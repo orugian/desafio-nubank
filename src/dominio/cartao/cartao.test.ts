@@ -5,6 +5,11 @@ import { calcularCenarios, criarHipotese, registrarDeclaracao } from "@/dominio/
 import { CONTEXTO, P1, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
 
 describe("B1b · cartão e caixa", () => {
+  test("CR-22: compra 300 à vista em 29/11 vai para a fatura de 05/01/2027", () => {
+    const r = alocarCompra(P1, estadoNovo(P1), { data: "2026-11-29", valor_centavos: reaisDaSpec("300"), parcelas: 1 });
+    if (!r.ok) throw new Error(r.erro.mensagem);
+    expect(r.parcelas).toEqual([{ numero: 1, fatura_id: "F2701", fechamento: "2026-12-29", vencimento: "2027-01-05", valor_centavos: reaisDaSpec("300") }]);
+  });
   test.each(["declaracao", "hipotese"] as const)("C-02/C-04/C-05: compra à vista em 30/10 (%s) vence em 05/12 sem saída de caixa", (camada) => {
     // Exemplo de §6.3: fatura antes zero, compra de 200; sem parcelamentos anteriores.
     const persona = { ...P1, cartao: { ...P1.cartao!, parcelamentos: [] } };
