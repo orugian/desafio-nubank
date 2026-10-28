@@ -15,8 +15,71 @@ import type {
   SnapshotMercado,
 } from "@/contratos";
 import { somarDias } from "@/dominio/calendario";
+import { calcularCenarios } from "@/dominio/caixa";
 
 const DecimalCdi = Decimal.clone({ precision: 50, rounding: Decimal.ROUND_HALF_UP });
+
+function resolverAteData(
+  persona: Persona,
+  estado: EstadoSessao,
+  contexto: Contexto,
+  ateDataInformada?: DataISO,
+): { ateData: DataISO; origem: ResultadoInvestimentos["ate_data_origem"] } {
+  if (ateDataInformada !== undefined) {
+    return { ateData: ateDataInformada, origem: "informada" };
+  }
+  const cenarios = calcularCenarios(persona, estado, contexto);
+  const faltas: DataISO[] = [];
+  for (const c of cenarios) {
+    if (c.status === "calculado" && c.indicadores?.primeira_falta) {
+      faltas.push(c.indicadores.primeira_falta.data);
+    }
+  }
+  if (faltas.length > 0) {
+    faltas.sort();
+    return { ateData: faltas[0], origem: "falta_mais_proxima" };
+  }
+  const atual = cenarios[0];
+  const dataMinimo = atual?.status === "calculado" && atual.indicadores ? atual.indicadores.data_saldo_minimo : HOJE;
+  return { ateData: dataMinimo, origem: "saldo_minimo" };
+}
+
+function classificarPosicao(
+  pos: Posicao,
+  valorAtual: number,
+  disponibilidade: DataISO,
+  ateData: DataISO,
+): {
+  classificacao: PosicaoAvaliada["classificacao"];
+  protegido: number;
+  naoResgatavel: number;
+  resgatavel: number;
+} {
+  if (pos.protecao?.tipo === "integral") {
+    return {
+      classificacao: "protegida",
+      protegido: valorAtual,
+      naoResgatavel: 0,
+      resgatavel: 0,
+    };
+  }
+  const protecaoParcial = pos.protecao?.tipo === "parcial" ? Math.min(pos.protecao.valor_centavos, valorAtual) : 0;
+  const livreDeProtecao = Math.max(0, valorAtual - protecaoParcial);
+  if (disponibilidade > ateData) {
+    return {
+      classificacao: "nao_resgatavel_ate_data",
+      protegido: protecaoParcial,
+      naoResgatavel: livreDeProtecao,
+      resgatavel: 0,
+    };
+  }
+  return {
+    classificacao: "resgatavel_ate_data",
+    protegido: protecaoParcial,
+    naoResgatavel: 0,
+    resgatavel: livreDeProtecao,
+  };
+}
 
 function formatarPct2Casas(numerador: Decimal, denominador: Decimal): string {
   if (denominador.isZero()) return "0.00";
@@ -135,7 +198,7 @@ export function consultarInvestimentos(
   contexto: Contexto,
   filtro: { ate_data?: DataISO },
 ): ResultadoDominio<ResultadoInvestimentos> {
-  const ateData: DataISO = filtro.ate_data ?? HOJE;
+  const { ateData, origem: ateDataOrigem } = resolverAteData(persona, estado, contexto, filtro.ate_data);
   const { taxaNoDia, ultimaDataSerie } = indiceTaxasCdi(contexto);
   let cdiDataRef: DataISO = ultimaDataSerie;
 
@@ -180,6 +243,12 @@ export function consultarInvestimentos(
 
     const resultado = valorAtual - aplicado;
     const rentabilidade = formatarPct2Casas(new DecimalCdi(resultado), new DecimalCdi(aplicado));
+    const { classificacao, protegido, naoResgatavel, resgatavel } = classificarPosicao(
+      pos,
+      valorAtual,
+      disponibilidade,
+      ateData,
+    );
 
     return {
       posicao_id: pos.id,
@@ -194,10 +263,10 @@ export function consultarInvestimentos(
       rentabilidade_pct: rentabilidade,
       valorizacao_periodo_pct: valorizacaoPct,
       data_disponibilidade: disponibilidade,
-      classificacao: "resgatavel_ate_data",
-      protegido_centavos: 0,
-      nao_resgatavel_centavos: 0,
-      resgatavel_centavos: valorAtual,
+      classificacao,
+      protegido_centavos: protegido,
+      nao_resgatavel_centavos: naoResgatavel,
+      resgatavel_centavos: resgatavel,
       protecao: pos.protecao,
       restricao: pos.restricao ?? null,
       estimado,
@@ -219,7 +288,7 @@ export function consultarInvestimentos(
   return {
     ok: true,
     ate_data: ateData,
-    ate_data_origem: "informada",
+    ate_data_origem: ateDataOrigem,
     posicoes,
     totais,
     rotulo_rentabilidade: textos.rotulos.rentabilidade,
