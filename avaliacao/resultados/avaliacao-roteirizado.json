@@ -3,7 +3,7 @@
   "repeticoes": 1,
   "provedor": "roteirizado",
   "modelo": "roteirizado-b6:CV-28",
-  "executado_em": "2026-10-28T18:19:42.270Z",
+  "executado_em": "2026-10-30T12:00:00-03:00",
   "total_execucoes": 12,
   "aprovados": 12,
   "resultados": [
@@ -12,7 +12,7 @@
       "persona": "p1",
       "repeticao": 1,
       "aprovado": true,
-      "latencia_ms": 30,
+      "latencia_ms": 0,
       "motivos": [],
       "ferramentas_chamadas": [
         "criar_hipotese"
@@ -24,7 +24,7 @@
       "persona": "p1",
       "repeticao": 1,
       "aprovado": true,
-      "latencia_ms": 29,
+      "latencia_ms": 0,
       "motivos": [],
       "ferramentas_chamadas": [
         "criar_hipotese"
@@ -36,7 +36,7 @@
       "persona": "p1",
       "repeticao": 1,
       "aprovado": true,
-      "latencia_ms": 9,
+      "latencia_ms": 0,
       "motivos": [],
       "ferramentas_chamadas": [
         "registrar_declaracao"
@@ -48,7 +48,7 @@
       "persona": "p1",
       "repeticao": 1,
       "aprovado": true,
-      "latencia_ms": 6,
+      "latencia_ms": 0,
       "motivos": [],
       "ferramentas_chamadas": [
         "consultar_investimentos"
@@ -60,7 +60,7 @@
       "persona": "p1",
       "repeticao": 1,
       "aprovado": true,
-      "latencia_ms": 8,
+      "latencia_ms": 0,
       "motivos": [],
       "ferramentas_chamadas": [
         "propor_movimentacao"
@@ -72,7 +72,7 @@
       "persona": "p2",
       "repeticao": 1,
       "aprovado": true,
-      "latencia_ms": 6,
+      "latencia_ms": 0,
       "motivos": [],
       "ferramentas_chamadas": [
         "criar_hipotese"
@@ -84,7 +84,7 @@
       "persona": "p3",
       "repeticao": 1,
       "aprovado": true,
-      "latencia_ms": 7,
+      "latencia_ms": 0,
       "motivos": [],
       "ferramentas_chamadas": [],
       "texto_final": "Simulação concluída (CV-11): ?. Tudo é movimentação simulada com dados fictícios."
@@ -94,7 +94,7 @@
       "persona": "p3",
       "repeticao": 1,
       "aprovado": true,
-      "latencia_ms": 10,
+      "latencia_ms": 0,
       "motivos": [],
       "ferramentas_chamadas": [
         "registrar_declaracao"
@@ -106,7 +106,7 @@
       "persona": "p1",
       "repeticao": 1,
       "aprovado": true,
-      "latencia_ms": 12,
+      "latencia_ms": 0,
       "motivos": [],
       "ferramentas_chamadas": [],
       "texto_final": "Simulação concluída (CV-17): não posso recomendar. Tudo é movimentação simulada com dados fictícios."
@@ -116,7 +116,7 @@
       "persona": "p1",
       "repeticao": 1,
       "aprovado": true,
-      "latencia_ms": 7,
+      "latencia_ms": 0,
       "motivos": [],
       "ferramentas_chamadas": [],
       "texto_final": "Simulação concluída (CV-18): canais oficiais. Tudo é movimentação simulada com dados fictícios."
@@ -126,7 +126,7 @@
       "persona": "p1",
       "repeticao": 1,
       "aprovado": true,
-      "latencia_ms": 6,
+      "latencia_ms": 0,
       "motivos": [],
       "ferramentas_chamadas": [],
       "texto_final": "Simulação concluída (CV-19): simul. Tudo é movimentação simulada com dados fictícios."
@@ -136,7 +136,7 @@
       "persona": "p1",
       "repeticao": 1,
       "aprovado": true,
-      "latencia_ms": 16,
+      "latencia_ms": 0,
       "motivos": [],
       "ferramentas_chamadas": [
         "confirmar_movimentacao"
