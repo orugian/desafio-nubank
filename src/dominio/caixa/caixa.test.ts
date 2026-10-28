@@ -363,3 +363,35 @@ describe("B1 · motor de caixa · P1", () => {
     });
   });
 });
+
+describe("B1 · motor de caixa · P2", () => {
+  test("CR-09: gasto diário de 15 vira blocos G1–G5; falta de 530 em 08/11 e ordem relevante em 08/11", () => {
+    const [atual] = calcularCenarios(P2, estadoNovo(P2), CONTEXTO);
+    expect(saldos(atual)).toEqual(
+      saldosDaSpec("G1 795 · E1 675 · G2 570 · E2 −530 · E3 970 · E4 790 · G3 685 · G4 580 · E5 180 · G5 135"),
+    );
+    const blocos = atual.linhas.filter((l) => l.evento_id.startsWith("G"));
+    expect(blocos.map((l) => [l.data, l.valor_centavos, l.origem, l.meio, l.estimativa?.metodo])).toEqual([
+      ["2026-10-30", 10500, "estimado", "pix_ou_debito", "gasto_diario"],
+      ["2026-11-06", 10500, "estimado", "pix_ou_debito", "gasto_diario"],
+      ["2026-11-13", 10500, "estimado", "pix_ou_debito", "gasto_diario"],
+      ["2026-11-20", 10500, "estimado", "pix_ou_debito", "gasto_diario"],
+      ["2026-11-27", 4500, "estimado", "pix_ou_debito", "gasto_diario"],
+    ]);
+    const falta = { data: "2026-11-08", valor_descoberto_centavos: reaisDaSpec("530"), saidas_do_dia: ["E2"] };
+    expect(atual.indicadores).toEqual({
+      saldo_inicial_centavos: reaisDaSpec("900"),
+      saldo_minimo_centavos: reaisDaSpec("−530"),
+      data_saldo_minimo: "2026-11-08",
+      primeira_falta: falta,
+      insuficiencia_centavos: reaisDaSpec("530"),
+      margem_hoje_centavos: 0,
+      saldo_final_centavos: reaisDaSpec("135"),
+      sem_recebimentos: { insuficiencia_centavos: reaisDaSpec("1.365"), primeira_falta: falta, saldo_final_centavos: reaisDaSpec("−1.365") },
+    });
+    expect(atual.avisos).toEqual(["saldo_final_positivo_com_falta", "falta_maior_sem_recebimento"]);
+    expect(atual.datas_ordem_relevante).toEqual(["2026-11-08"]);
+    const e4 = atual.linhas.find((l) => l.evento_id === "E4")!;
+    expect(e4.estimativa?.metodo).toBe("media_3_ultimas");
+  });
+});

@@ -21,6 +21,7 @@ import {
   type ResultadoCenario,
   type ResultadoDominio,
 } from "@/contratos";
+import { diaJuliano, somarDias } from "@/dominio/calendario";
 import { projetar, type Evento } from "./projecao";
 import { comparar } from "./comparacao";
 
@@ -75,8 +76,32 @@ function eventosBase(persona: Persona): Evento[] {
   return eventos;
 }
 
-type Cena = { eventos: Evento[] };
+type Cena = { eventos: Evento[]; gasto_diario_centavos: number };
 type Camada = "declaracao" | "hipotese";
+
+/** R-21: blocos de 7 dias a partir de hoje, saída no primeiro dia; gasto 0 não gera blocos. */
+function blocos(gasto: number): Evento[] {
+  if (gasto <= 0) return [];
+  const eventos: Evento[] = [];
+  for (let inicio = HOJE, k = 1; inicio <= FIM_JANELA; inicio = somarDias(inicio, 7), k++) {
+    const dias = Math.min(7, diaJuliano(FIM_JANELA) - diaJuliano(inicio) + 1);
+    eventos.push({
+      id: `G${k}`,
+      data: inicio,
+      descricao: "Gastos do dia a dia (estimado)",
+      tipo: "saida",
+      meio: "pix_ou_debito",
+      origem: "estimado",
+      estimativa: { metodo: "gasto_diario", valor_por_dia_centavos: gasto, dias, texto: textos.rotulos.estimado_gasto_diario(gasto, dias) },
+      previsto: false,
+      valor_centavos: gasto * dias,
+      original: null,
+      cadastro: cadastro("bloco", k),
+      especie: "bloco",
+    });
+  }
+  return eventos;
+}
 
 const falha = (codigo: ErroDominio["codigo"], campos: string[] = [], detalhes?: Record<string, unknown>, mensagem?: string) =>
   erro(codigo, mensagem ?? textos.erros[codigo], campos, detalhes).erro;
@@ -124,10 +149,11 @@ function aplicar(cena: Cena, alt: Alteracao, id: string, camada: Camada, indice:
       cadastro: cadastro(camada, indice),
       especie: camada,
     };
-    return { eventos: [...cena.eventos, evento] };
+    return { ...cena, eventos: [...cena.eventos, evento] };
   }
   if (alt.operacao === "alterar_evento") {
     return {
+      ...cena,
       eventos: cena.eventos.map((e) =>
         e.id !== alt.evento_id
           ? e
@@ -142,7 +168,7 @@ function aplicar(cena: Cena, alt: Alteracao, id: string, camada: Camada, indice:
     };
   }
   if (alt.operacao === "remover_evento") {
-    return { eventos: cena.eventos.filter((e) => e.id !== alt.evento_id) };
+    return { ...cena, eventos: cena.eventos.filter((e) => e.id !== alt.evento_id) };
   }
   if (alt.operacao === "adicionar_evento") {
     const evento: Evento = {
@@ -159,15 +185,17 @@ function aplicar(cena: Cena, alt: Alteracao, id: string, camada: Camada, indice:
       cadastro: cadastro(camada, indice),
       especie: camada,
     };
-    return { eventos: [...cena.eventos, evento] };
+    return { ...cena, eventos: [...cena.eventos, evento] };
   }
   return cena;
 }
 
+const cenaBase = (persona: Persona): Cena => ({ eventos: eventosBase(persona), gasto_diario_centavos: persona.gasto_diario.valor_centavos });
+
 function situacaoAtual(persona: Persona, estado: EstadoSessao): Cena {
   return estado.declaracoes.reduce(
     (c, d, k) => aplicar(c, d.alteracao, d.id, "declaracao", k),
-    { eventos: eventosBase(persona) } as Cena,
+    cenaBase(persona),
   );
 }
 
@@ -175,7 +203,7 @@ function resultado(cenario_id: string, nome: string, cena: Cena | null, saldoIni
   if (cena === null) {
     return { cenario_id, nome, status: "inconsistente", linhas: [], indicadores: null, faturas_afetadas: [], datas_ordem_relevante: [], avisos: [] };
   }
-  const p = projetar(cena.eventos, saldoInicial, new Set());
+  const p = projetar([...cena.eventos, ...blocos(cena.gasto_diario_centavos)], saldoInicial, new Set());
   return {
     cenario_id,
     nome,
@@ -286,7 +314,7 @@ export function desfazer(
     if (!estado.declaracoes.some((d) => d.id === alvo_id)) return { ok: false, erro: falha("ALTERACAO_INEXISTENTE", ["alvo_id"], { alvo_id }) };
     const restantes = estado.declaracoes.filter((d) => d.id !== alvo_id);
     // Declaração posterior que dependa da desfeita impede o desfazer.
-    let cena: Cena = { eventos: eventosBase(persona) };
+    let cena: Cena = cenaBase(persona);
     for (const [k, d] of restantes.entries()) {
       if (validar(cena, d.alteracao, "declaracao")) {
         return {
