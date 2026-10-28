@@ -1,0 +1,603 @@
+{
+  "exemplo": true,
+  "esquema": "RespostaTurno",
+  "descricao": "CV-05 com mercado ao vivo sem resposta em 3 s: F-07 em avisos, status ok",
+  "dados": {
+    "status": "ok",
+    "estado": {
+      "versao": 1,
+      "persona_id": "p1",
+      "mercado": {
+        "ao_vivo": false,
+        "obtido_em": "2026-10-28T11:00:00-03:00",
+        "tentou_ao_vivo": true,
+        "cdi": {
+          "taxa_diaria_pct": "0.05",
+          "data_ref": "2026-10-29",
+          "fonte": "CDI de teste (spec §11.4)"
+        },
+        "precos": {
+          "ITUB4": {
+            "preco_centavos": 3300,
+            "data_hora": "2026-10-27T18:00:00-03:00",
+            "fonte": "brapi"
+          },
+          "BTC": {
+            "preco_centavos": 38000000,
+            "data_hora": "2026-10-27T21:00:00-03:00",
+            "fonte": "CoinGecko"
+          }
+        }
+      },
+      "conversa": [
+        {
+          "mensagem_id": "m-0101",
+          "papel": "usuario",
+          "texto": "Tenho dinheiro aplicado. Posso contar com ele?",
+          "versao": 1,
+          "cartoes": [],
+          "rastro": []
+        },
+        {
+          "mensagem_id": "m-0101-r",
+          "papel": "assistente",
+          "texto": "Até 15/11, você tem R$ 1.830,00 em investimentos. A Caixinha Reserva (R$ 1.000,00) é reserva protegida. O CDB (R$ 500,00) só fica disponível no vencimento, em 15/03/2027. As ações (R$ 330,00, estimado com cotação de 27/10) ficam disponíveis em 04/11. Valores brutos.",
+          "versao": 1,
+          "cartoes": [],
+          "rastro": []
+        }
+      ],
+      "declaracoes": [],
+      "operacoes": [],
+      "operacao_pendente": null,
+      "hipoteses": [],
+      "contadores": {
+        "D": 0,
+        "H": 0,
+        "OP": 0
+      }
+    },
+    "texto": "Até 15/11, você tem R$ 1.830,00 em investimentos. A Caixinha Reserva (R$ 1.000,00) é reserva protegida. O CDB (R$ 500,00) só fica disponível no vencimento, em 15/03/2027. As ações (R$ 330,00, estimado com cotação de 27/10) ficam disponíveis em 04/11. Valores brutos.",
+    "cartoes": [
+      {
+        "tipo": "investimentos",
+        "resultado": {
+          "ate_data": "2026-11-15",
+          "ate_data_origem": "saldo_minimo",
+          "posicoes": [
+            {
+              "posicao_id": "SEP",
+              "nome": "Saldo separado",
+              "categoria": "saldo_separado",
+              "cdi_pct": null,
+              "ticker": null,
+              "quantidade": null,
+              "aplicado_centavos": 0,
+              "valor_atual_centavos": 0,
+              "resultado_centavos": 0,
+              "rentabilidade_pct": "0.00",
+              "valorizacao_periodo_pct": null,
+              "data_disponibilidade": "2026-10-30",
+              "classificacao": "resgatavel_ate_data",
+              "protegido_centavos": 0,
+              "nao_resgatavel_centavos": 0,
+              "resgatavel_centavos": 0,
+              "protecao": null,
+              "restricao": null,
+              "estimado": false,
+              "rotulo_estimativa": null,
+              "fonte": "sem rendimento"
+            },
+            {
+              "posicao_id": "INV1",
+              "nome": "Caixinha Reserva",
+              "categoria": "caixinha",
+              "cdi_pct": 100,
+              "ticker": null,
+              "quantidade": null,
+              "aplicado_centavos": 100000,
+              "valor_atual_centavos": 100000,
+              "resultado_centavos": 0,
+              "rentabilidade_pct": "0.00",
+              "valorizacao_periodo_pct": null,
+              "data_disponibilidade": "2026-10-30",
+              "classificacao": "protegida",
+              "protegido_centavos": 100000,
+              "nao_resgatavel_centavos": 0,
+              "resgatavel_centavos": 0,
+              "protecao": {
+                "tipo": "integral"
+              },
+              "restricao": "Reserva de emergência: não usar para objetivos",
+              "estimado": false,
+              "rotulo_estimativa": null,
+              "fonte": "CDI de teste (spec §11.4)"
+            },
+            {
+              "posicao_id": "INV9",
+              "nome": "Caixinha Viagem",
+              "categoria": "caixinha",
+              "cdi_pct": 100,
+              "ticker": null,
+              "quantidade": null,
+              "aplicado_centavos": 0,
+              "valor_atual_centavos": 0,
+              "resultado_centavos": 0,
+              "rentabilidade_pct": "0.00",
+              "valorizacao_periodo_pct": null,
+              "data_disponibilidade": "2026-10-30",
+              "classificacao": "resgatavel_ate_data",
+              "protegido_centavos": 0,
+              "nao_resgatavel_centavos": 0,
+              "resgatavel_centavos": 0,
+              "protecao": null,
+              "restricao": null,
+              "estimado": false,
+              "rotulo_estimativa": null,
+              "fonte": "CDI de teste (spec §11.4)"
+            },
+            {
+              "posicao_id": "INV2",
+              "nome": "CDB Banco Fictício",
+              "categoria": "cdb_vencimento",
+              "cdi_pct": 120,
+              "ticker": null,
+              "quantidade": null,
+              "aplicado_centavos": 50000,
+              "valor_atual_centavos": 50000,
+              "resultado_centavos": 0,
+              "rentabilidade_pct": "0.00",
+              "valorizacao_periodo_pct": null,
+              "data_disponibilidade": "2027-03-15",
+              "classificacao": "nao_resgatavel_ate_data",
+              "protegido_centavos": 0,
+              "nao_resgatavel_centavos": 50000,
+              "resgatavel_centavos": 0,
+              "protecao": null,
+              "restricao": null,
+              "estimado": false,
+              "rotulo_estimativa": null,
+              "fonte": "CDI de teste (spec §11.4)"
+            },
+            {
+              "posicao_id": "INV3",
+              "nome": "ITUB4",
+              "categoria": "acao",
+              "cdi_pct": null,
+              "ticker": "ITUB4",
+              "quantidade": "10",
+              "aplicado_centavos": 30000,
+              "valor_atual_centavos": 33000,
+              "resultado_centavos": 3000,
+              "rentabilidade_pct": "10.00",
+              "valorizacao_periodo_pct": "17.86",
+              "data_disponibilidade": "2026-11-04",
+              "classificacao": "resgatavel_ate_data",
+              "protegido_centavos": 0,
+              "nao_resgatavel_centavos": 0,
+              "resgatavel_centavos": 33000,
+              "protecao": null,
+              "restricao": null,
+              "estimado": true,
+              "rotulo_estimativa": "estimado com cotação de 27/10 18:00 (brapi)",
+              "fonte": "brapi (valor de teste)"
+            }
+          ],
+          "totais": {
+            "valor_total_centavos": 183000,
+            "protegido_centavos": 100000,
+            "nao_resgatavel_centavos": 50000,
+            "resgatavel_centavos": 33000
+          },
+          "rotulo_rentabilidade": "bruto, antes de IR, IOF e custos; não anualizado",
+          "cdi_data_ref": "2026-10-29",
+          "mercado": {
+            "ao_vivo": false,
+            "obtido_em": "2026-10-28T11:00:00-03:00",
+            "tentou_ao_vivo": true,
+            "cdi": {
+              "taxa_diaria_pct": "0.05",
+              "data_ref": "2026-10-29",
+              "fonte": "CDI de teste (spec §11.4)"
+            },
+            "precos": {
+              "ITUB4": {
+                "preco_centavos": 3300,
+                "data_hora": "2026-10-27T18:00:00-03:00",
+                "fonte": "brapi"
+              },
+              "BTC": {
+                "preco_centavos": 38000000,
+                "data_hora": "2026-10-27T21:00:00-03:00",
+                "fonte": "CoinGecko"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "avisos": [
+      {
+        "codigo": "F-07",
+        "mensagem": "cotação de 27/10 (consulta ao vivo indisponível)"
+      }
+    ],
+    "rastro": [
+      {
+        "chamada": 1,
+        "ferramenta": "consultar_investimentos",
+        "argumentos": {},
+        "resultado": {
+          "ok": true,
+          "ate_data": "2026-11-15",
+          "totais": {
+            "valor_total_centavos": 183000,
+            "protegido_centavos": 100000,
+            "nao_resgatavel_centavos": 50000,
+            "resgatavel_centavos": 33000
+          }
+        },
+        "duracao_ms": 3012
+      }
+    ],
+    "visao": {
+      "marca": "neutra",
+      "prototipo": true,
+      "persona": {
+        "id": "p1",
+        "nome": "Bia (fictícia)"
+      },
+      "conta": {
+        "saldo_disponivel_hoje_centavos": 180000,
+        "saldo_inicio_hoje_centavos": 180000,
+        "operacoes_hoje": []
+      },
+      "extrato": [
+        {
+          "id": "L0201",
+          "data": "2026-10-19",
+          "descricao": "Salário",
+          "tipo": "entrada",
+          "meio": "salario",
+          "categoria": "receitas",
+          "valor_centavos": 300000,
+          "simulado": false
+        },
+        {
+          "id": "L0198",
+          "data": "2026-10-15",
+          "descricao": "Contas da casa",
+          "tipo": "saida",
+          "meio": "debito_automatico",
+          "categoria": "contas_casa",
+          "valor_centavos": 20000,
+          "simulado": false
+        },
+        {
+          "id": "L0190",
+          "data": "2026-10-10",
+          "descricao": "Aluguel",
+          "tipo": "saida",
+          "meio": "pix",
+          "categoria": "moradia",
+          "valor_centavos": 60000,
+          "simulado": false
+        },
+        {
+          "id": "L0185",
+          "data": "2026-10-05",
+          "descricao": "Pagamento da fatura",
+          "tipo": "saida",
+          "meio": "debito",
+          "categoria": "fatura",
+          "valor_centavos": 64000,
+          "simulado": false
+        }
+      ],
+      "proximos_pagamentos": [
+        {
+          "evento_id": "A",
+          "data": "2026-11-05",
+          "descricao": "Fatura do cartão",
+          "tipo": "saida",
+          "meio": "debito",
+          "valor_centavos": 70000,
+          "previsto": false,
+          "estimativa_texto": null,
+          "origem": "dados_base"
+        },
+        {
+          "evento_id": "B",
+          "data": "2026-11-10",
+          "descricao": "Aluguel",
+          "tipo": "saida",
+          "meio": "pix",
+          "valor_centavos": 60000,
+          "previsto": false,
+          "estimativa_texto": null,
+          "origem": "dados_base"
+        },
+        {
+          "evento_id": "C",
+          "data": "2026-11-15",
+          "descricao": "Contas da casa",
+          "tipo": "saida",
+          "meio": "debito_automatico",
+          "valor_centavos": 20000,
+          "previsto": false,
+          "estimativa_texto": null,
+          "origem": "dados_base"
+        },
+        {
+          "evento_id": "R1",
+          "data": "2026-11-19",
+          "descricao": "Salário",
+          "tipo": "entrada",
+          "meio": "salario",
+          "valor_centavos": 300000,
+          "previsto": true,
+          "estimativa_texto": null,
+          "origem": "dados_base"
+        }
+      ],
+      "cartao": {
+        "limite_centavos": 400000,
+        "dia_fechamento": 29,
+        "dia_vencimento": 5,
+        "fatura_fechada": {
+          "fatura_id": "A",
+          "fechamento": "2026-10-29",
+          "vencimento": "2026-11-05",
+          "status": "fechada",
+          "valor_centavos": 70000,
+          "itens": [
+            {
+              "lancamento_id": "L0123",
+              "data": null,
+              "parcelamento_id": "PC1",
+              "parcela": "5/10",
+              "origem": "dados_base",
+              "descricao": "Celular",
+              "valor_centavos": 15000
+            },
+            {
+              "lancamento_id": "L0131",
+              "data": "2026-10-17",
+              "parcelamento_id": null,
+              "parcela": null,
+              "origem": "dados_base",
+              "descricao": "Mercado",
+              "valor_centavos": 32000
+            },
+            {
+              "lancamento_id": "L0140",
+              "data": "2026-10-24",
+              "parcelamento_id": null,
+              "parcela": null,
+              "origem": "dados_base",
+              "descricao": "Restaurante",
+              "valor_centavos": 23000
+            }
+          ]
+        },
+        "fatura_aberta": {
+          "fatura_id": "F2612",
+          "fechamento": "2026-11-29",
+          "vencimento": "2026-12-05",
+          "status": "aberta",
+          "valor_centavos": 19590,
+          "itens": [
+            {
+              "lancamento_id": null,
+              "data": null,
+              "parcelamento_id": "PC1",
+              "parcela": "6/10",
+              "origem": "dados_base",
+              "descricao": "Celular",
+              "valor_centavos": 15000
+            },
+            {
+              "lancamento_id": "L0150",
+              "data": "2026-10-29",
+              "parcelamento_id": null,
+              "parcela": null,
+              "origem": "dados_base",
+              "descricao": "Padaria",
+              "valor_centavos": 4590
+            }
+          ]
+        },
+        "proximas": [
+          {
+            "fatura_id": "F2701",
+            "fechamento": "2026-12-29",
+            "vencimento": "2027-01-05",
+            "status": "futura",
+            "valor_centavos": 15000,
+            "itens": [
+              {
+                "lancamento_id": null,
+                "data": null,
+                "parcelamento_id": "PC1",
+                "parcela": "7/10",
+                "origem": "dados_base",
+                "descricao": "Celular",
+                "valor_centavos": 15000
+              }
+            ]
+          },
+          {
+            "fatura_id": "F2702",
+            "fechamento": "2027-01-29",
+            "vencimento": "2027-02-05",
+            "status": "futura",
+            "valor_centavos": 15000,
+            "itens": [
+              {
+                "lancamento_id": null,
+                "data": null,
+                "parcelamento_id": "PC1",
+                "parcela": "8/10",
+                "origem": "dados_base",
+                "descricao": "Celular",
+                "valor_centavos": 15000
+              }
+            ]
+          },
+          {
+            "fatura_id": "F2703",
+            "fechamento": "2027-02-28",
+            "vencimento": "2027-03-05",
+            "status": "futura",
+            "valor_centavos": 15000,
+            "itens": [
+              {
+                "lancamento_id": null,
+                "data": null,
+                "parcelamento_id": "PC1",
+                "parcela": "9/10",
+                "origem": "dados_base",
+                "descricao": "Celular",
+                "valor_centavos": 15000
+              }
+            ]
+          },
+          {
+            "fatura_id": "F2704",
+            "fechamento": "2027-03-29",
+            "vencimento": "2027-04-05",
+            "status": "futura",
+            "valor_centavos": 15000,
+            "itens": [
+              {
+                "lancamento_id": null,
+                "data": null,
+                "parcelamento_id": "PC1",
+                "parcela": "10/10",
+                "origem": "dados_base",
+                "descricao": "Celular",
+                "valor_centavos": 15000
+              }
+            ]
+          }
+        ]
+      },
+      "posicoes": [
+        {
+          "cdi_pct": null,
+          "ticker": null,
+          "quantidade": null,
+          "valor_atual_centavos": 0,
+          "aplicado_centavos": 0,
+          "resultado_centavos": 0,
+          "rentabilidade_pct": "0.00",
+          "valorizacao_periodo_pct": null,
+          "data_disponibilidade": "2026-10-30",
+          "protecao": null,
+          "restricao": null,
+          "estimado": false,
+          "fonte": "sem rendimento",
+          "id": "SEP",
+          "nome": "Saldo separado",
+          "categoria": "saldo_separado"
+        },
+        {
+          "cdi_pct": 100,
+          "ticker": null,
+          "quantidade": null,
+          "valor_atual_centavos": 100000,
+          "aplicado_centavos": 100000,
+          "resultado_centavos": 0,
+          "rentabilidade_pct": "0.00",
+          "valorizacao_periodo_pct": null,
+          "data_disponibilidade": "2026-10-30",
+          "protecao": {
+            "tipo": "integral"
+          },
+          "restricao": "Reserva de emergência: não usar para objetivos",
+          "estimado": false,
+          "fonte": "CDI de teste (spec §11.4)",
+          "id": "INV1",
+          "nome": "Caixinha Reserva",
+          "categoria": "caixinha"
+        },
+        {
+          "cdi_pct": 100,
+          "ticker": null,
+          "quantidade": null,
+          "valor_atual_centavos": 0,
+          "aplicado_centavos": 0,
+          "resultado_centavos": 0,
+          "rentabilidade_pct": "0.00",
+          "valorizacao_periodo_pct": null,
+          "data_disponibilidade": "2026-10-30",
+          "protecao": null,
+          "restricao": null,
+          "estimado": false,
+          "fonte": "CDI de teste (spec §11.4)",
+          "id": "INV9",
+          "nome": "Caixinha Viagem",
+          "categoria": "caixinha"
+        },
+        {
+          "cdi_pct": 120,
+          "ticker": null,
+          "quantidade": null,
+          "valor_atual_centavos": 50000,
+          "aplicado_centavos": 50000,
+          "resultado_centavos": 0,
+          "rentabilidade_pct": "0.00",
+          "valorizacao_periodo_pct": null,
+          "data_disponibilidade": "2027-03-15",
+          "protecao": null,
+          "restricao": null,
+          "estimado": false,
+          "fonte": "CDI de teste (spec §11.4)",
+          "id": "INV2",
+          "nome": "CDB Banco Fictício",
+          "categoria": "cdb_vencimento"
+        },
+        {
+          "cdi_pct": null,
+          "ticker": "ITUB4",
+          "quantidade": "10",
+          "valor_atual_centavos": 33000,
+          "aplicado_centavos": 30000,
+          "resultado_centavos": 3000,
+          "rentabilidade_pct": "10.00",
+          "valorizacao_periodo_pct": "17.86",
+          "data_disponibilidade": "2026-11-04",
+          "protecao": null,
+          "restricao": null,
+          "estimado": true,
+          "fonte": "brapi (valor de teste)",
+          "id": "INV3",
+          "nome": "ITUB4",
+          "categoria": "acao"
+        }
+      ],
+      "mercado": {
+        "ao_vivo": false,
+        "obtido_em": "2026-10-28T11:00:00-03:00",
+        "tentou_ao_vivo": false,
+        "cdi": {
+          "taxa_diaria_pct": "0.05",
+          "data_ref": "2026-10-29",
+          "fonte": "CDI de teste (spec §11.4)"
+        },
+        "precos": {
+          "ITUB4": {
+            "preco_centavos": 3300,
+            "data_hora": "2026-10-27T18:00:00-03:00",
+            "fonte": "brapi"
+          },
+          "BTC": {
+            "preco_centavos": 38000000,
+            "data_hora": "2026-10-27T21:00:00-03:00",
+            "fonte": "CoinGecko"
+          }
+        }
+      }
+    }
+  }
+}

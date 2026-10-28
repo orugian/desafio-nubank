@@ -1,0 +1,22 @@
+{
+  "exemplo": true,
+  "esquema": "CartaoResposta",
+  "descricao": "CV-26: 500 na Caixinha Viagem a 100% do CDI até 19/11 (CR-32)",
+  "dados": {
+    "tipo": "rendimento",
+    "resultado": {
+      "valor_centavos": 50000,
+      "cdi_pct": 100,
+      "ate_data": "2026-11-19",
+      "dias_uteis": 13,
+      "taxa_diaria_pct": "0.05",
+      "cdi_data_ref": "2026-10-29",
+      "rendimento_bruto_centavos": 326,
+      "rotulo": "bruto, CDI constante",
+      "destino": {
+        "posicao_id": "INV9",
+        "nome": "Caixinha Viagem"
+      }
+    }
+  }
+}

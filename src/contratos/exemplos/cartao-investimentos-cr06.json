@@ -1,0 +1,161 @@
+{
+  "exemplo": true,
+  "esquema": "CartaoResposta",
+  "descricao": "CV-05 (P1, sessão nova): investimentos até 15/11 (CR-06)",
+  "dados": {
+    "tipo": "investimentos",
+    "resultado": {
+      "ate_data": "2026-11-15",
+      "ate_data_origem": "saldo_minimo",
+      "posicoes": [
+        {
+          "posicao_id": "SEP",
+          "nome": "Saldo separado",
+          "categoria": "saldo_separado",
+          "cdi_pct": null,
+          "ticker": null,
+          "quantidade": null,
+          "aplicado_centavos": 0,
+          "valor_atual_centavos": 0,
+          "resultado_centavos": 0,
+          "rentabilidade_pct": "0.00",
+          "valorizacao_periodo_pct": null,
+          "data_disponibilidade": "2026-10-30",
+          "classificacao": "resgatavel_ate_data",
+          "protegido_centavos": 0,
+          "nao_resgatavel_centavos": 0,
+          "resgatavel_centavos": 0,
+          "protecao": null,
+          "restricao": null,
+          "estimado": false,
+          "rotulo_estimativa": null,
+          "fonte": "sem rendimento"
+        },
+        {
+          "posicao_id": "INV1",
+          "nome": "Caixinha Reserva",
+          "categoria": "caixinha",
+          "cdi_pct": 100,
+          "ticker": null,
+          "quantidade": null,
+          "aplicado_centavos": 100000,
+          "valor_atual_centavos": 100000,
+          "resultado_centavos": 0,
+          "rentabilidade_pct": "0.00",
+          "valorizacao_periodo_pct": null,
+          "data_disponibilidade": "2026-10-30",
+          "classificacao": "protegida",
+          "protegido_centavos": 100000,
+          "nao_resgatavel_centavos": 0,
+          "resgatavel_centavos": 0,
+          "protecao": {
+            "tipo": "integral"
+          },
+          "restricao": "Reserva de emergência: não usar para objetivos",
+          "estimado": false,
+          "rotulo_estimativa": null,
+          "fonte": "CDI de teste (spec §11.4)"
+        },
+        {
+          "posicao_id": "INV9",
+          "nome": "Caixinha Viagem",
+          "categoria": "caixinha",
+          "cdi_pct": 100,
+          "ticker": null,
+          "quantidade": null,
+          "aplicado_centavos": 0,
+          "valor_atual_centavos": 0,
+          "resultado_centavos": 0,
+          "rentabilidade_pct": "0.00",
+          "valorizacao_periodo_pct": null,
+          "data_disponibilidade": "2026-10-30",
+          "classificacao": "resgatavel_ate_data",
+          "protegido_centavos": 0,
+          "nao_resgatavel_centavos": 0,
+          "resgatavel_centavos": 0,
+          "protecao": null,
+          "restricao": null,
+          "estimado": false,
+          "rotulo_estimativa": null,
+          "fonte": "CDI de teste (spec §11.4)"
+        },
+        {
+          "posicao_id": "INV2",
+          "nome": "CDB Banco Fictício",
+          "categoria": "cdb_vencimento",
+          "cdi_pct": 120,
+          "ticker": null,
+          "quantidade": null,
+          "aplicado_centavos": 50000,
+          "valor_atual_centavos": 50000,
+          "resultado_centavos": 0,
+          "rentabilidade_pct": "0.00",
+          "valorizacao_periodo_pct": null,
+          "data_disponibilidade": "2027-03-15",
+          "classificacao": "nao_resgatavel_ate_data",
+          "protegido_centavos": 0,
+          "nao_resgatavel_centavos": 50000,
+          "resgatavel_centavos": 0,
+          "protecao": null,
+          "restricao": null,
+          "estimado": false,
+          "rotulo_estimativa": null,
+          "fonte": "CDI de teste (spec §11.4)"
+        },
+        {
+          "posicao_id": "INV3",
+          "nome": "ITUB4",
+          "categoria": "acao",
+          "cdi_pct": null,
+          "ticker": "ITUB4",
+          "quantidade": "10",
+          "aplicado_centavos": 30000,
+          "valor_atual_centavos": 33000,
+          "resultado_centavos": 3000,
+          "rentabilidade_pct": "10.00",
+          "valorizacao_periodo_pct": "17.86",
+          "data_disponibilidade": "2026-11-04",
+          "classificacao": "resgatavel_ate_data",
+          "protegido_centavos": 0,
+          "nao_resgatavel_centavos": 0,
+          "resgatavel_centavos": 33000,
+          "protecao": null,
+          "restricao": null,
+          "estimado": true,
+          "rotulo_estimativa": "estimado com cotação de 27/10 18:00 (brapi)",
+          "fonte": "brapi (valor de teste)"
+        }
+      ],
+      "totais": {
+        "valor_total_centavos": 183000,
+        "protegido_centavos": 100000,
+        "nao_resgatavel_centavos": 50000,
+        "resgatavel_centavos": 33000
+      },
+      "rotulo_rentabilidade": "bruto, antes de IR, IOF e custos; não anualizado",
+      "cdi_data_ref": "2026-10-29",
+      "mercado": {
+        "ao_vivo": false,
+        "obtido_em": "2026-10-28T11:00:00-03:00",
+        "tentou_ao_vivo": false,
+        "cdi": {
+          "taxa_diaria_pct": "0.05",
+          "data_ref": "2026-10-29",
+          "fonte": "CDI de teste (spec §11.4)"
+        },
+        "precos": {
+          "ITUB4": {
+            "preco_centavos": 3300,
+            "data_hora": "2026-10-27T18:00:00-03:00",
+            "fonte": "brapi"
+          },
+          "BTC": {
+            "preco_centavos": 38000000,
+            "data_hora": "2026-10-27T21:00:00-03:00",
+            "fonte": "CoinGecko"
+          }
+        }
+      }
+    }
+  }
+}

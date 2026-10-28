@@ -1,0 +1,81 @@
+{
+  "exemplo": true,
+  "esquema": "CartaoResposta",
+  "descricao": "CV-03 após CV-01: D1 contas da casa = 150 (CR-04), diferenças por cenário",
+  "dados": {
+    "tipo": "o_que_mudou",
+    "alteracoes": [
+      {
+        "tipo": "declaracao_registrada",
+        "id": "D1",
+        "descricao": "Contas da casa (C) em 15/11: R$ 200,00 → R$ 150,00"
+      }
+    ],
+    "cenarios": [
+      {
+        "cenario_id": "atual",
+        "nome": "Situação atual",
+        "situacao": "alterado",
+        "diferencas": [
+          {
+            "indicador": "saldo_minimo_centavos",
+            "antes": 30000,
+            "depois": 35000
+          },
+          {
+            "indicador": "margem_hoje_centavos",
+            "antes": 30000,
+            "depois": 35000
+          },
+          {
+            "indicador": "saldo_final_centavos",
+            "antes": 330000,
+            "depois": 335000
+          },
+          {
+            "indicador": "sem_recebimentos_saldo_final_centavos",
+            "antes": 30000,
+            "depois": 35000
+          }
+        ]
+      },
+      {
+        "cenario_id": "H1",
+        "nome": "Separar R$ 500 hoje",
+        "situacao": "alterado",
+        "diferencas": [
+          {
+            "indicador": "saldo_minimo_centavos",
+            "antes": -20000,
+            "depois": -15000
+          },
+          {
+            "indicador": "primeira_falta_valor_centavos",
+            "antes": 20000,
+            "depois": 15000
+          },
+          {
+            "indicador": "insuficiencia_centavos",
+            "antes": 20000,
+            "depois": 15000
+          },
+          {
+            "indicador": "saldo_final_centavos",
+            "antes": 280000,
+            "depois": 285000
+          },
+          {
+            "indicador": "sem_recebimentos_insuficiencia_centavos",
+            "antes": 20000,
+            "depois": 15000
+          },
+          {
+            "indicador": "sem_recebimentos_saldo_final_centavos",
+            "antes": -20000,
+            "depois": -15000
+          }
+        ]
+      }
+    ]
+  }
+}

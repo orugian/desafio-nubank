@@ -1,0 +1,113 @@
+{
+  "exemplo": true,
+  "esquema": "ResultadoCenario",
+  "descricao": "inconsistente não tem indicadores (R-14)",
+  "dados": {
+    "cenario_id": "H1",
+    "nome": "Separar R$ 500 hoje",
+    "status": "inconsistente",
+    "linhas": [
+      {
+        "estimativa": null,
+        "original": null,
+        "previsto": false,
+        "data": "2026-10-30",
+        "evento_id": "H1.1",
+        "descricao": "Separar R$ 500,00",
+        "tipo": "saida",
+        "meio": "simulacao",
+        "origem": "hipotese",
+        "valor_centavos": 50000,
+        "saldo_apos_centavos": 130000,
+        "rotulo": null
+      },
+      {
+        "estimativa": null,
+        "original": null,
+        "previsto": false,
+        "data": "2026-11-05",
+        "evento_id": "A",
+        "descricao": "Fatura do cartão",
+        "tipo": "saida",
+        "meio": "debito",
+        "origem": "dados_base",
+        "valor_centavos": 70000,
+        "saldo_apos_centavos": 60000,
+        "rotulo": null
+      },
+      {
+        "estimativa": null,
+        "original": null,
+        "previsto": false,
+        "data": "2026-11-10",
+        "evento_id": "B",
+        "descricao": "Aluguel",
+        "tipo": "saida",
+        "meio": "pix",
+        "origem": "dados_base",
+        "valor_centavos": 60000,
+        "saldo_apos_centavos": 0,
+        "rotulo": "Saldo zerado"
+      },
+      {
+        "estimativa": null,
+        "original": null,
+        "previsto": false,
+        "data": "2026-11-15",
+        "evento_id": "C",
+        "descricao": "Contas da casa",
+        "tipo": "saida",
+        "meio": "debito_automatico",
+        "origem": "dados_base",
+        "valor_centavos": 20000,
+        "saldo_apos_centavos": -20000,
+        "rotulo": "Saldo insuficiente (faltam R$ 200,00)"
+      },
+      {
+        "estimativa": null,
+        "original": null,
+        "previsto": true,
+        "data": "2026-11-19",
+        "evento_id": "R1",
+        "descricao": "Salário",
+        "tipo": "entrada",
+        "meio": "salario",
+        "origem": "dados_base",
+        "valor_centavos": 300000,
+        "saldo_apos_centavos": 280000,
+        "rotulo": null
+      }
+    ],
+    "indicadores": {
+      "saldo_inicial_centavos": 180000,
+      "saldo_minimo_centavos": -20000,
+      "data_saldo_minimo": "2026-11-15",
+      "primeira_falta": {
+        "data": "2026-11-15",
+        "valor_descoberto_centavos": 20000,
+        "saidas_do_dia": [
+          "C"
+        ]
+      },
+      "insuficiencia_centavos": 20000,
+      "margem_hoje_centavos": 0,
+      "saldo_final_centavos": 280000,
+      "sem_recebimentos": {
+        "insuficiencia_centavos": 20000,
+        "primeira_falta": {
+          "data": "2026-11-15",
+          "valor_descoberto_centavos": 20000,
+          "saidas_do_dia": [
+            "C"
+          ]
+        },
+        "saldo_final_centavos": -20000
+      }
+    },
+    "faturas_afetadas": [],
+    "datas_ordem_relevante": [],
+    "avisos": [
+      "saldo_final_positivo_com_falta"
+    ]
+  }
+}

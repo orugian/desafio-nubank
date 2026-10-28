@@ -1,0 +1,57 @@
+{
+  "exemplo": true,
+  "esquema": "ArgumentosFerramentas",
+  "descricao": "Argumentos de exemplo de cada uma das 12 ferramentas",
+  "dados": {
+    "consultar_historico": {
+      "de": "2026-09-01",
+      "ate": "2026-09-30",
+      "tipo": "saida",
+      "categoria": "delivery"
+    },
+    "consultar_cartao": {},
+    "consultar_investimentos": {
+      "ate_data": "2026-11-15"
+    },
+    "projetar_rendimento": {
+      "valor": "500",
+      "destino": "INV9",
+      "ate_data": "2026-11-19"
+    },
+    "registrar_declaracao": {
+      "alteracao": {
+        "operacao": "alterar_evento",
+        "evento_id": "C",
+        "valor": "150"
+      }
+    },
+    "criar_hipotese": {
+      "nome": "Separar R$ 500 hoje",
+      "a_partir_de": "atual",
+      "alteracoes": [
+        {
+          "operacao": "separar",
+          "valor": "500",
+          "data": "2026-10-30"
+        }
+      ]
+    },
+    "desfazer": {
+      "alvo_id": "H1"
+    },
+    "propor_movimentacao": {
+      "valor": "500",
+      "destino": "INV9"
+    },
+    "confirmar_movimentacao": {
+      "operacao_id": "OP1"
+    },
+    "cancelar_movimentacao": {
+      "operacao_id": "OP1"
+    },
+    "exibir_comparacao": {},
+    "preparar_resumo_atendimento": {
+      "motivo": "Compras não reconhecidas no cartão"
+    }
+  }
+}

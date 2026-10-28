@@ -1,0 +1,34 @@
+{
+  "descricao": "CV-01 (P1): pergunta se pode separar R$ 500 hoje; o modelo chama criar_hipotese e depois responde.",
+  "turnos": [
+    {
+      "mensagem": "Posso separar R$ 500 hoje para minha viagem?",
+      "respostas": [
+        {
+          "tipo": "chamadas",
+          "chamadas": [
+            {
+              "id": "call_cv01_1",
+              "nome": "criar_hipotese",
+              "argumentos": {
+                "nome": "Separar R$ 500 hoje",
+                "a_partir_de": "atual",
+                "alteracoes": [
+                  {
+                    "operacao": "separar",
+                    "valor": "500",
+                    "data": "2026-10-30"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "tipo": "texto",
+          "texto": "Se você separar R$ 500 hoje, o saldo zera em 10/11, no aluguel, e faltam R$ 200,00 em 15/11, no débito das contas da casa. O salário previsto de 19/11 só chega depois. Sem separar, o menor saldo fica em R$ 300,00, em 15/11."
+        }
+      ]
+    }
+  ]
+}

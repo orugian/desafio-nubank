@@ -1,0 +1,64 @@
+{
+  "exemplo": true,
+  "esquema": "CartaoResposta",
+  "descricao": "CV-10 (P2): delivery em setembro; valores fictícios ilustrativos",
+  "dados": {
+    "tipo": "historico",
+    "resultado": {
+      "filtro": {
+        "de": "2026-09-01",
+        "ate": "2026-09-30",
+        "tipo": "saida",
+        "categoria": "delivery"
+      },
+      "de": "2026-09-01",
+      "ate": "2026-09-30",
+      "quantidade": 4,
+      "total_saidas_centavos": 24040,
+      "total_entradas_centavos": 0,
+      "grupos": [],
+      "itens": [
+        {
+          "id": "L0262",
+          "data": "2026-09-26",
+          "descricao": "Delivery pizzaria",
+          "tipo": "saida",
+          "meio": "pix",
+          "categoria": "delivery",
+          "valor_centavos": 7290,
+          "recorrencia_id": null
+        },
+        {
+          "id": "L0255",
+          "data": "2026-09-19",
+          "descricao": "Delivery japonês",
+          "tipo": "saida",
+          "meio": "debito",
+          "categoria": "delivery",
+          "valor_centavos": 8450,
+          "recorrencia_id": null
+        },
+        {
+          "id": "L0248",
+          "data": "2026-09-12",
+          "descricao": "Delivery lanche",
+          "tipo": "saida",
+          "meio": "pix",
+          "categoria": "delivery",
+          "valor_centavos": 4380,
+          "recorrencia_id": null
+        },
+        {
+          "id": "L0241",
+          "data": "2026-09-05",
+          "descricao": "Delivery marmita",
+          "tipo": "saida",
+          "meio": "pix",
+          "categoria": "delivery",
+          "valor_centavos": 3920,
+          "recorrencia_id": null
+        }
+      ]
+    }
+  }
+}
