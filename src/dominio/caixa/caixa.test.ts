@@ -2,8 +2,8 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 import { calcularCenarios, compararCenarios, criarHipotese, registrarDeclaracao } from "@/dominio/caixa";
-import { CONTEXTO, P1, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "./testes/personas";
-import type { ResultadoCenario } from "@/contratos";
+import { CONTEXTO, P1, P2, P3, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "./testes/personas";
+import type { Alteracao, EstadoSessao, Persona, ResultadoCenario } from "@/contratos";
 
 const saldos = (c: ResultadoCenario) => c.linhas.map((l) => [l.evento_id, l.saldo_apos_centavos]);
 
@@ -203,6 +203,83 @@ describe("B1 · motor de caixa · P1", () => {
         readFileSync(join(__dirname, "..", "..", "contratos", "exemplos", "cartao-o-que-mudou-cr04.json"), "utf8"),
       ).dados;
       expect(mudou).toEqual({ alteracoes: exemplo.alteracoes, cenarios: exemplo.cenarios });
+    });
+  });
+
+  describe("validações (estado inalterado em todo erro)", () => {
+    const gasto = (extra: Record<string, unknown>) =>
+      ({ operacao: "adicionar_evento", tipo: "saida", descricao: "Gasto extra", data: "2026-11-02", valor: "50", meio: "pix", ...extra }) as Alteracao;
+    const codigoDecl = (persona: Persona, alt: Alteracao) => {
+      const r = registrarDeclaracao(persona, estadoNovo(persona), alt, origem("m-9"));
+      return r.ok ? "ok" : r.erro.codigo;
+    };
+    const hip = (estado: EstadoSessao, alteracoes: Alteracao[], a_partir_de = "atual") =>
+      criarHipotese(P1, estado, { nome: "Teste", a_partir_de, alteracoes }, origem("m-9"));
+
+    test("CR-15b: saída em 29/10 → DATA_ANTES_DE_HOJE", () => {
+      expect(codigoDecl(P3, gasto({ data: "2026-10-29" }))).toBe("DATA_ANTES_DE_HOJE");
+    });
+
+    test("CR-17a: evento em 30/11 → DATA_FORA_DA_JANELA", () => {
+      expect(codigoDecl(P1, gasto({ data: "2026-11-30" }))).toBe("DATA_FORA_DA_JANELA");
+    });
+
+    test.each([["0"], ["0.00"], ["-5"], ["1.500"], ["12,50"]])("CR-17b: valor %s → VALOR_INVALIDO", (valor) => {
+      const r = hip(estadoNovo(P1), [{ operacao: "separar", valor }]);
+      expect(r.ok ? "ok" : r.erro.codigo).toBe("VALOR_INVALIDO");
+    });
+
+    test("CR-17b: \"1500\" e \"12.50\" são aceitos e convertidos exatamente", () => {
+      const r = hip(estadoNovo(P1), [{ operacao: "separar", valor: "1500" }, { operacao: "separar", valor: "12.50" }]);
+      if (!r.ok) throw new Error(r.erro.mensagem);
+      const [, h] = calcularCenarios(P1, r.estado, CONTEXTO);
+      expect(h.linhas.filter((l) => l.origem === "hipotese").map((l) => l.valor_centavos)).toEqual([150000, 1250]);
+    });
+
+    test("CR-17c: alterar_evento com id inexistente → EVENTO_INEXISTENTE", () => {
+      expect(codigoDecl(P1, { operacao: "alterar_evento", evento_id: "Z9", valor: "10" })).toBe("EVENTO_INEXISTENTE");
+    });
+
+    test("CR-17d: 4ª hipótese → LIMITE_HIPOTESES", () => {
+      let estado = estadoNovo(P1);
+      for (let i = 0; i < 3; i++) {
+        const r = hip(estado, [{ operacao: "separar", valor: "10" }]);
+        if (!r.ok) throw new Error(r.erro.mensagem);
+        estado = r.estado;
+      }
+      const quarta = hip(estado, [{ operacao: "separar", valor: "10" }]);
+      expect(quarta.ok ? "ok" : quarta.erro.codigo).toBe("LIMITE_HIPOTESES");
+    });
+
+    test("CR-17d: hipótese derivada com 6 alterações (1 copiada + 5) → LIMITE_ALTERACOES", () => {
+      const h1 = hip(estadoNovo(P1), [{ operacao: "separar", valor: "500" }]);
+      if (!h1.ok) throw new Error(h1.erro.mensagem);
+      const cinco = Array.from({ length: 5 }, () => ({ operacao: "separar", valor: "10" }) as Alteracao);
+      const r = hip(h1.estado, cinco, "H1");
+      expect(r.ok ? "ok" : r.erro.codigo).toBe("LIMITE_ALTERACOES");
+    });
+
+    test("CR-17e: separar como declaração → OPERACAO_NAO_PERMITIDA", () => {
+      expect(codigoDecl(P1, { operacao: "separar", valor: "500" })).toBe("OPERACAO_NAO_PERMITIDA");
+    });
+
+    test.each([
+      ["sem meio", { meio: undefined }],
+      ["sem data", { data: undefined }],
+      ["entrada com cartao_credito", { tipo: "entrada", meio: "cartao_credito" }],
+    ])("CR-17h: adicionar_evento %s → ARGUMENTOS_INVALIDOS", (_nome, extra) => {
+      expect(codigoDecl(P1, gasto(extra))).toBe("ARGUMENTOS_INVALIDOS");
+    });
+
+    test.each([
+      ["alterar A (fatura fechada de P1)", P1, { operacao: "alterar_evento", evento_id: "A", valor: "10" }],
+      ["remover A (fatura fechada de P1)", P1, { operacao: "remover_evento", evento_id: "A" }],
+      ["alterar G1 (bloco de P2)", P2, { operacao: "alterar_evento", evento_id: "G1", valor: "10" }],
+      ["remover G1 (bloco de P2)", P2, { operacao: "remover_evento", evento_id: "G1" }],
+    ])("CR-17l: %s → OPERACAO_NAO_PERMITIDA", (_nome, persona, alt) => {
+      expect(codigoDecl(persona as Persona, alt as Alteracao)).toBe("OPERACAO_NAO_PERMITIDA");
+      const r = criarHipotese(persona as Persona, estadoNovo(persona as Persona), { nome: "T", a_partir_de: "atual", alteracoes: [alt as Alteracao] }, origem());
+      expect(r.ok ? "ok" : r.erro.codigo).toBe("OPERACAO_NAO_PERMITIDA");
     });
   });
 });
