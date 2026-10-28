@@ -1,0 +1,21 @@
+{
+  "id": "CV-05",
+  "persona": "p1",
+  "mensagens": [
+    "Tenho dinheiro aplicado. Posso contar com ele?"
+  ],
+  "esperado": {
+    "ferramentas": [
+      {
+        "nome": "consultar_investimentos"
+      }
+    ],
+    "oraculo": "CR-06",
+    "texto_contem": [
+      "reserva",
+      "bruto"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": true
+}

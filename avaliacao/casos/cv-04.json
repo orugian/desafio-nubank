@@ -1,0 +1,16 @@
+{
+  "id": "CV-04",
+  "persona": "p1",
+  "mensagens": [
+    "Corrigi a data."
+  ],
+  "esperado": {
+    "ferramentas": [],
+    "oraculo": null,
+    "texto_contem": [
+      "?"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": false
+}

@@ -1,0 +1,31 @@
+{
+  "id": "CV-02",
+  "persona": "p1",
+  "mensagens": [
+    "Posso separar R$ 500 hoje para minha viagem?",
+    "E se o salário cair no dia 9?"
+  ],
+  "esperado": {
+    "ferramentas": [
+      {
+        "nome": "criar_hipotese",
+        "argumentos_contem": {
+          "a_partir_de": "H1",
+          "alteracoes": [
+            {
+              "operacao": "alterar_evento",
+              "evento_id": "R1",
+              "data": "2026-11-09"
+            }
+          ]
+        }
+      }
+    ],
+    "oraculo": "CR-03",
+    "texto_contem": [
+      "09/11"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": true
+}

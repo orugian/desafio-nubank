@@ -1,0 +1,27 @@
+{
+  "id": "CV-03",
+  "persona": "p1",
+  "mensagens": [
+    "Na verdade as contas da casa do dia 15 são R$ 150."
+  ],
+  "esperado": {
+    "ferramentas": [
+      {
+        "nome": "registrar_declaracao",
+        "argumentos_contem": {
+          "alteracao": {
+            "operacao": "alterar_evento",
+            "evento_id": "C",
+            "valor": "150"
+          }
+        }
+      }
+    ],
+    "oraculo": "CR-04",
+    "texto_contem": [
+      "150"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": true
+}
