@@ -5,6 +5,20 @@ import { calcularCenarios, criarHipotese, registrarDeclaracao, validarEstado } f
 import { CONTEXTO, P1, P2, P3, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
 
 describe("B1b · cartão e caixa", () => {
+  test("C-07/CR-19: replay de hipótese aplica cada alteração antes de validar a próxima", () => {
+    const h = criarHipotese(P1, estadoNovo(P1), { nome: "Compras distintas", a_partir_de: "atual", alteracoes: [
+      { operacao: "adicionar_evento", tipo: "saida", descricao: "Compra cartão", data: "2026-10-30", valor: "200", meio: "cartao_credito" },
+      { operacao: "adicionar_evento", tipo: "saida", descricao: "Outra compra", data: "2026-10-30", valor: "200", meio: "pix", confirmar_nao_duplicado: true },
+    ] }, origem());
+    if (!h.ok) throw new Error(h.erro.mensagem);
+    expect(validarEstado(P1, h.estado, CONTEXTO)).toEqual({ ok: true });
+    const adulterado = structuredClone(h.estado);
+    const alteracao = adulterado.hipoteses[0].alteracoes[1].alteracao;
+    if (alteracao.operacao !== "adicionar_evento") throw new Error("fixture inválida");
+    alteracao.confirmar_nao_duplicado = false;
+    const r = validarEstado(P1, adulterado, CONTEXTO);
+    expect(r.ok ? "ok" : r.erro.codigo).toBe("ESTADO_INVALIDO");
+  });
   test("C-07: compra declarada na aberta também exige confirmação em gasto posterior, sem detectar a si própria", () => {
     const compra: Alteracao = { operacao: "adicionar_evento", tipo: "saida", descricao: "Compra fictícia", data: "2026-10-30", valor: "200", meio: "cartao_credito" };
     const gasto: Alteracao = { ...compra, descricao: "Outra compra", meio: "pix" };

@@ -435,10 +435,12 @@ export function validarEstado(persona: Persona, estado: EstadoSessao, contexto: 
   // Hipóteses: estrutura e regras que não dependem da existência do alvo (R-14 permite inconsistência).
   for (const h of e.hipoteses) {
     if (h.alteracoes.length > LIMITES.alteracoes_por_hipotese) return invalido(`${h.id}: alterações demais`);
+    let cenaHipotese = cena;
     for (const [k, a] of h.alteracoes.entries()) {
       if (a.id !== `${h.id}.${k + 1}`) return invalido(`${h.id}: id de alteração ${a.id}`);
-      const problema = validar(persona, estado, cena, a.alteracao, "hipotese");
+      const problema = validar(persona, estado, cenaHipotese, a.alteracao, "hipotese");
       if (problema && problema.codigo !== "EVENTO_INEXISTENTE") return invalido(`${a.id}: ${problema.codigo}`);
+      if (!problema) cenaHipotese = aplicar(persona, estado, cenaHipotese, a.alteracao, a.id, "hipotese", k);
     }
   }
   return { ok: true };
