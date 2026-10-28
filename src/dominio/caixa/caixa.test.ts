@@ -622,6 +622,26 @@ describe("B1 · tabelas de P2 e P3 (spec §11.2, §11.3)", () => {
 });
 
 
+test("B1b · CR-14b: conserto 800 no cartão em 4x mantém caixa de CR-13 e afeta quatro faturas", () => {
+  const h1 = criarHipotese(P3, estadoNovo(P3), { nome: "Conserto Pix", a_partir_de: "atual", alteracoes: [{ operacao: "adicionar_evento", tipo: "saida", descricao: "Conserto", data: "2026-11-06", valor: "800", meio: "pix" }] }, origem());
+  if (!h1.ok) throw new Error(h1.erro.mensagem);
+  const h2 = criarHipotese(P3, h1.estado, { nome: "Conserto em 4x", a_partir_de: "atual", alteracoes: [{ operacao: "adicionar_evento", tipo: "saida", descricao: "Conserto", data: "2026-11-06", valor: "800", meio: "cartao_credito", parcelas: 4 }] }, origem());
+  if (!h2.ok) throw new Error(h2.erro.mensagem);
+  const [atual, , c] = calcularCenarios(P3, h2.estado, CONTEXTO);
+  expect(c.cenario_id).toBe("H2");
+  expect(c.linhas).toEqual(atual.linhas);
+  conferirLinhaDaSpec(c, {
+    saldos: "G1 2.430 · E1 1.530 · E2 280 · G2 210 · G3 140 · E3 4.340 · E4 3.040 · G4 2.970 · G5 2.940 · E5 2.290",
+    minimo: ["140", "2026-11-13"], falta: null, insuf: "0", margem: "140", final: "2.290",
+    sem: ["1.910", ["2026-11-18", "1.160", ["E4"]], "−1.910"], avisos: [DEPENDE], ordem: [],
+  });
+  expect(c.faturas_afetadas.map((f) => [f.vencimento, f.total_depois_centavos - f.total_antes_centavos])).toEqual([
+    ["2026-12-05", reaisDaSpec("200")], ["2027-01-05", reaisDaSpec("200")],
+    ["2027-02-05", reaisDaSpec("200")], ["2027-03-05", reaisDaSpec("200")],
+  ]);
+  expect(validarEstado(P3, h2.estado, CONTEXTO)).toEqual({ ok: true });
+});
+
 describe("B1 · validarEstado (D-15)", () => {
   const comH1eD1 = () => {
     const h = criarHipotese(P1, estadoNovo(P1), { nome: "Separar R$ 500 hoje", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500" }] }, origem("m-1"));
