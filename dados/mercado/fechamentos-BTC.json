@@ -1,0 +1,368 @@
+{
+  "fonte": "CoinGecko",
+  "url": "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=brl&days=92&interval=daily",
+  "obtido_em": "2026-10-28T12:39:48-03:00",
+  "ticker": "BTC",
+  "serie": [
+    {
+      "data": "2026-07-30",
+      "preco_centavos": 32778988
+    },
+    {
+      "data": "2026-07-31",
+      "preco_centavos": 32887026
+    },
+    {
+      "data": "2026-08-01",
+      "preco_centavos": 31919514
+    },
+    {
+      "data": "2026-08-02",
+      "preco_centavos": 31895374
+    },
+    {
+      "data": "2026-08-03",
+      "preco_centavos": 32223411
+    },
+    {
+      "data": "2026-08-04",
+      "preco_centavos": 32395177
+    },
+    {
+      "data": "2026-08-05",
+      "preco_centavos": 32961270
+    },
+    {
+      "data": "2026-08-06",
+      "preco_centavos": 33208875
+    },
+    {
+      "data": "2026-08-07",
+      "preco_centavos": 32923734
+    },
+    {
+      "data": "2026-08-08",
+      "preco_centavos": 33073753
+    },
+    {
+      "data": "2026-08-09",
+      "preco_centavos": 33090264
+    },
+    {
+      "data": "2026-08-10",
+      "preco_centavos": 32971543
+    },
+    {
+      "data": "2026-08-11",
+      "preco_centavos": 32644950
+    },
+    {
+      "data": "2026-08-12",
+      "preco_centavos": 32880687
+    },
+    {
+      "data": "2026-08-13",
+      "preco_centavos": 32952195
+    },
+    {
+      "data": "2026-08-14",
+      "preco_centavos": 32992053
+    },
+    {
+      "data": "2026-08-15",
+      "preco_centavos": 32889766
+    },
+    {
+      "data": "2026-08-16",
+      "preco_centavos": 32914183
+    },
+    {
+      "data": "2026-08-17",
+      "preco_centavos": 32824523
+    },
+    {
+      "data": "2026-08-18",
+      "preco_centavos": 33561296
+    },
+    {
+      "data": "2026-08-19",
+      "preco_centavos": 33739058
+    },
+    {
+      "data": "2026-08-20",
+      "preco_centavos": 35880271
+    },
+    {
+      "data": "2026-08-21",
+      "preco_centavos": 37930730
+    },
+    {
+      "data": "2026-08-22",
+      "preco_centavos": 40251422
+    },
+    {
+      "data": "2026-08-23",
+      "preco_centavos": 39615792
+    },
+    {
+      "data": "2026-08-24",
+      "preco_centavos": 39933253
+    },
+    {
+      "data": "2026-08-25",
+      "preco_centavos": 40720516
+    },
+    {
+      "data": "2026-08-26",
+      "preco_centavos": 40416798
+    },
+    {
+      "data": "2026-08-27",
+      "preco_centavos": 40685596
+    },
+    {
+      "data": "2026-08-28",
+      "preco_centavos": 41439351
+    },
+    {
+      "data": "2026-08-29",
+      "preco_centavos": 40423218
+    },
+    {
+      "data": "2026-08-30",
+      "preco_centavos": 40633266
+    },
+    {
+      "data": "2026-08-31",
+      "preco_centavos": 40322483
+    },
+    {
+      "data": "2026-09-01",
+      "preco_centavos": 40713906
+    },
+    {
+      "data": "2026-09-02",
+      "preco_centavos": 39901208
+    },
+    {
+      "data": "2026-09-03",
+      "preco_centavos": 39374387
+    },
+    {
+      "data": "2026-09-04",
+      "preco_centavos": 41469377
+    },
+    {
+      "data": "2026-09-05",
+      "preco_centavos": 40841877
+    },
+    {
+      "data": "2026-09-06",
+      "preco_centavos": 40918997
+    },
+    {
+      "data": "2026-09-07",
+      "preco_centavos": 41190480
+    },
+    {
+      "data": "2026-09-08",
+      "preco_centavos": 40557547
+    },
+    {
+      "data": "2026-09-09",
+      "preco_centavos": 39912605
+    },
+    {
+      "data": "2026-09-10",
+      "preco_centavos": 39972896
+    },
+    {
+      "data": "2026-09-11",
+      "preco_centavos": 39079024
+    },
+    {
+      "data": "2026-09-12",
+      "preco_centavos": 39530526
+    },
+    {
+      "data": "2026-09-13",
+      "preco_centavos": 39560271
+    },
+    {
+      "data": "2026-09-14",
+      "preco_centavos": 39305233
+    },
+    {
+      "data": "2026-09-15",
+      "preco_centavos": 40176412
+    },
+    {
+      "data": "2026-09-16",
+      "preco_centavos": 38891181
+    },
+    {
+      "data": "2026-09-17",
+      "preco_centavos": 39234645
+    },
+    {
+      "data": "2026-09-18",
+      "preco_centavos": 39144141
+    },
+    {
+      "data": "2026-09-19",
+      "preco_centavos": 41585196
+    },
+    {
+      "data": "2026-09-20",
+      "preco_centavos": 41771764
+    },
+    {
+      "data": "2026-09-21",
+      "preco_centavos": 41737930
+    },
+    {
+      "data": "2026-09-22",
+      "preco_centavos": 44279243
+    },
+    {
+      "data": "2026-09-23",
+      "preco_centavos": 43968993
+    },
+    {
+      "data": "2026-09-24",
+      "preco_centavos": 43599542
+    },
+    {
+      "data": "2026-09-25",
+      "preco_centavos": 43809039
+    },
+    {
+      "data": "2026-09-26",
+      "preco_centavos": 43561310
+    },
+    {
+      "data": "2026-09-27",
+      "preco_centavos": 43742209
+    },
+    {
+      "data": "2026-09-28",
+      "preco_centavos": 43819612
+    },
+    {
+      "data": "2026-09-29",
+      "preco_centavos": 43613745
+    },
+    {
+      "data": "2026-09-30",
+      "preco_centavos": 43529654
+    },
+    {
+      "data": "2026-10-01",
+      "preco_centavos": 43298288
+    },
+    {
+      "data": "2026-10-02",
+      "preco_centavos": 44319590
+    },
+    {
+      "data": "2026-10-03",
+      "preco_centavos": 44031251
+    },
+    {
+      "data": "2026-10-04",
+      "preco_centavos": 44154381
+    },
+    {
+      "data": "2026-10-05",
+      "preco_centavos": 45200400
+    },
+    {
+      "data": "2026-10-06",
+      "preco_centavos": 42869140
+    },
+    {
+      "data": "2026-10-07",
+      "preco_centavos": 42626336
+    },
+    {
+      "data": "2026-10-08",
+      "preco_centavos": 41813417
+    },
+    {
+      "data": "2026-10-09",
+      "preco_centavos": 41000597
+    },
+    {
+      "data": "2026-10-10",
+      "preco_centavos": 41176052
+    },
+    {
+      "data": "2026-10-11",
+      "preco_centavos": 41353231
+    },
+    {
+      "data": "2026-10-12",
+      "preco_centavos": 41748353
+    },
+    {
+      "data": "2026-10-13",
+      "preco_centavos": 40787819
+    },
+    {
+      "data": "2026-10-14",
+      "preco_centavos": 41782793
+    },
+    {
+      "data": "2026-10-15",
+      "preco_centavos": 41138034
+    },
+    {
+      "data": "2026-10-16",
+      "preco_centavos": 41883716
+    },
+    {
+      "data": "2026-10-17",
+      "preco_centavos": 41274205
+    },
+    {
+      "data": "2026-10-18",
+      "preco_centavos": 41212975
+    },
+    {
+      "data": "2026-10-19",
+      "preco_centavos": 41551121
+    },
+    {
+      "data": "2026-10-20",
+      "preco_centavos": 41252852
+    },
+    {
+      "data": "2026-10-21",
+      "preco_centavos": 41672640
+    },
+    {
+      "data": "2026-10-22",
+      "preco_centavos": 42247555
+    },
+    {
+      "data": "2026-10-23",
+      "preco_centavos": 41082943
+    },
+    {
+      "data": "2026-10-24",
+      "preco_centavos": 40382464
+    },
+    {
+      "data": "2026-10-25",
+      "preco_centavos": 40237199
+    },
+    {
+      "data": "2026-10-26",
+      "preco_centavos": 39802793
+    },
+    {
+      "data": "2026-10-27",
+      "preco_centavos": 43008618
+    }
+  ]
+}
