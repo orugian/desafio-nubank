@@ -622,6 +622,21 @@ describe("B1 · tabelas de P2 e P3 (spec §11.2, §11.3)", () => {
 });
 
 
+test("B1b · CR-15c: 480 Pix confirmado como outra compra é aplicado uma única vez", () => {
+  const estado = estadoNovo(P3);
+  const d = registrarDeclaracao(P3, estado, { operacao: "adicionar_evento", tipo: "saida", descricao: "Supermercado", data: "2026-10-30", valor: "480", meio: "pix", confirmar_nao_duplicado: true }, origem());
+  if (!d.ok) throw new Error(d.erro.mensagem);
+  const [c] = calcularCenarios(P3, d.estado, CONTEXTO);
+  conferirLinhaDaSpec(c, {
+    saldos: "G1 2.430 · D1 1.950 · E1 1.050 · E2 −200 · G2 −270 · G3 −340 · E3 3.860 · E4 2.560 · G4 2.490 · G5 2.460 · E5 1.810",
+    minimo: ["−340", "2026-11-13"], falta: ["2026-11-05", "200", ["E2"]], insuf: "340", margem: "0", final: "1.810",
+    sem: ["2.390", ["2026-11-05", "200", ["E2"]], "−2.390"], avisos: [R11, MAIOR], ordem: [],
+  });
+  expect(c.faturas_afetadas).toEqual([]);
+  expect(estado.declaracoes).toEqual([]);
+  expect(validarEstado(P3, d.estado, CONTEXTO)).toEqual({ ok: true });
+});
+
 test("B1b · CR-14b: conserto 800 no cartão em 4x mantém caixa de CR-13 e afeta quatro faturas", () => {
   const h1 = criarHipotese(P3, estadoNovo(P3), { nome: "Conserto Pix", a_partir_de: "atual", alteracoes: [{ operacao: "adicionar_evento", tipo: "saida", descricao: "Conserto", data: "2026-11-06", valor: "800", meio: "pix" }] }, origem());
   if (!h1.ok) throw new Error(h1.erro.mensagem);
