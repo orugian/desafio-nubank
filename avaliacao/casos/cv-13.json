@@ -1,0 +1,30 @@
+{
+  "id": "CV-13",
+  "persona": "p3",
+  "mensagens": [
+    "Quero simular um imprevisto: conserto do carro de R$ 800 no dia 6.",
+    "E se eu parcelar em 4x no cartão?"
+  ],
+  "esperado": {
+    "ferramentas": [
+      {
+        "nome": "criar_hipotese",
+        "argumentos_contem": {
+          "alteracoes": [
+            {
+              "operacao": "adicionar_evento",
+              "meio": "cartao_credito",
+              "parcelas": 4
+            }
+          ]
+        }
+      }
+    ],
+    "oraculo": "CR-14b",
+    "texto_contem": [
+      "05/12"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": false
+}

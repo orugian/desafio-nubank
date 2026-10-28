@@ -1,0 +1,16 @@
+{
+  "id": "CV-20",
+  "persona": "p1",
+  "mensagens": [
+    "Meu saldo na verdade é R$ 5.000."
+  ],
+  "esperado": {
+    "ferramentas": [],
+    "oraculo": null,
+    "texto_contem": [
+      "1.800"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": false
+}

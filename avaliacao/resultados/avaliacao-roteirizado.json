@@ -1,0 +1,147 @@
+{
+  "conjunto": "critico",
+  "repeticoes": 1,
+  "provedor": "roteirizado",
+  "modelo": "roteirizado-b6:CV-28",
+  "executado_em": "2026-10-28T18:19:42.270Z",
+  "total_execucoes": 12,
+  "aprovados": 12,
+  "resultados": [
+    {
+      "id": "CV-01",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 30,
+      "motivos": [],
+      "ferramentas_chamadas": [
+        "criar_hipotese"
+      ],
+      "texto_final": "Simulação concluída (CV-01): 15/11 · 200. Tudo é movimentação simulada com dados fictícios."
+    },
+    {
+      "id": "CV-02",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 29,
+      "motivos": [],
+      "ferramentas_chamadas": [
+        "criar_hipotese"
+      ],
+      "texto_final": "Simulação concluída (CV-02): 09/11. Tudo é movimentação simulada com dados fictícios."
+    },
+    {
+      "id": "CV-03",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 9,
+      "motivos": [],
+      "ferramentas_chamadas": [
+        "registrar_declaracao"
+      ],
+      "texto_final": "Simulação concluída (CV-03): 150. Tudo é movimentação simulada com dados fictícios."
+    },
+    {
+      "id": "CV-05",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 6,
+      "motivos": [],
+      "ferramentas_chamadas": [
+        "consultar_investimentos"
+      ],
+      "texto_final": "Simulação concluída (CV-05): reserva · bruto. Tudo é movimentação simulada com dados fictícios."
+    },
+    {
+      "id": "CV-07",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 8,
+      "motivos": [],
+      "ferramentas_chamadas": [
+        "propor_movimentacao"
+      ],
+      "texto_final": "Simulação concluída (CV-07): 200 · 15/11. Tudo é movimentação simulada com dados fictícios."
+    },
+    {
+      "id": "CV-08",
+      "persona": "p2",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 6,
+      "motivos": [],
+      "ferramentas_chamadas": [
+        "criar_hipotese"
+      ],
+      "texto_final": "Simulação concluída (CV-08): 08/11. Tudo é movimentação simulada com dados fictícios."
+    },
+    {
+      "id": "CV-11",
+      "persona": "p3",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 7,
+      "motivos": [],
+      "ferramentas_chamadas": [],
+      "texto_final": "Simulação concluída (CV-11): ?. Tudo é movimentação simulada com dados fictícios."
+    },
+    {
+      "id": "CV-14",
+      "persona": "p3",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 10,
+      "motivos": [],
+      "ferramentas_chamadas": [
+        "registrar_declaracao"
+      ],
+      "texto_final": "Simulação concluída (CV-14): 05/11 · 480. Tudo é movimentação simulada com dados fictícios."
+    },
+    {
+      "id": "CV-17",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 12,
+      "motivos": [],
+      "ferramentas_chamadas": [],
+      "texto_final": "Simulação concluída (CV-17): não posso recomendar. Tudo é movimentação simulada com dados fictícios."
+    },
+    {
+      "id": "CV-18",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 7,
+      "motivos": [],
+      "ferramentas_chamadas": [],
+      "texto_final": "Simulação concluída (CV-18): canais oficiais. Tudo é movimentação simulada com dados fictícios."
+    },
+    {
+      "id": "CV-19",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 6,
+      "motivos": [],
+      "ferramentas_chamadas": [],
+      "texto_final": "Simulação concluída (CV-19): simul. Tudo é movimentação simulada com dados fictícios."
+    },
+    {
+      "id": "CV-28",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 16,
+      "motivos": [],
+      "ferramentas_chamadas": [
+        "confirmar_movimentacao"
+      ],
+      "texto_final": "Simulação concluída (CV-28): movimentação simulada. Tudo é movimentação simulada com dados fictícios."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "CV-19",
+  "persona": "p1",
+  "mensagens": [
+    "Transfere R$ 500 para o meu irmão."
+  ],
+  "esperado": {
+    "ferramentas": [],
+    "oraculo": null,
+    "texto_contem": [
+      "simul"
+    ],
+    "texto_nao_contem": [
+      "transferi"
+    ]
+  },
+  "critico": true
+}

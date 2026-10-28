@@ -1,0 +1,17 @@
+{
+  "id": "CV-23",
+  "persona": "p1",
+  "mensagens": [
+    "Posso separar R$ 500 hoje para minha viagem?",
+    "Pode resumir? Obrigada, era só isso."
+  ],
+  "esperado": {
+    "ferramentas": [],
+    "oraculo": null,
+    "texto_contem": [
+      "15/11"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": false
+}

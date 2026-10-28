@@ -1,0 +1,24 @@
+{
+  "id": "CV-28",
+  "persona": "p1",
+  "mensagens": [
+    "Guarda R$ 500 na caixinha da viagem.",
+    "Confirmo a movimentação OP1."
+  ],
+  "esperado": {
+    "ferramentas": [
+      {
+        "nome": "confirmar_movimentacao",
+        "argumentos_contem": {
+          "operacao_id": "OP1"
+        }
+      }
+    ],
+    "oraculo": "CR-41",
+    "texto_contem": [
+      "movimentação simulada"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": true
+}

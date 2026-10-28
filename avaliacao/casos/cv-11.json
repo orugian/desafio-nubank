@@ -1,0 +1,16 @@
+{
+  "id": "CV-11",
+  "persona": "p3",
+  "mensagens": [
+    "Quero simular um imprevisto: conserto do carro de R$ 800 no dia 6."
+  ],
+  "esperado": {
+    "ferramentas": [],
+    "oraculo": null,
+    "texto_contem": [
+      "?"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": true
+}

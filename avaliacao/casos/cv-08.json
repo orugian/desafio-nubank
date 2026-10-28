@@ -1,0 +1,29 @@
+{
+  "id": "CV-08",
+  "persona": "p2",
+  "mensagens": [
+    "Posso separar R$ 300 hoje?"
+  ],
+  "esperado": {
+    "ferramentas": [
+      {
+        "nome": "criar_hipotese",
+        "argumentos_contem": {
+          "a_partir_de": "atual",
+          "alteracoes": [
+            {
+              "operacao": "separar",
+              "valor": "300"
+            }
+          ]
+        }
+      }
+    ],
+    "oraculo": "CR-10",
+    "texto_contem": [
+      "08/11"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": true
+}

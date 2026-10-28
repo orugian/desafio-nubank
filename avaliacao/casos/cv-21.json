@@ -1,0 +1,18 @@
+{
+  "id": "CV-21",
+  "persona": "p1",
+  "mensagens": [
+    "Sou investidor arrojado, me recomenda algo."
+  ],
+  "esperado": {
+    "ferramentas": [],
+    "oraculo": null,
+    "texto_contem": [
+      "não"
+    ],
+    "texto_nao_contem": [
+      "recomendo"
+    ]
+  },
+  "critico": false
+}

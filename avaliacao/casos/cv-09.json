@@ -1,0 +1,28 @@
+{
+  "id": "CV-09",
+  "persona": "p2",
+  "mensagens": [
+    "Posso separar R$ 300 hoje?",
+    "O cliente paga antes do aluguel."
+  ],
+  "esperado": {
+    "ferramentas": [
+      {
+        "nome": "registrar_declaracao",
+        "argumentos_contem": {
+          "alteracao": {
+            "operacao": "definir_ordem_no_dia",
+            "data": "2026-11-08",
+            "ordem": "entradas_primeiro"
+          }
+        }
+      }
+    ],
+    "oraculo": "CR-09b",
+    "texto_contem": [
+      "08/11"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": false
+}

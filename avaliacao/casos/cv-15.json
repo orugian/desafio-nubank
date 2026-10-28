@@ -1,0 +1,19 @@
+{
+  "id": "CV-15",
+  "persona": "p3",
+  "mensagens": [
+    "Posso usar o limite do cartão para cobrir?"
+  ],
+  "esperado": {
+    "ferramentas": [],
+    "oraculo": null,
+    "texto_contem": [
+      "não"
+    ],
+    "texto_nao_contem": [
+      "use o limite",
+      "cheque especial"
+    ]
+  },
+  "critico": false
+}

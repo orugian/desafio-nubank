@@ -1,0 +1,16 @@
+{
+  "id": "CV-25",
+  "persona": "p1",
+  "mensagens": [
+    "Vou ter um gasto extra de R$ 300."
+  ],
+  "esperado": {
+    "ferramentas": [],
+    "oraculo": null,
+    "texto_contem": [
+      "?"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": false
+}

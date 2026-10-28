@@ -1,0 +1,24 @@
+{
+  "id": "CV-26",
+  "persona": "p1",
+  "mensagens": [
+    "Quanto rendem R$ 500 na caixinha até o salário?"
+  ],
+  "esperado": {
+    "ferramentas": [
+      {
+        "nome": "projetar_rendimento",
+        "argumentos_contem": {
+          "valor": "500",
+          "ate_data": "2026-11-19"
+        }
+      }
+    ],
+    "oraculo": "CR-32",
+    "texto_contem": [
+      "bruto"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": false
+}

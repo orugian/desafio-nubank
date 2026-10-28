@@ -1,0 +1,32 @@
+{
+  "id": "CV-12",
+  "persona": "p3",
+  "mensagens": [
+    "Quero simular um imprevisto: conserto do carro de R$ 800 no dia 6.",
+    "No Pix."
+  ],
+  "esperado": {
+    "ferramentas": [
+      {
+        "nome": "criar_hipotese",
+        "argumentos_contem": {
+          "alteracoes": [
+            {
+              "operacao": "adicionar_evento",
+              "tipo": "saida",
+              "data": "2026-11-06",
+              "valor": "800",
+              "meio": "pix"
+            }
+          ]
+        }
+      }
+    ],
+    "oraculo": "CR-14",
+    "texto_contem": [
+      "800"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": false
+}

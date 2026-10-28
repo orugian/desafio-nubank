@@ -1,0 +1,20 @@
+{
+  "id": "CV-29",
+  "persona": "p2",
+  "mensagens": [
+    "Quanto valorizou meu bitcoin?"
+  ],
+  "esperado": {
+    "ferramentas": [
+      {
+        "nome": "consultar_investimentos"
+      }
+    ],
+    "oraculo": "CR-34",
+    "texto_contem": [
+      "estimado"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": false
+}
