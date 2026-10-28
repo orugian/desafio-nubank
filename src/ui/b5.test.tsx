@@ -221,4 +221,58 @@ describe("B5 · Frontend NewAI", () => {
     await user.click(screen.getByRole("button", { name: /Recomeçar/i }));
     expect(await screen.findByText("R$ 1.800,00")).toBeInTheDocument();
   });
+
+  test("4. Caixinhas/investimentos mostram valor, aplicado, rentabilidade, valorização, disponibilidade, proteção e origem do preço", async () => {
+    const user = userEvent.setup();
+    const cliente = criarClienteExemplos();
+    render(<AppNewAI cliente={cliente} />);
+
+    await user.click(await screen.findByRole("button", { name: /Bia \(fictícia\)/i }));
+    await user.click(screen.getByRole("button", { name: /Investimentos/i }));
+
+    expect(await screen.findByText("Total investido")).toBeInTheDocument();
+    expect(screen.getByText("R$ 1.830,00")).toBeInTheDocument();
+    expect(screen.getByText(/Caixinha Reserva/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Reserva de emergência: não usar para objetivos/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/17\.86%/)).toBeInTheDocument();
+    expect(screen.getByText(/brapi \(valor de teste\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/15\/03\/2027|15\/03/)).toBeInTheDocument();
+  });
+
+  test("11. Telas Conta/extrato, Cartão/faturas e 'Como funciona' (config, fontes de mercado e rastro)", async () => {
+    const user = userEvent.setup();
+    const cliente = criarClienteExemplos();
+    render(<AppNewAI cliente={cliente} />);
+
+    await user.click(await screen.findByRole("button", { name: /Bia \(fictícia\)/i }));
+
+    // Conta/extrato
+    await user.click(screen.getByRole("button", { name: /Conta e extrato/i }));
+    expect(await screen.findByRole("tab", { name: /Usar/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /Guardar/i })).toBeInTheDocument();
+    expect(screen.getByText(/Pagamento da fatura/i)).toBeInTheDocument();
+
+    // Cartão/faturas (voltar para home e abrir cartão)
+    await user.click(screen.getByRole("button", { name: /^Início$/i }));
+    await user.click(screen.getByRole("button", { name: /Meus cartões/i }));
+    expect(await screen.findByText(/Limite total/i)).toBeInTheDocument();
+    expect(screen.getByText("R$ 4.000,00")).toBeInTheDocument();
+    expect(screen.getByText(/Restaurante/i)).toBeInTheDocument();
+
+    // Gerar 1 resposta com rastro no chat e abrir "Como funciona"
+    await user.click(screen.getByRole("button", { name: /NewAI/i }));
+    const dialogo = await screen.findByRole("dialog", { name: /Chat/i });
+    const input = within(dialogo).getByPlaceholderText("Digite sua mensagem...");
+    await user.type(input, "Posso separar R$ 500 hoje para minha viagem?");
+    await user.click(within(dialogo).getByRole("button", { name: /Enviar mensagem/i }));
+    await within(dialogo).findByText(/Se você separar R\$ 500 hoje/i);
+    await user.click(within(dialogo).getByRole("button", { name: /Fechar chat/i }));
+
+    await user.click(screen.getByRole("button", { name: /^Como funciona$/i }));
+    expect(await screen.findByText(/Configuração e transparência/i)).toBeInTheDocument();
+    expect(screen.getByText(/BCB SGS 12/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/criar_hipotese/i).length).toBeGreaterThan(0);
+  });
 });
