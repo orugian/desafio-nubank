@@ -338,6 +338,7 @@ export function registrarDeclaracao(
     declaracao_id,
     estado: {
       ...estado,
+      operacao_pendente: null,
       declaracoes: [...estado.declaracoes, { id: declaracao_id, mensagem_id: origem.mensagem_id, alteracao: v.argumentos.alteracao }],
       contadores: { ...estado.contadores, D: n },
     },

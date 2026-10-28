@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { esquemaConfirmacaoMovimentacao, esquemaPropostaMovimentacao } from "@/contratos";
 import { confirmarMovimentacao, proporMovimentacao } from "@/dominio/operacoes";
-import { calcularCenarios, criarHipotese, validarEstado } from "@/dominio/caixa";
+import { calcularCenarios, criarHipotese, registrarDeclaracao, validarEstado } from "@/dominio/caixa";
 import { CONTEXTO, P1, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
 
 const indicadoresCR02 = () => {
@@ -14,6 +14,29 @@ const indicadoresCR02 = () => {
 };
 
 describe("B1c · operações simuladas", () => {
+  test("CR-42/CR-43/O-06: repetição é recusada, declaração expira e hipótese não expira proposta", () => {
+    const p = proporMovimentacao(P1, estadoNovo(P1), { valor: "500", destino: "INV9" }, CONTEXTO);
+    if (!p.ok) throw new Error(p.erro.mensagem);
+    const executada = confirmarMovimentacao(P1, p.estado, "OP1");
+    if (!executada.ok) throw new Error(executada.erro.mensagem);
+    const repetida = confirmarMovimentacao(P1, executada.estado, "OP1");
+    expect(repetida.ok ? "ok" : repetida.erro.codigo).toBe("OPERACAO_JA_EXECUTADA");
+    expect(executada.estado.operacoes).toHaveLength(1);
+    const d = registrarDeclaracao(P1, p.estado, { operacao: "alterar_evento", evento_id: "C", valor: "150" }, origem());
+    if (!d.ok) throw new Error(d.erro.mensagem);
+    expect(d.estado.operacao_pendente).toBeNull();
+    const expirada = confirmarMovimentacao(P1, d.estado, "OP1");
+    expect(expirada.ok ? "ok" : expirada.erro.codigo).toBe("OPERACAO_EXPIRADA");
+    const h = criarHipotese(P1, p.estado, { nome: "Separar 500", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500" }] }, origem());
+    if (!h.ok) throw new Error(h.erro.mensagem);
+    const aposTurno = { ...h.estado, versao: 2 };
+    expect(confirmarMovimentacao(P1, aposTurno, "OP1").ok).toBe(true);
+    const nova = proporMovimentacao(P1, p.estado, { valor: "300", destino: "SEP" }, CONTEXTO);
+    if (!nova.ok) throw new Error(nova.erro.mensagem);
+    expect(nova.operacao_pendente.id).toBe("OP2");
+    const antiga = confirmarMovimentacao(P1, nova.estado, "OP1");
+    expect(antiga.ok ? "ok" : antiga.erro.codigo).toBe("OPERACAO_EXPIRADA");
+  });
   test("CR-41: confirmar OP1 registra saída simulada, descarta H1/H2 e deixa saldo disponível 1.300", () => {
     const h1 = criarHipotese(P1, estadoNovo(P1), { nome: "Separar 500", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500" }] }, origem());
     if (!h1.ok) throw new Error(h1.erro.mensagem);
