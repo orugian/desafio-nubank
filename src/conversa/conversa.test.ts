@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+  esquemaRespostaAcao,
   esquemaRespostaTurno,
   estadoInicial,
   type DepsConversa,
@@ -8,7 +9,7 @@ import {
   type RespostaProvedor,
   type SnapshotMercado,
 } from "@/contratos";
-import { processarTurno } from "@/conversa";
+import { processarAcao, processarTurno } from "@/conversa";
 import { criarExecutores } from "@/conversa/executores";
 
 const snapshotTeste: SnapshotMercado = {
@@ -404,5 +405,93 @@ describe("B4 · Conversa", () => {
     expect(res.estado).toEqual(estado0);
     expect(res.estado?.hipoteses).toEqual([]);
     expect(res.estado?.versao).toBe(0);
+  });
+
+  test("7. processarAcao confirma e cancela sem chamar o provedor; versão + 1 só em sucesso (CR-41, CR-42)", async () => {
+    let chamadasProvedor = 0;
+    const provedorEspiao: Provedor = {
+      nome: "roteirizado",
+      modelo: "teste",
+      async gerar() {
+        chamadasProvedor += 1;
+        return { tipo: "texto", texto: "Nunca chamado" };
+      },
+    };
+
+    const estadoComPendente = {
+      ...estadoInicial("p1", snapshotTeste),
+      versao: 3,
+      hipoteses: [
+        {
+          id: "H1",
+          nome: "Separar R$ 500 hoje",
+          a_partir_de: "atual" as const,
+          mensagem_id: "m-0001",
+          alteracoes: [
+            {
+              id: "H1.1",
+              copiado_de: null,
+              alteracao: { operacao: "separar" as const, valor: "500", data: "2026-10-30" },
+            },
+          ],
+        },
+      ],
+      operacao_pendente: {
+        id: "OP1",
+        valor_centavos: 50000,
+        destino: "INV9",
+        criada_na_versao: 3,
+      },
+      contadores: { D: 0, H: 1, OP: 1 },
+    };
+
+    const resConfirmar = await processarAcao(
+      { estado: estadoComPendente, acao: { tipo: "confirmar", operacao_id: "OP1" } },
+      depsBase(provedorEspiao),
+    );
+    expect(chamadasProvedor).toBe(0);
+    const okConfirmar = esquemaRespostaAcao.parse(resConfirmar);
+    expect(okConfirmar.status).toBe("ok");
+    if (okConfirmar.status !== "ok") return;
+
+    expect(okConfirmar.estado.versao).toBe(4);
+    expect(okConfirmar.estado.operacao_pendente).toBeNull();
+    expect(okConfirmar.estado.operacoes).toEqual([
+      { id: "OP1", valor_centavos: 50000, destino: "INV9", data: "2026-10-30" },
+    ]);
+    expect(okConfirmar.estado.hipoteses).toEqual([]);
+    expect(okConfirmar.avisos).toEqual([
+      {
+        codigo: "HIPOTESES_DESCARTADAS",
+        mensagem: "As simulações H1 foram descartadas porque a situação atual mudou.",
+      },
+    ]);
+
+    const resRepetida = await processarAcao(
+      { estado: okConfirmar.estado, acao: { tipo: "confirmar", operacao_id: "OP1" } },
+      depsBase(provedorEspiao),
+    );
+    expect(esquemaRespostaAcao.parse(resRepetida)).toEqual({
+      status: "falha",
+      falha: {
+        tipo: "dominio",
+        codigo: "OPERACAO_JA_EXECUTADA",
+        mensagem: "Essa movimentação simulada já foi feita.",
+        pode_tentar_novamente: false,
+      },
+      estado: okConfirmar.estado,
+    });
+
+    const resCancelar = await processarAcao(
+      { estado: estadoComPendente, acao: { tipo: "cancelar", operacao_id: "OP1" } },
+      depsBase(provedorEspiao),
+    );
+    const okCancelar = esquemaRespostaAcao.parse(resCancelar);
+    expect(okCancelar.status).toBe("ok");
+    if (okCancelar.status === "ok") {
+      expect(okCancelar.estado.versao).toBe(4);
+      expect(okCancelar.estado.operacao_pendente).toBeNull();
+      expect(okCancelar.estado.operacoes).toEqual([]);
+    }
   });
 });

@@ -250,6 +250,66 @@ export async function processarAcao(
   req: RequisicaoAcao,
   deps: DepsConversa,
 ): Promise<RespostaAcao> {
-  void req, deps;
-  throw new Error("não implementado");
+  const estadoEntrada = structuredClone(req.estado);
+
+  const validacaoEstado = await deps.executores.validarEstado(estadoEntrada);
+  if (!validacaoEstado.ok) {
+    return respostaFalhaTecnica("F-06", estadoEntrada, { pode_tentar_novamente: false });
+  }
+
+  const nomeFerramenta =
+    req.acao.tipo === "confirmar" ? "confirmar_movimentacao" : "cancelar_movimentacao";
+  const exec = deps.executores.ferramentas[nomeFerramenta];
+  const rExec = await exec(
+    { operacao_id: req.acao.operacao_id },
+    { estado: structuredClone(estadoEntrada), mensagem_id: null },
+  );
+
+  if (!rExec.ok) {
+    return {
+      status: "falha",
+      falha: {
+        tipo: "dominio",
+        codigo: rExec.erro.codigo,
+        mensagem: rExec.erro.mensagem,
+        pode_tentar_novamente: false,
+      },
+      estado: estadoEntrada,
+    };
+  }
+
+  const novaVersao = estadoEntrada.versao + 1;
+  const texto =
+    typeof rExec.resultado.mensagem === "string"
+      ? rExec.resultado.mensagem
+      : req.acao.tipo === "confirmar"
+        ? "Movimentação simulada confirmada."
+        : "Proposta cancelada.";
+
+  const estadoFinal: EstadoSessao = {
+    ...rExec.estado,
+    versao: novaVersao,
+    conversa: [
+      ...rExec.estado.conversa,
+      {
+        mensagem_id: `acao-${req.acao.operacao_id}-${req.acao.tipo}`,
+        papel: "sistema",
+        texto,
+        versao: novaVersao,
+        cartoes: [],
+        rastro: [],
+      },
+    ],
+  };
+
+  const visao = await deps.executores.montarVisao(estadoFinal);
+  return {
+    status: "ok",
+    estado: estadoFinal,
+    texto,
+    cartoes: rExec.cartoes,
+    avisos: rExec.avisos,
+    rastro: [],
+    visao,
+  };
 }
