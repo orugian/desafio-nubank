@@ -204,6 +204,24 @@ describe("B1 · motor de caixa · P1", () => {
       ).dados;
       expect(mudou).toEqual({ alteracoes: exemplo.alteracoes, cenarios: exemplo.cenarios });
     });
+
+    test("compararCenarios lista hipótese criada (cenário novo) e desfeita (cenário removido)", () => {
+      const antes = estadoNovo(P1);
+      const depois = comH1();
+      const entrada = (e: EstadoSessao) => ({ estado: e, cenarios: calcularCenarios(P1, e, CONTEXTO) });
+      const criada = compararCenarios(entrada(antes), entrada(depois));
+      expect(criada.alteracoes).toEqual([{ tipo: "hipotese_criada", id: "H1", descricao: "Separar R$ 500 hoje" }]);
+      expect(criada.cenarios.map((c) => [c.cenario_id, c.situacao])).toEqual([
+        ["atual", "inalterado"],
+        ["H1", "novo"],
+      ]);
+      const desfeita = compararCenarios(entrada(depois), entrada(antes));
+      expect(desfeita.alteracoes).toEqual([{ tipo: "hipotese_desfeita", id: "H1", descricao: "Separar R$ 500 hoje" }]);
+      expect(desfeita.cenarios.map((c) => [c.cenario_id, c.situacao])).toEqual([
+        ["atual", "inalterado"],
+        ["H1", "removido"],
+      ]);
+    });
   });
 
   describe("validações (estado inalterado em todo erro)", () => {

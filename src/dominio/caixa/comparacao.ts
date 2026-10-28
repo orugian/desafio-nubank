@@ -67,6 +67,14 @@ export function comparar(antes: EntradaComparacao, depois: EntradaComparacao): O
   for (const d of antes.estado.declaracoes) {
     if (!idsDepois.has(d.id)) alteracoes.push({ tipo: "declaracao_desfeita", id: d.id, descricao: descreverDeclaracao(d, atualDepois, atualAntes) });
   }
+  const hipAntes = new Set(antes.estado.hipoteses.map((h) => h.id));
+  const hipDepois = new Set(depois.estado.hipoteses.map((h) => h.id));
+  for (const h of depois.estado.hipoteses) {
+    if (!hipAntes.has(h.id)) alteracoes.push({ tipo: "hipotese_criada", id: h.id, descricao: h.nome });
+  }
+  for (const h of antes.estado.hipoteses) {
+    if (!hipDepois.has(h.id)) alteracoes.push({ tipo: "hipotese_desfeita", id: h.id, descricao: h.nome });
+  }
 
   const porIdAntes = new Map(antes.cenarios.map((c) => [c.cenario_id, c]));
   const porIdDepois = new Map(depois.cenarios.map((c) => [c.cenario_id, c]));
