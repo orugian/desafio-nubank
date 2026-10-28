@@ -1,7 +1,11 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
-import { converterSerieBcb, converterSerieBrapi } from "./coletar";
+import {
+  converterSerieBcb,
+  converterSerieBrapi,
+  converterSerieCoinGecko,
+} from "./coletar";
 
 describe("B3a · Coleta de mercado gravada", () => {
   test("1. Resposta gravada do BCB vira série com datas ISO e taxas em texto decimal", () => {
@@ -38,6 +42,25 @@ describe("B3a · Coleta de mercado gravada", () => {
     expect(resultado.serie.at(-1)).toEqual({
       data: "2026-10-27",
       preco_centavos: 5279,
+    });
+  });
+
+  test("3. Resposta gravada da CoinGecko vira fechamento diário em centavos até 27/10", () => {
+    const bruto = JSON.parse(
+      readFileSync(join(__dirname, "fixtures", "coingecko-bitcoin-brl.json"), "utf8"),
+    );
+    const resultado = converterSerieCoinGecko(bruto);
+
+    expect(resultado.fonte).toBe("CoinGecko");
+    expect(resultado.ticker).toBe("BTC");
+    expect(resultado.serie.length).toBe(90);
+    expect(resultado.serie[0]).toEqual({
+      data: "2026-07-30",
+      preco_centavos: 32778988,
+    });
+    expect(resultado.serie.at(-1)).toEqual({
+      data: "2026-10-27",
+      preco_centavos: 43008618,
     });
   });
 });
