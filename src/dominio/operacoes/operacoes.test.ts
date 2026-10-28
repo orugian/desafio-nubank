@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { esquemaConfirmacaoMovimentacao, esquemaPropostaMovimentacao } from "@/contratos";
-import { confirmarMovimentacao, proporMovimentacao } from "@/dominio/operacoes";
+import { cancelarMovimentacao, confirmarMovimentacao, proporMovimentacao } from "@/dominio/operacoes";
 import { calcularCenarios, criarHipotese, registrarDeclaracao, validarEstado } from "@/dominio/caixa";
 import { CONTEXTO, P1, P3, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
 
@@ -14,6 +14,21 @@ const indicadoresCR02 = () => {
 };
 
 describe("B1c · operações simuladas", () => {
+  test("O-06: cancelar OP1 zera só a pendente e o id não é reutilizado", () => {
+    const p = proporMovimentacao(P1, estadoNovo(P1), { valor: "500", destino: "INV9" }, CONTEXTO);
+    if (!p.ok) throw new Error(p.erro.mensagem);
+    const antes = structuredClone(p.estado);
+    const errado = cancelarMovimentacao(p.estado, "OP2");
+    expect(errado.ok ? "ok" : errado.erro.codigo).toBe("OPERACAO_EXPIRADA");
+    const r = cancelarMovimentacao(p.estado, "OP1");
+    if (!r.ok) throw new Error(r.erro.mensagem);
+    expect(r.estado).toEqual({ ...antes, operacao_pendente: null });
+    expect(p.estado).toEqual(antes);
+    const confirmar = confirmarMovimentacao(P1, r.estado, "OP1");
+    expect(confirmar.ok ? "ok" : confirmar.erro.codigo).toBe("OPERACAO_EXPIRADA");
+    const nova = proporMovimentacao(P1, r.estado, { valor: "500", destino: "INV9" }, CONTEXTO);
+    expect(nova.ok && nova.operacao_pendente.id).toBe("OP2");
+  });
   test("CR-44/CR-44b: recusa 2.000 com 1.800, 1.400 após OP1 e 2.100 após saída declarada de 480", () => {
     const estado = estadoNovo(P1);
     const antes = structuredClone(estado);

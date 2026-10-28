@@ -64,6 +64,8 @@ export function confirmarMovimentacao(
 
 /** Zera a pendente e não muda mais nada. */
 export function cancelarMovimentacao(estado: EstadoSessao, operacao_id: string): ResultadoDominio<{ estado: EstadoSessao }> {
-  void estado, operacao_id;
-  throw new Error("não implementado");
+  const v = validarArgumentos("cancelar_movimentacao", { operacao_id });
+  if (!v.ok) return v;
+  if (!estado.operacao_pendente || estado.operacao_pendente.id !== operacao_id) return erro("OPERACAO_EXPIRADA", textos.erros.OPERACAO_EXPIRADA, ["operacao_id"]);
+  return { ok: true, estado: { ...estado, operacao_pendente: null } };
 }
