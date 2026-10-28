@@ -113,10 +113,19 @@ export function consultarCartao(persona: Persona, estado: EstadoSessao): CartaoV
       f.valor_centavos += p.valor_centavos;
     }
   }
-  // A consulta inclui só declarações efetivas, nunca hipóteses.
+  // Replay de compras declaradas: correções/remover apontam para o id D original.
+  const compras = new Map<string, Extract<EstadoSessao["declaracoes"][number]["alteracao"], { operacao: "adicionar_evento" }>>();
   for (const d of estado.declaracoes) {
     const a = d.alteracao;
-    if (a.operacao !== "adicionar_evento" || a.meio !== "cartao_credito") continue;
+    if (a.operacao === "adicionar_evento" && a.meio === "cartao_credito") compras.set(d.id, a);
+    if (a.operacao === "remover_evento") compras.delete(a.evento_id);
+    if (a.operacao === "alterar_evento") {
+      const anterior = compras.get(a.evento_id);
+      if (anterior) compras.set(a.evento_id, { ...anterior, data: a.data ?? anterior.data, valor: a.valor ?? anterior.valor });
+    }
+  }
+  // A consulta inclui só declarações efetivas, nunca hipóteses.
+  for (const a of compras.values()) {
     const [reais, cent = ""] = a.valor.split(".");
     const r = alocarCompra(persona, estado, { data: a.data, valor_centavos: Number(reais) * 100 + Number(cent.padEnd(2, "0")), parcelas: a.parcelas ?? 1 });
     if (!r.ok) continue;

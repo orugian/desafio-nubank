@@ -5,6 +5,23 @@ import { calcularCenarios, criarHipotese, registrarDeclaracao } from "@/dominio/
 import { CONTEXTO, P1, P2, P3, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
 
 describe("B1b · cartão e caixa", () => {
+  test("C-01/C-05/R-18: compra declarada em fatura aberta pode ser corrigida e removida sem virar caixa", () => {
+    const d1 = registrarDeclaracao(P1, estadoNovo(P1), { operacao: "adicionar_evento", tipo: "saida", descricao: "Compra fictícia", data: "2026-10-30", valor: "200", meio: "cartao_credito" }, origem());
+    if (!d1.ok) throw new Error(d1.erro.mensagem);
+    const d2 = registrarDeclaracao(P1, d1.estado, { operacao: "alterar_evento", evento_id: "D1", valor: "150", data: "2026-11-29" }, origem());
+    expect(d2.ok).toBe(true);
+    if (!d2.ok) return;
+    const c = calcularCenarios(P1, d2.estado, CONTEXTO)[0];
+    expect(c.faturas_afetadas).toEqual([{ fatura_id: "F2701", vencimento: "2027-01-05", total_antes_centavos: reaisDaSpec("150"), total_depois_centavos: reaisDaSpec("300") }]);
+    const cartao = consultarCartao(P1, d2.estado)!;
+    expect(cartao.fatura_aberta.valor_centavos).toBe(reaisDaSpec("150"));
+    expect(cartao.proximas[0].valor_centavos).toBe(reaisDaSpec("300"));
+    const d3 = registrarDeclaracao(P1, d2.estado, { operacao: "remover_evento", evento_id: "D1" }, origem());
+    if (!d3.ok) throw new Error(d3.erro.mensagem);
+    expect(calcularCenarios(P1, d3.estado, CONTEXTO)[0].faturas_afetadas).toEqual([]);
+    expect(consultarCartao(P1, d3.estado)).toEqual(consultarCartao(P1, estadoNovo(P1)));
+    expect(c.linhas.map((l) => [l.evento_id, l.saldo_apos_centavos])).toEqual(saldosDaSpec("A 1.100 · B 500 · C 300 · R1 3.300"));
+  });
   test("C-01/C-03/C-05/C-06: consulta fechada, aberta e próximas inclui celular anterior ao histórico sem duplicar", () => {
     const estado = estadoNovo(P1);
     const antes = structuredClone({ persona: P1, estado });

@@ -125,7 +125,7 @@ function validar(persona: Persona, estado: EstadoSessao, cena: Cena, alt: Altera
   if (data !== undefined && data > FIM_JANELA) return falha("DATA_FORA_DA_JANELA", ["data"]);
 
   if (alt.operacao === "alterar_evento" || alt.operacao === "remover_evento") {
-    const alvo = cena.eventos.find((e) => e.id === alt.evento_id);
+    const alvo = cena.eventos.find((e) => e.id === alt.evento_id) ?? cena.compras_cartao.find((c) => c.evento.id === alt.evento_id)?.evento;
     const intocavel = /^G\d+$/.test(alt.evento_id) || /^OP\d+$/.test(alt.evento_id) || alvo?.especie === "fatura" || alvo?.especie === "bloco" || alvo?.especie === "operacao";
     const itemFechado = persona.cartao?.faturas.some((f) => f.status === "fechada" && (f.id === alt.evento_id || f.itens.some((i) => i.lancamento_id === alt.evento_id)));
     if (intocavel || itemFechado) {
@@ -173,6 +173,13 @@ function aplicar(persona: Persona, estado: EstadoSessao, cena: Cena, alt: Altera
     return { ...cena, eventos: [...cena.eventos, evento] };
   }
   if (alt.operacao === "alterar_evento") {
+    const compra = cena.compras_cartao.find((c) => c.evento.id === alt.evento_id);
+    if (compra) {
+      const evento = { ...compra.evento, data: alt.data ?? compra.evento.data, valor_centavos: alt.valor !== undefined ? paraCentavos(alt.valor) : compra.evento.valor_centavos, origem: camada };
+      const r = alocarCompra(persona, estado, { data: evento.data, valor_centavos: evento.valor_centavos, parcelas: compra.alocacao.parcelas.length });
+      if (!r.ok) return cena;
+      return { ...cena, compras_cartao: cena.compras_cartao.map((c) => c === compra ? { evento, alocacao: { parcelas: r.parcelas } } : c) };
+    }
     return {
       ...cena,
       eventos: cena.eventos.map((e) =>
@@ -189,7 +196,7 @@ function aplicar(persona: Persona, estado: EstadoSessao, cena: Cena, alt: Altera
     };
   }
   if (alt.operacao === "remover_evento") {
-    return { ...cena, eventos: cena.eventos.filter((e) => e.id !== alt.evento_id) };
+    return { ...cena, eventos: cena.eventos.filter((e) => e.id !== alt.evento_id), compras_cartao: cena.compras_cartao.filter((c) => c.evento.id !== alt.evento_id) };
   }
   if (alt.operacao === "adicionar_evento") {
     const evento: Evento = {
@@ -272,7 +279,7 @@ export function calcularCenarios(persona: Persona, estado: EstadoSessao, context
     let cena: Cena | null = atual;
     for (const [k, a] of h.alteracoes.entries()) {
       const alvo = "evento_id" in a.alteracao ? a.alteracao.evento_id : null;
-      if (alvo !== null && !cena.eventos.some((e) => e.id === alvo)) {
+      if (alvo !== null && !cena.eventos.some((e) => e.id === alvo) && !cena.compras_cartao.some((c) => c.evento.id === alvo)) {
         cena = null; // R-14
         break;
       }
