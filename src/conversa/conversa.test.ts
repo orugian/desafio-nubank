@@ -103,4 +103,69 @@ describe("B4 · Conversa", () => {
       });
     }
   });
+
+  test("2. Argumento inválido → erro devolvido ao modelo, nada aplicado; segunda chamada corrige e anexa o_que_mudou", async () => {
+    const estado0 = estadoInicial("p1", snapshotTeste);
+    const capturadas: MensagemProvedor[][] = [];
+    const provedor = provedorSequencial(
+      [
+        {
+          tipo: "chamadas",
+          chamadas: [
+            {
+              id: "call_1",
+              nome: "registrar_declaracao",
+              argumentos: JSON.stringify({
+                alteracao: { operacao: "alterar_evento", evento_id: "C", valor: "R$ 150" },
+              }),
+            },
+          ],
+        },
+        {
+          tipo: "chamadas",
+          chamadas: [
+            {
+              id: "call_2",
+              nome: "registrar_declaracao",
+              argumentos: JSON.stringify({
+                alteracao: { operacao: "alterar_evento", evento_id: "C", valor: "150" },
+              }),
+            },
+          ],
+        },
+        {
+          tipo: "texto",
+          texto: "Atualizei as contas da casa (C) em 15/11 para R$ 150,00.",
+        },
+      ],
+      capturadas,
+    );
+
+    const res = await processarTurno(
+      {
+        estado: estado0,
+        mensagem: { id: "m-0002", texto: "Na verdade as contas da casa do dia 15 são R$ 150." },
+      },
+      depsBase(provedor),
+    );
+
+    expect(res.status).toBe("ok");
+    if (res.status !== "ok") return;
+
+    const msgFerramenta1 = capturadas[1]?.find(
+      (m) => m.papel === "ferramenta" && m.chamada_id === "call_1",
+    );
+    expect(msgFerramenta1).toBeDefined();
+    if (msgFerramenta1?.papel === "ferramenta") {
+      const payload = JSON.parse(msgFerramenta1.conteudo);
+      expect(payload.ok).toBe(false);
+      expect(payload.erro.codigo).toBe("VALOR_INVALIDO");
+    }
+
+    expect(res.estado.declaracoes).toHaveLength(1);
+    expect(res.estado.declaracoes[0]?.id).toBe("D1");
+    expect(res.rastro).toHaveLength(2);
+    expect(res.cartoes.some((c) => c.tipo === "o_que_mudou")).toBe(true);
+    expect(res.cartoes.some((c) => c.tipo === "comparacao")).toBe(true);
+  });
 });

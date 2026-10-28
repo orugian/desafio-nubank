@@ -63,6 +63,15 @@ export async function processarTurno(
     });
 
     if (resp.tipo === "texto") {
+      const mudouDeclaracoes =
+        estadoTrabalho.declaracoes.length !== estadoEntrada.declaracoes.length;
+      if (mudouDeclaracoes && !cartoes.some((c) => c.tipo === "o_que_mudou")) {
+        const diff = await deps.executores.compararCenarios(estadoEntrada, estadoTrabalho);
+        if (diff.alteracoes.length > 0) {
+          cartoes = [{ tipo: "o_que_mudou", ...diff }, ...cartoes];
+        }
+      }
+
       const novaVersao = estadoEntrada.versao + 1;
       const estadoFinal: EstadoSessao = {
         ...estadoTrabalho,
