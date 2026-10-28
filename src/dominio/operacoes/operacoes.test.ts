@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { esquemaConfirmacaoMovimentacao, esquemaPropostaMovimentacao } from "@/contratos";
 import { confirmarMovimentacao, proporMovimentacao } from "@/dominio/operacoes";
 import { calcularCenarios, criarHipotese, registrarDeclaracao, validarEstado } from "@/dominio/caixa";
-import { CONTEXTO, P1, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
+import { CONTEXTO, P1, P3, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
 
 const indicadoresCR02 = () => {
   const falta = { data: "2026-11-15", valor_descoberto_centavos: reaisDaSpec("200"), saidas_do_dia: ["C"] };
@@ -14,6 +14,24 @@ const indicadoresCR02 = () => {
 };
 
 describe("B1c · operações simuladas", () => {
+  test("CR-44/CR-44b: recusa 2.000 com 1.800, 1.400 após OP1 e 2.100 após saída declarada de 480", () => {
+    const estado = estadoNovo(P1);
+    const antes = structuredClone(estado);
+    const acima = proporMovimentacao(P1, estado, { valor: "2000", destino: "INV9" }, CONTEXTO);
+    expect(acima.ok ? "ok" : acima.erro.codigo).toBe("SALDO_INSUFICIENTE_HOJE");
+    const p = proporMovimentacao(P1, estado, { valor: "500", destino: "INV9" }, CONTEXTO);
+    if (!p.ok) throw new Error(p.erro.mensagem);
+    const r = confirmarMovimentacao(P1, p.estado, "OP1");
+    if (!r.ok) throw new Error(r.erro.mensagem);
+    const apos = proporMovimentacao(P1, r.estado, { valor: "1400", destino: "INV9" }, CONTEXTO);
+    expect(apos.ok ? "ok" : apos.erro.codigo).toBe("SALDO_INSUFICIENTE_HOJE");
+    const d = registrarDeclaracao(P3, estadoNovo(P3), { operacao: "adicionar_evento", tipo: "saida", descricao: "Supermercado", data: "2026-10-30", valor: "480", meio: "pix", confirmar_nao_duplicado: true }, origem());
+    if (!d.ok) throw new Error(d.erro.mensagem);
+    const p3 = proporMovimentacao(P3, d.estado, { valor: "2100", destino: "SEP" }, CONTEXTO);
+    expect(p3.ok ? "ok" : p3.erro.codigo).toBe("SALDO_INSUFICIENTE_HOJE");
+    if (!p3.ok) expect(p3.erro.detalhes).toEqual({ saldo_disponivel_hoje_centavos: reaisDaSpec("2.020") });
+    expect(estado).toEqual(antes);
+  });
   test("CR-42/CR-43/O-06: repetição é recusada, declaração expira e hipótese não expira proposta", () => {
     const p = proporMovimentacao(P1, estadoNovo(P1), { valor: "500", destino: "INV9" }, CONTEXTO);
     if (!p.ok) throw new Error(p.erro.mensagem);
