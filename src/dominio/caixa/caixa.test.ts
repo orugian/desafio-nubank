@@ -394,4 +394,78 @@ describe("B1 · motor de caixa · P2", () => {
     const e4 = atual.linhas.find((l) => l.evento_id === "E4")!;
     expect(e4.estimativa?.metodo).toBe("media_3_ultimas");
   });
+
+  const entradasPrimeiro = () => {
+    const d = registrarDeclaracao(P2, estadoNovo(P2), { operacao: "definir_ordem_no_dia", data: "2026-11-08", ordem: "entradas_primeiro" }, origem("m-1"));
+    if (!d.ok) throw new Error(d.erro.mensagem);
+    return d.estado;
+  };
+
+  test("CR-09b: D1 entradas primeiro em 08/11 tira a falta e a pergunta de ordem", () => {
+    const [atual] = calcularCenarios(P2, entradasPrimeiro(), CONTEXTO);
+    expect(saldos(atual)).toEqual(
+      saldosDaSpec("G1 795 · E1 675 · G2 570 · E3 2.070 · E2 970 · E4 790 · G3 685 · G4 580 · E5 180 · G5 135"),
+    );
+    expect(atual.indicadores).toEqual({
+      saldo_inicial_centavos: reaisDaSpec("900"),
+      saldo_minimo_centavos: reaisDaSpec("135"),
+      data_saldo_minimo: "2026-11-27",
+      primeira_falta: null,
+      insuficiencia_centavos: 0,
+      margem_hoje_centavos: reaisDaSpec("135"),
+      saldo_final_centavos: reaisDaSpec("135"),
+      sem_recebimentos: {
+        insuficiencia_centavos: reaisDaSpec("1.365"),
+        primeira_falta: { data: "2026-11-08", valor_descoberto_centavos: reaisDaSpec("530"), saidas_do_dia: ["E2"] },
+        saldo_final_centavos: reaisDaSpec("−1.365"),
+      },
+    });
+    expect(atual.avisos).toEqual(["cobertura_depende_de_recebimento"]);
+    expect(atual.datas_ordem_relevante).toEqual([]);
+  });
+
+  test("CR-10b: H1 separar 300 depois da D1 de CR-09b", () => {
+    const h = criarHipotese(P2, entradasPrimeiro(), { nome: "Separar R$ 300 hoje", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "300" }] }, origem("m-2"));
+    if (!h.ok) throw new Error(h.erro.mensagem);
+    const [, h1] = calcularCenarios(P2, h.estado, CONTEXTO);
+    expect(saldos(h1)).toEqual(
+      saldosDaSpec("G1 795 · H1.1 495 · E1 375 · G2 270 · E3 1.770 · E2 670 · E4 490 · G3 385 · G4 280 · E5 −120 · G5 −165"),
+    );
+    expect(h1.indicadores).toEqual({
+      saldo_inicial_centavos: reaisDaSpec("900"),
+      saldo_minimo_centavos: reaisDaSpec("−165"),
+      data_saldo_minimo: "2026-11-27",
+      primeira_falta: { data: "2026-11-25", valor_descoberto_centavos: reaisDaSpec("120"), saidas_do_dia: ["E5"] },
+      insuficiencia_centavos: reaisDaSpec("165"),
+      margem_hoje_centavos: 0,
+      saldo_final_centavos: reaisDaSpec("−165"),
+      sem_recebimentos: {
+        insuficiencia_centavos: reaisDaSpec("1.665"),
+        primeira_falta: { data: "2026-11-08", valor_descoberto_centavos: reaisDaSpec("830"), saidas_do_dia: ["E2"] },
+        saldo_final_centavos: reaisDaSpec("−1.665"),
+      },
+    });
+    expect(h1.avisos).toEqual(["falta_maior_sem_recebimento"]);
+    expect(h1.datas_ordem_relevante).toEqual([]);
+  });
+});
+
+describe("B1 · motor de caixa · P3", () => {
+  test("bloco estimado sozinho não dispara ordem relevante: 13/11 de CR-14 (G3 e salário) sem pergunta", () => {
+    const h = criarHipotese(
+      P3,
+      estadoNovo(P3),
+      {
+        nome: "Conserto do carro",
+        a_partir_de: "atual",
+        alteracoes: [{ operacao: "adicionar_evento", tipo: "saida", descricao: "Conserto do carro", data: "2026-11-06", valor: "800", meio: "pix" }],
+      },
+      origem("m-1"),
+    );
+    if (!h.ok) throw new Error(h.erro.mensagem);
+    const [, h1] = calcularCenarios(P3, h.estado, CONTEXTO);
+    const g3 = h1.linhas.find((l) => l.evento_id === "G3")!;
+    expect([g3.data, g3.saldo_apos_centavos]).toEqual(["2026-11-13", reaisDaSpec("−660")]);
+    expect(h1.datas_ordem_relevante).toEqual([]);
+  });
 });

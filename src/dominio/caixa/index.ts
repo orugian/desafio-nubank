@@ -76,7 +76,7 @@ function eventosBase(persona: Persona): Evento[] {
   return eventos;
 }
 
-type Cena = { eventos: Evento[]; gasto_diario_centavos: number };
+type Cena = { eventos: Evento[]; gasto_diario_centavos: number; entradas_primeiro: readonly string[] };
 type Camada = "declaracao" | "hipotese";
 
 /** R-21: blocos de 7 dias a partir de hoje, saída no primeiro dia; gasto 0 não gera blocos. */
@@ -187,10 +187,17 @@ function aplicar(cena: Cena, alt: Alteracao, id: string, camada: Camada, indice:
     };
     return { ...cena, eventos: [...cena.eventos, evento] };
   }
+  if (alt.operacao === "definir_ordem_no_dia") {
+    return { ...cena, entradas_primeiro: [...new Set([...cena.entradas_primeiro, alt.data])] };
+  }
   return cena;
 }
 
-const cenaBase = (persona: Persona): Cena => ({ eventos: eventosBase(persona), gasto_diario_centavos: persona.gasto_diario.valor_centavos });
+const cenaBase = (persona: Persona): Cena => ({
+  eventos: eventosBase(persona),
+  gasto_diario_centavos: persona.gasto_diario.valor_centavos,
+  entradas_primeiro: [],
+});
 
 function situacaoAtual(persona: Persona, estado: EstadoSessao): Cena {
   return estado.declaracoes.reduce(
@@ -203,7 +210,7 @@ function resultado(cenario_id: string, nome: string, cena: Cena | null, saldoIni
   if (cena === null) {
     return { cenario_id, nome, status: "inconsistente", linhas: [], indicadores: null, faturas_afetadas: [], datas_ordem_relevante: [], avisos: [] };
   }
-  const p = projetar([...cena.eventos, ...blocos(cena.gasto_diario_centavos)], saldoInicial, new Set());
+  const p = projetar([...cena.eventos, ...blocos(cena.gasto_diario_centavos)], saldoInicial, new Set(cena.entradas_primeiro));
   return {
     cenario_id,
     nome,
