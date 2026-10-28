@@ -1,5 +1,7 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, test } from "vitest";
-import { calcularCenarios, criarHipotese, registrarDeclaracao } from "@/dominio/caixa";
+import { calcularCenarios, compararCenarios, criarHipotese, registrarDeclaracao } from "@/dominio/caixa";
 import { CONTEXTO, P1, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "./testes/personas";
 import type { ResultadoCenario } from "@/contratos";
 
@@ -187,6 +189,20 @@ describe("B1 · motor de caixa · P1", () => {
         },
       });
       expect(h1.avisos).toEqual(["cobertura_depende_de_recebimento"]);
+    });
+
+    test("compararCenarios antes × depois de CR-04 lista D1 e as diferenças de indicadores (igual ao exemplo do contrato)", () => {
+      const antes = comH1();
+      const r = registrarDeclaracao(P1, antes, { operacao: "alterar_evento", evento_id: "C", valor: "150" }, origem("m-2"));
+      if (!r.ok) throw new Error(r.erro.mensagem);
+      const mudou = compararCenarios(
+        { estado: antes, cenarios: calcularCenarios(P1, antes, CONTEXTO) },
+        { estado: r.estado, cenarios: calcularCenarios(P1, r.estado, CONTEXTO) },
+      );
+      const exemplo = JSON.parse(
+        readFileSync(join(__dirname, "..", "..", "contratos", "exemplos", "cartao-o-que-mudou-cr04.json"), "utf8"),
+      ).dados;
+      expect(mudou).toEqual({ alteracoes: exemplo.alteracoes, cenarios: exemplo.cenarios });
     });
   });
 });

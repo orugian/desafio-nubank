@@ -18,6 +18,7 @@ import {
   type ResultadoDominio,
 } from "@/contratos";
 import { projetar, type Evento } from "./projecao";
+import { comparar } from "./comparacao";
 
 // Ordem de cadastro (R-05, §4.5): compromissos, blocos, declarações, operações, hipóteses.
 const GRUPO = { compromisso: 0, bloco: 1, declaracao: 2, operacao: 3, hipotese: 4 } as const;
@@ -213,8 +214,7 @@ export function desfazer(
 
 /** R-24: alterações do turno e diferenças de indicadores por cenário. */
 export function compararCenarios(antes: EntradaComparacao, depois: EntradaComparacao): OQueMudou {
-  void antes, depois;
-  throw new Error("não implementado");
+  return comparar(antes, depois);
 }
 
 /** Revalida o estado por replay (D-15); falha → ESTADO_INVALIDO (CR-19). */
