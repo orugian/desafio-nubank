@@ -67,4 +67,16 @@ describe("invariantes aplicáveis à P1 mínima (spec §4.2)", () => {
     p.cartao.faturas[0].valor_centavos = 71000;
     expect(numeros(p)).toContain(3);
   });
+
+  test("4: parcela 4/10 do Celular na fatura de 05/11, que é a da parcela 5 (C-03)", () => {
+    const p = base();
+    p.cartao.faturas[0].itens[0].parcela = "4/10";
+    expect(numeros(p)).toContain(4);
+  });
+
+  test("4: compra de 20/06 sem a marca anterior_ao_historico", () => {
+    const p = base();
+    p.cartao.parcelamentos[0].anterior_ao_historico = false;
+    expect(numeros(p)).toContain(4);
+  });
 });

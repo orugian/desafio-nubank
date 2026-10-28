@@ -1,6 +1,7 @@
 // Personas (spec §6.1 `dados`). B0: só a P1 mínima; o B2 troca pelas personas geradas.
 
 import {
+  INICIO_HISTORICO,
   erro,
   esquemaPersona,
   type Persona,
@@ -10,6 +11,26 @@ import {
 import p1 from "../../dados/personas/p1-minima.json";
 
 const BRUTAS: Record<string, unknown> = { p1 };
+
+// C-02: compra com data < fechamento do mês vai para a fatura que fecha nesse
+// dia; data ≥ fechamento, para a seguinte. Fechamento no último dia em meses
+// mais curtos; vencimento no mês seguinte ao fechamento.
+function diaNoMes(ano: number, mes: number, dia: number): string {
+  const ultimo = [31, ano % 4 === 0 && (ano % 100 !== 0 || ano % 400 === 0) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][mes - 1];
+  return `${ano}-${String(mes).padStart(2, "0")}-${String(Math.min(dia, ultimo)).padStart(2, "0")}`;
+}
+function somarMeses(data: string, n: number): string {
+  const [a, m, d] = data.split("-").map(Number);
+  const total = a * 12 + (m - 1) + n;
+  return diaNoMes(Math.floor(total / 12), (total % 12) + 1, d);
+}
+function vencimentoDaCompra(data: string, diaFechamento: number, diaVencimento: number): string {
+  const [a, m] = data.split("-").map(Number);
+  const fechamentoDoMes = diaNoMes(a, m, diaFechamento);
+  const mesFechamento = data < fechamentoDoMes ? `${a}-${String(m).padStart(2, "0")}-01` : somarMeses(`${a}-${String(m).padStart(2, "0")}-01`, 1);
+  const vencimentoBase = somarMeses(mesFechamento, 1);
+  return diaNoMes(Number(vencimentoBase.slice(0, 4)), Number(vencimentoBase.slice(5, 7)), diaVencimento);
+}
 
 export function listarPersonas(): ResumoPersona[] {
   return Object.values(BRUTAS).map((b) => {
@@ -63,6 +84,32 @@ export function verificarInvariantes(bruta: unknown): ViolacaoInvariante[] {
     const soma = f.itens.reduce((s, i) => s + i.valor_centavos, 0);
     if (soma !== f.valor_centavos) {
       v.push({ invariante: 3, mensagem: `fatura ${f.id}: valor ${f.valor_centavos} ≠ soma dos itens ${soma}` });
+    }
+  }
+
+  // 4. Parcelas coerentes com C-03; compra anterior a 30/07 marcada.
+  for (const pc of p.cartao?.parcelamentos ?? []) {
+    if ((pc.data_compra < INICIO_HISTORICO) !== pc.anterior_ao_historico) {
+      v.push({ invariante: 4, mensagem: `parcelamento ${pc.id}: anterior_ao_historico incoerente com ${pc.data_compra}` });
+    }
+  }
+  for (const f of p.cartao?.faturas ?? []) {
+    for (const item of f.itens) {
+      if (!item.parcelamento_id) continue;
+      const pc = p.cartao!.parcelamentos.find((x) => x.id === item.parcelamento_id);
+      const m = /^(\d+)\/(\d+)$/.exec(item.parcela ?? "");
+      if (!pc || !m) {
+        v.push({ invariante: 4, mensagem: `fatura ${f.id}: parcela sem parcelamento ou rótulo` });
+        continue;
+      }
+      const k = Number(m[1]);
+      const n = Number(m[2]);
+      const base = Math.floor(pc.valor_total_centavos / pc.parcelas);
+      const esperado = k === 1 ? pc.valor_total_centavos - base * (pc.parcelas - 1) : base;
+      const vencimento = somarMeses(vencimentoDaCompra(pc.data_compra, p.cartao!.dia_fechamento, p.cartao!.dia_vencimento), k - 1);
+      if (n !== pc.parcelas || item.valor_centavos !== esperado || vencimento !== f.vencimento) {
+        v.push({ invariante: 4, mensagem: `fatura ${f.id}: parcela ${item.parcela} de ${pc.id} incoerente com C-03` });
+      }
     }
   }
 
