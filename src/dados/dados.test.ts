@@ -29,12 +29,23 @@ describe("carregarPersona com a P1 mínima", () => {
     expect(r.ok).toBe(false);
   });
 
-  test("listarPersonas inclui P1 com nome e resumo", () => {
-    expect(listarPersonas()).toContainEqual({
-      id: "p1",
-      nome: "Bia (fictícia)",
-      resumo: "Quer juntar dinheiro para uma viagem.",
-    });
+  test("listarPersonas inclui P1, P2 e P3 com nome e resumo", () => {
+    expect(listarPersonas()).toEqual([
+      { id: "p1", nome: "Bia (fictícia)", resumo: "Quer juntar dinheiro para uma viagem." },
+      { id: "p2", nome: "Caio (fictício)", resumo: "Trabalha por conta própria e recebe de clientes por Pix." },
+      { id: "p3", nome: "Duda (fictícia)", resumo: "Tem filhos na escola, financiamento e compras parceladas no cartão." },
+    ]);
+  });
+
+  test("B2 · 1: cada persona gerada (p1, p2, p3) existe em dados/personas e é aceita pelo esquema e por carregarPersona", () => {
+    for (const id of ["p1", "p2", "p3"] as const) {
+      const caminho = join(__dirname, "..", "..", "dados", "personas", `${id}.json`);
+      const bruta = JSON.parse(readFileSync(caminho, "utf8"));
+      expect(bruta.id).toBe(id);
+      expect(bruta.historico.length).toBeGreaterThan(0);
+      const r = carregarPersona(id);
+      expect(r.ok ? "" : JSON.stringify(r.erro)).toBe("");
+    }
   });
 });
 

@@ -13,9 +13,11 @@ import {
   type ResultadoDominio,
   type ResumoPersona,
 } from "@/contratos";
-import p1 from "../../dados/personas/p1-minima.json";
+import p1 from "../../dados/personas/p1.json";
+import p2 from "../../dados/personas/p2.json";
+import p3 from "../../dados/personas/p3.json";
 
-const BRUTAS: Record<string, unknown> = { p1 };
+const BRUTAS: Record<string, unknown> = { p1, p2, p3 };
 
 // C-02: compra com data < fechamento do mês vai para a fatura que fecha nesse
 // dia; data ≥ fechamento, para a seguinte. Fechamento no último dia em meses
