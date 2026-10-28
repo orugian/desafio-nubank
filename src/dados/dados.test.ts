@@ -79,4 +79,10 @@ describe("invariantes aplicáveis à P1 mínima (spec §4.2)", () => {
     p.cartao.parcelamentos[0].anterior_ao_historico = false;
     expect(numeros(p)).toContain(4);
   });
+
+  test("6: gasto diário de 15,00 sem saídas variáveis por Pix ou débito no histórico", () => {
+    const p = base();
+    p.gasto_diario.valor_centavos = 1500;
+    expect(numeros(p)).toContain(6);
+  });
 });

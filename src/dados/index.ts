@@ -1,6 +1,9 @@
 // Personas (spec §6.1 `dados`). B0: só a P1 mínima; o B2 troca pelas personas geradas.
 
 import {
+  CATEGORIAS_VARIAVEIS,
+  DIAS_HISTORICO,
+  FIM_HISTORICO,
   INICIO_HISTORICO,
   erro,
   esquemaPersona,
@@ -111,6 +114,23 @@ export function verificarInvariantes(bruta: unknown): ViolacaoInvariante[] {
         v.push({ invariante: 4, mensagem: `fatura ${f.id}: parcela ${item.parcela} de ${pc.id} incoerente com C-03` });
       }
     }
+  }
+
+  // 6. gasto_diario = teto(saídas variáveis por Pix ou débito no histórico / 92).
+  const variaveis: readonly string[] = CATEGORIAS_VARIAVEIS;
+  const totalVariavel = p.historico
+    .filter((l) => l.tipo === "saida" && (l.meio === "pix" || l.meio === "debito") && variaveis.includes(l.categoria))
+    .reduce((s, l) => s + l.valor_centavos, 0);
+  const diario = Math.floor((totalVariavel + DIAS_HISTORICO - 1) / DIAS_HISTORICO);
+  const b = p.gasto_diario.base;
+  if (
+    p.gasto_diario.valor_centavos !== diario ||
+    b.total_centavos !== totalVariavel ||
+    b.dias !== DIAS_HISTORICO ||
+    b.de !== INICIO_HISTORICO ||
+    b.ate !== FIM_HISTORICO
+  ) {
+    v.push({ invariante: 6, mensagem: `gasto diário ${p.gasto_diario.valor_centavos} ≠ teto(${totalVariavel} / ${DIAS_HISTORICO}) = ${diario}` });
   }
 
   return v;
