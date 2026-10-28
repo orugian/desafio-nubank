@@ -8,6 +8,7 @@ import {
   erro,
   esquemaEstadoSessao,
   formatarReais,
+  formatarDiaMes,
   textos,
   validarArgumentos,
   type Alteracao,
@@ -25,6 +26,8 @@ import {
 import { diaJuliano, somarDias } from "@/dominio/calendario";
 import { projetar, type Evento } from "./projecao";
 import { comparar } from "./comparacao";
+import { alocarCompra, consultarCartao, verificarDuplicidade } from "@/dominio/cartao";
+import type { AlocacaoCompra } from "@/contratos";
 
 // Ordem de cadastro (R-05, §4.5): compromissos, blocos, declarações, operações, hipóteses.
 const GRUPO = { compromisso: 0, bloco: 1, declaracao: 2, operacao: 3, hipotese: 4 } as const;
@@ -77,7 +80,12 @@ function eventosBase(persona: Persona): Evento[] {
   return eventos;
 }
 
-type Cena = { eventos: Evento[]; gasto_diario_centavos: number; entradas_primeiro: readonly string[] };
+type Cena = {
+  eventos: Evento[];
+  compras_cartao: { evento: Evento; alocacao: AlocacaoCompra }[];
+  gasto_diario_centavos: number;
+  entradas_primeiro: readonly string[];
+};
 type Camada = "declaracao" | "hipotese";
 
 /** R-21: blocos de 7 dias a partir de hoje, saída no primeiro dia; gasto 0 não gera blocos. */
@@ -108,7 +116,7 @@ const falha = (codigo: ErroDominio["codigo"], campos: string[] = [], detalhes?: 
   erro(codigo, mensagem ?? textos.erros[codigo], campos, detalhes).erro;
 
 /** Regras de domínio de uma alteração sobre a cena em que será aplicada (§4.5, R-02, R-03, R-18). */
-function validar(cena: Cena, alt: Alteracao, camada: Camada): ErroDominio | null {
+function validar(persona: Persona, estado: EstadoSessao, cena: Cena, alt: Alteracao, camada: Camada): ErroDominio | null {
   if (camada === "declaracao" && !OPERACOES_EM_DECLARACAO.includes(alt.operacao)) {
     return falha("OPERACAO_NAO_PERMITIDA", ["operacao"], undefined, `${alt.operacao} não vale como declaração; use uma hipótese.`);
   }
@@ -117,9 +125,10 @@ function validar(cena: Cena, alt: Alteracao, camada: Camada): ErroDominio | null
   if (data !== undefined && data > FIM_JANELA) return falha("DATA_FORA_DA_JANELA", ["data"]);
 
   if (alt.operacao === "alterar_evento" || alt.operacao === "remover_evento") {
-    const alvo = cena.eventos.find((e) => e.id === alt.evento_id);
+    const alvo = cena.eventos.find((e) => e.id === alt.evento_id) ?? cena.compras_cartao.find((c) => c.evento.id === alt.evento_id)?.evento;
     const intocavel = /^G\d+$/.test(alt.evento_id) || /^OP\d+$/.test(alt.evento_id) || alvo?.especie === "fatura" || alvo?.especie === "bloco" || alvo?.especie === "operacao";
-    if (intocavel) {
+    const itemFechado = persona.cartao?.faturas.some((f) => f.status === "fechada" && (f.id === alt.evento_id || f.itens.some((i) => i.lancamento_id === alt.evento_id)));
+    if (intocavel || itemFechado) {
       return falha(
         "OPERACAO_NAO_PERMITIDA",
         ["evento_id"],
@@ -128,12 +137,41 @@ function validar(cena: Cena, alt: Alteracao, camada: Camada): ErroDominio | null
       );
     }
     if (!alvo) return falha("EVENTO_INEXISTENTE", ["evento_id"], { evento_id: alt.evento_id });
+    const compra = cena.compras_cartao.find((c) => c.evento.id === alt.evento_id);
+    if (compra && alt.operacao === "alterar_evento") {
+      const r = alocarCompra(persona, estado, { data: alt.data ?? compra.evento.data, valor_centavos: alt.valor !== undefined ? paraCentavos(alt.valor) : compra.evento.valor_centavos, parcelas: compra.alocacao.parcelas.length });
+      if (!r.ok) return r.erro;
+    }
+  }
+  if (alt.operacao === "adicionar_evento" && alt.tipo === "saida" && !alt.confirmar_nao_duplicado) {
+    const baseCartao = consultarCartao(persona, { ...estado, declaracoes: [] });
+    let personaDaCena = persona;
+    if (persona.cartao && baseCartao) {
+      const aberta = baseCartao.fatura_aberta;
+      const itens = aberta.itens.map((i) => ({ descricao: i.descricao, valor_centavos: i.valor_centavos, lancamento_id: i.lancamento_id ?? undefined, data: i.data ?? undefined, parcelamento_id: i.parcelamento_id ?? undefined, parcela: i.parcela ?? undefined }));
+      for (const compra of cena.compras_cartao) {
+        for (const p of compra.alocacao.parcelas) {
+          if (p.fatura_id === aberta.fatura_id) itens.push({ descricao: compra.evento.descricao, valor_centavos: p.valor_centavos, data: compra.evento.data, lancamento_id: undefined, parcelamento_id: undefined, parcela: undefined });
+        }
+      }
+      const fatura = { id: aberta.fatura_id, fechamento: aberta.fechamento, vencimento: aberta.vencimento, status: "aberta" as const, valor_centavos: itens.reduce((s, i) => s + i.valor_centavos, 0), itens };
+      personaDaCena = { ...persona, cartao: { ...persona.cartao, faturas: [...persona.cartao.faturas.filter((f) => f.id !== aberta.fatura_id), fatura] } };
+    }
+    const duplicidade = verificarDuplicidade(personaDaCena, { valor_centavos: paraCentavos(alt.valor) });
+    if (duplicidade.duplicado) {
+      const citacoes = duplicidade.itens.map((i) => `${i.descricao} ${formatarReais(i.valor_centavos).replace("R$ ", "")}, ${i.vencimento ? `fatura de ${formatarDiaMes(i.vencimento)}` : `lançamento de ${formatarDiaMes(i.data!)}`}`);
+      return falha("POSSIVEL_DUPLICIDADE", ["valor", "confirmar_nao_duplicado"], { itens: duplicidade.itens }, `${textos.erros.POSSIVEL_DUPLICIDADE} ${citacoes.join("; ")}. Confirme se é outra compra.`);
+    }
+  }
+  if (alt.operacao === "adicionar_evento" && alt.meio === "cartao_credito") {
+    const r = alocarCompra(persona, estado, { data: alt.data, valor_centavos: paraCentavos(alt.valor), parcelas: alt.parcelas ?? 1 });
+    if (!r.ok) return r.erro;
   }
   return null;
 }
 
 /** Aplica uma alteração já validada sobre a cena. */
-function aplicar(cena: Cena, alt: Alteracao, id: string, camada: Camada, indice: number): Cena {
+function aplicar(persona: Persona, estado: EstadoSessao, cena: Cena, alt: Alteracao, id: string, camada: Camada, indice: number): Cena {
   if (alt.operacao === "separar") {
     const valor = paraCentavos(alt.valor);
     const evento: Evento = {
@@ -153,6 +191,13 @@ function aplicar(cena: Cena, alt: Alteracao, id: string, camada: Camada, indice:
     return { ...cena, eventos: [...cena.eventos, evento] };
   }
   if (alt.operacao === "alterar_evento") {
+    const compra = cena.compras_cartao.find((c) => c.evento.id === alt.evento_id);
+    if (compra) {
+      const evento = { ...compra.evento, data: alt.data ?? compra.evento.data, valor_centavos: alt.valor !== undefined ? paraCentavos(alt.valor) : compra.evento.valor_centavos, origem: camada };
+      const r = alocarCompra(persona, estado, { data: evento.data, valor_centavos: evento.valor_centavos, parcelas: compra.alocacao.parcelas.length });
+      if (!r.ok) return cena;
+      return { ...cena, compras_cartao: cena.compras_cartao.map((c) => c === compra ? { evento, alocacao: { parcelas: r.parcelas } } : c) };
+    }
     return {
       ...cena,
       eventos: cena.eventos.map((e) =>
@@ -169,7 +214,7 @@ function aplicar(cena: Cena, alt: Alteracao, id: string, camada: Camada, indice:
     };
   }
   if (alt.operacao === "remover_evento") {
-    return { ...cena, eventos: cena.eventos.filter((e) => e.id !== alt.evento_id) };
+    return { ...cena, eventos: cena.eventos.filter((e) => e.id !== alt.evento_id), compras_cartao: cena.compras_cartao.filter((c) => c.evento.id !== alt.evento_id) };
   }
   if (alt.operacao === "adicionar_evento") {
     const evento: Evento = {
@@ -186,6 +231,11 @@ function aplicar(cena: Cena, alt: Alteracao, id: string, camada: Camada, indice:
       cadastro: cadastro(camada, indice),
       especie: camada,
     };
+    if (alt.meio === "cartao_credito") {
+      const alocacao = alocarCompra(persona, estado, { data: alt.data, valor_centavos: evento.valor_centavos, parcelas: alt.parcelas ?? 1 });
+      if (!alocacao.ok) return cena; // As entradas de domínio são validadas antes do replay.
+      return { ...cena, compras_cartao: [...cena.compras_cartao, { evento, alocacao: { parcelas: alocacao.parcelas } }] };
+    }
     return { ...cena, eventos: [...cena.eventos, evento] };
   }
   if (alt.operacao === "definir_ordem_no_dia") {
@@ -199,29 +249,40 @@ function aplicar(cena: Cena, alt: Alteracao, id: string, camada: Camada, indice:
 
 const cenaBase = (persona: Persona): Cena => ({
   eventos: eventosBase(persona),
+  compras_cartao: [],
   gasto_diario_centavos: persona.gasto_diario.valor_centavos,
   entradas_primeiro: [],
 });
 
 function situacaoAtual(persona: Persona, estado: EstadoSessao): Cena {
   return estado.declaracoes.reduce(
-    (c, d, k) => aplicar(c, d.alteracao, d.id, "declaracao", k),
+    (c, d, k) => aplicar(persona, estado, c, d.alteracao, d.id, "declaracao", k),
     cenaBase(persona),
   );
 }
 
-function resultado(cenario_id: string, nome: string, cena: Cena | null, saldoInicial: number): ResultadoCenario {
+function resultado(persona: Persona, estado: EstadoSessao, cenario_id: string, nome: string, cena: Cena | null, saldoInicial: number): ResultadoCenario {
   if (cena === null) {
     return { cenario_id, nome, status: "inconsistente", linhas: [], indicadores: null, faturas_afetadas: [], datas_ordem_relevante: [], avisos: [] };
   }
   const p = projetar([...cena.eventos, ...blocos(cena.gasto_diario_centavos)], saldoInicial, new Set(cena.entradas_primeiro));
+  const baseCartao = consultarCartao(persona, { ...estado, declaracoes: [] });
+  const baseFaturas = baseCartao ? [baseCartao.fatura_aberta, ...baseCartao.proximas] : [];
+  const afetadas = new Map<string, ResultadoCenario["faturas_afetadas"][number]>();
+  for (const compra of cena.compras_cartao) {
+    for (const parcela of compra.alocacao.parcelas) {
+      const anterior = baseFaturas.find((f) => f.fatura_id === parcela.fatura_id)?.valor_centavos ?? 0;
+      const fatura = afetadas.get(parcela.fatura_id) ?? { fatura_id: parcela.fatura_id, vencimento: parcela.vencimento, total_antes_centavos: anterior, total_depois_centavos: anterior };
+      afetadas.set(parcela.fatura_id, { ...fatura, total_depois_centavos: fatura.total_depois_centavos + parcela.valor_centavos });
+    }
+  }
   return {
     cenario_id,
     nome,
     status: "calculado",
     linhas: p.linhas,
     indicadores: p.indicadores,
-    faturas_afetadas: [],
+    faturas_afetadas: [...afetadas.values()].sort((a, b) => a.vencimento.localeCompare(b.vencimento)),
     datas_ordem_relevante: p.datas_ordem_relevante,
     avisos: p.avisos,
   };
@@ -236,15 +297,15 @@ export function calcularCenarios(persona: Persona, estado: EstadoSessao, context
     let cena: Cena | null = atual;
     for (const [k, a] of h.alteracoes.entries()) {
       const alvo = "evento_id" in a.alteracao ? a.alteracao.evento_id : null;
-      if (alvo !== null && !cena.eventos.some((e) => e.id === alvo)) {
+      if (alvo !== null && !cena.eventos.some((e) => e.id === alvo) && !cena.compras_cartao.some((c) => c.evento.id === alvo)) {
         cena = null; // R-14
         break;
       }
-      cena = aplicar(cena, a.alteracao, a.id, "hipotese", k);
+      cena = aplicar(persona, estado, cena, a.alteracao, a.id, "hipotese", k);
     }
-    return resultado(h.id, h.nome, cena, saldo);
+    return resultado(persona, estado, h.id, h.nome, cena, saldo);
   });
-  return [resultado("atual", textos.rotulos.situacao_atual, atual, saldo), ...hipoteses];
+  return [resultado(persona, estado, "atual", textos.rotulos.situacao_atual, atual, saldo), ...hipoteses];
 }
 
 /** Declaração altera a situação atual (R-04, R-20). Não muda `versao`. */
@@ -256,7 +317,7 @@ export function registrarDeclaracao(
 ): ResultadoDominio<{ estado: EstadoSessao; declaracao_id: string }> {
   const v = validarArgumentos("registrar_declaracao", { alteracao });
   if (!v.ok) return { ok: false, erro: v.erro };
-  const problema = validar(situacaoAtual(persona, estado), v.argumentos.alteracao, "declaracao");
+  const problema = validar(persona, estado, situacaoAtual(persona, estado), v.argumentos.alteracao, "declaracao");
   if (problema) return { ok: false, erro: problema };
   const n = estado.contadores.D + 1;
   const declaracao_id = `D${n}`;
@@ -298,9 +359,9 @@ export function criarHipotese(
   const alteracoes = todas.map((a, k) => ({ id: `${hipotese_id}.${k + 1}`, ...a }));
   let cena = situacaoAtual(persona, estado);
   for (const [k, a] of alteracoes.entries()) {
-    const problema = validar(cena, a.alteracao, "hipotese");
+    const problema = validar(persona, estado, cena, a.alteracao, "hipotese");
     if (problema) return { ok: false, erro: { ...problema, campos: problema.campos.map((c) => `alteracoes.${k}.${c}`) } };
-    cena = aplicar(cena, a.alteracao, a.id, "hipotese", k);
+    cena = aplicar(persona, estado, cena, a.alteracao, a.id, "hipotese", k);
   }
 
   const hipotese: Hipotese = { id: hipotese_id, nome: v.argumentos.nome, a_partir_de, mensagem_id: origem.mensagem_id, alteracoes };
@@ -327,13 +388,13 @@ export function desfazer(
     // Declaração posterior que dependa da desfeita impede o desfazer.
     let cena: Cena = cenaBase(persona);
     for (const [k, d] of restantes.entries()) {
-      if (validar(cena, d.alteracao, "declaracao")) {
+      if (validar(persona, estado, cena, d.alteracao, "declaracao")) {
         return {
           ok: false,
           erro: falha("OPERACAO_NAO_PERMITIDA", ["alvo_id"], { depende: d.id }, `${d.id} depende de ${alvo_id}; desfaça ${d.id} antes.`),
         };
       }
-      cena = aplicar(cena, d.alteracao, d.id, "declaracao", k);
+      cena = aplicar(persona, estado, cena, d.alteracao, d.id, "declaracao", k);
     }
     return { ok: true, removido: alvo_id, estado: { ...estado, declaracoes: restantes } };
   }
@@ -366,18 +427,20 @@ export function validarEstado(persona: Persona, estado: EstadoSessao, contexto: 
   // Replay das declarações na ordem.
   let cena = cenaBase(persona);
   for (const [k, d] of e.declaracoes.entries()) {
-    const problema = validar(cena, d.alteracao, "declaracao");
+    const problema = validar(persona, estado, cena, d.alteracao, "declaracao");
     if (problema) return invalido(`${d.id}: ${problema.codigo}`);
-    cena = aplicar(cena, d.alteracao, d.id, "declaracao", k);
+    cena = aplicar(persona, estado, cena, d.alteracao, d.id, "declaracao", k);
   }
 
   // Hipóteses: estrutura e regras que não dependem da existência do alvo (R-14 permite inconsistência).
   for (const h of e.hipoteses) {
     if (h.alteracoes.length > LIMITES.alteracoes_por_hipotese) return invalido(`${h.id}: alterações demais`);
+    let cenaHipotese = cena;
     for (const [k, a] of h.alteracoes.entries()) {
       if (a.id !== `${h.id}.${k + 1}`) return invalido(`${h.id}: id de alteração ${a.id}`);
-      const problema = validar(cena, a.alteracao, "hipotese");
+      const problema = validar(persona, estado, cenaHipotese, a.alteracao, "hipotese");
       if (problema && problema.codigo !== "EVENTO_INEXISTENTE") return invalido(`${a.id}: ${problema.codigo}`);
+      if (!problema) cenaHipotese = aplicar(persona, estado, cenaHipotese, a.alteracao, a.id, "hipotese", k);
     }
   }
   return { ok: true };
