@@ -1,5 +1,14 @@
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import Decimal from "decimal.js";
-import { INICIO_HISTORICO, type SerieCdi, type SerieFechamentos } from "@/contratos";
+import {
+  ARQUIVOS_MERCADO,
+  INICIO_HISTORICO,
+  esquemaSerieCdi,
+  esquemaSerieFechamentos,
+  type SerieCdi,
+  type SerieFechamentos,
+} from "@/contratos";
 
 export const URL_BCB_SGS12 =
   "https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial=03/11/2025&dataFinal=29/10/2026";
@@ -47,12 +56,12 @@ export function converterSerieBcb(
     })
     .sort((a, b) => a.data.localeCompare(b.data));
 
-  return {
+  return esquemaSerieCdi.parse({
     fonte: "BCB SGS 12",
     url: meta?.url ?? URL_BCB_SGS12,
     obtido_em: meta?.obtido_em ?? OBTIDO_EM_BCB,
     serie,
-  };
+  });
 }
 
 export function converterSerieBrapi(
@@ -74,13 +83,13 @@ export function converterSerieBrapi(
     .filter((item) => item.data <= ateData)
     .sort((a, b) => a.data.localeCompare(b.data));
 
-  return {
+  return esquemaSerieFechamentos.parse({
     fonte: "brapi",
     url: meta?.url ?? `https://brapi.dev/api/quote/${ticker}?range=3mo&interval=1d`,
     obtido_em: meta?.obtido_em ?? OBTIDO_EM_BRAPI,
     ticker,
     serie,
-  };
+  });
 }
 
 export function converterSerieCoinGecko(
@@ -106,11 +115,94 @@ export function converterSerieCoinGecko(
     .map(([data, preco_centavos]) => ({ data, preco_centavos }))
     .sort((a, b) => a.data.localeCompare(b.data));
 
-  return {
+  return esquemaSerieFechamentos.parse({
     fonte: "CoinGecko",
     url: meta?.url ?? URL_COINGECKO_BTC,
     obtido_em: meta?.obtido_em ?? OBTIDO_EM_COINGECKO,
     ticker: "BTC",
     serie,
-  };
+  });
+}
+
+export function gerarArquivosMercado(opcoes?: {
+  raiz?: string;
+  dirFixtures?: string;
+}): { cdi: SerieCdi; petr4: SerieFechamentos; btc: SerieFechamentos } {
+  const raiz = opcoes?.raiz ?? join(__dirname, "..", "..");
+  const dirFixtures = opcoes?.dirFixtures ?? join(__dirname, "fixtures");
+
+  const brutoBcb = JSON.parse(readFileSync(join(dirFixtures, "bcb-sgs12.json"), "utf8"));
+  const brutoPetr4 = JSON.parse(readFileSync(join(dirFixtures, "brapi-PETR4.json"), "utf8"));
+  const brutoBtc = JSON.parse(
+    readFileSync(join(dirFixtures, "coingecko-bitcoin-brl.json"), "utf8"),
+  );
+
+  const cdi = converterSerieBcb(brutoBcb);
+  const petr4 = converterSerieBrapi(brutoPetr4);
+  const btc = converterSerieCoinGecko(brutoBtc);
+
+  const caminhoCdi = join(raiz, ARQUIVOS_MERCADO.cdi);
+  const caminhoPetr4 = join(raiz, ARQUIVOS_MERCADO.fechamentos("PETR4"));
+  const caminhoBtc = join(raiz, ARQUIVOS_MERCADO.fechamentos("BTC"));
+
+  mkdirSync(dirname(caminhoCdi), { recursive: true });
+  writeFileSync(caminhoCdi, JSON.stringify(cdi, null, 2) + "\n", "utf8");
+  writeFileSync(caminhoPetr4, JSON.stringify(petr4, null, 2) + "\n", "utf8");
+  writeFileSync(caminhoBtc, JSON.stringify(btc, null, 2) + "\n", "utf8");
+
+  return { cdi, petr4, btc };
+}
+
+async function coletarPelaRede(): Promise<void> {
+  const resBcb = await fetch(URL_BCB_SGS12);
+  if (!resBcb.ok) throw new Error(`BCB HTTP ${resBcb.status}`);
+  const brutoBcb = await resBcb.json();
+
+  const headersBrapi: Record<string, string> = {};
+  if (process.env.BRAPI_TOKEN) {
+    headersBrapi.Authorization = `Bearer ${process.env.BRAPI_TOKEN}`;
+  }
+  const resPetr4 = await fetch(URL_BRAPI_PETR4, { headers: headersBrapi });
+  if (!resPetr4.ok) throw new Error(`brapi HTTP ${resPetr4.status}`);
+  const brutoPetr4 = await resPetr4.json();
+
+  const headersCg: Record<string, string> = {};
+  if (process.env.COINGECKO_API_KEY) {
+    headersCg["x-cg-demo-api-key"] = process.env.COINGECKO_API_KEY;
+  }
+  const resBtc = await fetch(URL_COINGECKO_BTC, { headers: headersCg });
+  if (!resBtc.ok) throw new Error(`CoinGecko HTTP ${resBtc.status}`);
+  const brutoBtc = await resBtc.json();
+
+  const raiz = join(__dirname, "..", "..");
+  const cdi = converterSerieBcb(brutoBcb);
+  const petr4 = converterSerieBrapi(brutoPetr4);
+  const btc = converterSerieCoinGecko(brutoBtc);
+
+  const caminhoCdi = join(raiz, ARQUIVOS_MERCADO.cdi);
+  mkdirSync(dirname(caminhoCdi), { recursive: true });
+  writeFileSync(caminhoCdi, JSON.stringify(cdi, null, 2) + "\n", "utf8");
+  writeFileSync(
+    join(raiz, ARQUIVOS_MERCADO.fechamentos("PETR4")),
+    JSON.stringify(petr4, null, 2) + "\n",
+    "utf8",
+  );
+  writeFileSync(
+    join(raiz, ARQUIVOS_MERCADO.fechamentos("BTC")),
+    JSON.stringify(btc, null, 2) + "\n",
+    "utf8",
+  );
+}
+
+const executadoDiretamente =
+  typeof process !== "undefined" &&
+  Array.isArray(process.argv) &&
+  process.argv[1]?.replace(/\\/g, "/").endsWith("scripts/mercado/coletar.ts");
+
+if (executadoDiretamente) {
+  if (process.argv.includes("--rede")) {
+    void coletarPelaRede();
+  } else {
+    gerarArquivosMercado();
+  }
 }

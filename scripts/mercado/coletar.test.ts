@@ -1,10 +1,12 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
+import { ARQUIVOS_MERCADO, esquemaSerieCdi, esquemaSerieFechamentos } from "@/contratos";
 import {
   converterSerieBcb,
   converterSerieBrapi,
   converterSerieCoinGecko,
+  gerarArquivosMercado,
 } from "./coletar";
 
 describe("B3a · Coleta de mercado gravada", () => {
@@ -62,5 +64,28 @@ describe("B3a · Coleta de mercado gravada", () => {
       data: "2026-10-27",
       preco_centavos: 43008618,
     });
+  });
+
+  test("4. Arquivos de saída gravados em dados/mercado/ são aceitos pelo esquema do contrato", () => {
+    const raiz = join(__dirname, "..", "..");
+    gerarArquivosMercado({ raiz });
+
+    const cdiJson = JSON.parse(readFileSync(join(raiz, ARQUIVOS_MERCADO.cdi), "utf8"));
+    const petr4Json = JSON.parse(
+      readFileSync(join(raiz, ARQUIVOS_MERCADO.fechamentos("PETR4")), "utf8"),
+    );
+    const btcJson = JSON.parse(
+      readFileSync(join(raiz, ARQUIVOS_MERCADO.fechamentos("BTC")), "utf8"),
+    );
+
+    const cdi = esquemaSerieCdi.parse(cdiJson);
+    const petr4 = esquemaSerieFechamentos.parse(petr4Json);
+    const btc = esquemaSerieFechamentos.parse(btcJson);
+
+    expect(cdi.serie.at(-1)?.data).toBe("2026-10-27");
+    expect(petr4.ticker).toBe("PETR4");
+    expect(petr4.serie.at(-1)?.data).toBe("2026-10-27");
+    expect(btc.ticker).toBe("BTC");
+    expect(btc.serie.at(-1)?.data).toBe("2026-10-27");
   });
 });
