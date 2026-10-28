@@ -255,10 +255,22 @@ const cenaBase = (persona: Persona): Cena => ({
 });
 
 function situacaoAtual(persona: Persona, estado: EstadoSessao): Cena {
-  return estado.declaracoes.reduce(
+  const cena = estado.declaracoes.reduce(
     (c, d, k) => aplicar(persona, estado, c, d.alteracao, d.id, "declaracao", k),
     cenaBase(persona),
   );
+  const operacoes: Evento[] = estado.operacoes.map((op, k) => ({
+    id: op.id, data: op.data, descricao: textos.descricao_movimentacao(persona.posicoes.find((p) => p.id === op.destino)?.nome ?? op.destino),
+    tipo: "saida", meio: "movimentacao_interna", origem: "operacao", estimativa: null, previsto: false,
+    valor_centavos: op.valor_centavos, original: null, cadastro: cadastro("operacao", k), especie: "operacao",
+  }));
+  return { ...cena, eventos: [...cena.eventos, ...operacoes] };
+}
+
+/** Spec §2: disponível não inclui estimativas, hipóteses nem entradas previstas. */
+export function saldoDisponivelHoje(persona: Persona, estado: EstadoSessao): number {
+  const saidas = situacaoAtual(persona, estado).eventos.filter((e) => e.data === HOJE && e.tipo === "saida" && (e.origem === "declaracao" || e.especie === "operacao"));
+  return persona.conta.saldo_inicio_hoje_centavos - saidas.reduce((s, e) => s + e.valor_centavos, 0);
 }
 
 function resultado(persona: Persona, estado: EstadoSessao, cenario_id: string, nome: string, cena: Cena | null, saldoInicial: number): ResultadoCenario {
@@ -326,6 +338,7 @@ export function registrarDeclaracao(
     declaracao_id,
     estado: {
       ...estado,
+      operacao_pendente: null,
       declaracoes: [...estado.declaracoes, { id: declaracao_id, mensagem_id: origem.mensagem_id, alteracao: v.argumentos.alteracao }],
       contadores: { ...estado.contadores, D: n },
     },
@@ -423,6 +436,20 @@ export function validarEstado(persona: Persona, estado: EstadoSessao, contexto: 
   if (e.declaracoes.some((d) => numero(d.id) > e.contadores.D)) return invalido("contador D atrás de id usado");
   if (e.hipoteses.some((h) => numero(h.id) > e.contadores.H)) return invalido("contador H atrás de id usado");
   if (e.hipoteses.length > LIMITES.hipoteses_ativas) return invalido("hipóteses demais");
+
+  const destinoPermitido = (id: string) => persona.posicoes.some((p) => p.id === id && (p.categoria === "saldo_separado" || p.categoria === "caixinha"));
+  if (new Set(ids(e.operacoes)).size !== e.operacoes.length) return invalido("operação repetida");
+  for (const op of e.operacoes) {
+    if (numero(op.id) < 1 || numero(op.id) > e.contadores.OP) return invalido("contador OP atrás de id usado");
+    if (op.data !== HOJE) return invalido("operação fora de hoje");
+    if (!destinoPermitido(op.destino)) return invalido("destino de operação inválido");
+  }
+  if (e.operacao_pendente) {
+    const op = e.operacao_pendente;
+    if (numero(op.id) < 1 || numero(op.id) > e.contadores.OP || e.operacoes.some((executada) => executada.id === op.id)) return invalido("id da pendente inválido");
+    if (op.criada_na_versao > e.versao) return invalido("pendente criada no futuro");
+    if (!destinoPermitido(op.destino)) return invalido("destino da pendente inválido");
+  }
 
   // Replay das declarações na ordem.
   let cena = cenaBase(persona);

@@ -589,7 +589,7 @@ describe("B4 · Conversa", () => {
         id: "OP1",
         valor_centavos: 30000,
         destino: "SEP",
-        criada_na_versao: 1,
+        criada_na_versao: 0,
       },
       contadores: { D: 1, H: 1, OP: 1 },
     };
