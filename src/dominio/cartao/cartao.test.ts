@@ -5,6 +5,15 @@ import { calcularCenarios, criarHipotese, registrarDeclaracao } from "@/dominio/
 import { CONTEXTO, P1, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
 
 describe("B1b · cartão e caixa", () => {
+  test.each(["alterar_evento", "remover_evento"] as const)("C-01: %s não altera item L0131 da fatura fechada", (operacao) => {
+    const estado = estadoNovo(P1);
+    const antes = structuredClone(estado);
+    const alteracao: Alteracao = operacao === "alterar_evento" ? { operacao, evento_id: "L0131", valor: "10" } : { operacao, evento_id: "L0131" };
+    const d = registrarDeclaracao(P1, estado, alteracao, origem());
+    const h = criarHipotese(P1, estado, { nome: "Item fechado", a_partir_de: "atual", alteracoes: [alteracao] }, origem());
+    expect([d.ok ? "ok" : d.erro.codigo, h.ok ? "ok" : h.erro.codigo]).toEqual(["OPERACAO_NAO_PERMITIDA", "OPERACAO_NAO_PERMITIDA"]);
+    expect(estado).toEqual(antes);
+  });
   test("CR-21: compra 1.000 em 3x tem resto na primeira parcela e cruza o ano", () => {
     const r = alocarCompra(P1, estadoNovo(P1), { data: "2026-10-30", valor_centavos: reaisDaSpec("1.000"), parcelas: 3 });
     if (!r.ok) throw new Error(r.erro.mensagem);

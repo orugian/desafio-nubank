@@ -126,7 +126,8 @@ function validar(persona: Persona, estado: EstadoSessao, cena: Cena, alt: Altera
   if (alt.operacao === "alterar_evento" || alt.operacao === "remover_evento") {
     const alvo = cena.eventos.find((e) => e.id === alt.evento_id);
     const intocavel = /^G\d+$/.test(alt.evento_id) || /^OP\d+$/.test(alt.evento_id) || alvo?.especie === "fatura" || alvo?.especie === "bloco" || alvo?.especie === "operacao";
-    if (intocavel) {
+    const itemFechado = persona.cartao?.faturas.some((f) => f.status === "fechada" && (f.id === alt.evento_id || f.itens.some((i) => i.lancamento_id === alt.evento_id)));
+    if (intocavel || itemFechado) {
       return falha(
         "OPERACAO_NAO_PERMITIDA",
         ["evento_id"],

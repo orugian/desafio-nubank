@@ -71,7 +71,7 @@ export const P1: Persona = esquemaPersona.parse({
         valor_centavos: 70000,
         itens: [
           { descricao: "Celular", valor_centavos: 15000, parcelamento_id: "PC1", parcela: "5/10" },
-          { data: "2026-10-17", descricao: "Mercado", valor_centavos: 32000 },
+          { lancamento_id: "L0131", data: "2026-10-17", descricao: "Mercado", valor_centavos: 32000 },
           { data: "2026-10-24", descricao: "Restaurante", valor_centavos: 23000 },
         ],
       },
