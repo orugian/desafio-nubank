@@ -190,6 +190,9 @@ function aplicar(cena: Cena, alt: Alteracao, id: string, camada: Camada, indice:
   if (alt.operacao === "definir_ordem_no_dia") {
     return { ...cena, entradas_primeiro: [...new Set([...cena.entradas_primeiro, alt.data])] };
   }
+  if (alt.operacao === "alterar_gasto_diario") {
+    return { ...cena, gasto_diario_centavos: paraCentavos(alt.valor_por_dia) };
+  }
   return cena;
 }
 

@@ -469,3 +469,136 @@ describe("B1 · motor de caixa · P3", () => {
     expect(h1.datas_ordem_relevante).toEqual([]);
   });
 });
+
+
+// Linha da tabela da spec §11: "Mín. (data) | Falta | Insuf. | Margem | Final | Sem receb.: insuf. · falta · final".
+type Falta = [string, string, string[]] | null;
+function conferirLinhaDaSpec(
+  c: ResultadoCenario,
+  spec: {
+    saldos: string;
+    minimo: [string, string];
+    falta: Falta;
+    insuf: string;
+    margem: string;
+    final: string;
+    sem: [string, Falta, string] | null;
+    avisos: string[];
+    ordem: string[];
+  },
+) {
+  const falta = (f: Falta) => (f ? { data: f[0], valor_descoberto_centavos: reaisDaSpec(f[1]), saidas_do_dia: f[2] } : null);
+  expect(saldos(c)).toEqual(saldosDaSpec(spec.saldos));
+  expect(c.indicadores).toEqual({
+    saldo_inicial_centavos: c.indicadores?.saldo_inicial_centavos,
+    saldo_minimo_centavos: reaisDaSpec(spec.minimo[0]),
+    data_saldo_minimo: spec.minimo[1],
+    primeira_falta: falta(spec.falta),
+    insuficiencia_centavos: reaisDaSpec(spec.insuf),
+    margem_hoje_centavos: reaisDaSpec(spec.margem),
+    saldo_final_centavos: reaisDaSpec(spec.final),
+    sem_recebimentos: spec.sem
+      ? { insuficiencia_centavos: reaisDaSpec(spec.sem[0]), primeira_falta: falta(spec.sem[1]), saldo_final_centavos: reaisDaSpec(spec.sem[2]) }
+      : null,
+  });
+  expect(c.avisos).toEqual(spec.avisos);
+  expect(c.datas_ordem_relevante).toEqual(spec.ordem);
+}
+
+const R11 = "saldo_final_positivo_com_falta";
+const MAIOR = "falta_maior_sem_recebimento";
+const DEPENDE = "cobertura_depende_de_recebimento";
+
+describe("B1 · tabelas de P2 e P3 (spec §11.2, §11.3)", () => {
+  const separar300 = (estado: EstadoSessao) => {
+    const h = criarHipotese(P2, estado, { nome: "Separar R$ 300 hoje", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "300" }] }, origem("m-1"));
+    if (!h.ok) throw new Error(h.erro.mensagem);
+    return h.estado;
+  };
+
+  test("CR-12: D1 gasto diário 10", () => {
+    const d = registrarDeclaracao(P2, estadoNovo(P2), { operacao: "alterar_gasto_diario", valor_por_dia: "10" }, origem("m-1"));
+    if (!d.ok) throw new Error(d.erro.mensagem);
+    const [atual] = calcularCenarios(P2, d.estado, CONTEXTO);
+    conferirLinhaDaSpec(atual, {
+      saldos: "G1 830 · E1 710 · G2 640 · E2 −460 · E3 1.040 · E4 860 · G3 790 · G4 720 · E5 320 · G5 290",
+      minimo: ["−460", "2026-11-08"],
+      falta: ["2026-11-08", "460", ["E2"]],
+      insuf: "460",
+      margem: "0",
+      final: "290",
+      sem: ["1.210", ["2026-11-08", "460", ["E2"]], "−1.210"],
+      avisos: [R11, MAIOR],
+      ordem: ["2026-11-08"],
+    });
+  });
+
+  test("CR-10: H1 separar 300 hoje sobre CR-09", () => {
+    const [, h1] = calcularCenarios(P2, separar300(estadoNovo(P2)), CONTEXTO);
+    conferirLinhaDaSpec(h1, {
+      saldos: "G1 795 · H1.1 495 · E1 375 · G2 270 · E2 −830 · E3 670 · E4 490 · G3 385 · G4 280 · E5 −120 · G5 −165",
+      minimo: ["−830", "2026-11-08"],
+      falta: ["2026-11-08", "830", ["E2"]],
+      insuf: "830",
+      margem: "0",
+      final: "−165",
+      sem: ["1.665", ["2026-11-08", "830", ["E2"]], "−1.665"],
+      avisos: [MAIOR],
+      ordem: ["2026-11-08"],
+    });
+  });
+
+  test("CR-11: H2 a partir de H1 + E3 em 07/11", () => {
+    const h2 = criarHipotese(P2, separar300(estadoNovo(P2)), { nome: "Cliente paga no dia 7", a_partir_de: "H1", alteracoes: [{ operacao: "alterar_evento", evento_id: "E3", data: "2026-11-07" }] }, origem("m-2"));
+    if (!h2.ok) throw new Error(h2.erro.mensagem);
+    const [, , c] = calcularCenarios(P2, h2.estado, CONTEXTO);
+    conferirLinhaDaSpec(c, {
+      saldos: "G1 795 · H2.1 495 · E1 375 · G2 270 · E3 1.770 · E2 670 · E4 490 · G3 385 · G4 280 · E5 −120 · G5 −165",
+      minimo: ["−165", "2026-11-27"],
+      falta: ["2026-11-25", "120", ["E5"]],
+      insuf: "165",
+      margem: "0",
+      final: "−165",
+      sem: ["1.665", ["2026-11-08", "830", ["E2"]], "−1.665"],
+      avisos: [MAIOR],
+      ordem: [],
+    });
+  });
+
+  test("CR-13: situação atual de P3", () => {
+    const [atual] = calcularCenarios(P3, estadoNovo(P3), CONTEXTO);
+    conferirLinhaDaSpec(atual, {
+      saldos: "G1 2.430 · E1 1.530 · E2 280 · G2 210 · G3 140 · E3 4.340 · E4 3.040 · G4 2.970 · G5 2.940 · E5 2.290",
+      minimo: ["140", "2026-11-13"],
+      falta: null,
+      insuf: "0",
+      margem: "140",
+      final: "2.290",
+      sem: ["1.910", ["2026-11-18", "1.160", ["E4"]], "−1.910"],
+      avisos: [DEPENDE],
+      ordem: [],
+    });
+  });
+
+  test("CR-14: H1 conserto 800 Pix em 06/11", () => {
+    const h = criarHipotese(
+      P3,
+      estadoNovo(P3),
+      { nome: "Conserto do carro", a_partir_de: "atual", alteracoes: [{ operacao: "adicionar_evento", tipo: "saida", descricao: "Conserto do carro", data: "2026-11-06", valor: "800", meio: "pix" }] },
+      origem("m-1"),
+    );
+    if (!h.ok) throw new Error(h.erro.mensagem);
+    const [, h1] = calcularCenarios(P3, h.estado, CONTEXTO);
+    conferirLinhaDaSpec(h1, {
+      saldos: "G1 2.430 · E1 1.530 · E2 280 · G2 210 · H1.1 −590 · G3 −660 · E3 3.540 · E4 2.240 · G4 2.170 · G5 2.140 · E5 1.490",
+      minimo: ["−660", "2026-11-13"],
+      falta: ["2026-11-06", "590", ["G2", "H1.1"]],
+      insuf: "660",
+      margem: "0",
+      final: "1.490",
+      sem: ["2.710", ["2026-11-06", "590", ["G2", "H1.1"]], "−2.710"],
+      avisos: [R11, MAIOR],
+      ordem: [],
+    });
+  });
+});
