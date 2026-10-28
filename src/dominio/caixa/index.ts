@@ -71,9 +71,10 @@ export function paraCentavos(valor: string): number {
 }
 
 type Cena = { eventos: Evento[] };
+type Camada = "declaracao" | "hipotese";
 
-/** Aplica uma alteração de hipótese sobre a cena. */
-function aplicarNaHipotese(cena: Cena, alt: Alteracao, id: string, indice: number): Cena {
+/** Aplica uma alteração (declaração ou hipótese) sobre a cena. */
+function aplicar(cena: Cena, alt: Alteracao, id: string, camada: Camada, indice: number): Cena {
   if (alt.operacao === "separar") {
     const valor = paraCentavos(alt.valor);
     const evento: Evento = {
@@ -82,12 +83,12 @@ function aplicarNaHipotese(cena: Cena, alt: Alteracao, id: string, indice: numbe
       descricao: `Separar ${formatarReais(valor)}`,
       tipo: "saida",
       meio: "simulacao",
-      origem: "hipotese",
+      origem: camada,
       estimativa: null,
       previsto: false,
       valor_centavos: valor,
       original: null,
-      cadastro: cadastro("hipotese", indice),
+      cadastro: cadastro(camada, indice),
       bloco: false,
     };
     return { eventos: [...cena.eventos, evento] };
@@ -101,13 +102,20 @@ function aplicarNaHipotese(cena: Cena, alt: Alteracao, id: string, indice: numbe
               ...e,
               data: alt.data ?? e.data,
               valor_centavos: alt.valor !== undefined ? paraCentavos(alt.valor) : e.valor_centavos,
-              origem: "hipotese",
+              origem: camada,
               original: e.original ?? (e.origem === "dados_base" ? { data: e.data, valor_centavos: e.valor_centavos } : null),
             },
       ),
     };
   }
   return cena;
+}
+
+function situacaoAtual(persona: Persona, estado: EstadoSessao): Cena {
+  return estado.declaracoes.reduce(
+    (c, d, k) => aplicar(c, d.alteracao, d.id, "declaracao", k),
+    { eventos: eventosBase(persona) } as Cena,
+  );
 }
 
 function resultado(cenario_id: string, nome: string, cena: Cena, saldoInicial: number): ResultadoCenario {
@@ -128,9 +136,9 @@ function resultado(cenario_id: string, nome: string, cena: Cena, saldoInicial: n
 export function calcularCenarios(persona: Persona, estado: EstadoSessao, contexto: Contexto): ResultadoCenario[] {
   void contexto;
   const saldo = persona.conta.saldo_inicio_hoje_centavos;
-  const atual: Cena = { eventos: eventosBase(persona) };
+  const atual = situacaoAtual(persona, estado);
   const hipoteses = estado.hipoteses.map((h) => {
-    const cena = h.alteracoes.reduce((c, a, k) => aplicarNaHipotese(c, a.alteracao, a.id, k), atual);
+    const cena = h.alteracoes.reduce((c, a, k) => aplicar(c, a.alteracao, a.id, "hipotese", k), atual);
     return resultado(h.id, h.nome, cena, saldo);
   });
   return [resultado("atual", textos.rotulos.situacao_atual, atual, saldo), ...hipoteses];
@@ -143,8 +151,20 @@ export function registrarDeclaracao(
   alteracao: Alteracao,
   origem: Origem,
 ): ResultadoDominio<{ estado: EstadoSessao; declaracao_id: string }> {
-  void persona, estado, alteracao, origem;
-  throw new Error("não implementado");
+  void persona;
+  const v = validarArgumentos("registrar_declaracao", { alteracao });
+  if (!v.ok) return { ok: false, erro: v.erro };
+  const n = estado.contadores.D + 1;
+  const declaracao_id = `D${n}`;
+  return {
+    ok: true,
+    declaracao_id,
+    estado: {
+      ...estado,
+      declaracoes: [...estado.declaracoes, { id: declaracao_id, mensagem_id: origem.mensagem_id, alteracao: v.argumentos.alteracao }],
+      contadores: { ...estado.contadores, D: n },
+    },
+  };
 }
 
 /** Hipótese sobre a situação atual ou sobre outra hipótese, com cópia renumerada (§4.5). */

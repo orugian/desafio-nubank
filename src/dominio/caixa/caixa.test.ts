@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { calcularCenarios, criarHipotese } from "@/dominio/caixa";
+import { calcularCenarios, criarHipotese, registrarDeclaracao } from "@/dominio/caixa";
 import { CONTEXTO, P1, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "./testes/personas";
 import type { ResultadoCenario } from "@/contratos";
 
@@ -110,5 +110,83 @@ describe("B1 · motor de caixa · P1", () => {
       },
     });
     expect(cH2.avisos).toEqual(["cobertura_depende_de_recebimento"]);
+  });
+
+  describe("declarações sobre a situação atual com H1 ativa", () => {
+    const comH1 = () => {
+      const r = criarHipotese(P1, estadoNovo(P1), { nome: "Separar R$ 500 hoje", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500" }] }, origem("m-1"));
+      if (!r.ok) throw new Error(r.erro.mensagem);
+      return r.estado;
+    };
+
+    test("CR-04: D1 contas da casa = 150 recalcula atual e H1 e guarda o original", () => {
+      const r = registrarDeclaracao(P1, comH1(), { operacao: "alterar_evento", evento_id: "C", valor: "150" }, origem("m-2"));
+      expect(r.ok ? "" : r.erro.mensagem).toBe("");
+      if (!r.ok) return;
+      expect(r.declaracao_id).toBe("D1");
+      expect(r.estado.contadores.D).toBe(1);
+      expect(r.estado.declaracoes.map((d) => [d.id, d.mensagem_id])).toEqual([["D1", "m-2"]]);
+
+      const [atual, h1] = calcularCenarios(P1, r.estado, CONTEXTO);
+      expect(saldos(atual)).toEqual(saldosDaSpec("A 1.100 · B 500 · C 350 · R1 3.350"));
+      const c = atual.linhas.find((l) => l.evento_id === "C")!;
+      expect([c.valor_centavos, c.origem, c.original]).toEqual([15000, "declaracao", { data: "2026-11-15", valor_centavos: 20000 }]);
+      expect(atual.indicadores).toMatchObject({
+        saldo_minimo_centavos: reaisDaSpec("350"),
+        data_saldo_minimo: "2026-11-15",
+        primeira_falta: null,
+        insuficiencia_centavos: 0,
+        margem_hoje_centavos: reaisDaSpec("350"),
+        saldo_final_centavos: reaisDaSpec("3.350"),
+        sem_recebimentos: { insuficiencia_centavos: 0, primeira_falta: null, saldo_final_centavos: reaisDaSpec("350") },
+      });
+      expect(atual.avisos).toEqual([]);
+
+      expect(saldos(h1)).toEqual(saldosDaSpec("H1.1 1.300 · A 600 · B 0 · C −150 · R1 2.850"));
+      const falta = { data: "2026-11-15", valor_descoberto_centavos: reaisDaSpec("150"), saidas_do_dia: ["C"] };
+      expect(h1.indicadores).toMatchObject({
+        saldo_minimo_centavos: reaisDaSpec("−150"),
+        data_saldo_minimo: "2026-11-15",
+        primeira_falta: falta,
+        insuficiencia_centavos: reaisDaSpec("150"),
+        margem_hoje_centavos: 0,
+        saldo_final_centavos: reaisDaSpec("2.850"),
+        sem_recebimentos: { insuficiencia_centavos: reaisDaSpec("150"), primeira_falta: falta, saldo_final_centavos: reaisDaSpec("−150") },
+      });
+      expect(h1.avisos).toEqual(["saldo_final_positivo_com_falta"]);
+    });
+
+    test("CR-05: D1 aluguel em 21/11 recalcula atual e H1", () => {
+      const r = registrarDeclaracao(P1, comH1(), { operacao: "alterar_evento", evento_id: "B", data: "2026-11-21" }, origem("m-2"));
+      if (!r.ok) throw new Error(r.erro.mensagem);
+      const [atual, h1] = calcularCenarios(P1, r.estado, CONTEXTO);
+      expect(saldos(atual)).toEqual(saldosDaSpec("A 1.100 · C 900 · R1 3.900 · B 3.300"));
+      expect(atual.indicadores).toMatchObject({
+        saldo_minimo_centavos: reaisDaSpec("900"),
+        data_saldo_minimo: "2026-11-15",
+        primeira_falta: null,
+        insuficiencia_centavos: 0,
+        margem_hoje_centavos: reaisDaSpec("900"),
+        saldo_final_centavos: reaisDaSpec("3.300"),
+        sem_recebimentos: { insuficiencia_centavos: 0, primeira_falta: null, saldo_final_centavos: reaisDaSpec("300") },
+      });
+      expect(atual.avisos).toEqual([]);
+
+      expect(saldos(h1)).toEqual(saldosDaSpec("H1.1 1.300 · A 600 · C 400 · R1 3.400 · B 2.800"));
+      expect(h1.indicadores).toMatchObject({
+        saldo_minimo_centavos: reaisDaSpec("400"),
+        data_saldo_minimo: "2026-11-15",
+        primeira_falta: null,
+        insuficiencia_centavos: 0,
+        margem_hoje_centavos: reaisDaSpec("400"),
+        saldo_final_centavos: reaisDaSpec("2.800"),
+        sem_recebimentos: {
+          insuficiencia_centavos: reaisDaSpec("200"),
+          primeira_falta: { data: "2026-11-21", valor_descoberto_centavos: reaisDaSpec("200"), saidas_do_dia: ["B"] },
+          saldo_final_centavos: reaisDaSpec("−200"),
+        },
+      });
+      expect(h1.avisos).toEqual(["cobertura_depende_de_recebimento"]);
+    });
   });
 });
