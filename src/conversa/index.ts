@@ -91,7 +91,26 @@ export async function processarTurno(
       timeout_ms: LIMITES.timeout_chamada_ms,
     });
 
+    if (resp.tipo === "falha") {
+      if (resp.falha === "timeout") {
+        return respostaFalhaTecnica("F-01", estadoEntrada);
+      }
+      if (resp.falha === "cota") {
+        return respostaFalhaTecnica("F-02", estadoEntrada, {
+          espera_segundos: resp.espera_segundos,
+          provedor: deps.provedor.nome,
+        });
+      }
+      if (resp.falha === "indisponivel") {
+        return respostaFalhaTecnica("F-03", estadoEntrada);
+      }
+      return respostaFalhaTecnica("F-04", estadoEntrada);
+    }
+
     if (resp.tipo === "texto") {
+      if (!resp.texto.trim()) {
+        return respostaFalhaTecnica("F-04", estadoEntrada);
+      }
       const mudouDeclaracoes =
         estadoTrabalho.declaracoes.length !== estadoEntrada.declaracoes.length;
       if (mudouDeclaracoes && !cartoes.some((c) => c.tipo === "o_que_mudou")) {
@@ -159,7 +178,7 @@ export async function processarTurno(
         }
 
         if (!ehNomeFerramenta(tc.nome)) {
-          throw new Error(`Ferramenta desconhecida: ${tc.nome}`);
+          return respostaFalhaTecnica("F-04", estadoEntrada);
         }
 
         const exec = deps.executores.ferramentas[tc.nome];

@@ -207,4 +207,92 @@ describe("B4 · Conversa", () => {
       estado: estado0,
     });
   });
+
+  test("4. Timeout → F-01; 429 → F-02; 5xx/rede/chave → F-03; vazia ou ferramenta desconhecida → F-04", async () => {
+    const estado0 = estadoInicial("p1", snapshotTeste);
+
+    const rTimeout = await processarTurno(
+      { estado: estado0, mensagem: { id: "m-t1", texto: "Oi" } },
+      depsBase(provedorSequencial([{ tipo: "falha", falha: "timeout" }])),
+    );
+    expect(esquemaRespostaTurno.parse(rTimeout)).toEqual({
+      status: "falha",
+      falha: {
+        tipo: "F-01",
+        codigo: "TIMEOUT",
+        mensagem: "A assistente não respondeu a tempo. Nada foi alterado.",
+        pode_tentar_novamente: true,
+      },
+      estado: estado0,
+    });
+
+    const rCota = await processarTurno(
+      { estado: estado0, mensagem: { id: "m-t2", texto: "Oi" } },
+      depsBase(provedorSequencial([{ tipo: "falha", falha: "cota", espera_segundos: 60 }])),
+    );
+    expect(esquemaRespostaTurno.parse(rCota)).toEqual({
+      status: "falha",
+      falha: {
+        tipo: "F-02",
+        codigo: "COTA",
+        mensagem:
+          "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em cerca de 1 min.",
+        pode_tentar_novamente: true,
+        espera_segundos: 60,
+      },
+      estado: estado0,
+    });
+
+    const rIndisp = await processarTurno(
+      { estado: estado0, mensagem: { id: "m-t3", texto: "Oi" } },
+      depsBase(provedorSequencial([{ tipo: "falha", falha: "indisponivel" }])),
+    );
+    expect(esquemaRespostaTurno.parse(rIndisp)).toEqual({
+      status: "falha",
+      falha: {
+        tipo: "F-03",
+        codigo: "INDISPONIVEL",
+        mensagem: "A assistente está indisponível no momento.",
+        pode_tentar_novamente: true,
+      },
+      estado: estado0,
+    });
+
+    const rVazia = await processarTurno(
+      { estado: estado0, mensagem: { id: "m-t4", texto: "Oi" } },
+      depsBase(provedorSequencial([{ tipo: "falha", falha: "resposta_invalida" }])),
+    );
+    expect(esquemaRespostaTurno.parse(rVazia)).toEqual({
+      status: "falha",
+      falha: {
+        tipo: "F-04",
+        codigo: "RESPOSTA_INVALIDA",
+        mensagem: "A assistente está indisponível no momento.",
+        pode_tentar_novamente: true,
+      },
+      estado: estado0,
+    });
+
+    const rFerramentaDesconhecida = await processarTurno(
+      { estado: estado0, mensagem: { id: "m-t5", texto: "Oi" } },
+      depsBase(
+        provedorSequencial([
+          {
+            tipo: "chamadas",
+            chamadas: [{ id: "c1", nome: "ferramenta_inventada", argumentos: "{}" }],
+          },
+        ]),
+      ),
+    );
+    expect(esquemaRespostaTurno.parse(rFerramentaDesconhecida)).toEqual({
+      status: "falha",
+      falha: {
+        tipo: "F-04",
+        codigo: "RESPOSTA_INVALIDA",
+        mensagem: "A assistente está indisponível no momento.",
+        pode_tentar_novamente: true,
+      },
+      estado: estado0,
+    });
+  });
 });
