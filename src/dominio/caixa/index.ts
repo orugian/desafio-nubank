@@ -92,6 +92,21 @@ function aplicarNaHipotese(cena: Cena, alt: Alteracao, id: string, indice: numbe
     };
     return { eventos: [...cena.eventos, evento] };
   }
+  if (alt.operacao === "alterar_evento") {
+    return {
+      eventos: cena.eventos.map((e) =>
+        e.id !== alt.evento_id
+          ? e
+          : {
+              ...e,
+              data: alt.data ?? e.data,
+              valor_centavos: alt.valor !== undefined ? paraCentavos(alt.valor) : e.valor_centavos,
+              origem: "hipotese",
+              original: e.original ?? (e.origem === "dados_base" ? { data: e.data, valor_centavos: e.valor_centavos } : null),
+            },
+      ),
+    };
+  }
   return cena;
 }
 
@@ -144,12 +159,20 @@ export function criarHipotese(
   if (!v.ok) return { ok: false, erro: v.erro };
   const n = estado.contadores.H + 1;
   const hipotese_id = `H${n}`;
+  const copiadas =
+    v.argumentos.a_partir_de === "atual"
+      ? []
+      : (estado.hipoteses.find((h) => h.id === v.argumentos.a_partir_de)?.alteracoes ?? []);
+  const todas = [
+    ...copiadas.map((a) => ({ copiado_de: a.id, alteracao: a.alteracao })),
+    ...v.argumentos.alteracoes.map((alteracao) => ({ copiado_de: null, alteracao })),
+  ];
   const hipotese: Hipotese = {
     id: hipotese_id,
     nome: v.argumentos.nome,
     a_partir_de: v.argumentos.a_partir_de,
     mensagem_id: origem.mensagem_id,
-    alteracoes: v.argumentos.alteracoes.map((alteracao, k) => ({ id: `${hipotese_id}.${k + 1}`, copiado_de: null, alteracao })),
+    alteracoes: todas.map((a, k) => ({ id: `${hipotese_id}.${k + 1}`, ...a })),
   };
   return {
     ok: true,

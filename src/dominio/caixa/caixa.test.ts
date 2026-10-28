@@ -68,4 +68,47 @@ describe("B1 · motor de caixa · P1", () => {
     });
     expect(h1.avisos).toEqual(["saldo_final_positivo_com_falta"]);
   });
+
+  test("CR-03: H2 a partir de H1 renumera a cópia (H2.1), move R1 para 09/11 sem duplicar e depende do recebimento", () => {
+    const r1 = criarHipotese(P1, estadoNovo(P1), { nome: "Separar R$ 500 hoje", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500" }] }, origem("m-1"));
+    if (!r1.ok) throw new Error(r1.erro.mensagem);
+    const r2 = criarHipotese(
+      P1,
+      r1.estado,
+      { nome: "Salário no dia 9", a_partir_de: "H1", alteracoes: [{ operacao: "alterar_evento", evento_id: "R1", data: "2026-11-09" }] },
+      origem("m-2"),
+    );
+    expect(r2.ok ? "" : r2.erro.mensagem).toBe("");
+    if (!r2.ok) return;
+    expect(r2.hipotese_id).toBe("H2");
+    const h2 = r2.estado.hipoteses[1];
+    expect(h2.a_partir_de).toBe("H1");
+    expect(h2.alteracoes.map((a) => [a.id, a.copiado_de])).toEqual([
+      ["H2.1", "H1.1"],
+      ["H2.2", null],
+    ]);
+
+    const [atual, cH1, cH2] = calcularCenarios(P1, r2.estado, CONTEXTO);
+    expect(saldos(atual)).toEqual(saldosDaSpec("A 1.100 · B 500 · C 300 · R1 3.300"));
+    expect(saldos(cH1)).toEqual(saldosDaSpec("H1.1 1.300 · A 600 · B 0 (Saldo zerado) · C −200 · R1 2.800"));
+    expect(saldos(cH2)).toEqual(saldosDaSpec("H2.1 1.300 · A 600 · R1 3.600 · B 3.000 · C 2.800"));
+    const r1Linha = cH2.linhas.find((l) => l.evento_id === "R1")!;
+    expect([r1Linha.data, r1Linha.previsto, r1Linha.original]).toEqual(["2026-11-09", true, { data: "2026-11-19", valor_centavos: 300000 }]);
+
+    expect(cH2.indicadores).toEqual({
+      saldo_inicial_centavos: reaisDaSpec("1.800"),
+      saldo_minimo_centavos: reaisDaSpec("600"),
+      data_saldo_minimo: "2026-11-05",
+      primeira_falta: null,
+      insuficiencia_centavos: 0,
+      margem_hoje_centavos: reaisDaSpec("600"),
+      saldo_final_centavos: reaisDaSpec("2.800"),
+      sem_recebimentos: {
+        insuficiencia_centavos: reaisDaSpec("200"),
+        primeira_falta: { data: "2026-11-15", valor_descoberto_centavos: reaisDaSpec("200"), saidas_do_dia: ["C"] },
+        saldo_final_centavos: reaisDaSpec("−200"),
+      },
+    });
+    expect(cH2.avisos).toEqual(["cobertura_depende_de_recebimento"]);
+  });
 });
