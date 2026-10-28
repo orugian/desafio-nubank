@@ -1,8 +1,8 @@
 import { describe, expect, test } from "vitest";
-import { esquemaPropostaMovimentacao } from "@/contratos";
-import { proporMovimentacao } from "@/dominio/operacoes";
-import { calcularCenarios } from "@/dominio/caixa";
-import { CONTEXTO, P1, estadoNovo, reaisDaSpec } from "@/dominio/caixa/testes/personas";
+import { esquemaConfirmacaoMovimentacao, esquemaPropostaMovimentacao } from "@/contratos";
+import { confirmarMovimentacao, proporMovimentacao } from "@/dominio/operacoes";
+import { calcularCenarios, criarHipotese, validarEstado } from "@/dominio/caixa";
+import { CONTEXTO, P1, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
 
 const indicadoresCR02 = () => {
   const falta = { data: "2026-11-15", valor_descoberto_centavos: reaisDaSpec("200"), saidas_do_dia: ["C"] };
@@ -14,6 +14,33 @@ const indicadoresCR02 = () => {
 };
 
 describe("B1c · operações simuladas", () => {
+  test("CR-41: confirmar OP1 registra saída simulada, descarta H1/H2 e deixa saldo disponível 1.300", () => {
+    const h1 = criarHipotese(P1, estadoNovo(P1), { nome: "Separar 500", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500" }] }, origem());
+    if (!h1.ok) throw new Error(h1.erro.mensagem);
+    const h2 = criarHipotese(P1, h1.estado, { nome: "Salário antes", a_partir_de: "H1", alteracoes: [{ operacao: "alterar_evento", evento_id: "R1", data: "2026-11-09" }] }, origem());
+    if (!h2.ok) throw new Error(h2.erro.mensagem);
+    const p = proporMovimentacao(P1, h2.estado, { valor: "500", destino: "INV9" }, CONTEXTO);
+    if (!p.ok) throw new Error(p.erro.mensagem);
+    const antes = structuredClone(p.estado);
+    const r = confirmarMovimentacao(P1, p.estado, "OP1");
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.operacao).toEqual({ id: "OP1", valor_centavos: reaisDaSpec("500"), destino: "INV9", data: "2026-10-30" });
+    expect(r.estado.operacoes).toEqual([r.operacao]);
+    expect(r.estado.operacao_pendente).toBeNull();
+    expect(r.estado.hipoteses).toEqual([]);
+    expect(r.hipoteses_descartadas).toEqual(["H1", "H2"]);
+    expect(r.estado.contadores).toEqual({ D: 0, H: 2, OP: 1 });
+    expect(r.saldo_disponivel_hoje_centavos).toBe(reaisDaSpec("1.300"));
+    const [atual, ...outros] = calcularCenarios(P1, r.estado, CONTEXTO);
+    expect(outros).toEqual([]);
+    expect(atual.linhas.map((l) => [l.evento_id, l.saldo_apos_centavos])).toEqual(saldosDaSpec("OP1 1.300 · A 600 · B 0 · C −200 · R1 2.800"));
+    expect(atual.linhas[0]).toMatchObject({ meio: "movimentacao_interna", origem: "operacao", descricao: "Movimentação simulada para Caixinha Viagem" });
+    expect(atual.indicadores).toEqual(indicadoresCR02());
+    expect(esquemaConfirmacaoMovimentacao.safeParse(r).success).toBe(true);
+    expect(validarEstado(P1, r.estado, CONTEXTO)).toEqual({ ok: true });
+    expect(p.estado).toEqual(antes);
+  });
   test("CR-40: proposta de guardar 500 na Viagem cria OP1 pendente, impacto de CR-02 e alerta de falta", () => {
     const estado = estadoNovo(P1);
     const antes = structuredClone(estado);

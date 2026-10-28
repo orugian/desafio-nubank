@@ -50,8 +50,16 @@ export function confirmarMovimentacao(
   estado: EstadoSessao,
   operacao_id: string,
 ): ResultadoDominio<{ estado: EstadoSessao } & ConfirmacaoMovimentacao> {
-  void persona, estado, operacao_id;
-  throw new Error("não implementado");
+  const v = validarArgumentos("confirmar_movimentacao", { operacao_id });
+  if (!v.ok) return v;
+  if (estado.operacoes.some((op) => op.id === operacao_id)) return erro("OPERACAO_JA_EXECUTADA", textos.erros.OPERACAO_JA_EXECUTADA, ["operacao_id"]);
+  const pendente = estado.operacao_pendente;
+  if (!pendente || pendente.id !== operacao_id) return erro("OPERACAO_EXPIRADA", textos.erros.OPERACAO_EXPIRADA, ["operacao_id"]);
+  const posicao = persona.posicoes.find((p) => p.id === pendente.destino);
+  if (!posicao) return erro("POSICAO_INEXISTENTE", textos.erros.POSICAO_INEXISTENTE, ["destino"]);
+  const operacao = { id: pendente.id, valor_centavos: pendente.valor_centavos, destino: pendente.destino, data: HOJE };
+  const novo = { ...estado, operacoes: [...estado.operacoes, operacao], hipoteses: [], operacao_pendente: null };
+  return { ok: true, estado: novo, operacao, destino: destinoDaPosicao(posicao), hipoteses_descartadas: estado.hipoteses.map((h) => h.id), saldo_disponivel_hoje_centavos: saldoDisponivelHoje(persona, novo) };
 }
 
 /** Zera a pendente e não muda mais nada. */
