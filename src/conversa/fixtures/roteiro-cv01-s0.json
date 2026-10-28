@@ -1,0 +1,24 @@
+{
+  "descricao": "M1 tracer bullet: repete a chamada gravada no S0 (minimaxai/minimax-m3.1-flash) para CV-01 e o texto real obtido no M1.",
+  "turnos": [
+    {
+      "mensagem": "Posso separar R$ 500 hoje para minha viagem?",
+      "respostas": [
+        {
+          "tipo": "chamadas",
+          "chamadas": [
+            {
+              "id": "call-22257aab-41c5-4d44-8f42-322df89b74dd",
+              "nome": "criar_hipotese",
+              "argumentos": "{\"nome\":\"Separar R$ 500 para viagem\",\"a_partir_de\":\"atual\",\"alteracoes\":[{\"operacao\":\"separar\",\"valor\":\"500.00\",\"data\":\"2026-10-30\"}]}"
+            }
+          ]
+        },
+        {
+          "tipo": "texto",
+          "texto": "A simulação mostra que separar R$ 500 hoje deixa a margem disponível em R$ 0.\n\nSem o recebimento previsto do salário, falta de R$ 200 em 15/11/2026, na data das contas da casa.\n\nO saldo final projetado é de R$ 2.800, mas isso considera o salário previsto. Nada foi movimentado de verdade."
+        }
+      ]
+    }
+  ]
+}
