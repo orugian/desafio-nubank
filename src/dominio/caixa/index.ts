@@ -1,21 +1,124 @@
-// Motor de caixa (spec §5.1, §6.1). Implementação no B1.
+// Motor de caixa (spec §5.1, §6.1).
 
-import type {
-  Alteracao,
-  Contexto,
-  EntradaComparacao,
-  EstadoSessao,
-  OQueMudou,
-  Origem,
-  Persona,
-  ResultadoCenario,
-  ResultadoDominio,
+import {
+  FIM_JANELA,
+  HOJE,
+  formatarReais,
+  textos,
+  validarArgumentos,
+  type Alteracao,
+  type Contexto,
+  type EntradaComparacao,
+  type EstadoSessao,
+  type Hipotese,
+  type OQueMudou,
+  type Origem,
+  type Persona,
+  type ResultadoCenario,
+  type ResultadoDominio,
 } from "@/contratos";
+import { projetar, type Evento } from "./projecao";
+
+// Ordem de cadastro (R-05, §4.5): compromissos, blocos, declarações, operações, hipóteses.
+const GRUPO = { compromisso: 0, bloco: 1, declaracao: 2, operacao: 3, hipotese: 4 } as const;
+const cadastro = (grupo: keyof typeof GRUPO, indice: number) => GRUPO[grupo] * 10_000 + indice;
+
+/** Dados-base: fatura fechada derivada (§4.1) e compromissos da persona na janela. */
+function eventosBase(persona: Persona): Evento[] {
+  const eventos: Evento[] = [];
+  for (const f of persona.cartao?.faturas ?? []) {
+    if (f.status === "fechada" && f.vencimento >= HOJE && f.vencimento <= FIM_JANELA) {
+      eventos.push({
+        id: f.id,
+        data: f.vencimento,
+        descricao: "Fatura do cartão",
+        tipo: "saida",
+        meio: "debito",
+        origem: "dados_base",
+        estimativa: null,
+        previsto: false,
+        valor_centavos: f.valor_centavos,
+        original: null,
+        cadastro: cadastro("compromisso", eventos.length),
+        bloco: false,
+      });
+    }
+  }
+  for (const c of persona.compromissos) {
+    if (c.data < HOJE || c.data > FIM_JANELA) continue;
+    eventos.push({
+      id: c.id,
+      data: c.data,
+      descricao: c.descricao,
+      tipo: c.tipo,
+      meio: c.meio,
+      origem: "dados_base",
+      estimativa: c.estimativa,
+      previsto: c.previsto,
+      valor_centavos: c.valor_centavos,
+      original: null,
+      cadastro: cadastro("compromisso", eventos.length),
+      bloco: false,
+    });
+  }
+  return eventos;
+}
+
+/** Texto `^\d{1,7}(\.\d{1,2})?$` → centavos, sem ponto flutuante. */
+export function paraCentavos(valor: string): number {
+  const [reais, cent = ""] = valor.split(".");
+  return Number(reais) * 100 + Number(cent.padEnd(2, "0"));
+}
+
+type Cena = { eventos: Evento[] };
+
+/** Aplica uma alteração de hipótese sobre a cena. */
+function aplicarNaHipotese(cena: Cena, alt: Alteracao, id: string, indice: number): Cena {
+  if (alt.operacao === "separar") {
+    const valor = paraCentavos(alt.valor);
+    const evento: Evento = {
+      id,
+      data: alt.data ?? HOJE,
+      descricao: `Separar ${formatarReais(valor)}`,
+      tipo: "saida",
+      meio: "simulacao",
+      origem: "hipotese",
+      estimativa: null,
+      previsto: false,
+      valor_centavos: valor,
+      original: null,
+      cadastro: cadastro("hipotese", indice),
+      bloco: false,
+    };
+    return { eventos: [...cena.eventos, evento] };
+  }
+  return cena;
+}
+
+function resultado(cenario_id: string, nome: string, cena: Cena, saldoInicial: number): ResultadoCenario {
+  const p = projetar(cena.eventos, saldoInicial, new Set());
+  return {
+    cenario_id,
+    nome,
+    status: "calculado",
+    linhas: p.linhas,
+    indicadores: p.indicadores,
+    faturas_afetadas: [],
+    datas_ordem_relevante: p.datas_ordem_relevante,
+    avisos: p.avisos,
+  };
+}
 
 /** Situação atual primeiro, depois as hipóteses ativas na ordem do estado. */
 export function calcularCenarios(persona: Persona, estado: EstadoSessao, contexto: Contexto): ResultadoCenario[] {
-  void persona, estado, contexto;
-  throw new Error("não implementado");
+  void contexto;
+  const saldo = persona.conta.saldo_inicio_hoje_centavos;
+  const atual: Cena = { eventos: eventosBase(persona) };
+  const hipoteses = estado.hipoteses.map((h) => {
+    const cena = h.alteracoes.reduce((c, a, k) => aplicarNaHipotese(c, a.alteracao, a.id, k), atual);
+    return resultado(h.id, h.nome, cena, saldo);
+  });
+  return [resultado("atual", textos.rotulos.situacao_atual, atual, saldo), ...hipoteses];
 }
 
 /** Declaração altera a situação atual (R-04, R-20). Não muda `versao`. */
@@ -36,8 +139,23 @@ export function criarHipotese(
   entrada: { nome: string; a_partir_de: string; alteracoes: Alteracao[] },
   origem: Origem,
 ): ResultadoDominio<{ estado: EstadoSessao; hipotese_id: string }> {
-  void persona, estado, entrada, origem;
-  throw new Error("não implementado");
+  void persona;
+  const v = validarArgumentos("criar_hipotese", entrada);
+  if (!v.ok) return { ok: false, erro: v.erro };
+  const n = estado.contadores.H + 1;
+  const hipotese_id = `H${n}`;
+  const hipotese: Hipotese = {
+    id: hipotese_id,
+    nome: v.argumentos.nome,
+    a_partir_de: v.argumentos.a_partir_de,
+    mensagem_id: origem.mensagem_id,
+    alteracoes: v.argumentos.alteracoes.map((alteracao, k) => ({ id: `${hipotese_id}.${k + 1}`, copiado_de: null, alteracao })),
+  };
+  return {
+    ok: true,
+    hipotese_id,
+    estado: { ...estado, hipoteses: [...estado.hipoteses, hipotese], contadores: { ...estado.contadores, H: n } },
+  };
 }
 
 /** Remove declaração (`D<n>`) ou hipótese (`H<n>`); o id não é reutilizado. */
