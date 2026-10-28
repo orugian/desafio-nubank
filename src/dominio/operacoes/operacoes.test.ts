@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { esquemaConfirmacaoMovimentacao, esquemaPropostaMovimentacao } from "@/contratos";
 import { cancelarMovimentacao, confirmarMovimentacao, proporMovimentacao } from "@/dominio/operacoes";
-import { calcularCenarios, criarHipotese, registrarDeclaracao, validarEstado } from "@/dominio/caixa";
+import { calcularCenarios, compararCenarios, criarHipotese, registrarDeclaracao, validarEstado } from "@/dominio/caixa";
 import { CONTEXTO, P1, P3, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
 
 const indicadoresCR02 = () => {
@@ -14,6 +14,26 @@ const indicadoresCR02 = () => {
 };
 
 describe("B1c · operações simuladas", () => {
+  test("R-24/CR-40/CR-41: comparação distingue proposta, cancelamento, expiração e hipóteses descartadas", () => {
+    const inicial = estadoNovo(P1);
+    const entrada = (estado: typeof inicial) => ({ estado, cenarios: calcularCenarios(P1, estado, CONTEXTO) });
+    const p = proporMovimentacao(P1, inicial, { valor: "500", destino: "INV9" }, CONTEXTO);
+    if (!p.ok) throw new Error(p.erro.mensagem);
+    expect(compararCenarios(entrada(inicial), entrada(p.estado)).alteracoes.map((a) => [a.tipo, a.id])).toEqual([["operacao_proposta", "OP1"]]);
+    const c = cancelarMovimentacao(p.estado, "OP1");
+    if (!c.ok) throw new Error(c.erro.mensagem);
+    expect(compararCenarios(entrada(p.estado), entrada(c.estado)).alteracoes.map((a) => [a.tipo, a.id])).toEqual([["operacao_cancelada", "OP1"]]);
+    const d = registrarDeclaracao(P1, p.estado, { operacao: "alterar_evento", evento_id: "C", valor: "150" }, origem());
+    if (!d.ok) throw new Error(d.erro.mensagem);
+    expect(compararCenarios(entrada(p.estado), entrada(d.estado)).alteracoes.map((a) => a.tipo)).toEqual(["declaracao_registrada", "operacao_expirada"]);
+    const h = criarHipotese(P1, p.estado, { nome: "Separar", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500" }] }, origem());
+    if (!h.ok) throw new Error(h.erro.mensagem);
+    const r = confirmarMovimentacao(P1, h.estado, "OP1");
+    if (!r.ok) throw new Error(r.erro.mensagem);
+    const mudou = compararCenarios(entrada(h.estado), entrada(r.estado));
+    expect(mudou.alteracoes.map((a) => [a.tipo, a.id])).toEqual([["hipotese_descartada", "H1"], ["operacao_executada", "OP1"]]);
+    expect(mudou.cenarios[0].diferencas).toContainEqual({ indicador: "insuficiencia_centavos", antes: 0, depois: reaisDaSpec("200") });
+  });
   test("O-06: cancelar OP1 zera só a pendente e o id não é reutilizado", () => {
     const p = proporMovimentacao(P1, estadoNovo(P1), { valor: "500", destino: "INV9" }, CONTEXTO);
     if (!p.ok) throw new Error(p.erro.mensagem);

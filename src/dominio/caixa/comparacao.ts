@@ -67,13 +67,27 @@ export function comparar(antes: EntradaComparacao, depois: EntradaComparacao): O
   for (const d of antes.estado.declaracoes) {
     if (!idsDepois.has(d.id)) alteracoes.push({ tipo: "declaracao_desfeita", id: d.id, descricao: descreverDeclaracao(d, atualDepois, atualAntes) });
   }
+  const novasOperacoes = depois.estado.operacoes.filter((op) => !antes.estado.operacoes.some((a) => a.id === op.id));
   const hipAntes = new Set(antes.estado.hipoteses.map((h) => h.id));
   const hipDepois = new Set(depois.estado.hipoteses.map((h) => h.id));
   for (const h of depois.estado.hipoteses) {
     if (!hipAntes.has(h.id)) alteracoes.push({ tipo: "hipotese_criada", id: h.id, descricao: h.nome });
   }
   for (const h of antes.estado.hipoteses) {
-    if (!hipDepois.has(h.id)) alteracoes.push({ tipo: "hipotese_desfeita", id: h.id, descricao: h.nome });
+    if (!hipDepois.has(h.id)) alteracoes.push({ tipo: novasOperacoes.length ? "hipotese_descartada" : "hipotese_desfeita", id: h.id, descricao: novasOperacoes.length ? `${h.nome}: descartada porque a situação atual mudou.` : h.nome });
+  }
+
+  for (const op of novasOperacoes) {
+    alteracoes.push({ tipo: "operacao_executada", id: op.id, descricao: `Movimentação simulada: ${formatarReais(op.valor_centavos)} para ${op.destino}.` });
+  }
+  const pendenteAntes = antes.estado.operacao_pendente;
+  const pendenteDepois = depois.estado.operacao_pendente;
+  if (pendenteAntes && pendenteAntes.id !== pendenteDepois?.id && !novasOperacoes.some((op) => op.id === pendenteAntes.id)) {
+    const mudouAtual = JSON.stringify(antes.estado.declaracoes) !== JSON.stringify(depois.estado.declaracoes) || novasOperacoes.length > 0 || pendenteDepois !== null;
+    alteracoes.push({ tipo: mudouAtual ? "operacao_expirada" : "operacao_cancelada", id: pendenteAntes.id, descricao: `Proposta ${pendenteAntes.id} ${mudouAtual ? "expirada" : "cancelada"}.` });
+  }
+  if (pendenteDepois && pendenteDepois.id !== pendenteAntes?.id) {
+    alteracoes.push({ tipo: "operacao_proposta", id: pendenteDepois.id, descricao: `Proposta de movimentação simulada: ${formatarReais(pendenteDepois.valor_centavos)} para ${pendenteDepois.destino}.` });
   }
 
   const porIdAntes = new Map(antes.cenarios.map((c) => [c.cenario_id, c]));
