@@ -494,4 +494,129 @@ describe("B4 · Conversa", () => {
       expect(okCancelar.estado.operacoes).toEqual([]);
     }
   });
+
+  test("10. CPF, cartão, e-mail ou telefone são recusados antes de chamar o provedor (D-20)", async () => {
+    const estado0 = estadoInicial("p1", snapshotTeste);
+    let chamadas = 0;
+    const provedorEspiao: Provedor = {
+      nome: "roteirizado",
+      modelo: "teste",
+      async gerar() {
+        chamadas += 1;
+        return { tipo: "texto", texto: "Nunca deve chamar" };
+      },
+    };
+
+    const entradasSensiveis = [
+      "Meu CPF é 123.456.789-01, pode conferir?",
+      "Meu cartão é 4532 1122 3344 5566.",
+      "Manda no meu e-mail bia.teste@exemplo.com.br",
+      "Me liga no (11) 98765-4321 por favor",
+    ];
+
+    for (const [i, texto] of entradasSensiveis.entries()) {
+      const res = await processarTurno(
+        { estado: estado0, mensagem: { id: `m-pii-${i}`, texto } },
+        depsBase(provedorEspiao),
+      );
+      expect(res.status).toBe("falha");
+      if (res.status === "falha") {
+        expect(res.falha.codigo).toBe("DADOS_PESSOAIS_RECUSADOS");
+        expect(res.estado).toEqual(estado0);
+      }
+    }
+    expect(chamadas).toBe(0);
+  });
+
+  test("11 e 12. instrucoes.md lido a cada turno com IN-01..IN-16; contexto determinístico contém ids, origens, estimativas, hipóteses, operação pendente e datas_ordem_relevante sem histórico bruto", async () => {
+    const { lerInstrucoes } = await import("./config");
+    const textoArquivo = await lerInstrucoes();
+    for (let i = 1; i <= 16; i++) {
+      const codigo = `IN-${String(i).padStart(2, "0")}`;
+      expect(textoArquivo).toContain(codigo);
+    }
+
+    let leiturasInstrucoes = 0;
+    const capturadas: MensagemProvedor[][] = [];
+    const provedor = provedorSequencial(
+      [
+        { tipo: "texto", texto: "Resposta turno 1." },
+        { tipo: "texto", texto: "Resposta turno 2." },
+      ],
+      capturadas,
+    );
+
+    const deps: DepsConversa = {
+      ...depsBase(provedor),
+      instrucoes: async () => {
+        leiturasInstrucoes += 1;
+        return `${textoArquivo}\nLeitura #${leiturasInstrucoes}`;
+      },
+    };
+
+    const estadoComDados = {
+      ...estadoInicial("p1", snapshotTeste),
+      declaracoes: [
+        {
+          id: "D1",
+          mensagem_id: "m-ant",
+          alteracao: {
+            operacao: "adicionar_evento" as const,
+            tipo: "entrada" as const,
+            descricao: "Pix cliente",
+            data: "2026-11-10",
+            valor: "500",
+            meio: "pix" as const,
+          },
+        },
+      ],
+      hipoteses: [
+        {
+          id: "H1",
+          nome: "Separar R$ 500 hoje",
+          a_partir_de: "atual" as const,
+          mensagem_id: "m-ant2",
+          alteracoes: [
+            {
+              id: "H1.1",
+              copiado_de: null,
+              alteracao: { operacao: "separar" as const, valor: "500", data: "2026-10-30" },
+            },
+          ],
+        },
+      ],
+      operacao_pendente: {
+        id: "OP1",
+        valor_centavos: 30000,
+        destino: "SEP",
+        criada_na_versao: 1,
+      },
+      contadores: { D: 1, H: 1, OP: 1 },
+    };
+
+    await processarTurno(
+      { estado: estadoComDados, mensagem: { id: "m-ctx-1", texto: "Resumo?" } },
+      deps,
+    );
+    await processarTurno(
+      { estado: estadoComDados, mensagem: { id: "m-ctx-2", texto: "De novo?" } },
+      deps,
+    );
+
+    expect(leiturasInstrucoes).toBe(2);
+    const sistema1 = capturadas[0]?.find((m) => m.papel === "sistema")?.conteudo ?? "";
+    const sistema2 = capturadas[1]?.find((m) => m.papel === "sistema")?.conteudo ?? "";
+    expect(sistema1).toContain("Leitura #1");
+    expect(sistema2).toContain("Leitura #2");
+
+    expect(sistema1).toContain('"evento_id":"A"');
+    expect(sistema1).toContain('"origem":"dados_base"');
+    expect(sistema1).toContain('"origem":"declaracao"');
+    expect(sistema1).toContain('"estimativa"');
+    expect(sistema1).toContain('"hipoteses"');
+    expect(sistema1).toContain('"operacao_pendente"');
+    expect(sistema1).toContain('"OP1"');
+    expect(sistema1).toContain('"datas_ordem_relevante":["2026-11-10"]');
+    expect(sistema1).not.toContain('"historico"');
+  });
 });

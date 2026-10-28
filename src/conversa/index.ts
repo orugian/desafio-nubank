@@ -2,12 +2,15 @@
 
 import {
   CODIGOS_FALHA_TECNICA,
+  FIM_JANELA,
+  HOJE,
   LIMITES,
   definicoesFerramentas,
   ehNomeFerramenta,
   textos,
   type AvisoTurno,
   type CartaoResposta,
+  type Contexto,
   type DepsConversa,
   type EstadoSessao,
   type ItemRastro,
@@ -19,6 +22,107 @@ import {
   type RespostaTurno,
   type TipoFalha,
 } from "@/contratos";
+import { carregarPersona } from "@/dados";
+import { criarCalendario } from "@/dominio/calendario";
+import { calcularCenarios } from "@/dominio/caixa";
+import cdiJson from "../../dados/mercado/cdi.json";
+import btcJson from "../../dados/mercado/fechamentos-BTC.json";
+import petr4Json from "../../dados/mercado/fechamentos-PETR4.json";
+
+const contextoDominio: Contexto = {
+  series: {
+    cdi: cdiJson,
+    fechamentos: {
+      PETR4: petr4Json,
+      BTC: btcJson,
+    },
+  },
+  calendario: criarCalendario(cdiJson),
+};
+
+const REGEX_CPF = /\b\d{3}\.\d{3}\.\d{3}-\d{2}\b|\b\d{11}\b/;
+const REGEX_CARTAO = /\b(?:\d{4}[ -]?){3}\d{4}\b/;
+const REGEX_EMAIL = /\b[^\s@]+@[^\s@]+\.[^\s@]{2,}\b/;
+const REGEX_TELEFONE = /(?:\+?55\s*)?(?:\(\d{2}\)\s*|\b\d{2}\s+)9?\d{4}[-.\s]?\d{4}\b/;
+
+export function contemDadosPessoais(texto: string): boolean {
+  return (
+    REGEX_CPF.test(texto) ||
+    REGEX_CARTAO.test(texto) ||
+    REGEX_EMAIL.test(texto) ||
+    REGEX_TELEFONE.test(texto)
+  );
+}
+
+export function montarContextoDeterministico(
+  estado: EstadoSessao,
+  tela_atual?: string,
+): Record<string, unknown> {
+  const rPersona = carregarPersona(estado.persona_id);
+  if (!rPersona.ok) {
+    return {
+      hoje: HOJE,
+      janela: { de: HOJE, ate: FIM_JANELA },
+      persona_id: estado.persona_id,
+      declaracoes: estado.declaracoes,
+      hipoteses: estado.hipoteses,
+      operacoes: estado.operacoes,
+      operacao_pendente: estado.operacao_pendente,
+      ...(tela_atual ? { tela_atual } : {}),
+    };
+  }
+
+  const persona = rPersona.persona;
+  const cenarios = calcularCenarios(persona, estado, contextoDominio);
+  const cenarioAtual = cenarios[0];
+  const gastoHoje = estado.operacoes
+    .filter((op) => op.data === HOJE)
+    .reduce((acc, op) => acc + op.valor_centavos, 0);
+
+  return {
+    hoje: HOJE,
+    janela: { de: HOJE, ate: FIM_JANELA },
+    ...(tela_atual ? { tela_atual } : {}),
+    persona: { id: persona.id, nome: persona.nome },
+    conta: {
+      saldo_inicio_hoje_centavos: persona.conta.saldo_inicio_hoje_centavos,
+      saldo_disponivel_hoje_centavos: persona.conta.saldo_inicio_hoje_centavos - gastoHoje,
+    },
+    gasto_diario_centavos: persona.gasto_diario.valor_centavos,
+    compromissos: (cenarioAtual?.linhas ?? []).map((l) => ({
+      id: l.evento_id,
+      evento_id: l.evento_id,
+      data: l.data,
+      descricao: l.descricao,
+      tipo: l.tipo,
+      meio: l.meio,
+      valor_centavos: l.valor_centavos,
+      origem: l.origem,
+      previsto: l.previsto,
+      estimativa: l.estimativa,
+    })),
+    posicoes: persona.posicoes.map((p) => ({
+      id: p.id,
+      nome: p.nome,
+      categoria: p.categoria,
+      cdi_pct: "cdi_pct" in p ? p.cdi_pct : null,
+      liquidez: p.liquidez,
+      protecao: p.protecao,
+    })),
+    declaracoes: estado.declaracoes,
+    hipoteses: estado.hipoteses,
+    operacoes: estado.operacoes,
+    operacao_pendente: estado.operacao_pendente,
+    cenarios: cenarios.map((c) => ({
+      cenario_id: c.cenario_id,
+      nome: c.nome,
+      status: c.status,
+      indicadores: c.indicadores,
+      datas_ordem_relevante: c.datas_ordem_relevante,
+      avisos: c.avisos,
+    })),
+  };
+}
 
 function respostaFalhaTecnica(
   tipo: Exclude<TipoFalha, "dominio">,
@@ -60,11 +164,31 @@ function mesclarCartoes(atuais: CartaoResposta[], novos: CartaoResposta[]): Cart
   return resultado;
 }
 
+const FERRAMENTAS_DE_MERCADO = new Set([
+  "consultar_investimentos",
+  "projetar_rendimento",
+  "propor_movimentacao",
+]);
+
 export async function processarTurno(
   req: RequisicaoTurno,
   deps: DepsConversa,
 ): Promise<RespostaTurno> {
   const estadoEntrada = structuredClone(req.estado);
+
+  if (contemDadosPessoais(req.mensagem.texto)) {
+    return {
+      status: "falha",
+      falha: {
+        tipo: "dominio",
+        codigo: "DADOS_PESSOAIS_RECUSADOS",
+        mensagem:
+          "Não envie CPF, número de cartão, e-mail ou telefone. Este é um protótipo com dados fictícios.",
+        pode_tentar_novamente: false,
+      },
+      estado: estadoEntrada,
+    };
+  }
 
   const validacaoEstado = await deps.executores.validarEstado(estadoEntrada);
   if (!validacaoEstado.ok) {
@@ -87,10 +211,13 @@ export async function processarTurno(
   let estadoTrabalho = structuredClone(req.estado);
 
   const textoInstrucoes = await deps.instrucoes();
+  const contextoDet = montarContextoDeterministico(estadoTrabalho, req.tela_atual);
+  const conteudoSistema = `${textoInstrucoes}\n\nContexto determinístico da persona:\n${JSON.stringify(contextoDet)}`;
+
   const historicoConversa = estadoEntrada.conversa.slice(-LIMITES.mensagens_no_contexto);
 
   const mensagens: MensagemProvedor[] = [
-    { papel: "sistema", conteudo: textoInstrucoes },
+    { papel: "sistema", conteudo: conteudoSistema },
     ...historicoConversa.map(
       (m): MensagemProvedor => ({
         papel: m.papel === "usuario" ? "usuario" : "assistente",
@@ -187,17 +314,32 @@ export async function processarTurno(
         chamadas: resp.chamadas,
       });
 
-      for (const tc of resp.chamadas) {
+      for (const tc of resp.chamadas.slice(0, LIMITES.ferramentas_por_resposta)) {
+        if (!ehNomeFerramenta(tc.nome)) {
+          return respostaFalhaTecnica("F-04", estadoEntrada);
+        }
+
+        if (FERRAMENTAS_DE_MERCADO.has(tc.nome) && !estadoTrabalho.mercado.tentou_ao_vivo) {
+          const snap = await deps.mercado.buscarAoVivo({
+            timeout_ms: LIMITES.timeout_mercado_ms,
+          });
+          estadoTrabalho = { ...estadoTrabalho, mercado: snap };
+          if (!snap.ao_vivo && snap.tentou_ao_vivo) {
+            const primeiroPreco = Object.values(snap.precos)[0];
+            const dataHoraRef = primeiroPreco?.data_hora ?? snap.obtido_em;
+            avisos.push({
+              codigo: "F-07",
+              mensagem: textos.aviso_f07(dataHoraRef),
+            });
+          }
+        }
+
         const inicio = Date.now();
         let argsParsed: unknown = {};
         try {
           argsParsed = tc.argumentos.trim() ? JSON.parse(tc.argumentos) : {};
         } catch {
           argsParsed = tc.argumentos;
-        }
-
-        if (!ehNomeFerramenta(tc.nome)) {
-          return respostaFalhaTecnica("F-04", estadoEntrada);
         }
 
         const exec = deps.executores.ferramentas[tc.nome];
@@ -225,6 +367,11 @@ export async function processarTurno(
             conteudo: JSON.stringify(payload),
           });
         } else {
+          if (rExec.erro.codigo === "POSSIVEL_DUPLICIDADE") {
+            cartoes = mesclarCartoes(cartoes, [
+              { tipo: "erro", codigo: rExec.erro.codigo, mensagem: rExec.erro.mensagem },
+            ]);
+          }
           const payload = { ok: false, erro: rExec.erro };
           rastro.push({
             chamada,
@@ -243,7 +390,7 @@ export async function processarTurno(
     }
   }
 
-  throw new Error("não implementado");
+  return respostaFalhaTecnica("F-05", estadoEntrada);
 }
 
 export async function processarAcao(
