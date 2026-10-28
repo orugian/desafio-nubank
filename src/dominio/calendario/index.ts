@@ -1,6 +1,6 @@
 // Calendário (spec §3). Funções puras sobre texto `AAAA-MM-DD`; sem relógio do sistema.
 
-import { FERIADOS, type Calendario, type DataISO } from "@/contratos";
+import { FERIADOS, HOJE, type Calendario, type DataISO } from "@/contratos";
 
 /** Dias desde 1970-01-01 (algoritmo civil de Howard Hinnant), sem Date. */
 export function diaJuliano(data: DataISO): number {
@@ -41,12 +41,21 @@ export function diaDaSemana(data: DataISO): number {
 export type OpcoesCalendario = {
   /** Feriados de hoje em diante (padrão: spec §3). */
   feriados?: readonly DataISO[];
+  /**
+   * Datas da série de CDI gravada. Antes de hoje, até a última data da série,
+   * dia útil é o que está na série. Entre a última data e hoje (a série do BCB
+   * sai com atraso), vale seg–sex sem feriados; I-03 usa a última taxa conhecida.
+   */
+  datas_cdi?: readonly DataISO[];
 };
 
 export function criarCalendario(opcoes: OpcoesCalendario = {}): Calendario {
   const feriados = new Set<string>(opcoes.feriados ?? FERIADOS);
+  const datasCdi = new Set<string>(opcoes.datas_cdi ?? []);
+  const fimSerie = opcoes.datas_cdi?.length ? [...datasCdi].sort().at(-1)! : null;
 
   const ehDiaUtil = (data: DataISO): boolean => {
+    if (fimSerie !== null && data < HOJE && data <= fimSerie) return datasCdi.has(data);
     const dow = diaDaSemana(data);
     return dow !== 0 && dow !== 6 && !feriados.has(data);
   };
