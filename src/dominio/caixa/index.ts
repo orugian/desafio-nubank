@@ -3,11 +3,14 @@
 import {
   FIM_JANELA,
   HOJE,
+  formatarReais,
   textos,
+  validarArgumentos,
   type Alteracao,
   type Contexto,
   type EntradaComparacao,
   type EstadoSessao,
+  type Hipotese,
   type OQueMudou,
   type Origem,
   type Persona,
@@ -61,22 +64,61 @@ function eventosBase(persona: Persona): Evento[] {
   return eventos;
 }
 
+/** Texto `^\d{1,7}(\.\d{1,2})?$` → centavos, sem ponto flutuante. */
+export function paraCentavos(valor: string): number {
+  const [reais, cent = ""] = valor.split(".");
+  return Number(reais) * 100 + Number(cent.padEnd(2, "0"));
+}
+
+type Cena = { eventos: Evento[] };
+
+/** Aplica uma alteração de hipótese sobre a cena. */
+function aplicarNaHipotese(cena: Cena, alt: Alteracao, id: string, indice: number): Cena {
+  if (alt.operacao === "separar") {
+    const valor = paraCentavos(alt.valor);
+    const evento: Evento = {
+      id,
+      data: alt.data ?? HOJE,
+      descricao: `Separar ${formatarReais(valor)}`,
+      tipo: "saida",
+      meio: "simulacao",
+      origem: "hipotese",
+      estimativa: null,
+      previsto: false,
+      valor_centavos: valor,
+      original: null,
+      cadastro: cadastro("hipotese", indice),
+      bloco: false,
+    };
+    return { eventos: [...cena.eventos, evento] };
+  }
+  return cena;
+}
+
+function resultado(cenario_id: string, nome: string, cena: Cena, saldoInicial: number): ResultadoCenario {
+  const p = projetar(cena.eventos, saldoInicial, new Set());
+  return {
+    cenario_id,
+    nome,
+    status: "calculado",
+    linhas: p.linhas,
+    indicadores: p.indicadores,
+    faturas_afetadas: [],
+    datas_ordem_relevante: p.datas_ordem_relevante,
+    avisos: p.avisos,
+  };
+}
+
 /** Situação atual primeiro, depois as hipóteses ativas na ordem do estado. */
 export function calcularCenarios(persona: Persona, estado: EstadoSessao, contexto: Contexto): ResultadoCenario[] {
-  void estado, contexto;
-  const p = projetar(eventosBase(persona), persona.conta.saldo_inicio_hoje_centavos, new Set());
-  return [
-    {
-      cenario_id: "atual",
-      nome: textos.rotulos.situacao_atual,
-      status: "calculado",
-      linhas: p.linhas,
-      indicadores: p.indicadores,
-      faturas_afetadas: [],
-      datas_ordem_relevante: p.datas_ordem_relevante,
-      avisos: p.avisos,
-    },
-  ];
+  void contexto;
+  const saldo = persona.conta.saldo_inicio_hoje_centavos;
+  const atual: Cena = { eventos: eventosBase(persona) };
+  const hipoteses = estado.hipoteses.map((h) => {
+    const cena = h.alteracoes.reduce((c, a, k) => aplicarNaHipotese(c, a.alteracao, a.id, k), atual);
+    return resultado(h.id, h.nome, cena, saldo);
+  });
+  return [resultado("atual", textos.rotulos.situacao_atual, atual, saldo), ...hipoteses];
 }
 
 /** Declaração altera a situação atual (R-04, R-20). Não muda `versao`. */
@@ -97,8 +139,23 @@ export function criarHipotese(
   entrada: { nome: string; a_partir_de: string; alteracoes: Alteracao[] },
   origem: Origem,
 ): ResultadoDominio<{ estado: EstadoSessao; hipotese_id: string }> {
-  void persona, estado, entrada, origem;
-  throw new Error("não implementado");
+  void persona;
+  const v = validarArgumentos("criar_hipotese", entrada);
+  if (!v.ok) return { ok: false, erro: v.erro };
+  const n = estado.contadores.H + 1;
+  const hipotese_id = `H${n}`;
+  const hipotese: Hipotese = {
+    id: hipotese_id,
+    nome: v.argumentos.nome,
+    a_partir_de: v.argumentos.a_partir_de,
+    mensagem_id: origem.mensagem_id,
+    alteracoes: v.argumentos.alteracoes.map((alteracao, k) => ({ id: `${hipotese_id}.${k + 1}`, copiado_de: null, alteracao })),
+  };
+  return {
+    ok: true,
+    hipotese_id,
+    estado: { ...estado, hipoteses: [...estado.hipoteses, hipotese], contadores: { ...estado.contadores, H: n } },
+  };
 }
 
 /** Remove declaração (`D<n>`) ou hipótese (`H<n>`); o id não é reutilizado. */
