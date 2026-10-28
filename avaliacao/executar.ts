@@ -749,7 +749,7 @@ export async function executarAvaliacao(opcoes: {
         }
       }
 
-      const latencia_ms = Math.round(performance.now() - t0);
+      const latencia_ms = usarRoteirizado ? 0 : Math.round(performance.now() - t0);
       const ferramentasChamadas =
         ultimaResposta?.status === "ok"
           ? ultimaResposta.rastro.map((r) => ({ nome: r.ferramenta, argumentos: r.argumentos }))
@@ -781,7 +781,7 @@ export async function executarAvaliacao(opcoes: {
     repeticoes,
     provedor: nomeProvedor,
     modelo: nomeModelo,
-    executado_em: new Date().toISOString(),
+    executado_em: usarRoteirizado ? "2026-10-30T12:00:00-03:00" : new Date().toISOString(),
     total_execucoes: resultados.length,
     aprovados: resultados.filter((r) => r.aprovado).length,
     resultados,
