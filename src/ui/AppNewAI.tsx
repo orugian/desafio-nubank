@@ -21,12 +21,15 @@ import {
   formatarDiaMes,
   formatarReais,
   textos,
+  type AvisoTurno,
   type Config,
   type EstadoSessao,
+  type Falha,
   type ResumoPersona,
   type VisaoApp,
 } from "@/contratos";
 import { obterClientePadrao, type ClienteApi } from "./cliente-api";
+import { CamadaChat } from "./componentes/CamadaChat";
 
 export type AbaTela = "home" | "investimentos" | "conta" | "cartao" | "como_funciona";
 
@@ -51,6 +54,11 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
   const [mostrarSaldos, setMostrarSaldos] = useState(true);
   const [avisoTemporario, setAvisoTemporario] = useState<string | null>(null);
   const [erroFatal, setErroFatal] = useState<string | null>(null);
+  const [enviando, setEnviando] = useState(false);
+  const [ultimoEnvio, setUltimoEnvio] = useState<{ id: string; texto: string } | null>(null);
+  const [falhaChat, setFalhaChat] = useState<Falha | null>(null);
+  const [avisosChat, setAvisosChat] = useState<AvisoTurno[]>([]);
+  const [contadorMsg, setContadorMsg] = useState(1);
 
   useEffect(() => {
     try {
@@ -84,6 +92,9 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
   async function iniciarPersona(persona_id: string) {
     setAvisoTemporario(null);
     setErroFatal(null);
+    setFalhaChat(null);
+    setAvisosChat([]);
+    setUltimoEnvio(null);
     const res = await cliente.criarSessao({ persona_id });
     if (res.status === "ok") {
       setEstado(res.estado);
@@ -92,6 +103,105 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
       setAbaAtual("home");
     } else {
       setErroFatal(res.falha.mensagem);
+    }
+  }
+
+  async function dispararTurno(msg: { id: string; texto: string }) {
+    if (!estado || enviando) return;
+    const versaoEsperada = estado.versao + 1;
+    setEnviando(true);
+    setFalhaChat(null);
+    setUltimoEnvio(msg);
+
+    try {
+      const res = await cliente.enviarTurno({
+        estado,
+        mensagem: msg,
+        tela_atual: abaAtual,
+      });
+
+      if (res.status === "ok") {
+        if (res.estado.versao !== versaoEsperada) {
+          setFalhaChat({
+            tipo: "F-06",
+            codigo: "ESTADO_INVALIDO",
+            mensagem: textos.falhas["F-06"],
+            pode_tentar_novamente: false,
+          });
+          return;
+        }
+        setEstado(res.estado);
+        setVisao(res.visao);
+        setAvisosChat(res.avisos);
+        setUltimoEnvio(null);
+      } else {
+        setFalhaChat(res.falha);
+        if (res.estado) setEstado(res.estado);
+      }
+    } catch {
+      setFalhaChat({
+        tipo: "F-03",
+        codigo: "INDISPONIVEL",
+        mensagem: textos.falhas["F-03"],
+        pode_tentar_novamente: true,
+      });
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  function enviarMensagemNova(texto: string) {
+    const id = `msg-${Date.now()}-${contadorMsg}`;
+    setContadorMsg((n) => n + 1);
+    void dispararTurno({ id, texto });
+  }
+
+  function tentarNovamenteTurno() {
+    if (!ultimoEnvio || enviando) return;
+    void dispararTurno(ultimoEnvio);
+  }
+
+  async function executarAcaoMovimentacao(
+    tipo: "confirmar" | "cancelar",
+    operacao_id: string,
+  ) {
+    if (!estado || enviando) return;
+    const versaoEsperada = estado.versao + 1;
+    setEnviando(true);
+    setFalhaChat(null);
+
+    try {
+      const res = await cliente.enviarAcao({
+        estado,
+        acao: { tipo, operacao_id },
+      });
+
+      if (res.status === "ok") {
+        if (res.estado.versao !== versaoEsperada) {
+          setFalhaChat({
+            tipo: "F-06",
+            codigo: "ESTADO_INVALIDO",
+            mensagem: textos.falhas["F-06"],
+            pode_tentar_novamente: false,
+          });
+          return;
+        }
+        setEstado(res.estado);
+        setVisao(res.visao);
+        setAvisosChat(res.avisos);
+      } else {
+        setFalhaChat(res.falha);
+        if (res.estado) setEstado(res.estado);
+      }
+    } catch {
+      setFalhaChat({
+        tipo: "F-03",
+        codigo: "INDISPONIVEL",
+        mensagem: textos.falhas["F-03"],
+        pode_tentar_novamente: true,
+      });
+    } finally {
+      setEnviando(false);
     }
   }
 
@@ -428,6 +538,21 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
             <Wallet className="w-5 h-5" />
           </button>
         </nav>
+
+        {chatAberto && (
+          <CamadaChat
+            estado={estado}
+            enviando={enviando}
+            textoPendente={ultimoEnvio?.texto ?? null}
+            falhaAtual={falhaChat}
+            avisosRecentes={avisosChat}
+            aoFechar={() => setChatAberto(false)}
+            aoEnviarMensagem={enviarMensagemNova}
+            aoTentarNovamente={tentarNovamenteTurno}
+            aoRecomecar={() => void iniciarPersona(estado.persona_id)}
+            aoExecutarAcao={(tipo, opId) => void executarAcaoMovimentacao(tipo, opId)}
+          />
+        )}
       </div>
     </div>
   );
