@@ -1,6 +1,6 @@
 // Cartão e parcelas (spec §5.3, §6.1). Implementação no B1b.
 
-import { dataExiste, erro, textos } from "@/contratos";
+import { HOJE, dataExiste, erro, textos, type FaturaVisao } from "@/contratos";
 import { somarDias } from "@/dominio/calendario";
 import type {
   AlocacaoCompra,
@@ -30,6 +30,10 @@ export function alocarCompra(
   compra: { data: string; valor_centavos: number; parcelas: number },
 ): ResultadoDominio<AlocacaoCompra> {
   void estado;
+  return distribuirCompra(persona, compra, true);
+}
+
+function distribuirCompra(persona: Persona, compra: { data: string; valor_centavos: number; parcelas: number }, protegerFechadas: boolean): ResultadoDominio<AlocacaoCompra> {
   if (!persona.cartao) return erro("OPERACAO_NAO_PERMITIDA", textos.erros.OPERACAO_NAO_PERMITIDA, ["meio"]);
   if (!dataExiste(compra.data) || !Number.isInteger(compra.parcelas) || compra.parcelas < 1 || compra.parcelas > 12) {
     return erro("ARGUMENTOS_INVALIDOS", textos.erros.ARGUMENTOS_INVALIDOS, ["data", "parcelas"]);
@@ -48,7 +52,7 @@ export function alocarCompra(
     const venceEm = deslocarMes(fechaEm, k + 1);
     const vencimento = dataNoMes(venceEm, dia_vencimento);
     const fatura = persona.cartao.faturas.find((f) => f.vencimento === vencimento);
-    if (fatura?.status === "fechada") return erro("OPERACAO_NAO_PERMITIDA", textos.erros.OPERACAO_NAO_PERMITIDA, ["data"]);
+    if (protegerFechadas && fatura?.status === "fechada") return erro("OPERACAO_NAO_PERMITIDA", textos.erros.OPERACAO_NAO_PERMITIDA, ["data"]);
     parcelas.push({ numero: k + 1, fatura_id: fatura?.id ?? `F${venceEm.slice(2).replace("-", "")}`, fechamento: dataNoMes(deslocarMes(fechaEm, k), dia_fechamento), vencimento, valor_centavos: valor + (k === 0 ? compra.valor_centavos % compra.parcelas : 0) });
   }
   return { ok: true, parcelas };
@@ -73,6 +77,61 @@ export function verificarDuplicidade(persona: Persona, gasto: { valor_centavos: 
 
 /** Fatura fechada, aberta e próximas, na situação atual. null para persona sem cartão. */
 export function consultarCartao(persona: Persona, estado: EstadoSessao): CartaoVisao | null {
-  void persona, estado;
-  throw new Error("não implementado");
+  if (!persona.cartao) return null;
+  const cartao = persona.cartao;
+  const primeira = distribuirCompra(persona, { data: HOJE, valor_centavos: 1, parcelas: 1 }, false);
+  if (!primeira.ok) return null;
+  const aberta = primeira.parcelas[0];
+  const faturas = new Map<string, FaturaVisao>();
+  for (const f of cartao.faturas) {
+    faturas.set(f.id, {
+      fatura_id: f.id, fechamento: f.fechamento, vencimento: f.vencimento,
+      status: f.status === "fechada" ? "fechada" : f.vencimento === aberta.vencimento ? "aberta" : "futura",
+      valor_centavos: f.valor_centavos,
+      itens: f.itens.map((i) => ({ lancamento_id: i.lancamento_id ?? null, data: i.data ?? null, descricao: i.descricao, valor_centavos: i.valor_centavos, parcelamento_id: i.parcelamento_id ?? null, parcela: i.parcela ?? null, origem: "dados_base" })),
+    });
+  }
+  const obter = (p: AlocacaoCompra["parcelas"][number]) => {
+    let f = faturas.get(p.fatura_id);
+    if (!f) {
+      f = { fatura_id: p.fatura_id, fechamento: p.fechamento, vencimento: p.vencimento, status: p.vencimento === aberta.vencimento ? "aberta" : "futura", valor_centavos: 0, itens: [] };
+      faturas.set(p.fatura_id, f);
+    }
+    return f;
+  };
+  obter(aberta);
+  // Reconstituir parcelas futuras; nunca completar nem reescrever fatura fechada.
+  for (const pc of cartao.parcelamentos) {
+    const r = distribuirCompra(persona, { data: pc.data_compra, valor_centavos: pc.valor_total_centavos, parcelas: pc.parcelas }, false);
+    if (!r.ok) continue;
+    for (const p of r.parcelas) {
+      if (p.vencimento < aberta.vencimento) continue;
+      const f = obter(p);
+      const parcela = `${p.numero}/${pc.parcelas}`;
+      if (f.status === "fechada" || f.itens.some((i) => i.parcelamento_id === pc.id && i.parcela === parcela)) continue;
+      f.itens.push({ lancamento_id: null, data: pc.data_compra, descricao: pc.descricao, valor_centavos: p.valor_centavos, parcelamento_id: pc.id, parcela, origem: "dados_base" });
+      f.valor_centavos += p.valor_centavos;
+    }
+  }
+  // A consulta inclui só declarações efetivas, nunca hipóteses.
+  for (const d of estado.declaracoes) {
+    const a = d.alteracao;
+    if (a.operacao !== "adicionar_evento" || a.meio !== "cartao_credito") continue;
+    const [reais, cent = ""] = a.valor.split(".");
+    const r = alocarCompra(persona, estado, { data: a.data, valor_centavos: Number(reais) * 100 + Number(cent.padEnd(2, "0")), parcelas: a.parcelas ?? 1 });
+    if (!r.ok) continue;
+    for (const p of r.parcelas) {
+      const f = obter(p);
+      if (f.status === "fechada") continue;
+      f.itens.push({ lancamento_id: null, data: a.data, descricao: a.descricao, valor_centavos: p.valor_centavos, parcelamento_id: null, parcela: (a.parcelas ?? 1) > 1 ? `${p.numero}/${a.parcelas}` : null, origem: "declaracao" });
+      f.valor_centavos += p.valor_centavos;
+    }
+  }
+  const ordenadas = [...faturas.values()].sort((a, b) => a.vencimento.localeCompare(b.vencimento));
+  return {
+    limite_centavos: cartao.limite_centavos, dia_fechamento: cartao.dia_fechamento, dia_vencimento: cartao.dia_vencimento,
+    fatura_fechada: ordenadas.filter((f) => f.status === "fechada").at(-1) ?? null,
+    fatura_aberta: obter(aberta),
+    proximas: ordenadas.filter((f) => f.status === "futura" && f.vencimento > aberta.vencimento),
+  };
 }

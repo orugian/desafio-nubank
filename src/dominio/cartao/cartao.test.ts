@@ -1,10 +1,34 @@
 import { describe, expect, test } from "vitest";
-import { esquemaAlocacaoCompra, esquemaResultadoCenario, type Alteracao } from "@/contratos";
-import { alocarCompra, verificarDuplicidade } from "@/dominio/cartao";
+import { esquemaAlocacaoCompra, esquemaCartaoVisao, esquemaResultadoCenario, type Alteracao } from "@/contratos";
+import { alocarCompra, consultarCartao, verificarDuplicidade } from "@/dominio/cartao";
 import { calcularCenarios, criarHipotese, registrarDeclaracao } from "@/dominio/caixa";
-import { CONTEXTO, P1, P3, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
+import { CONTEXTO, P1, P2, P3, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
 
 describe("B1b · cartão e caixa", () => {
+  test("C-01/C-03/C-05/C-06: consulta fechada, aberta e próximas inclui celular anterior ao histórico sem duplicar", () => {
+    const estado = estadoNovo(P1);
+    const antes = structuredClone({ persona: P1, estado });
+    const base = consultarCartao(P1, estado)!;
+    expect(esquemaCartaoVisao.safeParse(base).success).toBe(true);
+    expect(base.limite_centavos).toBe(P1.cartao!.limite_centavos);
+    expect(base.fatura_fechada).toMatchObject({ fatura_id: "A", valor_centavos: reaisDaSpec("700"), status: "fechada" });
+    expect(base.fatura_fechada!.itens).toHaveLength(3);
+    expect(base.fatura_aberta).toMatchObject({ fatura_id: "F2612", fechamento: "2026-11-29", vencimento: "2026-12-05", valor_centavos: reaisDaSpec("150"), status: "aberta" });
+    expect(base.fatura_aberta.itens).toEqual([{ descricao: "Celular", valor_centavos: reaisDaSpec("150"), lancamento_id: null, data: "2026-06-20", parcelamento_id: "PC1", parcela: "6/10", origem: "dados_base" }]);
+    expect(base.proximas.map((f) => [f.vencimento, f.valor_centavos, f.itens[0].parcela, f.status])).toEqual([
+      ["2027-01-05", reaisDaSpec("150"), "7/10", "futura"], ["2027-02-05", reaisDaSpec("150"), "8/10", "futura"],
+      ["2027-03-05", reaisDaSpec("150"), "9/10", "futura"], ["2027-04-05", reaisDaSpec("150"), "10/10", "futura"],
+    ]);
+    const d = registrarDeclaracao(P1, estado, { operacao: "adicionar_evento", tipo: "saida", descricao: "Compra fictícia", data: "2026-10-30", valor: "200", meio: "cartao_credito" }, origem());
+    if (!d.ok) throw new Error(d.erro.mensagem);
+    const consulta = consultarCartao(P1, d.estado)!;
+    expect(consulta.fatura_aberta.valor_centavos).toBe(reaisDaSpec("350"));
+    expect(consulta.fatura_aberta.itens[1]).toMatchObject({ descricao: "Compra fictícia", origem: "declaracao", valor_centavos: reaisDaSpec("200") });
+    expect(consulta.fatura_fechada).toEqual(base.fatura_fechada);
+    expect(calcularCenarios(P1, d.estado, CONTEXTO)[0].faturas_afetadas).toEqual([{ fatura_id: "F2612", vencimento: "2026-12-05", total_antes_centavos: reaisDaSpec("150"), total_depois_centavos: reaisDaSpec("350") }]);
+    expect(consultarCartao(P2, estadoNovo(P2))).toBeNull();
+    expect({ persona: P1, estado }).toEqual(antes);
+  });
   test("CR-15a/C-07: saída igual à fatura fechada, aberta ou lançamento recente exige confirmação", () => {
     const estado = estadoNovo(P3);
     const antes = structuredClone(estado);

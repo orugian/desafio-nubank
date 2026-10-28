@@ -26,7 +26,7 @@ import {
 import { diaJuliano, somarDias } from "@/dominio/calendario";
 import { projetar, type Evento } from "./projecao";
 import { comparar } from "./comparacao";
-import { alocarCompra, verificarDuplicidade } from "@/dominio/cartao";
+import { alocarCompra, consultarCartao, verificarDuplicidade } from "@/dominio/cartao";
 import type { AlocacaoCompra } from "@/contratos";
 
 // Ordem de cadastro (R-05, §4.5): compromissos, blocos, declarações, operações, hipóteses.
@@ -236,15 +236,17 @@ function situacaoAtual(persona: Persona, estado: EstadoSessao): Cena {
   );
 }
 
-function resultado(persona: Persona, cenario_id: string, nome: string, cena: Cena | null, saldoInicial: number): ResultadoCenario {
+function resultado(persona: Persona, estado: EstadoSessao, cenario_id: string, nome: string, cena: Cena | null, saldoInicial: number): ResultadoCenario {
   if (cena === null) {
     return { cenario_id, nome, status: "inconsistente", linhas: [], indicadores: null, faturas_afetadas: [], datas_ordem_relevante: [], avisos: [] };
   }
   const p = projetar([...cena.eventos, ...blocos(cena.gasto_diario_centavos)], saldoInicial, new Set(cena.entradas_primeiro));
+  const baseCartao = consultarCartao(persona, { ...estado, declaracoes: [] });
+  const baseFaturas = baseCartao ? [baseCartao.fatura_aberta, ...baseCartao.proximas] : [];
   const afetadas = new Map<string, ResultadoCenario["faturas_afetadas"][number]>();
   for (const compra of cena.compras_cartao) {
     for (const parcela of compra.alocacao.parcelas) {
-      const anterior = persona.cartao?.faturas.find((f) => f.id === parcela.fatura_id)?.valor_centavos ?? 0;
+      const anterior = baseFaturas.find((f) => f.fatura_id === parcela.fatura_id)?.valor_centavos ?? 0;
       const fatura = afetadas.get(parcela.fatura_id) ?? { fatura_id: parcela.fatura_id, vencimento: parcela.vencimento, total_antes_centavos: anterior, total_depois_centavos: anterior };
       afetadas.set(parcela.fatura_id, { ...fatura, total_depois_centavos: fatura.total_depois_centavos + parcela.valor_centavos });
     }
@@ -276,9 +278,9 @@ export function calcularCenarios(persona: Persona, estado: EstadoSessao, context
       }
       cena = aplicar(persona, estado, cena, a.alteracao, a.id, "hipotese", k);
     }
-    return resultado(persona, h.id, h.nome, cena, saldo);
+    return resultado(persona, estado, h.id, h.nome, cena, saldo);
   });
-  return [resultado(persona, "atual", textos.rotulos.situacao_atual, atual, saldo), ...hipoteses];
+  return [resultado(persona, estado, "atual", textos.rotulos.situacao_atual, atual, saldo), ...hipoteses];
 }
 
 /** Declaração altera a situação atual (R-04, R-20). Não muda `versao`. */
