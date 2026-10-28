@@ -1,9 +1,11 @@
 // Conversa (spec §6.1, §6.7, §8, §10).
 
 import {
+  CODIGOS_FALHA_TECNICA,
   LIMITES,
   definicoesFerramentas,
   ehNomeFerramenta,
+  textos,
   type AvisoTurno,
   type CartaoResposta,
   type DepsConversa,
@@ -13,8 +15,35 @@ import {
   type RequisicaoAcao,
   type RequisicaoTurno,
   type RespostaAcao,
+  type RespostaFalha,
   type RespostaTurno,
+  type TipoFalha,
 } from "@/contratos";
+
+function respostaFalhaTecnica(
+  tipo: Exclude<TipoFalha, "dominio">,
+  estado: EstadoSessao,
+  opcoes?: { espera_segundos?: number; provedor?: string; pode_tentar_novamente?: boolean },
+): RespostaFalha {
+  const codigo = CODIGOS_FALHA_TECNICA[tipo];
+  const mensagem =
+    tipo === "F-02"
+      ? `${textos.falhas["F-02"]} ${textos.falha_f02_espera(opcoes?.espera_segundos, opcoes?.provedor ?? "")}`
+      : textos.falhas[tipo];
+  return {
+    status: "falha",
+    falha: {
+      tipo,
+      codigo,
+      mensagem,
+      pode_tentar_novamente: opcoes?.pode_tentar_novamente ?? tipo !== "F-06",
+      ...(opcoes?.espera_segundos !== undefined
+        ? { espera_segundos: opcoes.espera_segundos }
+        : {}),
+    },
+    estado,
+  };
+}
 
 function mesclarCartoes(atuais: CartaoResposta[], novos: CartaoResposta[]): CartaoResposta[] {
   const resultado = [...atuais];
@@ -110,6 +139,10 @@ export async function processarTurno(
     }
 
     if (resp.tipo === "chamadas") {
+      if (chamada === LIMITES.chamadas_modelo_por_turno) {
+        return respostaFalhaTecnica("F-05", estadoEntrada);
+      }
+
       mensagens.push({
         papel: "assistente",
         conteudo: resp.texto ?? "",

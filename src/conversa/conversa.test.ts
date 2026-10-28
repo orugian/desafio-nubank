@@ -168,4 +168,43 @@ describe("B4 · Conversa", () => {
     expect(res.cartoes.some((c) => c.tipo === "o_que_mudou")).toBe(true);
     expect(res.cartoes.some((c) => c.tipo === "comparacao")).toBe(true);
   });
+
+  test("3. Terceira chamada ainda pedindo ferramenta → F-05 com o estado de entrada", async () => {
+    const estado0 = estadoInicial("p1", snapshotTeste);
+    const chamadaSeparar: RespostaProvedor = {
+      tipo: "chamadas",
+      chamadas: [
+        {
+          id: "call_loop",
+          nome: "criar_hipotese",
+          argumentos: JSON.stringify({
+            nome: "Separar R$ 500 hoje",
+            a_partir_de: "atual",
+            alteracoes: [{ operacao: "separar", valor: "500", data: "2026-10-30" }],
+          }),
+        },
+      ],
+    };
+    const provedor = provedorSequencial([chamadaSeparar, chamadaSeparar, chamadaSeparar]);
+
+    const res = await processarTurno(
+      {
+        estado: estado0,
+        mensagem: { id: "m-0003", texto: "Posso separar R$ 500?" },
+      },
+      depsBase(provedor),
+    );
+
+    const validado = esquemaRespostaTurno.parse(res);
+    expect(validado).toEqual({
+      status: "falha",
+      falha: {
+        tipo: "F-05",
+        codigo: "LIMITE_CHAMADAS",
+        mensagem: "Não consegui concluir esta etapa.",
+        pode_tentar_novamente: true,
+      },
+      estado: estado0,
+    });
+  });
 });
