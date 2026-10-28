@@ -4,6 +4,8 @@ import {
   CATEGORIAS_VARIAVEIS,
   DIAS_HISTORICO,
   FIM_HISTORICO,
+  FIM_JANELA,
+  HOJE,
   INICIO_HISTORICO,
   erro,
   esquemaPersona,
@@ -131,6 +133,13 @@ export function verificarInvariantes(bruta: unknown): ViolacaoInvariante[] {
     b.ate !== FIM_HISTORICO
   ) {
     v.push({ invariante: 6, mensagem: `gasto diário ${p.gasto_diario.valor_centavos} ≠ teto(${totalVariavel} / ${DIAS_HISTORICO}) = ${diario}` });
+  }
+
+  // 9. Fatura fechada que vence na janela tem fechamento ≤ 29/10.
+  for (const f of p.cartao?.faturas ?? []) {
+    if (f.status === "fechada" && f.vencimento >= HOJE && f.vencimento <= FIM_JANELA && f.fechamento > FIM_HISTORICO) {
+      v.push({ invariante: 9, mensagem: `fatura fechada ${f.id} com fechamento ${f.fechamento} depois de ${FIM_HISTORICO}` });
+    }
   }
 
   return v;

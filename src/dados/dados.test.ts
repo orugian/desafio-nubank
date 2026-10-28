@@ -85,4 +85,10 @@ describe("invariantes aplicáveis à P1 mínima (spec §4.2)", () => {
     p.gasto_diario.valor_centavos = 1500;
     expect(numeros(p)).toContain(6);
   });
+
+  test("9: fatura fechada que vence na janela com fechamento depois de 29/10", () => {
+    const p = base();
+    p.cartao.faturas[0].fechamento = "2026-10-30";
+    expect(numeros(p)).toContain(9);
+  });
 });
