@@ -1,10 +1,25 @@
 import { describe, expect, test } from "vitest";
 import { esquemaAlocacaoCompra, esquemaCartaoVisao, esquemaResultadoCenario, type Alteracao } from "@/contratos";
 import { alocarCompra, consultarCartao, verificarDuplicidade } from "@/dominio/cartao";
-import { calcularCenarios, criarHipotese, registrarDeclaracao } from "@/dominio/caixa";
+import { calcularCenarios, criarHipotese, registrarDeclaracao, validarEstado } from "@/dominio/caixa";
 import { CONTEXTO, P1, P2, P3, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
 
 describe("B1b · cartão e caixa", () => {
+  test("C-07: compra declarada na aberta também exige confirmação em gasto posterior, sem detectar a si própria", () => {
+    const compra: Alteracao = { operacao: "adicionar_evento", tipo: "saida", descricao: "Compra fictícia", data: "2026-10-30", valor: "200", meio: "cartao_credito" };
+    const gasto: Alteracao = { ...compra, descricao: "Outra compra", meio: "pix" };
+    const d1 = registrarDeclaracao(P1, estadoNovo(P1), compra, origem());
+    if (!d1.ok) throw new Error(d1.erro.mensagem);
+    expect(validarEstado(P1, d1.estado, CONTEXTO)).toEqual({ ok: true });
+    const d2 = registrarDeclaracao(P1, d1.estado, gasto, origem());
+    expect(d2.ok ? "ok" : d2.erro.codigo).toBe("POSSIVEL_DUPLICIDADE");
+    if (!d2.ok) expect(d2.erro.mensagem).toContain("Compra fictícia 200,00, fatura de 05/12");
+    const h = criarHipotese(P1, estadoNovo(P1), { nome: "Duas compras", a_partir_de: "atual", alteracoes: [compra, gasto] }, origem());
+    expect(h.ok ? "ok" : h.erro.codigo).toBe("POSSIVEL_DUPLICIDADE");
+    const confirmado = registrarDeclaracao(P1, d1.estado, { ...gasto, confirmar_nao_duplicado: true }, origem());
+    if (!confirmado.ok) throw new Error(confirmado.erro.mensagem);
+    expect(validarEstado(P1, confirmado.estado, CONTEXTO)).toEqual({ ok: true });
+  });
   test("C-03: correção de compra parcelada com menos centavos que parcelas é recusada antes de aplicar", () => {
     const d = registrarDeclaracao(P1, estadoNovo(P1), { operacao: "adicionar_evento", tipo: "saida", descricao: "Compra em 3x", data: "2026-10-30", valor: "1000", meio: "cartao_credito", parcelas: 3 }, origem());
     if (!d.ok) throw new Error(d.erro.mensagem);

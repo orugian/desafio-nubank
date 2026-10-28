@@ -144,7 +144,20 @@ function validar(persona: Persona, estado: EstadoSessao, cena: Cena, alt: Altera
     }
   }
   if (alt.operacao === "adicionar_evento" && alt.tipo === "saida" && !alt.confirmar_nao_duplicado) {
-    const duplicidade = verificarDuplicidade(persona, { valor_centavos: paraCentavos(alt.valor) });
+    const baseCartao = consultarCartao(persona, { ...estado, declaracoes: [] });
+    let personaDaCena = persona;
+    if (persona.cartao && baseCartao) {
+      const aberta = baseCartao.fatura_aberta;
+      const itens = aberta.itens.map((i) => ({ descricao: i.descricao, valor_centavos: i.valor_centavos, lancamento_id: i.lancamento_id ?? undefined, data: i.data ?? undefined, parcelamento_id: i.parcelamento_id ?? undefined, parcela: i.parcela ?? undefined }));
+      for (const compra of cena.compras_cartao) {
+        for (const p of compra.alocacao.parcelas) {
+          if (p.fatura_id === aberta.fatura_id) itens.push({ descricao: compra.evento.descricao, valor_centavos: p.valor_centavos, data: compra.evento.data, lancamento_id: undefined, parcelamento_id: undefined, parcela: undefined });
+        }
+      }
+      const fatura = { id: aberta.fatura_id, fechamento: aberta.fechamento, vencimento: aberta.vencimento, status: "aberta" as const, valor_centavos: itens.reduce((s, i) => s + i.valor_centavos, 0), itens };
+      personaDaCena = { ...persona, cartao: { ...persona.cartao, faturas: [...persona.cartao.faturas.filter((f) => f.id !== aberta.fatura_id), fatura] } };
+    }
+    const duplicidade = verificarDuplicidade(personaDaCena, { valor_centavos: paraCentavos(alt.valor) });
     if (duplicidade.duplicado) {
       const citacoes = duplicidade.itens.map((i) => `${i.descricao} ${formatarReais(i.valor_centavos).replace("R$ ", "")}, ${i.vencimento ? `fatura de ${formatarDiaMes(i.vencimento)}` : `lançamento de ${formatarDiaMes(i.data!)}`}`);
       return falha("POSSIVEL_DUPLICIDADE", ["valor", "confirmar_nao_duplicado"], { itens: duplicidade.itens }, `${textos.erros.POSSIVEL_DUPLICIDADE} ${citacoes.join("; ")}. Confirme se é outra compra.`);
