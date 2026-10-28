@@ -37,7 +37,7 @@ const contextoDominio: Contexto = {
       BTC: btcJson,
     },
   },
-  calendario: criarCalendario(cdiJson),
+  calendario: criarCalendario({ datas_cdi: cdiJson.serie.map((x) => x.data) }),
 };
 
 const REGEX_CPF = /\b\d{3}\.\d{3}\.\d{3}-\d{2}\b|\b\d{11}\b/;

@@ -45,7 +45,7 @@ const contextoPadrao: Contexto = {
       BTC: btcJson,
     },
   },
-  calendario: criarCalendario(cdiJson),
+  calendario: criarCalendario({ datas_cdi: cdiJson.serie.map((x) => x.data) }),
 };
 
 function obterVisaoExemplo(estado: EstadoSessao): VisaoApp {
@@ -443,24 +443,11 @@ export function criarExecutores(): Executores {
     },
 
     async compararCenarios(antes: EstadoSessao, depois: EstadoSessao): Promise<OQueMudou> {
-      const rPersona = carregarPersona(depois.persona_id);
       const cenariosAntes = calcularCenariosEstado(antes);
       const cenariosDepois = calcularCenariosEstado(depois);
-      const eventosBase = rPersona.ok
-        ? Object.fromEntries([
-            ...rPersona.persona.compromissos.map((c) => [
-              c.id,
-              { descricao: c.descricao, data: c.data, valor_centavos: c.valor_centavos },
-            ]),
-            ...(rPersona.persona.cartao?.faturas.map((f) => [
-              f.id,
-              { descricao: "Fatura do cartão", data: f.vencimento, valor_centavos: f.valor_centavos },
-            ]) ?? []),
-          ])
-        : {};
       return compararCenariosDominio(
-        { estado: antes, cenarios: cenariosAntes, eventos_base: eventosBase },
-        { estado: depois, cenarios: cenariosDepois, eventos_base: eventosBase },
+        { estado: antes, cenarios: cenariosAntes },
+        { estado: depois, cenarios: cenariosDepois },
       );
     },
   };

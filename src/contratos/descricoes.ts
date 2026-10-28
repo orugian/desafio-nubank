@@ -10,7 +10,7 @@ export const descricoesFerramentas: Record<NomeFerramenta, string> = {
   consultar_cartao:
     "Mostra o cartão de crédito: fatura fechada, fatura aberta e próximas faturas com parcelas. Somente leitura.",
   consultar_investimentos:
-    "Mostra cada investimento: valor atual, aplicado, rentabilidade bruta, disponibilidade e proteção, classificado até uma data. Sem ate_data, usa a data da falta mais próxima. Somente leitura; não recomenda nada.",
+    "Mostra cada investimento: valor atual, aplicado, rentabilidade bruta, disponibilidade e proteção, classificado até uma data. Sem ate_data, usa a data da falta mais próxima. Somente leitura; não recomenda nada. Não chame esta ferramenta se a pessoa apenas pedir recomendação de onde investir.",
   projetar_rendimento:
     "Calcula o rendimento bruto estimado de um valor em produto atrelado ao CDI até uma data (no máximo 2026-11-29), com CDI constante. Informe destino (id da posição) ou cdi_pct.",
   registrar_declaracao:
