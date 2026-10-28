@@ -5,6 +5,16 @@ import { calcularCenarios, criarHipotese, registrarDeclaracao } from "@/dominio/
 import { CONTEXTO, P1, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
 
 describe("B1b · cartão e caixa", () => {
+  test("CR-21: compra 1.000 em 3x tem resto na primeira parcela e cruza o ano", () => {
+    const r = alocarCompra(P1, estadoNovo(P1), { data: "2026-10-30", valor_centavos: reaisDaSpec("1.000"), parcelas: 3 });
+    if (!r.ok) throw new Error(r.erro.mensagem);
+    expect(r.parcelas.map((p) => [p.numero, p.fatura_id, p.vencimento, p.valor_centavos])).toEqual([
+      [1, "F2612", "2026-12-05", reaisDaSpec("333,34")],
+      [2, "F2701", "2027-01-05", reaisDaSpec("333,33")],
+      [3, "F2702", "2027-02-05", reaisDaSpec("333,33")],
+    ]);
+    expect(r.parcelas.map((p) => p.fechamento)).toEqual(["2026-11-29", "2026-12-29", "2027-01-29"]);
+  });
   test("CR-22: compra 300 à vista em 29/11 vai para a fatura de 05/01/2027", () => {
     const r = alocarCompra(P1, estadoNovo(P1), { data: "2026-11-29", valor_centavos: reaisDaSpec("300"), parcelas: 1 });
     if (!r.ok) throw new Error(r.erro.mensagem);

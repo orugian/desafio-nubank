@@ -41,11 +41,17 @@ export function alocarCompra(
   const mes = compra.data.slice(0, 7);
   const fechamento = dataNoMes(mes, dia_fechamento);
   const fechaEm = compra.data < fechamento ? mes : deslocarMes(mes, 1);
-  const venceEm = deslocarMes(fechaEm, 1);
-  const vencimento = dataNoMes(venceEm, dia_vencimento);
-  const fatura = persona.cartao.faturas.find((f) => f.vencimento === vencimento);
-  if (fatura?.status === "fechada") return erro("OPERACAO_NAO_PERMITIDA", textos.erros.OPERACAO_NAO_PERMITIDA, ["data"]);
-  return { ok: true, parcelas: [{ numero: 1, fatura_id: fatura?.id ?? `F${venceEm.slice(2).replace("-", "")}`, fechamento: dataNoMes(fechaEm, dia_fechamento), vencimento, valor_centavos: compra.valor_centavos }] };
+  const valor = Math.floor(compra.valor_centavos / compra.parcelas);
+  if (valor === 0) return erro("VALOR_INVALIDO", "Cada parcela deve ter pelo menos um centavo.", ["valor_centavos", "parcelas"]);
+  const parcelas: AlocacaoCompra["parcelas"] = [];
+  for (let k = 0; k < compra.parcelas; k++) {
+    const venceEm = deslocarMes(fechaEm, k + 1);
+    const vencimento = dataNoMes(venceEm, dia_vencimento);
+    const fatura = persona.cartao.faturas.find((f) => f.vencimento === vencimento);
+    if (fatura?.status === "fechada") return erro("OPERACAO_NAO_PERMITIDA", textos.erros.OPERACAO_NAO_PERMITIDA, ["data"]);
+    parcelas.push({ numero: k + 1, fatura_id: fatura?.id ?? `F${venceEm.slice(2).replace("-", "")}`, fechamento: dataNoMes(deslocarMes(fechaEm, k), dia_fechamento), vencimento, valor_centavos: valor + (k === 0 ? compra.valor_centavos % compra.parcelas : 0) });
+  }
+  return { ok: true, parcelas };
 }
 
 /** C-07: valor igual a item de fatura fechada ou aberta, ou a lançamento de 23/10 a 29/10. */
