@@ -51,4 +51,14 @@ describe("invariantes aplicáveis à P1 mínima (spec §4.2)", () => {
     p.compromissos[1].id = "B";
     expect(numeros(p)).toContain(1);
   });
+
+  test("11: campo de renda declarada é rejeitado", () => {
+    expect(numeros({ ...base(), renda_mensal_centavos: 500000 })).toContain(11);
+  });
+
+  test("2: saldo de 30/07 + lançamentos de conta ≠ saldo no início de hoje", () => {
+    const p = base();
+    p.conta.saldo_30_07_centavos = 170000;
+    expect(numeros(p)).toContain(2);
+  });
 });

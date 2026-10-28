@@ -47,6 +47,17 @@ export function verificarInvariantes(bruta: unknown): ViolacaoInvariante[] {
     vistos.add(id);
   }
 
+  // 2. saldo_30_07 + lançamentos de conta (sem compras no cartão) = saldo no início de hoje.
+  const movimento = p.historico
+    .filter((l) => l.meio !== "cartao_credito")
+    .reduce((s, l) => s + (l.tipo === "entrada" ? l.valor_centavos : -l.valor_centavos), 0);
+  if (p.conta.saldo_30_07_centavos + movimento !== p.conta.saldo_inicio_hoje_centavos) {
+    v.push({
+      invariante: 2,
+      mensagem: `saldo 30/07 ${p.conta.saldo_30_07_centavos} + movimento ${movimento} ≠ saldo hoje ${p.conta.saldo_inicio_hoje_centavos}`,
+    });
+  }
+
   return v;
 }
 
