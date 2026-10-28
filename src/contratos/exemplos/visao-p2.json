@@ -1,0 +1,217 @@
+{
+  "exemplo": true,
+  "esquema": "VisaoApp",
+  "descricao": "P2 Caio, sessão nova, sem cartão (saldo 900; investimentos de CR-07)",
+  "dados": {
+    "marca": "neutra",
+    "prototipo": true,
+    "persona": {
+      "id": "p2",
+      "nome": "Caio (fictício)"
+    },
+    "conta": {
+      "saldo_disponivel_hoje_centavos": 90000,
+      "saldo_inicio_hoje_centavos": 90000,
+      "operacoes_hoje": []
+    },
+    "extrato": [
+      {
+        "id": "L0288",
+        "data": "2026-10-29",
+        "descricao": "Delivery",
+        "tipo": "saida",
+        "meio": "pix",
+        "categoria": "delivery",
+        "valor_centavos": 3870,
+        "simulado": false
+      },
+      {
+        "id": "L0285",
+        "data": "2026-10-28",
+        "descricao": "Mercado",
+        "tipo": "saida",
+        "meio": "debito",
+        "categoria": "mercado",
+        "valor_centavos": 6215,
+        "simulado": false
+      },
+      {
+        "id": "L0279",
+        "data": "2026-10-26",
+        "descricao": "Recebimento de cliente",
+        "tipo": "entrada",
+        "meio": "pix",
+        "categoria": "receitas",
+        "valor_centavos": 95000,
+        "simulado": false
+      },
+      {
+        "id": "L0271",
+        "data": "2026-10-22",
+        "descricao": "Transporte",
+        "tipo": "saida",
+        "meio": "pix",
+        "categoria": "transporte",
+        "valor_centavos": 2240,
+        "simulado": false
+      }
+    ],
+    "proximos_pagamentos": [
+      {
+        "evento_id": "E1",
+        "data": "2026-11-03",
+        "descricao": "Internet",
+        "tipo": "saida",
+        "meio": "debito_automatico",
+        "valor_centavos": 12000,
+        "previsto": false,
+        "estimativa_texto": null,
+        "origem": "dados_base"
+      },
+      {
+        "evento_id": "E2",
+        "data": "2026-11-08",
+        "descricao": "Aluguel",
+        "tipo": "saida",
+        "meio": "pix",
+        "valor_centavos": 110000,
+        "previsto": false,
+        "estimativa_texto": null,
+        "origem": "dados_base"
+      },
+      {
+        "evento_id": "E3",
+        "data": "2026-11-08",
+        "descricao": "Cobrança Pix a cliente",
+        "tipo": "entrada",
+        "meio": "pix",
+        "valor_centavos": 150000,
+        "previsto": true,
+        "estimativa_texto": null,
+        "origem": "dados_base"
+      },
+      {
+        "evento_id": "E4",
+        "data": "2026-11-12",
+        "descricao": "Conta de luz",
+        "tipo": "saida",
+        "meio": "debito_automatico",
+        "valor_centavos": 18000,
+        "previsto": false,
+        "estimativa_texto": "estimado: média de R$ 165,00, R$ 180,00 e R$ 195,00",
+        "origem": "dados_base"
+      },
+      {
+        "evento_id": "E5",
+        "data": "2026-11-25",
+        "descricao": "Curso",
+        "tipo": "saida",
+        "meio": "boleto",
+        "valor_centavos": 40000,
+        "previsto": false,
+        "estimativa_texto": null,
+        "origem": "dados_base"
+      }
+    ],
+    "cartao": null,
+    "posicoes": [
+      {
+        "cdi_pct": null,
+        "ticker": null,
+        "quantidade": null,
+        "valor_atual_centavos": 0,
+        "aplicado_centavos": 0,
+        "resultado_centavos": 0,
+        "rentabilidade_pct": "0.00",
+        "valorizacao_periodo_pct": null,
+        "data_disponibilidade": "2026-10-30",
+        "protecao": null,
+        "restricao": null,
+        "estimado": false,
+        "fonte": "sem rendimento",
+        "id": "SEP",
+        "nome": "Saldo separado",
+        "categoria": "saldo_separado"
+      },
+      {
+        "cdi_pct": 100,
+        "ticker": null,
+        "quantidade": null,
+        "valor_atual_centavos": 0,
+        "aplicado_centavos": 0,
+        "resultado_centavos": 0,
+        "rentabilidade_pct": "0.00",
+        "valorizacao_periodo_pct": null,
+        "data_disponibilidade": "2026-10-30",
+        "protecao": null,
+        "restricao": null,
+        "estimado": false,
+        "fonte": "CDI de teste (spec §11.4)",
+        "id": "INV10",
+        "nome": "Caixinha",
+        "categoria": "caixinha"
+      },
+      {
+        "cdi_pct": 98,
+        "ticker": null,
+        "quantidade": null,
+        "valor_atual_centavos": 210000,
+        "aplicado_centavos": 200000,
+        "resultado_centavos": 10000,
+        "rentabilidade_pct": "5.00",
+        "valorizacao_periodo_pct": null,
+        "data_disponibilidade": "2026-11-03",
+        "protecao": {
+          "tipo": "parcial",
+          "valor_centavos": 120000
+        },
+        "restricao": null,
+        "estimado": false,
+        "fonte": "CDI de teste (spec §11.4)",
+        "id": "INV4",
+        "nome": "Fundo DI Fictício",
+        "categoria": "fundo"
+      },
+      {
+        "cdi_pct": null,
+        "ticker": "BTC",
+        "quantidade": "0.005",
+        "valor_atual_centavos": 190000,
+        "aplicado_centavos": 175000,
+        "resultado_centavos": 15000,
+        "rentabilidade_pct": "8.57",
+        "valorizacao_periodo_pct": "11.76",
+        "data_disponibilidade": "2026-10-30",
+        "protecao": null,
+        "restricao": null,
+        "estimado": true,
+        "fonte": "CoinGecko (valor de teste)",
+        "id": "INV5",
+        "nome": "Bitcoin",
+        "categoria": "cripto"
+      }
+    ],
+    "mercado": {
+      "ao_vivo": false,
+      "obtido_em": "2026-10-28T11:00:00-03:00",
+      "tentou_ao_vivo": false,
+      "cdi": {
+        "taxa_diaria_pct": "0.05",
+        "data_ref": "2026-10-29",
+        "fonte": "CDI de teste (spec §11.4)"
+      },
+      "precos": {
+        "ITUB4": {
+          "preco_centavos": 3300,
+          "data_hora": "2026-10-27T18:00:00-03:00",
+          "fonte": "brapi"
+        },
+        "BTC": {
+          "preco_centavos": 38000000,
+          "data_hora": "2026-10-27T21:00:00-03:00",
+          "fonte": "CoinGecko"
+        }
+      }
+    }
+  }
+}

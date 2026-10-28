@@ -1,0 +1,22 @@
+{
+  "exemplo": true,
+  "esquema": "RespostaPersonas",
+  "descricao": "GET /api/personas",
+  "dados": [
+    {
+      "id": "p1",
+      "nome": "Bia (fictícia)",
+      "resumo": "Quer juntar dinheiro para uma viagem."
+    },
+    {
+      "id": "p2",
+      "nome": "Caio (fictício)",
+      "resumo": "Trabalha por conta própria e recebe de clientes por Pix."
+    },
+    {
+      "id": "p3",
+      "nome": "Duda (fictícia)",
+      "resumo": "Tem filhos na escola, financiamento e compras parceladas no cartão."
+    }
+  ]
+}

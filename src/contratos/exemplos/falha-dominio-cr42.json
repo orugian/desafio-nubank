@@ -1,0 +1,355 @@
+{
+  "exemplo": true,
+  "esquema": "RespostaFalha",
+  "descricao": "Domínio: confirmar OP1 já executada (CR-42); estado de entrada",
+  "dados": {
+    "status": "falha",
+    "falha": {
+      "tipo": "dominio",
+      "codigo": "OPERACAO_JA_EXECUTADA",
+      "mensagem": "Essa movimentação simulada já foi feita.",
+      "pode_tentar_novamente": false
+    },
+    "estado": {
+      "versao": 4,
+      "persona_id": "p1",
+      "mercado": {
+        "ao_vivo": false,
+        "obtido_em": "2026-10-28T11:00:00-03:00",
+        "tentou_ao_vivo": false,
+        "cdi": {
+          "taxa_diaria_pct": "0.05",
+          "data_ref": "2026-10-29",
+          "fonte": "CDI de teste (spec §11.4)"
+        },
+        "precos": {
+          "ITUB4": {
+            "preco_centavos": 3300,
+            "data_hora": "2026-10-27T18:00:00-03:00",
+            "fonte": "brapi"
+          },
+          "BTC": {
+            "preco_centavos": 38000000,
+            "data_hora": "2026-10-27T21:00:00-03:00",
+            "fonte": "CoinGecko"
+          }
+        }
+      },
+      "conversa": [
+        {
+          "mensagem_id": "m-0001",
+          "papel": "usuario",
+          "texto": "Posso separar R$ 500 hoje para minha viagem?",
+          "versao": 1,
+          "cartoes": [],
+          "rastro": []
+        },
+        {
+          "mensagem_id": "m-0001-r",
+          "papel": "assistente",
+          "texto": "Se você separar R$ 500 hoje, o saldo zera em 10/11, no aluguel, e faltam R$ 200,00 em 15/11, no débito das contas da casa. O salário previsto de 19/11 só chega depois. Sem separar, o menor saldo fica em R$ 300,00, em 15/11.",
+          "versao": 1,
+          "cartoes": [
+            {
+              "tipo": "comparacao",
+              "cenarios": [
+                {
+                  "cenario_id": "atual",
+                  "nome": "Situação atual",
+                  "status": "calculado",
+                  "linhas": [
+                    {
+                      "estimativa": null,
+                      "original": null,
+                      "previsto": false,
+                      "data": "2026-11-05",
+                      "evento_id": "A",
+                      "descricao": "Fatura do cartão",
+                      "tipo": "saida",
+                      "meio": "debito",
+                      "origem": "dados_base",
+                      "valor_centavos": 70000,
+                      "saldo_apos_centavos": 110000,
+                      "rotulo": null
+                    },
+                    {
+                      "estimativa": null,
+                      "original": null,
+                      "previsto": false,
+                      "data": "2026-11-10",
+                      "evento_id": "B",
+                      "descricao": "Aluguel",
+                      "tipo": "saida",
+                      "meio": "pix",
+                      "origem": "dados_base",
+                      "valor_centavos": 60000,
+                      "saldo_apos_centavos": 50000,
+                      "rotulo": null
+                    },
+                    {
+                      "estimativa": null,
+                      "original": null,
+                      "previsto": false,
+                      "data": "2026-11-15",
+                      "evento_id": "C",
+                      "descricao": "Contas da casa",
+                      "tipo": "saida",
+                      "meio": "debito_automatico",
+                      "origem": "dados_base",
+                      "valor_centavos": 20000,
+                      "saldo_apos_centavos": 30000,
+                      "rotulo": null
+                    },
+                    {
+                      "estimativa": null,
+                      "original": null,
+                      "previsto": true,
+                      "data": "2026-11-19",
+                      "evento_id": "R1",
+                      "descricao": "Salário",
+                      "tipo": "entrada",
+                      "meio": "salario",
+                      "origem": "dados_base",
+                      "valor_centavos": 300000,
+                      "saldo_apos_centavos": 330000,
+                      "rotulo": null
+                    }
+                  ],
+                  "indicadores": {
+                    "saldo_inicial_centavos": 180000,
+                    "saldo_minimo_centavos": 30000,
+                    "data_saldo_minimo": "2026-11-15",
+                    "primeira_falta": null,
+                    "insuficiencia_centavos": 0,
+                    "margem_hoje_centavos": 30000,
+                    "saldo_final_centavos": 330000,
+                    "sem_recebimentos": {
+                      "insuficiencia_centavos": 0,
+                      "primeira_falta": null,
+                      "saldo_final_centavos": 30000
+                    }
+                  },
+                  "faturas_afetadas": [],
+                  "datas_ordem_relevante": [],
+                  "avisos": []
+                },
+                {
+                  "cenario_id": "H1",
+                  "nome": "Separar R$ 500 hoje",
+                  "status": "calculado",
+                  "linhas": [
+                    {
+                      "estimativa": null,
+                      "original": null,
+                      "previsto": false,
+                      "data": "2026-10-30",
+                      "evento_id": "H1.1",
+                      "descricao": "Separar R$ 500,00",
+                      "tipo": "saida",
+                      "meio": "simulacao",
+                      "origem": "hipotese",
+                      "valor_centavos": 50000,
+                      "saldo_apos_centavos": 130000,
+                      "rotulo": null
+                    },
+                    {
+                      "estimativa": null,
+                      "original": null,
+                      "previsto": false,
+                      "data": "2026-11-05",
+                      "evento_id": "A",
+                      "descricao": "Fatura do cartão",
+                      "tipo": "saida",
+                      "meio": "debito",
+                      "origem": "dados_base",
+                      "valor_centavos": 70000,
+                      "saldo_apos_centavos": 60000,
+                      "rotulo": null
+                    },
+                    {
+                      "estimativa": null,
+                      "original": null,
+                      "previsto": false,
+                      "data": "2026-11-10",
+                      "evento_id": "B",
+                      "descricao": "Aluguel",
+                      "tipo": "saida",
+                      "meio": "pix",
+                      "origem": "dados_base",
+                      "valor_centavos": 60000,
+                      "saldo_apos_centavos": 0,
+                      "rotulo": "Saldo zerado"
+                    },
+                    {
+                      "estimativa": null,
+                      "original": null,
+                      "previsto": false,
+                      "data": "2026-11-15",
+                      "evento_id": "C",
+                      "descricao": "Contas da casa",
+                      "tipo": "saida",
+                      "meio": "debito_automatico",
+                      "origem": "dados_base",
+                      "valor_centavos": 20000,
+                      "saldo_apos_centavos": -20000,
+                      "rotulo": "Saldo insuficiente (faltam R$ 200,00)"
+                    },
+                    {
+                      "estimativa": null,
+                      "original": null,
+                      "previsto": true,
+                      "data": "2026-11-19",
+                      "evento_id": "R1",
+                      "descricao": "Salário",
+                      "tipo": "entrada",
+                      "meio": "salario",
+                      "origem": "dados_base",
+                      "valor_centavos": 300000,
+                      "saldo_apos_centavos": 280000,
+                      "rotulo": null
+                    }
+                  ],
+                  "indicadores": {
+                    "saldo_inicial_centavos": 180000,
+                    "saldo_minimo_centavos": -20000,
+                    "data_saldo_minimo": "2026-11-15",
+                    "primeira_falta": {
+                      "data": "2026-11-15",
+                      "valor_descoberto_centavos": 20000,
+                      "saidas_do_dia": [
+                        "C"
+                      ]
+                    },
+                    "insuficiencia_centavos": 20000,
+                    "margem_hoje_centavos": 0,
+                    "saldo_final_centavos": 280000,
+                    "sem_recebimentos": {
+                      "insuficiencia_centavos": 20000,
+                      "primeira_falta": {
+                        "data": "2026-11-15",
+                        "valor_descoberto_centavos": 20000,
+                        "saidas_do_dia": [
+                          "C"
+                        ]
+                      },
+                      "saldo_final_centavos": -20000
+                    }
+                  },
+                  "faturas_afetadas": [],
+                  "datas_ordem_relevante": [],
+                  "avisos": [
+                    "saldo_final_positivo_com_falta"
+                  ]
+                }
+              ]
+            }
+          ],
+          "rastro": [
+            {
+              "chamada": 1,
+              "ferramenta": "criar_hipotese",
+              "argumentos": {
+                "nome": "Separar R$ 500 hoje",
+                "a_partir_de": "atual",
+                "alteracoes": [
+                  {
+                    "operacao": "separar",
+                    "valor": "500",
+                    "data": "2026-10-30"
+                  }
+                ]
+              },
+              "resultado": {
+                "ok": true,
+                "hipotese_id": "H1",
+                "indicadores": {
+                  "saldo_inicial_centavos": 180000,
+                  "saldo_minimo_centavos": -20000,
+                  "data_saldo_minimo": "2026-11-15",
+                  "primeira_falta": {
+                    "data": "2026-11-15",
+                    "valor_descoberto_centavos": 20000,
+                    "saidas_do_dia": [
+                      "C"
+                    ]
+                  },
+                  "insuficiencia_centavos": 20000,
+                  "margem_hoje_centavos": 0,
+                  "saldo_final_centavos": 280000,
+                  "sem_recebimentos": {
+                    "insuficiencia_centavos": 20000,
+                    "primeira_falta": {
+                      "data": "2026-11-15",
+                      "valor_descoberto_centavos": 20000,
+                      "saidas_do_dia": [
+                        "C"
+                      ]
+                    },
+                    "saldo_final_centavos": -20000
+                  }
+                }
+              },
+              "duracao_ms": 4
+            }
+          ]
+        },
+        {
+          "mensagem_id": "m-0002",
+          "papel": "usuario",
+          "texto": "E se o salário cair no dia 9?",
+          "versao": 2,
+          "cartoes": [],
+          "rastro": []
+        },
+        {
+          "mensagem_id": "m-0002-r",
+          "papel": "assistente",
+          "texto": "Com o salário em 09/11, a falta some e o menor saldo fica em R$ 600,00, em 05/11. Isso depende do salário chegar.",
+          "versao": 2,
+          "cartoes": [],
+          "rastro": []
+        },
+        {
+          "mensagem_id": "m-0003",
+          "papel": "usuario",
+          "texto": "Guarda R$ 500 na caixinha da viagem.",
+          "versao": 3,
+          "cartoes": [],
+          "rastro": []
+        },
+        {
+          "mensagem_id": "m-0003-r",
+          "papel": "assistente",
+          "texto": "Antes de confirmar: com essa movimentação simulada, faltariam R$ 200,00 em 15/11. Confirma?",
+          "versao": 3,
+          "cartoes": [],
+          "rastro": []
+        },
+        {
+          "mensagem_id": "acao-OP1-confirmar",
+          "papel": "sistema",
+          "texto": "Movimentação simulada: R$ 500,00 para Caixinha Viagem. Nenhum dinheiro real foi movimentado.",
+          "versao": 4,
+          "cartoes": [],
+          "rastro": []
+        }
+      ],
+      "declaracoes": [],
+      "operacoes": [
+        {
+          "id": "OP1",
+          "valor_centavos": 50000,
+          "destino": "INV9",
+          "data": "2026-10-30"
+        }
+      ],
+      "operacao_pendente": null,
+      "hipoteses": [],
+      "contadores": {
+        "D": 0,
+        "H": 2,
+        "OP": 1
+      }
+    }
+  }
+}

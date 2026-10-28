@@ -1,0 +1,384 @@
+{
+  "exemplo": true,
+  "esquema": "VisaoApp",
+  "descricao": "P3 Duda, sessão nova (saldo 2.500; fatura E2 1.250; investimentos de CR-16)",
+  "dados": {
+    "marca": "neutra",
+    "prototipo": true,
+    "persona": {
+      "id": "p3",
+      "nome": "Duda (fictícia)"
+    },
+    "conta": {
+      "saldo_disponivel_hoje_centavos": 250000,
+      "saldo_inicio_hoje_centavos": 250000,
+      "operacoes_hoje": []
+    },
+    "extrato": [
+      {
+        "id": "L0349",
+        "data": "2026-10-28",
+        "descricao": "Padaria",
+        "tipo": "saida",
+        "meio": "debito",
+        "categoria": "mercado",
+        "valor_centavos": 1860,
+        "simulado": false
+      },
+      {
+        "id": "L0344",
+        "data": "2026-10-26",
+        "descricao": "Transporte",
+        "tipo": "saida",
+        "meio": "pix",
+        "categoria": "transporte",
+        "valor_centavos": 1250,
+        "simulado": false
+      },
+      {
+        "id": "L0337",
+        "data": "2026-10-18",
+        "descricao": "Financiamento",
+        "tipo": "saida",
+        "meio": "debito_automatico",
+        "categoria": "outros",
+        "valor_centavos": 130000,
+        "simulado": false
+      },
+      {
+        "id": "L0334",
+        "data": "2026-10-13",
+        "descricao": "Salário",
+        "tipo": "entrada",
+        "meio": "salario",
+        "categoria": "receitas",
+        "valor_centavos": 420000,
+        "simulado": false
+      }
+    ],
+    "proximos_pagamentos": [
+      {
+        "evento_id": "E1",
+        "data": "2026-11-04",
+        "descricao": "Mensalidade escolar",
+        "tipo": "saida",
+        "meio": "boleto",
+        "valor_centavos": 90000,
+        "previsto": false,
+        "estimativa_texto": null,
+        "origem": "dados_base"
+      },
+      {
+        "evento_id": "E2",
+        "data": "2026-11-05",
+        "descricao": "Fatura do cartão",
+        "tipo": "saida",
+        "meio": "debito",
+        "valor_centavos": 125000,
+        "previsto": false,
+        "estimativa_texto": null,
+        "origem": "dados_base"
+      },
+      {
+        "evento_id": "E3",
+        "data": "2026-11-13",
+        "descricao": "Salário",
+        "tipo": "entrada",
+        "meio": "salario",
+        "valor_centavos": 420000,
+        "previsto": true,
+        "estimativa_texto": null,
+        "origem": "dados_base"
+      },
+      {
+        "evento_id": "E4",
+        "data": "2026-11-18",
+        "descricao": "Financiamento",
+        "tipo": "saida",
+        "meio": "debito_automatico",
+        "valor_centavos": 130000,
+        "previsto": false,
+        "estimativa_texto": null,
+        "origem": "dados_base"
+      },
+      {
+        "evento_id": "E5",
+        "data": "2026-11-28",
+        "descricao": "Condomínio",
+        "tipo": "saida",
+        "meio": "boleto",
+        "valor_centavos": 65000,
+        "previsto": false,
+        "estimativa_texto": null,
+        "origem": "dados_base"
+      }
+    ],
+    "cartao": {
+      "limite_centavos": 600000,
+      "dia_fechamento": 29,
+      "dia_vencimento": 5,
+      "fatura_fechada": {
+        "fatura_id": "E2",
+        "fechamento": "2026-10-29",
+        "vencimento": "2026-11-05",
+        "status": "fechada",
+        "valor_centavos": 125000,
+        "itens": [
+          {
+            "lancamento_id": "L0311",
+            "data": "2026-10-03",
+            "parcelamento_id": null,
+            "parcela": null,
+            "origem": "dados_base",
+            "descricao": "Supermercado",
+            "valor_centavos": 48000
+          },
+          {
+            "lancamento_id": "L0318",
+            "data": "2026-10-09",
+            "parcelamento_id": null,
+            "parcela": null,
+            "origem": "dados_base",
+            "descricao": "Combustível",
+            "valor_centavos": 32000
+          },
+          {
+            "lancamento_id": "L0326",
+            "data": "2026-10-16",
+            "parcelamento_id": null,
+            "parcela": null,
+            "origem": "dados_base",
+            "descricao": "Restaurante",
+            "valor_centavos": 20000
+          },
+          {
+            "lancamento_id": "L0330",
+            "data": null,
+            "parcelamento_id": "PC1",
+            "parcela": "3/10",
+            "origem": "dados_base",
+            "descricao": "Geladeira",
+            "valor_centavos": 25000
+          }
+        ]
+      },
+      "fatura_aberta": {
+        "fatura_id": "F2612",
+        "fechamento": "2026-11-29",
+        "vencimento": "2026-12-05",
+        "status": "aberta",
+        "valor_centavos": 28790,
+        "itens": [
+          {
+            "lancamento_id": null,
+            "data": null,
+            "parcelamento_id": "PC1",
+            "parcela": "4/10",
+            "origem": "dados_base",
+            "descricao": "Geladeira",
+            "valor_centavos": 25000
+          },
+          {
+            "lancamento_id": "L0352",
+            "data": "2026-10-29",
+            "parcelamento_id": null,
+            "parcela": null,
+            "origem": "dados_base",
+            "descricao": "Farmácia",
+            "valor_centavos": 3790
+          }
+        ]
+      },
+      "proximas": [
+        {
+          "fatura_id": "F2701",
+          "fechamento": "2026-12-29",
+          "vencimento": "2027-01-05",
+          "status": "futura",
+          "valor_centavos": 25000,
+          "itens": [
+            {
+              "lancamento_id": null,
+              "data": null,
+              "parcelamento_id": "PC1",
+              "parcela": "5/10",
+              "origem": "dados_base",
+              "descricao": "Geladeira",
+              "valor_centavos": 25000
+            }
+          ]
+        },
+        {
+          "fatura_id": "F2702",
+          "fechamento": "2027-01-29",
+          "vencimento": "2027-02-05",
+          "status": "futura",
+          "valor_centavos": 25000,
+          "itens": [
+            {
+              "lancamento_id": null,
+              "data": null,
+              "parcelamento_id": "PC1",
+              "parcela": "6/10",
+              "origem": "dados_base",
+              "descricao": "Geladeira",
+              "valor_centavos": 25000
+            }
+          ]
+        },
+        {
+          "fatura_id": "F2703",
+          "fechamento": "2027-02-28",
+          "vencimento": "2027-03-05",
+          "status": "futura",
+          "valor_centavos": 25000,
+          "itens": [
+            {
+              "lancamento_id": null,
+              "data": null,
+              "parcelamento_id": "PC1",
+              "parcela": "7/10",
+              "origem": "dados_base",
+              "descricao": "Geladeira",
+              "valor_centavos": 25000
+            }
+          ]
+        },
+        {
+          "fatura_id": "F2704",
+          "fechamento": "2027-03-29",
+          "vencimento": "2027-04-05",
+          "status": "futura",
+          "valor_centavos": 25000,
+          "itens": [
+            {
+              "lancamento_id": null,
+              "data": null,
+              "parcelamento_id": "PC1",
+              "parcela": "8/10",
+              "origem": "dados_base",
+              "descricao": "Geladeira",
+              "valor_centavos": 25000
+            }
+          ]
+        },
+        {
+          "fatura_id": "F2705",
+          "fechamento": "2027-04-29",
+          "vencimento": "2027-05-05",
+          "status": "futura",
+          "valor_centavos": 25000,
+          "itens": [
+            {
+              "lancamento_id": null,
+              "data": null,
+              "parcelamento_id": "PC1",
+              "parcela": "9/10",
+              "origem": "dados_base",
+              "descricao": "Geladeira",
+              "valor_centavos": 25000
+            }
+          ]
+        },
+        {
+          "fatura_id": "F2706",
+          "fechamento": "2027-05-29",
+          "vencimento": "2027-06-05",
+          "status": "futura",
+          "valor_centavos": 25000,
+          "itens": [
+            {
+              "lancamento_id": null,
+              "data": null,
+              "parcelamento_id": "PC1",
+              "parcela": "10/10",
+              "origem": "dados_base",
+              "descricao": "Geladeira",
+              "valor_centavos": 25000
+            }
+          ]
+        }
+      ]
+    },
+    "posicoes": [
+      {
+        "cdi_pct": null,
+        "ticker": null,
+        "quantidade": null,
+        "valor_atual_centavos": 0,
+        "aplicado_centavos": 0,
+        "resultado_centavos": 0,
+        "rentabilidade_pct": "0.00",
+        "valorizacao_periodo_pct": null,
+        "data_disponibilidade": "2026-10-30",
+        "protecao": null,
+        "restricao": null,
+        "estimado": false,
+        "fonte": "sem rendimento",
+        "id": "SEP",
+        "nome": "Saldo separado",
+        "categoria": "saldo_separado"
+      },
+      {
+        "cdi_pct": 100,
+        "ticker": null,
+        "quantidade": null,
+        "valor_atual_centavos": 300000,
+        "aplicado_centavos": 300000,
+        "resultado_centavos": 0,
+        "rentabilidade_pct": "0.00",
+        "valorizacao_periodo_pct": null,
+        "data_disponibilidade": "2026-10-30",
+        "protecao": {
+          "tipo": "integral"
+        },
+        "restricao": "Reserva de emergência: não usar para objetivos",
+        "estimado": false,
+        "fonte": "CDI de teste (spec §11.4)",
+        "id": "INV6",
+        "nome": "Caixinha Reserva de emergência",
+        "categoria": "caixinha"
+      },
+      {
+        "cdi_pct": 110,
+        "ticker": null,
+        "quantidade": null,
+        "valor_atual_centavos": 155000,
+        "aplicado_centavos": 150000,
+        "resultado_centavos": 5000,
+        "rentabilidade_pct": "3.33",
+        "valorizacao_periodo_pct": null,
+        "data_disponibilidade": "2026-10-30",
+        "protecao": null,
+        "restricao": null,
+        "estimado": false,
+        "fonte": "CDI de teste (spec §11.4)",
+        "id": "INV7",
+        "nome": "CDB liquidez diária",
+        "categoria": "cdb_liquidez_diaria"
+      }
+    ],
+    "mercado": {
+      "ao_vivo": false,
+      "obtido_em": "2026-10-28T11:00:00-03:00",
+      "tentou_ao_vivo": false,
+      "cdi": {
+        "taxa_diaria_pct": "0.05",
+        "data_ref": "2026-10-29",
+        "fonte": "CDI de teste (spec §11.4)"
+      },
+      "precos": {
+        "ITUB4": {
+          "preco_centavos": 3300,
+          "data_hora": "2026-10-27T18:00:00-03:00",
+          "fonte": "brapi"
+        },
+        "BTC": {
+          "preco_centavos": 38000000,
+          "data_hora": "2026-10-27T21:00:00-03:00",
+          "fonte": "CoinGecko"
+        }
+      }
+    }
+  }
+}

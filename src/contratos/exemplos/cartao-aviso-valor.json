@@ -1,0 +1,12 @@
+{
+  "exemplo": true,
+  "esquema": "CartaoResposta",
+  "descricao": "P1 (G-01): valor do texto que não veio de cálculo do turno",
+  "dados": {
+    "tipo": "aviso_valor",
+    "valores_centavos": [
+      45000
+    ],
+    "mensagem": "O valor R$ 450,00 citado no texto não veio do cálculo. Confira a tabela."
+  }
+}

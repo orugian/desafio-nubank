@@ -1,0 +1,11 @@
+{
+  "exemplo": true,
+  "esquema": "CartaoResposta",
+  "descricao": "P1: rascunho para atendimento humano, não enviado",
+  "dados": {
+    "tipo": "rascunho_atendimento",
+    "motivo": "Compras não reconhecidas no cartão",
+    "texto": "Cliente relata compras que não reconhece no cartão. Pede orientação pelos canais oficiais. (Rascunho do protótipo, dados fictícios.)",
+    "enviado": false
+  }
+}
