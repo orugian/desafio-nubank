@@ -1,10 +1,31 @@
 import { describe, expect, test } from "vitest";
 import { esquemaAlocacaoCompra, esquemaResultadoCenario, type Alteracao } from "@/contratos";
-import { alocarCompra } from "@/dominio/cartao";
+import { alocarCompra, verificarDuplicidade } from "@/dominio/cartao";
 import { calcularCenarios, criarHipotese, registrarDeclaracao } from "@/dominio/caixa";
-import { CONTEXTO, P1, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
+import { CONTEXTO, P1, P3, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
 
 describe("B1b · cartão e caixa", () => {
+  test("CR-15a/C-07: saída igual à fatura fechada, aberta ou lançamento recente exige confirmação", () => {
+    const estado = estadoNovo(P3);
+    const antes = structuredClone(estado);
+    for (const [valor, descricao, fonte] of [["480", "Supermercado", "fatura"], ["76", "Café fictício", "fatura"], ["67", "Consulta fictícia", "lancamento"]]) {
+      const alt: Alteracao = { operacao: "adicionar_evento", tipo: "saida", descricao, data: "2026-10-30", valor, meio: "pix" };
+      const r = registrarDeclaracao(P3, estado, alt, origem());
+      expect(r.ok).toBe(false);
+      if (r.ok) continue;
+      expect(r.erro.codigo).toBe("POSSIVEL_DUPLICIDADE");
+      expect(r.erro.mensagem).toContain(descricao);
+      if (valor === "480") expect(r.erro.mensagem).toContain("Supermercado 480,00, fatura de 05/11");
+      const consulta = verificarDuplicidade(P3, { valor_centavos: reaisDaSpec(valor) });
+      expect(consulta.duplicado).toBe(true);
+      if (consulta.duplicado) expect(consulta.itens[0]).toMatchObject({ fonte, descricao, valor_centavos: reaisDaSpec(valor) });
+      const h = criarHipotese(P3, estado, { nome: "Gasto repetido", a_partir_de: "atual", alteracoes: [alt] }, origem());
+      expect(h.ok ? "ok" : h.erro.codigo).toBe("POSSIVEL_DUPLICIDADE");
+    }
+    expect(verificarDuplicidade(P3, { valor_centavos: reaisDaSpec("800") })).toEqual({ duplicado: false });
+    expect(estado).toEqual(antes);
+    expect(calcularCenarios(P3, estado, CONTEXTO)[0].linhas.map((l) => [l.evento_id, l.saldo_apos_centavos])).toEqual(saldosDaSpec("G1 2.430 · E1 1.530 · E2 280 · G2 210 · G3 140 · E3 4.340 · E4 3.040 · G4 2.970 · G5 2.940 · E5 2.290"));
+  });
   test.each(["alterar_evento", "remover_evento"] as const)("C-01: %s não altera item L0131 da fatura fechada", (operacao) => {
     const estado = estadoNovo(P1);
     const antes = structuredClone(estado);

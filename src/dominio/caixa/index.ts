@@ -8,6 +8,7 @@ import {
   erro,
   esquemaEstadoSessao,
   formatarReais,
+  formatarDiaMes,
   textos,
   validarArgumentos,
   type Alteracao,
@@ -25,7 +26,7 @@ import {
 import { diaJuliano, somarDias } from "@/dominio/calendario";
 import { projetar, type Evento } from "./projecao";
 import { comparar } from "./comparacao";
-import { alocarCompra } from "@/dominio/cartao";
+import { alocarCompra, verificarDuplicidade } from "@/dominio/cartao";
 import type { AlocacaoCompra } from "@/contratos";
 
 // Ordem de cadastro (R-05, §4.5): compromissos, blocos, declarações, operações, hipóteses.
@@ -136,6 +137,13 @@ function validar(persona: Persona, estado: EstadoSessao, cena: Cena, alt: Altera
       );
     }
     if (!alvo) return falha("EVENTO_INEXISTENTE", ["evento_id"], { evento_id: alt.evento_id });
+  }
+  if (alt.operacao === "adicionar_evento" && alt.tipo === "saida" && !alt.confirmar_nao_duplicado) {
+    const duplicidade = verificarDuplicidade(persona, { valor_centavos: paraCentavos(alt.valor) });
+    if (duplicidade.duplicado) {
+      const citacoes = duplicidade.itens.map((i) => `${i.descricao} ${formatarReais(i.valor_centavos).replace("R$ ", "")}, ${i.vencimento ? `fatura de ${formatarDiaMes(i.vencimento)}` : `lançamento de ${formatarDiaMes(i.data!)}`}`);
+      return falha("POSSIVEL_DUPLICIDADE", ["valor", "confirmar_nao_duplicado"], { itens: duplicidade.itens }, `${textos.erros.POSSIVEL_DUPLICIDADE} ${citacoes.join("; ")}. Confirme se é outra compra.`);
+    }
   }
   if (alt.operacao === "adicionar_evento" && alt.meio === "cartao_credito") {
     const r = alocarCompra(persona, estado, { data: alt.data, valor_centavos: paraCentavos(alt.valor), parcelas: alt.parcelas ?? 1 });

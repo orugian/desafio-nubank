@@ -56,8 +56,19 @@ export function alocarCompra(
 
 /** C-07: valor igual a item de fatura fechada ou aberta, ou a lançamento de 23/10 a 29/10. */
 export function verificarDuplicidade(persona: Persona, gasto: { valor_centavos: number }): ResultadoDuplicidade {
-  void persona, gasto;
-  throw new Error("não implementado");
+  const itens: Extract<ResultadoDuplicidade, { duplicado: true }>["itens"] = [];
+  for (const f of persona.cartao?.faturas ?? []) {
+    for (const i of f.itens) {
+      if (i.valor_centavos !== gasto.valor_centavos) continue;
+      itens.push({ fonte: "fatura", fatura_id: f.id, vencimento: f.vencimento, lancamento_id: i.lancamento_id ?? null, data: i.data ?? null, descricao: i.descricao, valor_centavos: i.valor_centavos });
+    }
+  }
+  for (const l of persona.historico) {
+    if (l.data < "2026-10-23" || l.data > "2026-10-29" || l.valor_centavos !== gasto.valor_centavos) continue;
+    if (itens.some((i) => i.lancamento_id === l.id)) continue;
+    itens.push({ fonte: "lancamento", fatura_id: null, vencimento: null, lancamento_id: l.id, data: l.data, descricao: l.descricao, valor_centavos: l.valor_centavos });
+  }
+  return itens.length ? { duplicado: true, itens } : { duplicado: false };
 }
 
 /** Fatura fechada, aberta e próximas, na situação atual. null para persona sem cartão. */

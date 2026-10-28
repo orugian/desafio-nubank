@@ -136,8 +136,8 @@ export const P3: Persona = esquemaPersona.parse({
   id: "p3",
   nome: "Duda (fictícia)",
   resumo: "Tem filhos na escola, financiamento e compras parceladas no cartão.",
-  conta: { saldo_30_07_centavos: 250000, saldo_inicio_hoje_centavos: 250000 },
-  historico: [],
+  conta: { saldo_30_07_centavos: 256700, saldo_inicio_hoje_centavos: 250000 },
+  historico: [{ id: "L0301", data: "2026-10-23", descricao: "Consulta fictícia", tipo: "saida", meio: "debito", categoria: "saude", valor_centavos: 6700 }],
   compromissos: [
     compromisso("E1", "saida", "educacao", "Mensalidade escolar", "2026-11-04", 900, "boleto", "boleto"),
     compromisso("E3", "entrada", "receitas", "Salário", "2026-11-13", 4200, "salario", "recebimento_previsto", { previsto: true }),
@@ -165,6 +165,10 @@ export const P3: Persona = esquemaPersona.parse({
           { data: "2026-10-16", descricao: "Restaurante", valor_centavos: 20000 },
           { descricao: "Geladeira", valor_centavos: 25000, parcelamento_id: "PC1", parcela: "3/10" },
         ],
+      },
+      {
+        id: "F2612", fechamento: "2026-11-29", vencimento: "2026-12-05", status: "aberta", valor_centavos: 7600,
+        itens: [{ lancamento_id: "L0302", data: "2026-10-29", descricao: "Café fictício", valor_centavos: 7600 }],
       },
     ],
   },
