@@ -1,7 +1,7 @@
 // Investimentos (spec §5.4, §6.1). Implementação no B3b.
 
 import Decimal from "decimal.js";
-import { HOJE, INICIO_HISTORICO, formatarDiaMes, textos } from "@/contratos";
+import { FIM_JANELA, HOJE, INICIO_HISTORICO, dataExiste, erro, formatarDiaMes, textos } from "@/contratos";
 import type {
   Contexto,
   DataISO,
@@ -309,8 +309,43 @@ export function projetarRendimento(
   contexto: Contexto,
   pedido: { valor_centavos: number; cdi_pct: number; ate_data: DataISO },
 ): ResultadoDominio<Omit<ResultadoProjecao, "destino">> {
-  void mercado, contexto, pedido;
-  throw new Error("não implementado");
+  if (!Number.isInteger(pedido.valor_centavos) || pedido.valor_centavos <= 0) {
+    return erro("VALOR_INVALIDO", textos.erros.VALOR_INVALIDO, ["valor_centavos"]);
+  }
+  if (!(pedido.cdi_pct > 0 && pedido.cdi_pct <= 300)) {
+    return erro("ARGUMENTOS_INVALIDOS", textos.erros.ARGUMENTOS_INVALIDOS, ["cdi_pct"]);
+  }
+  if (!dataExiste(pedido.ate_data)) {
+    return erro("ARGUMENTOS_INVALIDOS", textos.erros.ARGUMENTOS_INVALIDOS, ["ate_data"]);
+  }
+  if (pedido.ate_data < HOJE) {
+    return erro("DATA_ANTES_DE_HOJE", textos.erros.DATA_ANTES_DE_HOJE, ["ate_data"]);
+  }
+  if (pedido.ate_data > FIM_JANELA) {
+    return erro("DATA_FORA_DA_JANELA", textos.erros.DATA_FORA_DA_JANELA, ["ate_data"]);
+  }
+
+  const diasUteis = contexto.calendario.diasUteisEntre(HOJE, pedido.ate_data);
+  const taxaDia = new DecimalCdi(mercado.cdi.taxa_diaria_pct).div(100);
+  const pct = new DecimalCdi(pedido.cdi_pct).div(100);
+  const fatorDiario = new DecimalCdi(1).add(taxaDia.mul(pct));
+  const fatorPeriodo = fatorDiario.pow(diasUteis).sub(1);
+  const rendimentoBruto = new DecimalCdi(pedido.valor_centavos)
+    .mul(fatorPeriodo)
+    .toDecimalPlaces(0, Decimal.ROUND_HALF_UP)
+    .toNumber();
+
+  return {
+    ok: true,
+    valor_centavos: pedido.valor_centavos,
+    cdi_pct: pedido.cdi_pct,
+    ate_data: pedido.ate_data,
+    dias_uteis: diasUteis,
+    taxa_diaria_pct: mercado.cdi.taxa_diaria_pct,
+    cdi_data_ref: mercado.cdi.data_ref,
+    rendimento_bruto_centavos: rendimentoBruto,
+    rotulo: textos.rotulos.projecao,
+  };
 }
 
 /** I-01, I-02: primeiro dia com o valor em conta se o pedido for feito hoje. */

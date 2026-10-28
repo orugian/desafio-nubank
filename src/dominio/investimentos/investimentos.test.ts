@@ -3,12 +3,13 @@ import {
   esquemaPersona,
   esquemaPosicao,
   esquemaResultadoInvestimentos,
+  esquemaResultadoProjecao,
   estadoInicial,
   type Contexto,
   type Persona,
   type Posicao,
 } from "@/contratos";
-import { consultarInvestimentos, dataDisponivel } from "@/dominio/investimentos";
+import { consultarInvestimentos, dataDisponivel, projetarRendimento } from "@/dominio/investimentos";
 import { criarHipotese } from "@/dominio/caixa";
 import { confirmarMovimentacao, proporMovimentacao } from "@/dominio/operacoes";
 import { criarCalendario, diaDaSemana, somarDias } from "@/dominio/calendario";
@@ -433,6 +434,49 @@ describe("B3b · investimentos", () => {
       nao_resgatavel_centavos: 0,
       resgatavel_centavos: reaisDaSpec("1.550"),
     });
+  });
+
+  test("CR-32 e I-08: projeção de rendimento bruto CDI e erros de data fora da janela ou antes de hoje", () => {
+    const r = projetarRendimento(MERCADO_TESTE, CONTEXTO, {
+      valor_centavos: reaisDaSpec("500"),
+      cdi_pct: 100,
+      ate_data: "2026-11-19",
+    });
+    if (!r.ok) throw new Error(r.erro.mensagem);
+    esquemaResultadoProjecao.parse({ ...r, destino: null });
+    expect({
+      valor_centavos: r.valor_centavos,
+      cdi_pct: r.cdi_pct,
+      ate_data: r.ate_data,
+      dias_uteis: r.dias_uteis,
+      taxa_diaria_pct: r.taxa_diaria_pct,
+      cdi_data_ref: r.cdi_data_ref,
+      rendimento_bruto_centavos: r.rendimento_bruto_centavos,
+      rotulo: r.rotulo,
+    }).toEqual({
+      valor_centavos: reaisDaSpec("500"),
+      cdi_pct: 100,
+      ate_data: "2026-11-19",
+      dias_uteis: 13,
+      taxa_diaria_pct: "0.05",
+      cdi_data_ref: "2026-10-29",
+      rendimento_bruto_centavos: reaisDaSpec("3,26"),
+      rotulo: "bruto, CDI constante",
+    });
+
+    const foraJanela = projetarRendimento(MERCADO_TESTE, CONTEXTO, {
+      valor_centavos: reaisDaSpec("500"),
+      cdi_pct: 100,
+      ate_data: "2026-11-30",
+    });
+    expect(foraJanela.ok ? "ok" : foraJanela.erro.codigo).toBe("DATA_FORA_DA_JANELA");
+
+    const antesHoje = projetarRendimento(MERCADO_TESTE, CONTEXTO, {
+      valor_centavos: reaisDaSpec("500"),
+      cdi_pct: 100,
+      ate_data: "2026-10-29",
+    });
+    expect(antesHoje.ok ? "ok" : antesHoje.erro.codigo).toBe("DATA_ANTES_DE_HOJE");
   });
 });
 
