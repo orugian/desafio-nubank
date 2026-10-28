@@ -30,6 +30,12 @@ import {
 } from "@/contratos";
 import { obterClientePadrao, type ClienteApi } from "./cliente-api";
 import { CamadaChat } from "./componentes/CamadaChat";
+import {
+  TelaCartao,
+  TelaComoFunciona,
+  TelaConta,
+  TelaInvestimentos,
+} from "./componentes/TelasDetalhe";
 
 export type AbaTela = "home" | "investimentos" | "conta" | "cartao" | "como_funciona";
 
@@ -443,11 +449,17 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
                     <p className="text-xs text-[#646464] mt-1">Fatura fechada</p>
                     <p className="text-xl font-semibold text-[#111111] mt-0.5 tabular-nums">
                       {mostrarSaldos
-                        ? formatarReais(visao.cartao.fatura_fechada.valor_centavos)
+                        ? formatarReais(
+                            (visao.cartao.fatura_fechada ?? visao.cartao.fatura_aberta)
+                              .valor_centavos,
+                          )
                         : "••••"}
                     </p>
                     <p className="text-xs text-[#646464] mt-1">
-                      Vencimento {formatarDiaMes(visao.cartao.fatura_fechada.vencimento)}
+                      Vencimento{" "}
+                      {formatarDiaMes(
+                        (visao.cartao.fatura_fechada ?? visao.cartao.fatura_aberta).vencimento,
+                      )}
                     </p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-[#646464]" />
@@ -490,6 +502,39 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
               </div>
             </section>
           </div>
+        )}
+
+        {abaAtual === "investimentos" && (
+          <TelaInvestimentos
+            visao={visao}
+            mostrarSaldos={mostrarSaldos}
+            aoNaoDisponivel={acionarNaoDisponivel}
+          />
+        )}
+
+        {abaAtual === "conta" && (
+          <TelaConta
+            visao={visao}
+            mostrarSaldos={mostrarSaldos}
+            aoVoltar={() => setAbaAtual("home")}
+            aoNaoDisponivel={acionarNaoDisponivel}
+          />
+        )}
+
+        {abaAtual === "cartao" && (
+          <TelaCartao
+            visao={visao}
+            aoVoltar={() => setAbaAtual("home")}
+            aoNaoDisponivel={acionarNaoDisponivel}
+          />
+        )}
+
+        {abaAtual === "como_funciona" && (
+          <TelaComoFunciona
+            config={config}
+            estado={estado}
+            aoVoltar={() => setAbaAtual("home")}
+          />
         )}
 
         {/* Botão NewAI flutuante em todas as telas */}

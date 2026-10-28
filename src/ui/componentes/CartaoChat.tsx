@@ -353,15 +353,15 @@ export function CartaoChat({
   }
 
   if (cartao.tipo === "cartao_credito") {
+    const faturaRef = cartao.cartao.fatura_fechada ?? cartao.cartao.fatura_aberta;
     return (
       <div className="mt-2 rounded-2xl border border-[#EEEEEE] bg-white p-3.5 text-xs flex flex-col gap-2">
         <div className="font-semibold text-sm">
-          Cartão · Fatura fechada ({cartao.cartao.fatura_fechada.fatura_id}):{" "}
-          {formatarReais(cartao.cartao.fatura_fechada.valor_centavos)}
+          Cartão · Fatura ({faturaRef.fatura_id}): {formatarReais(faturaRef.valor_centavos)}
         </div>
         <TabelaCompartilhada
-          caption="Itens da fatura fechada"
-          itens={cartao.cartao.fatura_fechada.itens}
+          caption="Itens da fatura"
+          itens={faturaRef.itens}
           obterChave={(i, idx) => `${i.descricao}-${idx}`}
           colunas={[
             {
