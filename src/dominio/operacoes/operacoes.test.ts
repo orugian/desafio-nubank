@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { esquemaConfirmacaoMovimentacao, esquemaPropostaMovimentacao } from "@/contratos";
+import { esquemaConfirmacaoMovimentacao, esquemaPropostaMovimentacao, type EstadoSessao } from "@/contratos";
 import { cancelarMovimentacao, confirmarMovimentacao, proporMovimentacao } from "@/dominio/operacoes";
 import { calcularCenarios, compararCenarios, criarHipotese, registrarDeclaracao, validarEstado } from "@/dominio/caixa";
 import { CONTEXTO, P1, P3, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
@@ -14,6 +14,30 @@ const indicadoresCR02 = () => {
 };
 
 describe("B1c · operações simuladas", () => {
+  test("CR-19/O-05: validarEstado rejeita operação ou pendente adulterada", () => {
+    const p = proporMovimentacao(P1, estadoNovo(P1), { valor: "500", destino: "INV9" }, CONTEXTO);
+    if (!p.ok) throw new Error(p.erro.mensagem);
+    const r = confirmarMovimentacao(P1, p.estado, "OP1");
+    if (!r.ok) throw new Error(r.erro.mensagem);
+    const adulterados: EstadoSessao[] = [
+      { ...r.estado, operacoes: [{ ...r.operacao, data: "2026-11-01" }] },
+      { ...r.estado, operacoes: [{ ...r.operacao, destino: "INV999" }] },
+      { ...r.estado, operacoes: [r.operacao, r.operacao] },
+      { ...r.estado, contadores: { ...r.estado.contadores, OP: 0 } },
+      { ...p.estado, operacao_pendente: { ...p.operacao_pendente, criada_na_versao: 1 } },
+      { ...p.estado, operacao_pendente: { ...p.operacao_pendente, destino: "INV999" } },
+      { ...p.estado, contadores: { ...p.estado.contadores, OP: 0 } },
+      { ...r.estado, operacao_pendente: p.operacao_pendente },
+    ];
+    for (const estado of adulterados) {
+      const resultado = validarEstado(P1, estado, CONTEXTO);
+      expect(resultado.ok ? "ok" : resultado.erro.codigo).toBe("ESTADO_INVALIDO");
+    }
+    expect(validarEstado(P1, p.estado, CONTEXTO)).toEqual({ ok: true });
+    expect(validarEstado(P1, r.estado, CONTEXTO)).toEqual({ ok: true });
+    const alterar = registrarDeclaracao(P1, r.estado, { operacao: "alterar_evento", evento_id: "OP1", valor: "300" }, origem());
+    expect(alterar.ok ? "ok" : alterar.erro.codigo).toBe("OPERACAO_NAO_PERMITIDA");
+  });
   test("R-24/CR-40/CR-41: comparação distingue proposta, cancelamento, expiração e hipóteses descartadas", () => {
     const inicial = estadoNovo(P1);
     const entrada = (estado: typeof inicial) => ({ estado, cenarios: calcularCenarios(P1, estado, CONTEXTO) });

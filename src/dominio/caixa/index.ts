@@ -437,6 +437,20 @@ export function validarEstado(persona: Persona, estado: EstadoSessao, contexto: 
   if (e.hipoteses.some((h) => numero(h.id) > e.contadores.H)) return invalido("contador H atrás de id usado");
   if (e.hipoteses.length > LIMITES.hipoteses_ativas) return invalido("hipóteses demais");
 
+  const destinoPermitido = (id: string) => persona.posicoes.some((p) => p.id === id && (p.categoria === "saldo_separado" || p.categoria === "caixinha"));
+  if (new Set(ids(e.operacoes)).size !== e.operacoes.length) return invalido("operação repetida");
+  for (const op of e.operacoes) {
+    if (numero(op.id) < 1 || numero(op.id) > e.contadores.OP) return invalido("contador OP atrás de id usado");
+    if (op.data !== HOJE) return invalido("operação fora de hoje");
+    if (!destinoPermitido(op.destino)) return invalido("destino de operação inválido");
+  }
+  if (e.operacao_pendente) {
+    const op = e.operacao_pendente;
+    if (numero(op.id) < 1 || numero(op.id) > e.contadores.OP || e.operacoes.some((executada) => executada.id === op.id)) return invalido("id da pendente inválido");
+    if (op.criada_na_versao > e.versao) return invalido("pendente criada no futuro");
+    if (!destinoPermitido(op.destino)) return invalido("destino da pendente inválido");
+  }
+
   // Replay das declarações na ordem.
   let cena = cenaBase(persona);
   for (const [k, d] of e.declaracoes.entries()) {
