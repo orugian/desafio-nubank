@@ -1,0 +1,30 @@
+{
+  "id": "chatcmpl-b9c2be9d-59a0-44c8-978e-97273ab70216",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "content": "Qual será o meio de pagamento do conserto: Pix, débito, boleto, débito automático ou cartão de crédito?  \nA data simulada será 06/11/2026.",
+        "refusal": null,
+        "role": "assistant",
+        "reasoning_content": "We need payment method unknown. Ask before tool. Also date 2026-11-06 likely. Need ask meio."
+      },
+      "finish_reason": "stop",
+      "logprobs": null
+    }
+  ],
+  "created": 1793203664,
+  "model": "minimaxai/minimax-m3.1-flash",
+  "object": "chat.completion",
+  "usage": {
+    "prompt_tokens": 5025,
+    "completion_tokens": 65,
+    "total_tokens": 5090,
+    "prompt_tokens_details": {
+      "cached_tokens": 4992
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 26
+    }
+  }
+}
