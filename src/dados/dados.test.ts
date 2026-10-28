@@ -1,11 +1,17 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
-import { estadoInicial } from "@/contratos";
+import { esquemaSerieCdi, esquemaSerieFechamentos, estadoInicial, type Contexto } from "@/contratos";
 import { carregarPersona, listarPersonas, verificarInvariantes } from "@/dados";
 import { calcularCenarios } from "@/dominio/caixa";
+import { criarCalendario } from "@/dominio/calendario";
 import { consultarCartao } from "@/dominio/cartao";
+import { consultarInvestimentos } from "@/dominio/investimentos";
+import { snapshotGravado } from "@/mercado";
 import { CONTEXTO, MERCADO_TESTE, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
+import cdiBruto from "../../dados/mercado/cdi.json";
+import btcBruto from "../../dados/mercado/fechamentos-BTC.json";
+import petr4Bruto from "../../dados/mercado/fechamentos-PETR4.json";
 
 // B0 · comportamento 4: carregarPersona("p1") com a P1 mínima passa nos
 // invariantes aplicáveis (spec §4.2). A P1 mínima não tem histórico.
@@ -258,5 +264,58 @@ describe("B2 · 3: com as personas geradas, motor reproduz CR-01, CR-09 e CR-13 
       ["Restaurante", reaisDaSpec("200"), null],
       ["Geladeira", reaisDaSpec("250"), "3/10"],
     ]);
+  });
+});
+
+describe("B2 · 5: conferência independente (Python) vs motor TypeScript nas 3 personas e séries reais", () => {
+  test("relatório de scripts/personas/conferencia.json existe, tem diferencas = 0 e bate exatamente com o motor TS", () => {
+    const caminhoRelatorio = join(__dirname, "..", "..", "scripts", "personas", "conferencia.json");
+    const relatorio = JSON.parse(readFileSync(caminhoRelatorio, "utf8"));
+    expect(relatorio.diferencas).toBe(0);
+
+    const cdi = esquemaSerieCdi.parse(cdiBruto);
+    const petr4 = esquemaSerieFechamentos.parse(petr4Bruto);
+    const btc = esquemaSerieFechamentos.parse(btcBruto);
+    const ctxReal: Contexto = {
+      series: {
+        cdi,
+        fechamentos: { PETR4: petr4, BTC: btc },
+      },
+      calendario: criarCalendario({ datas_cdi: cdi.serie.map((x) => x.data) }),
+    };
+    const snap = snapshotGravado();
+
+    for (const id of ["p1", "p2", "p3"] as const) {
+      const rp = carregarPersona(id);
+      if (!rp.ok) throw new Error(rp.erro.mensagem);
+      const p = rp.persona;
+      const py = relatorio.personas[id];
+
+      expect(py.saldo_inicio_hoje_centavos).toBe(p.conta.saldo_inicio_hoje_centavos);
+      expect(py.gasto_diario_centavos).toBe(p.gasto_diario.valor_centavos);
+      expect(py.faturas).toEqual(
+        (p.cartao?.faturas ?? []).map((f) => ({ id: f.id, vencimento: f.vencimento, valor_centavos: f.valor_centavos })),
+      );
+      expect(py.contas_estimadas).toEqual(
+        p.compromissos
+          .filter((c) => c.estimativa !== null)
+          .map((c) => ({ id: c.id, valor_centavos: c.valor_centavos })),
+      );
+
+      const inv = consultarInvestimentos(p, estadoInicial(id, snap), ctxReal, {});
+      if (!inv.ok) throw new Error(inv.erro.mensagem);
+      expect(py.posicoes).toEqual(
+        inv.posicoes.map((pos) => ({
+          posicao_id: pos.posicao_id,
+          aplicado_centavos: pos.aplicado_centavos,
+          valor_atual_centavos: pos.valor_atual_centavos,
+          resultado_centavos: pos.resultado_centavos,
+          rentabilidade_pct: pos.rentabilidade_pct,
+          valorizacao_periodo_pct: pos.valorizacao_periodo_pct,
+          data_disponibilidade: pos.data_disponibilidade,
+        })),
+      );
+      expect(py.totais).toEqual(inv.totais);
+    }
   });
 });
