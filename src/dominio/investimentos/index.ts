@@ -215,7 +215,10 @@ export function consultarInvestimentos(
     let fonte = "sem rendimento";
 
     if (pos.categoria === "saldo_separado") {
-      for (const ap of pos.aportes) aplicado += ap.valor_centavos;
+      const aportesOperacao = estado.operacoes
+        .filter((op) => op.destino === pos.id)
+        .map((op) => ({ data: op.data, valor_centavos: op.valor_centavos }));
+      for (const ap of [...pos.aportes, ...aportesOperacao]) aplicado += ap.valor_centavos;
       valorAtual = aplicado;
     } else if (
       pos.categoria === "caixinha" ||
@@ -224,7 +227,10 @@ export function consultarInvestimentos(
       pos.categoria === "fundo"
     ) {
       cdiPct = pos.cdi_pct;
-      const aval = avaliarRendaFixaCdi(pos.aportes, pos.cdi_pct, contexto, taxaNoDia);
+      const aportesOperacao = estado.operacoes
+        .filter((op) => op.destino === pos.id)
+        .map((op) => ({ data: op.data, valor_centavos: op.valor_centavos }));
+      const aval = avaliarRendaFixaCdi([...pos.aportes, ...aportesOperacao], pos.cdi_pct, contexto, taxaNoDia);
       aplicado = aval.aplicado;
       valorAtual = aval.valorAtual;
       if (aval.ultimaRefUsada && aval.ultimaRefUsada > cdiDataRef) cdiDataRef = aval.ultimaRefUsada;

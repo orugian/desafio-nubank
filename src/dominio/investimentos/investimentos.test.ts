@@ -10,6 +10,7 @@ import {
 } from "@/contratos";
 import { consultarInvestimentos, dataDisponivel } from "@/dominio/investimentos";
 import { criarHipotese } from "@/dominio/caixa";
+import { confirmarMovimentacao, proporMovimentacao } from "@/dominio/operacoes";
 import { criarCalendario, diaDaSemana, somarDias } from "@/dominio/calendario";
 import { CONTEXTO, MERCADO_TESTE, P1, P2, P3, origem, reaisDaSpec } from "@/dominio/caixa/testes/personas";
 
@@ -385,6 +386,50 @@ describe("B3b · investimentos", () => {
     expect(r16.totais).toEqual({
       valor_total_centavos: reaisDaSpec("4.550"),
       protegido_centavos: reaisDaSpec("3.000"),
+      nao_resgatavel_centavos: 0,
+      resgatavel_centavos: reaisDaSpec("1.550"),
+    });
+  });
+
+  test("CR-41 e CR-45: operações executadas viram aporte de hoje em INV9, SEP e reserva protegida INV6", () => {
+    // CR-41: propor e confirmar 500 em INV9 (Caixinha Viagem) → INV9 aplicado 500 e valor 500.
+    const prop41 = proporMovimentacao(P1_FIXA, estadoInicial(P1_FIXA.id, MERCADO_VALORES_TESTE), { valor: "500", destino: "INV9" }, CONTEXTO_VALOR_FIXO);
+    if (!prop41.ok) throw new Error(prop41.erro.mensagem);
+    const conf41 = confirmarMovimentacao(P1_FIXA, prop41.estado, "OP1");
+    if (!conf41.ok) throw new Error(conf41.erro.mensagem);
+
+    const r41 = consultarInvestimentos(P1_FIXA, conf41.estado, CONTEXTO_VALOR_FIXO, { ate_data: "2026-11-15" });
+    if (!r41.ok) throw new Error(r41.erro.mensagem);
+    const inv9 = r41.posicoes.find((p) => p.posicao_id === "INV9")!;
+    expect({
+      aplicado: inv9.aplicado_centavos,
+      valor: inv9.valor_atual_centavos,
+      resgatavel: inv9.resgatavel_centavos,
+      rentabilidade: inv9.rentabilidade_pct,
+    }).toEqual({
+      aplicado: reaisDaSpec("500"),
+      valor: reaisDaSpec("500"),
+      resgatavel: reaisDaSpec("500"),
+      rentabilidade: "0.00",
+    });
+
+    // CR-45: guardar 500 na Caixinha Reserva (INV6), confirmar, consultar até 06/11 → INV6 continua protegida, total 5.050, protegido 3.500, resgatável 1.550.
+    const prop45 = proporMovimentacao(P3_FIXA, estadoInicial(P3_FIXA.id, MERCADO_VALORES_TESTE), { valor: "500", destino: "INV6" }, CONTEXTO_VALOR_FIXO);
+    if (!prop45.ok) throw new Error(prop45.erro.mensagem);
+    const conf45 = confirmarMovimentacao(P3_FIXA, prop45.estado, "OP1");
+    if (!conf45.ok) throw new Error(conf45.erro.mensagem);
+
+    const r45 = consultarInvestimentos(P3_FIXA, conf45.estado, CONTEXTO_VALOR_FIXO, { ate_data: "2026-11-06" });
+    if (!r45.ok) throw new Error(r45.erro.mensagem);
+    const inv6 = r45.posicoes.find((p) => p.posicao_id === "INV6")!;
+    expect(inv6.classificacao).toBe("protegida");
+    expect(inv6.aplicado_centavos).toBe(reaisDaSpec("3.500"));
+    expect(inv6.valor_atual_centavos).toBe(reaisDaSpec("3.500"));
+    expect(inv6.protegido_centavos).toBe(reaisDaSpec("3.500"));
+    expect(inv6.resgatavel_centavos).toBe(0);
+    expect(r45.totais).toEqual({
+      valor_total_centavos: reaisDaSpec("5.050"),
+      protegido_centavos: reaisDaSpec("3.500"),
       nao_resgatavel_centavos: 0,
       resgatavel_centavos: reaisDaSpec("1.550"),
     });
