@@ -5,6 +5,23 @@ import { calcularCenarios, compararCenarios, criarHipotese, desfazer, registrarD
 import { CONTEXTO, P1, P2, P3, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "./testes/personas";
 import { esquemaPersona, type Alteracao, type EstadoSessao, type Persona, type ResultadoCenario } from "@/contratos";
 
+import { proporMovimentacao, confirmarMovimentacao } from "@/dominio/operacoes";
+
+test("B1c · CR-46: separa 300 no Saldo separado confirma operação com alerta de falta", () => {
+  const p = proporMovimentacao(P3, estadoNovo(P3), { valor: "300", destino: "SEP" }, CONTEXTO);
+  if (!p.ok) throw new Error(p.erro.mensagem);
+  expect(p.destino).toEqual({ posicao_id: "SEP", nome: "Saldo separado", rende: false, cdi_pct: null });
+  expect(p.alerta).toBe("Com essa movimentação, faltariam R$ 20,00 em 05/11.");
+  const r = confirmarMovimentacao(P3, p.estado, "OP1");
+  if (!r.ok) throw new Error(r.erro.mensagem);
+  expect(r.operacao.destino).toBe("SEP");
+  conferirLinhaDaSpec(calcularCenarios(P3, r.estado, CONTEXTO)[0], {
+    saldos: "G1 2.430 · OP1 2.130 · E1 1.230 · E2 −20 · G2 −90 · G3 −160 · E3 4.040 · E4 2.740 · G4 2.670 · G5 2.640 · E5 1.990",
+    minimo: ["−160", "2026-11-13"], falta: ["2026-11-05", "20", ["E2"]], insuf: "160", margem: "0", final: "1.990",
+    sem: ["2.210", ["2026-11-05", "20", ["E2"]], "−2.210"], avisos: ["saldo_final_positivo_com_falta", "falta_maior_sem_recebimento"], ordem: [],
+  });
+});
+
 const saldos = (c: ResultadoCenario) => c.linhas.map((l) => [l.evento_id, l.saldo_apos_centavos]);
 
 describe("B1 · motor de caixa · P1", () => {
