@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
-import { calcularCenarios, compararCenarios, criarHipotese, registrarDeclaracao } from "@/dominio/caixa";
+import { calcularCenarios, compararCenarios, criarHipotese, desfazer, registrarDeclaracao } from "@/dominio/caixa";
 import { CONTEXTO, P1, P2, P3, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "./testes/personas";
 import { esquemaPersona, type Alteracao, type EstadoSessao, type Persona, type ResultadoCenario } from "@/contratos";
 
@@ -321,5 +321,45 @@ describe("B1 · motor de caixa · P1", () => {
       expect(atual.indicadores?.insuficiencia_centavos).toBe(30000);
       expect(atual.indicadores?.saldo_minimo_centavos).toBe(-30000);
     }
+  });
+
+  describe("desfazer", () => {
+    const comH1 = () => {
+      const r = criarHipotese(P1, estadoNovo(P1), { nome: "Separar R$ 500 hoje", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500" }] }, origem("m-1"));
+      if (!r.ok) throw new Error(r.erro.mensagem);
+      return r.estado;
+    };
+
+    test("CR-17g: desfazer H1 após CR-02 deixa os números de CR-01 e H1 não é reutilizado", () => {
+      const r = desfazer(P1, comH1(), "H1");
+      expect(r.ok ? "" : r.erro.mensagem).toBe("");
+      if (!r.ok) return;
+      expect(r.removido).toBe("H1");
+      const cenarios = calcularCenarios(P1, r.estado, CONTEXTO);
+      expect(cenarios.map((c) => c.cenario_id)).toEqual(["atual"]);
+      expect(saldos(cenarios[0])).toEqual(saldosDaSpec("A 1.100 · B 500 · C 300 · R1 3.300"));
+      expect(cenarios[0].indicadores?.margem_hoje_centavos).toBe(reaisDaSpec("300"));
+
+      const nova = criarHipotese(P1, r.estado, { nome: "Outra", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "100" }] }, origem("m-3"));
+      expect(nova.ok && nova.hipotese_id).toBe("H2");
+    });
+
+    test("desfazer D1 depois de CR-04 volta atual a CR-01 e H1 a CR-02", () => {
+      const d = registrarDeclaracao(P1, comH1(), { operacao: "alterar_evento", evento_id: "C", valor: "150" }, origem("m-2"));
+      if (!d.ok) throw new Error(d.erro.mensagem);
+      const r = desfazer(P1, d.estado, "D1");
+      if (!r.ok) throw new Error(r.erro.mensagem);
+      const [atual, h1] = calcularCenarios(P1, r.estado, CONTEXTO);
+      expect(saldos(atual)).toEqual(saldosDaSpec("A 1.100 · B 500 · C 300 · R1 3.300"));
+      expect(saldos(h1)).toEqual(saldosDaSpec("H1.1 1.300 · A 600 · B 0 · C −200 · R1 2.800"));
+      expect(r.estado.contadores.D).toBe(1);
+    });
+
+    test("alvo inexistente → HIPOTESE_INEXISTENTE ou ALTERACAO_INEXISTENTE, estado inalterado", () => {
+      const estado = comH1();
+      const h = desfazer(P1, estado, "H7");
+      const d = desfazer(P1, estado, "D3");
+      expect([h.ok ? "ok" : h.erro.codigo, d.ok ? "ok" : d.erro.codigo]).toEqual(["HIPOTESE_INEXISTENTE", "ALTERACAO_INEXISTENTE"]);
+    });
   });
 });

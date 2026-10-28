@@ -278,8 +278,27 @@ export function desfazer(
   estado: EstadoSessao,
   alvo_id: string,
 ): ResultadoDominio<{ estado: EstadoSessao; removido: string }> {
-  void persona, estado, alvo_id;
-  throw new Error("não implementado");
+  if (/^H\d+$/.test(alvo_id)) {
+    if (!estado.hipoteses.some((h) => h.id === alvo_id)) return { ok: false, erro: falha("HIPOTESE_INEXISTENTE", ["alvo_id"], { alvo_id }) };
+    return { ok: true, removido: alvo_id, estado: { ...estado, hipoteses: estado.hipoteses.filter((h) => h.id !== alvo_id) } };
+  }
+  if (/^D\d+$/.test(alvo_id)) {
+    if (!estado.declaracoes.some((d) => d.id === alvo_id)) return { ok: false, erro: falha("ALTERACAO_INEXISTENTE", ["alvo_id"], { alvo_id }) };
+    const restantes = estado.declaracoes.filter((d) => d.id !== alvo_id);
+    // Declaração posterior que dependa da desfeita impede o desfazer.
+    let cena: Cena = { eventos: eventosBase(persona) };
+    for (const [k, d] of restantes.entries()) {
+      if (validar(cena, d.alteracao, "declaracao")) {
+        return {
+          ok: false,
+          erro: falha("OPERACAO_NAO_PERMITIDA", ["alvo_id"], { depende: d.id }, `${d.id} depende de ${alvo_id}; desfaça ${d.id} antes.`),
+        };
+      }
+      cena = aplicar(cena, d.alteracao, d.id, "declaracao", k);
+    }
+    return { ok: true, removido: alvo_id, estado: { ...estado, declaracoes: restantes } };
+  }
+  return { ok: false, erro: falha("ARGUMENTOS_INVALIDOS", ["alvo_id"]) };
 }
 
 /** R-24: alterações do turno e diferenças de indicadores por cenário. */
