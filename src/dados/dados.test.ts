@@ -91,4 +91,11 @@ describe("invariantes aplicáveis à P1 mínima (spec §4.2)", () => {
     p.cartao.faturas[0].fechamento = "2026-10-30";
     expect(numeros(p)).toContain(9);
   });
+
+  test("10: item de fatura de R$ 500,00, valor reservado das conversas de teste", () => {
+    const p = base();
+    p.cartao.faturas[0].itens[2].valor_centavos = 50000;
+    p.cartao.faturas[0].valor_centavos = 97000;
+    expect(numeros(p)).toEqual([10]);
+  });
 });

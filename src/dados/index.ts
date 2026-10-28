@@ -46,6 +46,9 @@ export function listarPersonas(): ResumoPersona[] {
 
 export type ViolacaoInvariante = { invariante: number; mensagem: string };
 
+/** Invariante 10: valores das conversas de teste, em centavos. */
+export const VALORES_RESERVADOS_CENTAVOS = [300, 500, 800, 1000, 1400, 2000, 2100, 5000].map((r) => r * 100);
+
 /**
  * Invariantes da spec §4.2 aplicáveis aos dados presentes. Recebe o JSON bruto:
  * o esquema estrito cobre o invariante 11 (campos proibidos). Usado no
@@ -139,6 +142,21 @@ export function verificarInvariantes(bruta: unknown): ViolacaoInvariante[] {
   for (const f of p.cartao?.faturas ?? []) {
     if (f.status === "fechada" && f.vencimento >= HOJE && f.vencimento <= FIM_JANELA && f.fechamento > FIM_HISTORICO) {
       v.push({ invariante: 9, mensagem: `fatura fechada ${f.id} com fechamento ${f.fechamento} depois de ${FIM_HISTORICO}` });
+    }
+  }
+
+  // 10. Valores das conversas de teste não aparecem em itens de fatura nem em lançamentos de 23/10 a 29/10.
+  const reservados = new Set<number>(VALORES_RESERVADOS_CENTAVOS);
+  for (const f of p.cartao?.faturas ?? []) {
+    for (const item of f.itens) {
+      if (reservados.has(item.valor_centavos)) {
+        v.push({ invariante: 10, mensagem: `fatura ${f.id}: item ${item.descricao} com valor reservado ${item.valor_centavos}` });
+      }
+    }
+  }
+  for (const l of p.historico) {
+    if (l.data >= "2026-10-23" && l.data <= FIM_HISTORICO && reservados.has(l.valor_centavos)) {
+      v.push({ invariante: 10, mensagem: `lançamento ${l.id} com valor reservado ${l.valor_centavos}` });
     }
   }
 
