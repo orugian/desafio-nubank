@@ -1,5 +1,7 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, test } from "vitest";
-import { carregarPersona, listarPersonas } from "@/dados";
+import { carregarPersona, listarPersonas, verificarInvariantes } from "@/dados";
 
 // B0 · comportamento 4: carregarPersona("p1") com a P1 mínima passa nos
 // invariantes aplicáveis (spec §4.2). A P1 mínima não tem histórico.
@@ -33,5 +35,20 @@ describe("carregarPersona com a P1 mínima", () => {
       nome: "Bia (fictícia)",
       resumo: "Quer juntar dinheiro para uma viagem.",
     });
+  });
+});
+
+describe("invariantes aplicáveis à P1 mínima (spec §4.2)", () => {
+  const base = () => JSON.parse(readFileSync(join(__dirname, "..", "..", "dados", "personas", "p1-minima.json"), "utf8"));
+  const numeros = (p: unknown) => verificarInvariantes(p).map((v) => v.invariante);
+
+  test("a P1 mínima não viola nenhum", () => {
+    expect(verificarInvariantes(base())).toEqual([]);
+  });
+
+  test("1: identificador repetido", () => {
+    const p = base();
+    p.compromissos[1].id = "B";
+    expect(numeros(p)).toContain(1);
   });
 });

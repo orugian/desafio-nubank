@@ -18,15 +18,45 @@ export function listarPersonas(): ResumoPersona[] {
   });
 }
 
+export type ViolacaoInvariante = { invariante: number; mensagem: string };
+
+/**
+ * Invariantes da spec §4.2 aplicáveis aos dados presentes. Recebe o JSON bruto:
+ * o esquema estrito cobre o invariante 11 (campos proibidos). Usado no
+ * carregamento e pelo gerador de personas (B2).
+ */
+export function verificarInvariantes(bruta: unknown): ViolacaoInvariante[] {
+  const r = esquemaPersona.safeParse(bruta);
+  if (!r.success) {
+    return r.error.issues.map((i) => ({ invariante: 11, mensagem: `${i.path.join(".")}: ${i.message}` }));
+  }
+  const p = r.data;
+  const v: ViolacaoInvariante[] = [];
+
+  // 1. Identificadores únicos.
+  const ids = [
+    ...p.historico.map((l) => l.id),
+    ...p.compromissos.map((c) => c.id),
+    ...(p.cartao?.faturas.map((f) => f.id) ?? []),
+    ...(p.cartao?.parcelamentos.map((x) => x.id) ?? []),
+    ...p.posicoes.map((x) => x.id),
+  ];
+  const vistos = new Set<string>();
+  for (const id of ids) {
+    if (vistos.has(id)) v.push({ invariante: 1, mensagem: `id repetido: ${id}` });
+    vistos.add(id);
+  }
+
+  return v;
+}
+
 /** Carrega a persona e valida esquema e invariantes. */
 export function carregarPersona(id: string): ResultadoDominio<{ persona: Persona }> {
   const bruta = BRUTAS[id];
   if (bruta === undefined) return erro("ARGUMENTOS_INVALIDOS", `persona ${id} não existe`, ["persona_id"]);
-  const r = esquemaPersona.safeParse(bruta);
-  if (!r.success) {
-    return erro("ESTADO_INVALIDO", `persona ${id} fora do esquema`, [], {
-      problemas: r.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`),
-    });
+  const violacoes = verificarInvariantes(bruta);
+  if (violacoes.length > 0) {
+    return erro("ESTADO_INVALIDO", `persona ${id} viola invariantes`, [], { violacoes });
   }
-  return { ok: true, persona: r.data };
+  return { ok: true, persona: esquemaPersona.parse(bruta) };
 }
