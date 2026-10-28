@@ -26,8 +26,8 @@ export type Evento = {
   valor_centavos: number;
   original: { data: DataISO; valor_centavos: number } | null;
   cadastro: number;
-  /** Bloco de gasto estimado (R-21): não dispara ordem relevante (R-22). */
-  bloco: boolean;
+  /** De onde veio o evento. Bloco de gasto estimado (R-21) não dispara ordem relevante (R-22). */
+  especie: "compromisso" | "fatura" | "bloco" | "declaracao" | "operacao" | "hipotese";
 };
 
 export type Projecao = {
@@ -122,7 +122,7 @@ function datasOrdemRelevante(eventos: Evento[], saldoInicial: number, entradasPr
     const doDia = linhas.filter((l) => l.data === dia);
     const saidas = doDia.filter((l) => l.tipo === "saida");
     const temEntrada = doDia.some((l) => l.tipo === "entrada");
-    const temSaidaReal = saidas.some((l) => !porId.get(l.evento_id)?.bloco);
+    const temSaidaReal = saidas.some((l) => porId.get(l.evento_id)?.especie !== "bloco");
     return temEntrada && temSaidaReal && saidas[saidas.length - 1].saldo_apos_centavos <= 0;
   });
 }
