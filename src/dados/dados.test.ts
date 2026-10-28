@@ -110,3 +110,59 @@ describe("invariantes aplicáveis à P1 mínima (spec §4.2)", () => {
     expect(numeros(p)).toEqual([10]);
   });
 });
+
+describe("B2 · 2: invariantes 1 a 11 da spec §4.2 nas 3 personas geradas", () => {
+  const lerPersona = (id: "p1" | "p2" | "p3") =>
+    JSON.parse(readFileSync(join(__dirname, "..", "..", "dados", "personas", `${id}.json`), "utf8"));
+  const numeros = (p: unknown) => verificarInvariantes(p).map((v) => v.invariante);
+
+  test("as 3 personas geradas (p1, p2, p3) passam sem nenhuma violação nos invariantes 1 a 11", () => {
+    for (const id of ["p1", "p2", "p3"] as const) {
+      expect(verificarInvariantes(lerPersona(id))).toEqual([]);
+    }
+  });
+
+  test("3: compra no cartão no histórico fora da fatura do ciclo ou fatura paga sem débito correspondente", () => {
+    const p1 = lerPersona("p1");
+    p1.historico.push({
+      id: "L19999",
+      data: "2026-10-18",
+      descricao: "Compra solta no cartão",
+      tipo: "saida",
+      meio: "cartao_credito",
+      categoria: "compras",
+      valor_centavos: 4500,
+    });
+    expect(numeros(p1)).toContain(3);
+
+    const p1SemPagamento = lerPersona("p1");
+    p1SemPagamento.historico = p1SemPagamento.historico.filter((l: { fatura_id?: string }) => l.fatura_id !== "F2609");
+    p1SemPagamento.conta.saldo_30_07_centavos -= 62000;
+    expect(numeros(p1SemPagamento)).toContain(3);
+  });
+
+  test("5: compromisso recorrente sem ocorrências coerentes no histórico", () => {
+    const p1 = lerPersona("p1");
+    const aluguelAgo = p1.historico.find((l: { recorrencia_id?: string }) => l.recorrencia_id === "B");
+    aluguelAgo.valor_centavos = 61000;
+    p1.conta.saldo_30_07_centavos += 1000;
+    expect(numeros(p1)).toContain(5);
+  });
+
+  test("7: conta estimada diferente do teto da média das 3 últimas ocorrências citadas", () => {
+    const p2 = lerPersona("p2");
+    const luz = p2.compromissos.find((c: { id: string }) => c.id === "E4");
+    luz.valor_centavos = 18500;
+    expect(numeros(p2)).toContain(7);
+  });
+
+  test("8: compra de renda variável sem usar fechamento gravado da data ou sem débito em conta no histórico", () => {
+    const p1 = lerPersona("p1");
+    p1.posicoes.find((x: { id: string }) => x.id === "INV3").compras[0].preco_centavos = 4000;
+    expect(numeros(p1)).toContain(8);
+
+    const p2 = lerPersona("p2");
+    p2.historico = p2.historico.filter((l: { posicao_id?: string }) => l.posicao_id !== "INV5");
+    expect(numeros(p2)).toContain(8);
+  });
+});
