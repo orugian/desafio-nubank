@@ -5,6 +5,14 @@ import { calcularCenarios, criarHipotese, registrarDeclaracao } from "@/dominio/
 import { CONTEXTO, P1, P2, P3, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "@/dominio/caixa/testes/personas";
 
 describe("B1b · cartão e caixa", () => {
+  test("C-03: correção de compra parcelada com menos centavos que parcelas é recusada antes de aplicar", () => {
+    const d = registrarDeclaracao(P1, estadoNovo(P1), { operacao: "adicionar_evento", tipo: "saida", descricao: "Compra em 3x", data: "2026-10-30", valor: "1000", meio: "cartao_credito", parcelas: 3 }, origem());
+    if (!d.ok) throw new Error(d.erro.mensagem);
+    const antes = structuredClone(d.estado);
+    const r = registrarDeclaracao(P1, d.estado, { operacao: "alterar_evento", evento_id: "D1", valor: "0.01" }, origem());
+    expect(r.ok ? "ok" : r.erro.codigo).toBe("VALOR_INVALIDO");
+    expect(d.estado).toEqual(antes);
+  });
   test("C-01/C-05/R-18: compra declarada em fatura aberta pode ser corrigida e removida sem virar caixa", () => {
     const d1 = registrarDeclaracao(P1, estadoNovo(P1), { operacao: "adicionar_evento", tipo: "saida", descricao: "Compra fictícia", data: "2026-10-30", valor: "200", meio: "cartao_credito" }, origem());
     if (!d1.ok) throw new Error(d1.erro.mensagem);

@@ -137,6 +137,11 @@ function validar(persona: Persona, estado: EstadoSessao, cena: Cena, alt: Altera
       );
     }
     if (!alvo) return falha("EVENTO_INEXISTENTE", ["evento_id"], { evento_id: alt.evento_id });
+    const compra = cena.compras_cartao.find((c) => c.evento.id === alt.evento_id);
+    if (compra && alt.operacao === "alterar_evento") {
+      const r = alocarCompra(persona, estado, { data: alt.data ?? compra.evento.data, valor_centavos: alt.valor !== undefined ? paraCentavos(alt.valor) : compra.evento.valor_centavos, parcelas: compra.alocacao.parcelas.length });
+      if (!r.ok) return r.erro;
+    }
   }
   if (alt.operacao === "adicionar_evento" && alt.tipo === "saida" && !alt.confirmar_nao_duplicado) {
     const duplicidade = verificarDuplicidade(persona, { valor_centavos: paraCentavos(alt.valor) });
