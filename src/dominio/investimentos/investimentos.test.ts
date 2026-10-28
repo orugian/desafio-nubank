@@ -116,5 +116,107 @@ describe("B3b · investimentos", () => {
       rentabilidade: "1.21",
     });
   });
+
+  test("CR-33 e CR-34: renda variável (ação e cripto), valorização no período e rótulo de estimativa", () => {
+    const posicoes = [
+      posicao({
+        id: "INV3",
+        categoria: "acao",
+        nome: "PETR4",
+        ticker: "PETR4",
+        compras: [{ data: "2026-08-14", quantidade: "10", preco_centavos: reaisDaSpec("30,00") }],
+        liquidez: { regra: "d_mais_uteis", dias: 2 },
+        protecao: null,
+      }),
+      posicao({
+        id: "INV5",
+        categoria: "cripto",
+        nome: "Bitcoin",
+        ticker: "BTC",
+        compras: [{ data: "2026-08-10", quantidade: "0.005", preco_centavos: reaisDaSpec("350.000") }],
+        liquidez: { regra: "imediata" },
+        protecao: null,
+      }),
+    ];
+    const persona = personaComPosicoes(P1, posicoes);
+    const mercado = {
+      ...MERCADO_TESTE,
+      precos: {
+        PETR4: { preco_centavos: reaisDaSpec("33,00"), data_hora: "2026-10-27T18:00:00-03:00", fonte: "brapi" },
+        BTC: { preco_centavos: reaisDaSpec("380.000"), data_hora: "2026-10-27T21:00:00-03:00", fonte: "CoinGecko" },
+      },
+    };
+    const ctx: Contexto = {
+      ...CONTEXTO,
+      series: {
+        ...CONTEXTO.series,
+        fechamentos: {
+          PETR4: {
+            fonte: "brapi",
+            url: "https://exemplo.invalid/petr4",
+            obtido_em: "2026-10-28T13:45:39-03:00",
+            ticker: "PETR4",
+            serie: [{ data: "2026-07-30", preco_centavos: reaisDaSpec("28,00") }],
+          },
+          BTC: {
+            fonte: "CoinGecko",
+            url: "https://exemplo.invalid/btc",
+            obtido_em: "2026-10-28T12:39:48-03:00",
+            ticker: "BTC",
+            serie: [{ data: "2026-07-30", preco_centavos: reaisDaSpec("340.000") }],
+          },
+        },
+      },
+    };
+
+    const r = consultarInvestimentos(persona, estadoInicial(persona.id, mercado), ctx, { ate_data: "2026-11-15" });
+    if (!r.ok) throw new Error(r.erro.mensagem);
+    esquemaResultadoInvestimentos.parse(r);
+
+    const [cr33, cr34] = r.posicoes;
+    expect({
+      ticker: cr33.ticker,
+      quantidade: cr33.quantidade,
+      aplicado: cr33.aplicado_centavos,
+      valor: cr33.valor_atual_centavos,
+      resultado: cr33.resultado_centavos,
+      rentabilidade: cr33.rentabilidade_pct,
+      valorizacao: cr33.valorizacao_periodo_pct,
+      estimado: cr33.estimado,
+      rotulo: cr33.rotulo_estimativa,
+    }).toEqual({
+      ticker: "PETR4",
+      quantidade: "10",
+      aplicado: reaisDaSpec("300,00"),
+      valor: reaisDaSpec("330,00"),
+      resultado: reaisDaSpec("30,00"),
+      rentabilidade: "10.00",
+      valorizacao: "17.86",
+      estimado: true,
+      rotulo: "estimado com cotação de 27/10 18:00 (brapi)",
+    });
+
+    expect({
+      ticker: cr34.ticker,
+      quantidade: cr34.quantidade,
+      aplicado: cr34.aplicado_centavos,
+      valor: cr34.valor_atual_centavos,
+      resultado: cr34.resultado_centavos,
+      rentabilidade: cr34.rentabilidade_pct,
+      valorizacao: cr34.valorizacao_periodo_pct,
+      estimado: cr34.estimado,
+      rotulo: cr34.rotulo_estimativa,
+    }).toEqual({
+      ticker: "BTC",
+      quantidade: "0.005",
+      aplicado: reaisDaSpec("1.750,00"),
+      valor: reaisDaSpec("1.900,00"),
+      resultado: reaisDaSpec("150,00"),
+      rentabilidade: "8.57",
+      valorizacao: "11.76",
+      estimado: true,
+      rotulo: "estimado com cotação de 27/10 21:00 (CoinGecko)",
+    });
+  });
 });
 
