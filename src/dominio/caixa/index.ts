@@ -6,6 +6,7 @@ import {
   LIMITES,
   OPERACOES_EM_DECLARACAO,
   erro,
+  esquemaEstadoSessao,
   formatarReais,
   textos,
   validarArgumentos,
@@ -346,6 +347,38 @@ export function compararCenarios(antes: EntradaComparacao, depois: EntradaCompar
 
 /** Revalida o estado por replay (D-15); falha → ESTADO_INVALIDO (CR-19). */
 export function validarEstado(persona: Persona, estado: EstadoSessao, contexto: Contexto): ResultadoDominio {
-  void persona, estado, contexto;
-  throw new Error("não implementado");
+  void contexto;
+  const invalido = (motivo: string) => erro("ESTADO_INVALIDO", textos.erros.ESTADO_INVALIDO, [], { motivo });
+  const r = esquemaEstadoSessao.safeParse(estado);
+  if (!r.success) return invalido(`fora do esquema: ${r.error.issues[0]?.path.join(".")}`);
+  const e = r.data;
+  if (e.persona_id !== persona.id) return invalido("persona diferente");
+
+  // Identificadores e contadores (§4.5: ids nunca reutilizados).
+  const numero = (id: string) => Number(id.replace(/^\D+/, "").split(".")[0]);
+  const ids = (lista: { id: string }[]) => lista.map((x) => x.id);
+  if (new Set(ids(e.declaracoes)).size !== e.declaracoes.length) return invalido("declaração repetida");
+  if (new Set(ids(e.hipoteses)).size !== e.hipoteses.length) return invalido("hipótese repetida");
+  if (e.declaracoes.some((d) => numero(d.id) > e.contadores.D)) return invalido("contador D atrás de id usado");
+  if (e.hipoteses.some((h) => numero(h.id) > e.contadores.H)) return invalido("contador H atrás de id usado");
+  if (e.hipoteses.length > LIMITES.hipoteses_ativas) return invalido("hipóteses demais");
+
+  // Replay das declarações na ordem.
+  let cena = cenaBase(persona);
+  for (const [k, d] of e.declaracoes.entries()) {
+    const problema = validar(cena, d.alteracao, "declaracao");
+    if (problema) return invalido(`${d.id}: ${problema.codigo}`);
+    cena = aplicar(cena, d.alteracao, d.id, "declaracao", k);
+  }
+
+  // Hipóteses: estrutura e regras que não dependem da existência do alvo (R-14 permite inconsistência).
+  for (const h of e.hipoteses) {
+    if (h.alteracoes.length > LIMITES.alteracoes_por_hipotese) return invalido(`${h.id}: alterações demais`);
+    for (const [k, a] of h.alteracoes.entries()) {
+      if (a.id !== `${h.id}.${k + 1}`) return invalido(`${h.id}: id de alteração ${a.id}`);
+      const problema = validar(cena, a.alteracao, "hipotese");
+      if (problema && problema.codigo !== "EVENTO_INEXISTENTE") return invalido(`${a.id}: ${problema.codigo}`);
+    }
+  }
+  return { ok: true };
 }

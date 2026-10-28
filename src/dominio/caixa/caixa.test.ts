@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
-import { calcularCenarios, compararCenarios, criarHipotese, desfazer, registrarDeclaracao } from "@/dominio/caixa";
+import { calcularCenarios, compararCenarios, criarHipotese, desfazer, registrarDeclaracao, validarEstado } from "@/dominio/caixa";
 import { CONTEXTO, P1, P2, P3, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "./testes/personas";
 import { esquemaPersona, type Alteracao, type EstadoSessao, type Persona, type ResultadoCenario } from "@/contratos";
 
@@ -600,5 +600,51 @@ describe("B1 · tabelas de P2 e P3 (spec §11.2, §11.3)", () => {
       avisos: [R11, MAIOR],
       ordem: [],
     });
+  });
+});
+
+
+describe("B1 · validarEstado (D-15)", () => {
+  const comH1eD1 = () => {
+    const h = criarHipotese(P1, estadoNovo(P1), { nome: "Separar R$ 500 hoje", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500" }] }, origem("m-1"));
+    if (!h.ok) throw new Error(h.erro.mensagem);
+    const d = registrarDeclaracao(P1, h.estado, { operacao: "alterar_evento", evento_id: "C", valor: "150" }, origem("m-2"));
+    if (!d.ok) throw new Error(d.erro.mensagem);
+    return d.estado;
+  };
+  const codigo = (estado: unknown, persona: Persona = P1) => {
+    const r = validarEstado(persona, estado as EstadoSessao, CONTEXTO);
+    return r.ok ? "ok" : r.erro.codigo;
+  };
+
+  test("aceita estado novo e estado produzido pelo domínio (CR-02 + CR-04)", () => {
+    expect(codigo(estadoNovo(P1))).toBe("ok");
+    expect(codigo(comH1eD1())).toBe("ok");
+  });
+
+  test("CR-19: declaração adulterada com alteração em 29/10 → ESTADO_INVALIDO", () => {
+    const e = comH1eD1();
+    const adulterado = {
+      ...e,
+      declaracoes: [{ ...e.declaracoes[0], alteracao: { operacao: "alterar_evento", evento_id: "C", data: "2026-10-29" } }],
+    };
+    expect(codigo(adulterado)).toBe("ESTADO_INVALIDO");
+  });
+
+  test("CR-19: hipótese adulterada com separar em 29/10 → ESTADO_INVALIDO", () => {
+    const e = comH1eD1();
+    const h = e.hipoteses[0];
+    const adulterado = { ...e, hipoteses: [{ ...h, alteracoes: [{ ...h.alteracoes[0], alteracao: { operacao: "separar", valor: "500", data: "2026-10-29" } }] }] };
+    expect(codigo(adulterado)).toBe("ESTADO_INVALIDO");
+  });
+
+  test.each([
+    ["fora do esquema (versão negativa)", (e: EstadoSessao) => ({ ...e, versao: -1 })],
+    ["de outra persona", (e: EstadoSessao) => ({ ...e, persona_id: "p2" })],
+    ["contador de declarações atrás do id usado", (e: EstadoSessao) => ({ ...e, contadores: { ...e.contadores, D: 0 } })],
+    ["separar como declaração", (e: EstadoSessao) => ({ ...e, declaracoes: [{ id: "D1", mensagem_id: null, alteracao: { operacao: "separar", valor: "10" } }] })],
+    ["alteração de hipótese com id de outra hipótese", (e: EstadoSessao) => ({ ...e, hipoteses: [{ ...e.hipoteses[0], alteracoes: [{ ...e.hipoteses[0].alteracoes[0], id: "H9.1" }] }] })],
+  ])("estado %s → ESTADO_INVALIDO", (_nome, adulterar) => {
+    expect(codigo(adulterar(comH1eD1()))).toBe("ESTADO_INVALIDO");
   });
 });
