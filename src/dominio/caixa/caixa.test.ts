@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 import { calcularCenarios, compararCenarios, criarHipotese, registrarDeclaracao } from "@/dominio/caixa";
 import { CONTEXTO, P1, P2, P3, estadoNovo, origem, reaisDaSpec, saldosDaSpec } from "./testes/personas";
-import type { Alteracao, EstadoSessao, Persona, ResultadoCenario } from "@/contratos";
+import { esquemaPersona, type Alteracao, type EstadoSessao, type Persona, type ResultadoCenario } from "@/contratos";
 
 const saldos = (c: ResultadoCenario) => c.linhas.map((l) => [l.evento_id, l.saldo_apos_centavos]);
 
@@ -281,5 +281,45 @@ describe("B1 · motor de caixa · P1", () => {
       const r = criarHipotese(persona as Persona, estadoNovo(persona as Persona), { nome: "T", a_partir_de: "atual", alteracoes: [alt as Alteracao] }, origem());
       expect(r.ok ? "ok" : r.erro.codigo).toBe("OPERACAO_NAO_PERMITIDA");
     });
+  });
+
+  test("CR-17f: H1 altera B; D1 remove B → H1 inconsistente, sem indicadores", () => {
+    const h = criarHipotese(P1, estadoNovo(P1), { nome: "Aluguel maior", a_partir_de: "atual", alteracoes: [{ operacao: "alterar_evento", evento_id: "B", valor: "700" }] }, origem("m-1"));
+    if (!h.ok) throw new Error(h.erro.mensagem);
+    const d = registrarDeclaracao(P1, h.estado, { operacao: "remover_evento", evento_id: "B" }, origem("m-2"));
+    if (!d.ok) throw new Error(d.erro.mensagem);
+    const [atual, h1] = calcularCenarios(P1, d.estado, CONTEXTO);
+    expect(atual.linhas.map((l) => l.evento_id)).toEqual(["A", "C", "R1"]);
+    expect(h1.status).toBe("inconsistente");
+    expect(h1.indicadores).toBeNull();
+  });
+
+  test("CR-17i: P1 com R1 removido por declaração → sem_recebimentos null e sem avisos de R-12", () => {
+    const h = criarHipotese(P1, estadoNovo(P1), { nome: "Separar R$ 500 hoje", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500" }] }, origem("m-1"));
+    if (!h.ok) throw new Error(h.erro.mensagem);
+    const d = registrarDeclaracao(P1, h.estado, { operacao: "remover_evento", evento_id: "R1" }, origem("m-2"));
+    if (!d.ok) throw new Error(d.erro.mensagem);
+    for (const c of calcularCenarios(P1, d.estado, CONTEXTO)) {
+      expect(c.indicadores?.sem_recebimentos).toBeNull();
+      expect(c.avisos).not.toContain("cobertura_depende_de_recebimento");
+      expect(c.avisos).not.toContain("falta_maior_sem_recebimento");
+    }
+  });
+
+  test("CR-17j: saldo 500 e duas saídas de 400 no mesmo dia, em qualquer ordem de cadastro → falta de 300 no dia com as duas", () => {
+    const duas = (ordem: [string, string]) =>
+      esquemaPersona.parse({
+        ...P1,
+        conta: { saldo_30_07_centavos: 50000, saldo_inicio_hoje_centavos: 50000 },
+        cartao: null,
+        compromissos: ordem.map((id) => ({ ...P1.compromissos[0], id, descricao: `Conta ${id}`, data: "2026-11-10", valor_centavos: 40000 })),
+      });
+    for (const ordem of [["X1", "X2"], ["X2", "X1"]] as Array<[string, string]>) {
+      const p = duas(ordem);
+      const [atual] = calcularCenarios(p, estadoNovo(p), CONTEXTO);
+      expect(atual.indicadores?.primeira_falta).toEqual({ data: "2026-11-10", valor_descoberto_centavos: 30000, saidas_do_dia: ordem });
+      expect(atual.indicadores?.insuficiencia_centavos).toBe(30000);
+      expect(atual.indicadores?.saldo_minimo_centavos).toBe(-30000);
+    }
   });
 });

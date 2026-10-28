@@ -171,7 +171,10 @@ function situacaoAtual(persona: Persona, estado: EstadoSessao): Cena {
   );
 }
 
-function resultado(cenario_id: string, nome: string, cena: Cena, saldoInicial: number): ResultadoCenario {
+function resultado(cenario_id: string, nome: string, cena: Cena | null, saldoInicial: number): ResultadoCenario {
+  if (cena === null) {
+    return { cenario_id, nome, status: "inconsistente", linhas: [], indicadores: null, faturas_afetadas: [], datas_ordem_relevante: [], avisos: [] };
+  }
   const p = projetar(cena.eventos, saldoInicial, new Set());
   return {
     cenario_id,
@@ -191,7 +194,15 @@ export function calcularCenarios(persona: Persona, estado: EstadoSessao, context
   const saldo = persona.conta.saldo_inicio_hoje_centavos;
   const atual = situacaoAtual(persona, estado);
   const hipoteses = estado.hipoteses.map((h) => {
-    const cena = h.alteracoes.reduce((c, a, k) => aplicar(c, a.alteracao, a.id, "hipotese", k), atual);
+    let cena: Cena | null = atual;
+    for (const [k, a] of h.alteracoes.entries()) {
+      const alvo = "evento_id" in a.alteracao ? a.alteracao.evento_id : null;
+      if (alvo !== null && !cena.eventos.some((e) => e.id === alvo)) {
+        cena = null; // R-14
+        break;
+      }
+      cena = aplicar(cena, a.alteracao, a.id, "hipotese", k);
+    }
     return resultado(h.id, h.nome, cena, saldo);
   });
   return [resultado("atual", textos.rotulos.situacao_atual, atual, saldo), ...hipoteses];
