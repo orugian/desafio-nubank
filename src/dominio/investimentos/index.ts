@@ -1,5 +1,6 @@
 // Investimentos (spec §5.4, §6.1). Implementação no B3b.
 
+import { HOJE } from "@/contratos";
 import type {
   Contexto,
   DataISO,
@@ -35,6 +36,14 @@ export function projetarRendimento(
 
 /** I-01, I-02: primeiro dia com o valor em conta se o pedido for feito hoje. */
 export function dataDisponivel(posicao: Posicao, contexto: Contexto): DataISO {
-  void posicao, contexto;
-  throw new Error("não implementado");
+  const liquidez = posicao.liquidez;
+  switch (liquidez.regra) {
+    case "imediata":
+      return HOJE;
+    case "d_mais_uteis":
+      return contexto.calendario.somarDiasUteis(HOJE, liquidez.dias);
+    case "no_vencimento":
+      // CR-35: CDB no vencimento, na data.
+      return posicao.categoria === "cdb_vencimento" ? posicao.vencimento : HOJE;
+  }
 }
