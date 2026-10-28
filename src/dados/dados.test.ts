@@ -61,4 +61,10 @@ describe("invariantes aplicáveis à P1 mínima (spec §4.2)", () => {
     p.conta.saldo_30_07_centavos = 170000;
     expect(numeros(p)).toContain(2);
   });
+
+  test("3: valor da fatura A ≠ soma dos itens", () => {
+    const p = base();
+    p.cartao.faturas[0].valor_centavos = 71000;
+    expect(numeros(p)).toContain(3);
+  });
 });

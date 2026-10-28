@@ -58,6 +58,14 @@ export function verificarInvariantes(bruta: unknown): ViolacaoInvariante[] {
     });
   }
 
+  // 3. Valor de cada fatura = soma dos itens. (Ciclos × compras do histórico: B2.)
+  for (const f of p.cartao?.faturas ?? []) {
+    const soma = f.itens.reduce((s, i) => s + i.valor_centavos, 0);
+    if (soma !== f.valor_centavos) {
+      v.push({ invariante: 3, mensagem: `fatura ${f.id}: valor ${f.valor_centavos} ≠ soma dos itens ${soma}` });
+    }
+  }
+
   return v;
 }
 
