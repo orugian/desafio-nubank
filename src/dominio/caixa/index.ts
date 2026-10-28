@@ -255,10 +255,22 @@ const cenaBase = (persona: Persona): Cena => ({
 });
 
 function situacaoAtual(persona: Persona, estado: EstadoSessao): Cena {
-  return estado.declaracoes.reduce(
+  const cena = estado.declaracoes.reduce(
     (c, d, k) => aplicar(persona, estado, c, d.alteracao, d.id, "declaracao", k),
     cenaBase(persona),
   );
+  const operacoes: Evento[] = estado.operacoes.map((op, k) => ({
+    id: op.id, data: op.data, descricao: textos.descricao_movimentacao(persona.posicoes.find((p) => p.id === op.destino)?.nome ?? op.destino),
+    tipo: "saida", meio: "movimentacao_interna", origem: "operacao", estimativa: null, previsto: false,
+    valor_centavos: op.valor_centavos, original: null, cadastro: cadastro("operacao", k), especie: "operacao",
+  }));
+  return { ...cena, eventos: [...cena.eventos, ...operacoes] };
+}
+
+/** Spec §2: disponível não inclui estimativas, hipóteses nem entradas previstas. */
+export function saldoDisponivelHoje(persona: Persona, estado: EstadoSessao): number {
+  const saidas = situacaoAtual(persona, estado).eventos.filter((e) => e.data === HOJE && e.tipo === "saida" && (e.origem === "declaracao" || e.especie === "operacao"));
+  return persona.conta.saldo_inicio_hoje_centavos - saidas.reduce((s, e) => s + e.valor_centavos, 0);
 }
 
 function resultado(persona: Persona, estado: EstadoSessao, cenario_id: string, nome: string, cena: Cena | null, saldoInicial: number): ResultadoCenario {

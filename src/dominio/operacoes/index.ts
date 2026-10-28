@@ -1,6 +1,8 @@
 // Operações simuladas (spec §5.5, §6.1). Implementação no B1c.
 
 import type { z } from "zod";
+import { HOJE, erro, textos, validarArgumentos, type Posicao } from "@/contratos";
+import { calcularCenarios, paraCentavos, saldoDisponivelHoje } from "@/dominio/caixa";
 import type {
   Contexto,
   EstadoSessao,
@@ -13,6 +15,10 @@ import type {
 export type PropostaMovimentacao = z.infer<typeof esquemaPropostaMovimentacao>;
 export type ConfirmacaoMovimentacao = z.infer<typeof esquemaConfirmacaoMovimentacao>;
 
+function destinoDaPosicao(posicao: Posicao): PropostaMovimentacao["destino"] {
+  return { posicao_id: posicao.id, nome: posicao.nome, rende: posicao.categoria === "caixinha", cdi_pct: posicao.categoria === "caixinha" ? posicao.cdi_pct : null };
+}
+
 /** O-03, O-04, O-06: cria a pendente com o impacto na situação atual. `valor` em texto (§4.5). */
 export function proporMovimentacao(
   persona: Persona,
@@ -20,8 +26,22 @@ export function proporMovimentacao(
   pedido: { valor: string; destino: string },
   contexto: Contexto,
 ): ResultadoDominio<{ estado: EstadoSessao } & PropostaMovimentacao> {
-  void persona, estado, pedido, contexto;
-  throw new Error("não implementado");
+  const v = validarArgumentos("propor_movimentacao", pedido);
+  if (!v.ok) return v;
+  const posicao = persona.posicoes.find((p) => p.id === v.argumentos.destino);
+  if (!posicao) return erro("POSICAO_INEXISTENTE", textos.erros.POSICAO_INEXISTENTE, ["destino"]);
+  if (posicao.categoria !== "caixinha" && posicao.categoria !== "saldo_separado") return erro("OPERACAO_NAO_PERMITIDA", textos.erros.OPERACAO_NAO_PERMITIDA, ["destino"]);
+  const valor_centavos = paraCentavos(v.argumentos.valor);
+  const disponivel = saldoDisponivelHoje(persona, estado);
+  if (valor_centavos > disponivel) return erro("SALDO_INSUFICIENTE_HOJE", textos.erros.SALDO_INSUFICIENTE_HOJE, ["valor"], { saldo_disponivel_hoje_centavos: disponivel });
+  const n = estado.contadores.OP + 1;
+  const operacao_pendente = { id: `OP${n}`, valor_centavos, destino: posicao.id, criada_na_versao: estado.versao };
+  const novo = { ...estado, operacao_pendente, contadores: { ...estado.contadores, OP: n } };
+  // A operação é acrescentada apenas ao cálculo transitório do impacto, não ao estado retornado.
+  const [impactoAtual] = calcularCenarios(persona, { ...estado, hipoteses: [], operacoes: [...estado.operacoes, { id: operacao_pendente.id, valor_centavos, destino: posicao.id, data: HOJE }] }, contexto);
+  const impacto = { ...impactoAtual, cenario_id: operacao_pendente.id, nome: textos.descricao_movimentacao(posicao.nome) };
+  const falta = impacto.indicadores!.primeira_falta;
+  return { ok: true, estado: novo, operacao_pendente, destino: destinoDaPosicao(posicao), impacto, alerta: falta ? textos.alerta_falta(falta.valor_descoberto_centavos, falta.data) : null };
 }
 
 /** O-05, O-07: executa uma vez e descarta as hipóteses ativas. */
