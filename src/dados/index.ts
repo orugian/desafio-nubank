@@ -1,5 +1,6 @@
 // Personas (spec §6.1 `dados`). B0: só a P1 mínima; o B2 troca pelas personas geradas.
 
+import Decimal from "decimal.js";
 import {
   CATEGORIAS_VARIAVEIS,
   DIAS_HISTORICO,
@@ -9,13 +10,23 @@ import {
   INICIO_HISTORICO,
   erro,
   esquemaPersona,
+  esquemaSerieFechamentos,
   type Persona,
   type ResultadoDominio,
   type ResumoPersona,
 } from "@/contratos";
-import p1 from "../../dados/personas/p1-minima.json";
+import btcBruto from "../../dados/mercado/fechamentos-BTC.json";
+import petr4Bruto from "../../dados/mercado/fechamentos-PETR4.json";
+import p1 from "../../dados/personas/p1.json";
+import p2 from "../../dados/personas/p2.json";
+import p3 from "../../dados/personas/p3.json";
 
-const BRUTAS: Record<string, unknown> = { p1 };
+const BRUTAS: Record<string, unknown> = { p1, p2, p3 };
+
+const SERIES_FECHAMENTOS: Record<string, Map<string, number>> = {
+  PETR4: new Map(esquemaSerieFechamentos.parse(petr4Bruto).serie.map((x) => [x.data, x.preco_centavos])),
+  BTC: new Map(esquemaSerieFechamentos.parse(btcBruto).serie.map((x) => [x.data, x.preco_centavos])),
+};
 
 // C-02: compra com data < fechamento do mês vai para a fatura que fecha nesse
 // dia; data ≥ fechamento, para a seguinte. Fechamento no último dia em meses
@@ -87,11 +98,51 @@ export function verificarInvariantes(bruta: unknown): ViolacaoInvariante[] {
     });
   }
 
-  // 3. Valor de cada fatura = soma dos itens. (Ciclos × compras do histórico: B2.)
+  // 3. Valor de cada fatura = soma dos itens. Itens de cada ciclo = compras no cartão do ciclo (C-02) + parcelas do ciclo.
+  //    Cada fatura paga uma vez no vencimento com débito em conta. Nenhuma compra em duas faturas.
+  const lancamentosEmFatura = new Set<string>();
   for (const f of p.cartao?.faturas ?? []) {
     const soma = f.itens.reduce((s, i) => s + i.valor_centavos, 0);
     if (soma !== f.valor_centavos) {
       v.push({ invariante: 3, mensagem: `fatura ${f.id}: valor ${f.valor_centavos} ≠ soma dos itens ${soma}` });
+    }
+    for (const item of f.itens) {
+      if (item.lancamento_id) {
+        if (lancamentosEmFatura.has(item.lancamento_id)) {
+          v.push({ invariante: 3, mensagem: `compra ${item.lancamento_id} repetida em mais de uma fatura` });
+        }
+        lancamentosEmFatura.add(item.lancamento_id);
+      }
+    }
+    if (p.historico.length > 0 && f.status === "fechada" && f.vencimento >= INICIO_HISTORICO && f.vencimento <= FIM_HISTORICO) {
+      const pagamentos = p.historico.filter((l) => l.fatura_id === f.id);
+      if (
+        pagamentos.length !== 1 ||
+        pagamentos[0].data !== f.vencimento ||
+        pagamentos[0].meio !== "debito" ||
+        pagamentos[0].valor_centavos !== f.valor_centavos
+      ) {
+        v.push({ invariante: 3, mensagem: `fatura ${f.id}: pagamento no vencimento incoerente no histórico` });
+      }
+    }
+  }
+  if (p.cartao && p.historico.length > 0) {
+    for (const l of p.historico) {
+      if (l.meio !== "cartao_credito") continue;
+      const vencimento = vencimentoDaCompra(l.data, p.cartao.dia_fechamento, p.cartao.dia_vencimento);
+      const fatura = p.cartao.faturas.find((f) => f.vencimento === vencimento);
+      const item = fatura?.itens.find((i) => i.lancamento_id === l.id);
+      const valorEsperado = l.parcelamento_id
+        ? (() => {
+            const pc = p.cartao!.parcelamentos.find((x) => x.id === l.parcelamento_id);
+            if (!pc) return -1;
+            const base = Math.floor(pc.valor_total_centavos / pc.parcelas);
+            return pc.valor_total_centavos - base * (pc.parcelas - 1);
+          })()
+        : l.valor_centavos;
+      if (!fatura || !item || item.valor_centavos !== valorEsperado) {
+        v.push({ invariante: 3, mensagem: `compra no cartão ${l.id} sem item correspondente na fatura de ${vencimento}` });
+      }
     }
   }
 
@@ -121,6 +172,27 @@ export function verificarInvariantes(bruta: unknown): ViolacaoInvariante[] {
     }
   }
 
+  // 5. Cada compromisso recorrente tem ocorrências no histórico coerentes em valor e dia (quando há histórico).
+  if (p.historico.length > 0) {
+    for (const c of p.compromissos) {
+      if (!c.recorrente) continue;
+      const ocorrencias = p.historico.filter((l) => l.recorrencia_id === c.id);
+      if (ocorrencias.length < 3) {
+        v.push({ invariante: 5, mensagem: `compromisso recorrente ${c.id} com menos de 3 ocorrências no histórico` });
+        continue;
+      }
+      const diaComp = Number(c.data.slice(8, 10));
+      for (const oc of ocorrencias) {
+        const diaOc = Number(oc.data.slice(8, 10));
+        const diaCoerente = diaOc === diaComp || (diaComp === 19 && diaOc === 20);
+        const valorCoerente = c.estimativa !== null || oc.valor_centavos === c.valor_centavos;
+        if (!diaCoerente || !valorCoerente || oc.tipo !== c.tipo) {
+          v.push({ invariante: 5, mensagem: `ocorrência ${oc.id} de ${c.id} incoerente em dia ou valor` });
+        }
+      }
+    }
+  }
+
   // 6. gasto_diario = teto(saídas variáveis por Pix ou débito no histórico / 92).
   const variaveis: readonly string[] = CATEGORIAS_VARIAVEIS;
   const totalVariavel = p.historico
@@ -136,6 +208,85 @@ export function verificarInvariantes(bruta: unknown): ViolacaoInvariante[] {
     b.ate !== FIM_HISTORICO
   ) {
     v.push({ invariante: 6, mensagem: `gasto diário ${p.gasto_diario.valor_centavos} ≠ teto(${totalVariavel} / ${DIAS_HISTORICO}) = ${diario}` });
+  }
+
+  // 7. Conta estimada = teto(média das 3 últimas ocorrências), citadas em `estimativa`.
+  for (const c of p.compromissos) {
+    if (c.origem_dado !== "conta_estimada" && c.estimativa === null) continue;
+    if (!c.estimativa || c.estimativa.metodo !== "media_3_ultimas") {
+      v.push({ invariante: 7, mensagem: `compromisso ${c.id} sem estimativa media_3_ultimas` });
+      continue;
+    }
+    const ocs = c.estimativa.ocorrencias;
+    const soma = ocs.reduce((s, o) => s + o.valor_centavos, 0);
+    const mediaTeto = Math.ceil(soma / 3);
+    if (c.valor_centavos !== mediaTeto) {
+      v.push({ invariante: 7, mensagem: `conta estimada ${c.id}: valor ${c.valor_centavos} ≠ teto(${soma}/3) = ${mediaTeto}` });
+    }
+    if (p.historico.length > 0) {
+      const doHist = p.historico
+        .filter((l) => l.recorrencia_id === c.id)
+        .sort((a, b) => a.data.localeCompare(b.data))
+        .slice(-3);
+      if (
+        doHist.length !== 3 ||
+        doHist.some(
+          (h, idx) =>
+            h.id !== ocs[idx].lancamento_id || h.data !== ocs[idx].data || h.valor_centavos !== ocs[idx].valor_centavos,
+        )
+      ) {
+        v.push({ invariante: 7, mensagem: `conta estimada ${c.id}: ocorrências não batem com as 3 últimas do histórico` });
+      }
+    }
+  }
+
+  // 8. Compras de renda variável no histórico usam o fechamento gravado da data e aparecem como débito em conta; aportes dentro do histórico também.
+  if (p.historico.length > 0) {
+    for (const pos of p.posicoes) {
+      if (pos.categoria === "acao" || pos.categoria === "cripto") {
+        const mapaTicker = SERIES_FECHAMENTOS[pos.ticker];
+        for (const comp of pos.compras) {
+          if (comp.data < INICIO_HISTORICO || comp.data > FIM_HISTORICO) continue;
+          const fechamento = mapaTicker?.get(comp.data);
+          if (fechamento === undefined || comp.preco_centavos !== fechamento) {
+            v.push({
+              invariante: 8,
+              mensagem: `posição ${pos.id}: compra em ${comp.data} com preço ${comp.preco_centavos} ≠ fechamento gravado ${fechamento}`,
+            });
+          }
+          const custo = new Decimal(comp.quantidade)
+            .mul(comp.preco_centavos)
+            .toDecimalPlaces(0, Decimal.ROUND_HALF_UP)
+            .toNumber();
+          const lanc = p.historico.find(
+            (l) =>
+              l.posicao_id === pos.id &&
+              l.data === comp.data &&
+              l.tipo === "saida" &&
+              l.meio !== "cartao_credito" &&
+              l.valor_centavos === custo,
+          );
+          if (!lanc) {
+            v.push({ invariante: 8, mensagem: `posição ${pos.id}: compra em ${comp.data} sem saída correspondente no histórico` });
+          }
+        }
+      } else {
+        for (const ap of pos.aportes) {
+          if (ap.data < INICIO_HISTORICO || ap.data > FIM_HISTORICO) continue;
+          const lanc = p.historico.find(
+            (l) =>
+              l.posicao_id === pos.id &&
+              l.data === ap.data &&
+              l.tipo === "saida" &&
+              l.meio !== "cartao_credito" &&
+              l.valor_centavos === ap.valor_centavos,
+          );
+          if (!lanc) {
+            v.push({ invariante: 8, mensagem: `posição ${pos.id}: aporte em ${ap.data} sem saída correspondente no histórico` });
+          }
+        }
+      }
+    }
   }
 
   // 9. Fatura fechada que vence na janela tem fechamento ≤ 29/10.
