@@ -65,6 +65,25 @@ export async function processarTurno(
   deps: DepsConversa,
 ): Promise<RespostaTurno> {
   const estadoEntrada = structuredClone(req.estado);
+
+  const validacaoEstado = await deps.executores.validarEstado(estadoEntrada);
+  if (!validacaoEstado.ok) {
+    return respostaFalhaTecnica("F-06", estadoEntrada, { pode_tentar_novamente: false });
+  }
+
+  if (estadoEntrada.conversa.some((m) => m.mensagem_id === req.mensagem.id)) {
+    return {
+      status: "falha",
+      falha: {
+        tipo: "dominio",
+        codigo: "MENSAGEM_JA_PROCESSADA",
+        mensagem: textos.erros.MENSAGEM_JA_PROCESSADA,
+        pode_tentar_novamente: false,
+      },
+      estado: estadoEntrada,
+    };
+  }
+
   let estadoTrabalho = structuredClone(req.estado);
 
   const textoInstrucoes = await deps.instrucoes();

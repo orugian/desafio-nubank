@@ -295,4 +295,114 @@ describe("B4 · Conversa", () => {
       estado: estado0,
     });
   });
+
+  test("5. mensagem.id repetido → MENSAGEM_JA_PROCESSADA sem chamar o provedor; estado inválido → F-06", async () => {
+    const estado0 = estadoInicial("p1", snapshotTeste);
+    const estado1 = {
+      ...estado0,
+      versao: 1,
+      conversa: [
+        {
+          mensagem_id: "m-0001",
+          papel: "usuario" as const,
+          texto: "Oi",
+          versao: 1,
+          cartoes: [],
+          rastro: [],
+        },
+      ],
+    };
+
+    let chamadasProvedor = 0;
+    const provedorEspiao: Provedor = {
+      nome: "roteirizado",
+      modelo: "teste",
+      async gerar() {
+        chamadasProvedor += 1;
+        return { tipo: "texto", texto: "Nunca deve ser chamado" };
+      },
+    };
+
+    const resRepetida = await processarTurno(
+      { estado: estado1, mensagem: { id: "m-0001", texto: "Oi de novo" } },
+      depsBase(provedorEspiao),
+    );
+    expect(chamadasProvedor).toBe(0);
+    expect(esquemaRespostaTurno.parse(resRepetida)).toEqual({
+      status: "falha",
+      falha: {
+        tipo: "dominio",
+        codigo: "MENSAGEM_JA_PROCESSADA",
+        mensagem: "Essa mensagem já foi processada.",
+        pode_tentar_novamente: false,
+      },
+      estado: estado1,
+    });
+
+    const estadoAdulterado = {
+      ...estado0,
+      versao: 1,
+      declaracoes: [
+        {
+          id: "D1",
+          mensagem_id: "m-0001",
+          alteracao: {
+            operacao: "adicionar_evento" as const,
+            tipo: "saida" as const,
+            descricao: "Compra",
+            data: "2026-10-29",
+            valor: "50",
+            meio: "pix" as const,
+          },
+        },
+      ],
+      contadores: { D: 1, H: 0, OP: 0 },
+    };
+
+    const resAdulterado = await processarTurno(
+      { estado: estadoAdulterado, mensagem: { id: "m-0002", texto: "Oi" } },
+      depsBase(provedorEspiao),
+    );
+    expect(esquemaRespostaTurno.parse(resAdulterado)).toEqual({
+      status: "falha",
+      falha: {
+        tipo: "F-06",
+        codigo: "ESTADO_INVALIDO",
+        mensagem: "A sessão ficou inconsistente.",
+        pode_tentar_novamente: false,
+      },
+      estado: estadoAdulterado,
+    });
+  });
+
+  test("6. Falha depois de aplicar alteração devolve o estado de entrada intacto (CR-18b)", async () => {
+    const estado0 = estadoInicial("p1", snapshotTeste);
+    const provedor = provedorSequencial([
+      {
+        tipo: "chamadas",
+        chamadas: [
+          {
+            id: "call_1",
+            nome: "criar_hipotese",
+            argumentos: JSON.stringify({
+              nome: "Separar R$ 500 hoje",
+              a_partir_de: "atual",
+              alteracoes: [{ operacao: "separar", valor: "500", data: "2026-10-30" }],
+            }),
+          },
+        ],
+      },
+      { tipo: "falha", falha: "indisponivel" },
+    ]);
+
+    const res = await processarTurno(
+      { estado: estado0, mensagem: { id: "m-cr18b", texto: "Posso separar R$ 500 hoje?" } },
+      depsBase(provedor),
+    );
+
+    expect(res.status).toBe("falha");
+    expect(res.estado).toEqual(estado0);
+    expect(res.estado?.hipoteses).toEqual([]);
+    expect(res.estado?.versao).toBe(0);
+  });
 });
