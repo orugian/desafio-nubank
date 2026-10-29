@@ -1,0 +1,3958 @@
+{
+  "conjunto": "todos",
+  "repeticoes": 1,
+  "provedor": "openrouter",
+  "modelo": "deepseek/deepseek-v4.1-flash-1017",
+  "executado_em": "2026-10-29T13:57:42.558Z",
+  "total_execucoes": 1,
+  "aprovados": 1,
+  "total_chamadas_modelo": 3,
+  "resultados": [
+    {
+      "id": "CV-12",
+      "persona": "p3",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 4188,
+      "motivos": [],
+      "ferramentas_chamadas": [
+        "criar_hipotese"
+      ],
+      "texto_final": "Simulação criada: H1 — Conserto do carro R$ 800 em 06/11 (Pix). É só hipótese; nada muda na situação atual.\n\n- Primeira falta: 06/11, com R$ 590,00 descobertos.\n- Menor saldo: -R$ 660,00, em 13/11.\n- Falta total no período: R$ 660,00.\n- Saldo final: R$ 1.490,00 — mas depende do salário previsto em 13/11; a falta de 06/11 continua.\n\nOs gastos do dia a dia são estimativas.",
+      "falha": null,
+      "rastro": [
+        {
+          "chamada": 1,
+          "ferramenta": "criar_hipotese",
+          "argumentos": {
+            "nome": "Conserto do carro R$ 800 em 06/11",
+            "a_partir_de": "atual",
+            "alteracoes": [
+              {
+                "operacao": "adicionar_evento",
+                "tipo": "saida",
+                "descricao": "Conserto do carro",
+                "data": "2026-11-06",
+                "valor": "800",
+                "meio": "pix"
+              }
+            ]
+          },
+          "resultado": {
+            "ok": true,
+            "hipotese_id": "H1",
+            "indicadores": {
+              "saldo_inicial_centavos": 250000,
+              "saldo_minimo_centavos": -66000,
+              "data_saldo_minimo": "2026-11-13",
+              "primeira_falta": {
+                "data": "2026-11-06",
+                "valor_descoberto_centavos": 59000,
+                "saidas_do_dia": [
+                  "G2",
+                  "H1.1"
+                ]
+              },
+              "insuficiencia_centavos": 66000,
+              "margem_hoje_centavos": 0,
+              "saldo_final_centavos": 149000,
+              "sem_recebimentos": {
+                "insuficiencia_centavos": 271000,
+                "primeira_falta": {
+                  "data": "2026-11-06",
+                  "valor_descoberto_centavos": 59000,
+                  "saidas_do_dia": [
+                    "G2",
+                    "H1.1"
+                  ]
+                },
+                "saldo_final_centavos": -271000
+              }
+            },
+            "cenarios": [
+              {
+                "cenario_id": "atual",
+                "nome": "Situação atual",
+                "status": "calculado",
+                "linhas": [
+                  {
+                    "data": "2026-10-30",
+                    "evento_id": "G1",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1000,
+                      "dias": 7,
+                      "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 7000,
+                    "saldo_apos_centavos": 243000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-04",
+                    "evento_id": "E1",
+                    "descricao": "Mensalidade escolar",
+                    "tipo": "saida",
+                    "meio": "boleto",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 90000,
+                    "saldo_apos_centavos": 153000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-05",
+                    "evento_id": "E2",
+                    "descricao": "Fatura do cartão",
+                    "tipo": "saida",
+                    "meio": "debito",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 125000,
+                    "saldo_apos_centavos": 28000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-06",
+                    "evento_id": "G2",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1000,
+                      "dias": 7,
+                      "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 7000,
+                    "saldo_apos_centavos": 21000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-13",
+                    "evento_id": "G3",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1000,
+                      "dias": 7,
+                      "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 7000,
+                    "saldo_apos_centavos": 14000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-13",
+                    "evento_id": "E3",
+                    "descricao": "Salário",
+                    "tipo": "entrada",
+                    "meio": "salario",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": true,
+                    "valor_centavos": 420000,
+                    "saldo_apos_centavos": 434000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-18",
+                    "evento_id": "E4",
+                    "descricao": "Financiamento",
+                    "tipo": "saida",
+                    "meio": "debito_automatico",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 130000,
+                    "saldo_apos_centavos": 304000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-20",
+                    "evento_id": "G4",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1000,
+                      "dias": 7,
+                      "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 7000,
+                    "saldo_apos_centavos": 297000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-27",
+                    "evento_id": "G5",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1000,
+                      "dias": 3,
+                      "texto": "estimado: R$ 10,00 por dia × 3 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 3000,
+                    "saldo_apos_centavos": 294000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-28",
+                    "evento_id": "E5",
+                    "descricao": "Condomínio",
+                    "tipo": "saida",
+                    "meio": "boleto",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 65000,
+                    "saldo_apos_centavos": 229000,
+                    "rotulo": null,
+                    "original": null
+                  }
+                ],
+                "indicadores": {
+                  "saldo_inicial_centavos": 250000,
+                  "saldo_minimo_centavos": 14000,
+                  "data_saldo_minimo": "2026-11-13",
+                  "primeira_falta": null,
+                  "insuficiencia_centavos": 0,
+                  "margem_hoje_centavos": 14000,
+                  "saldo_final_centavos": 229000,
+                  "sem_recebimentos": {
+                    "insuficiencia_centavos": 191000,
+                    "primeira_falta": {
+                      "data": "2026-11-18",
+                      "valor_descoberto_centavos": 116000,
+                      "saidas_do_dia": [
+                        "E4"
+                      ]
+                    },
+                    "saldo_final_centavos": -191000
+                  }
+                },
+                "faturas_afetadas": [],
+                "datas_ordem_relevante": [],
+                "avisos": [
+                  "cobertura_depende_de_recebimento"
+                ]
+              },
+              {
+                "cenario_id": "H1",
+                "nome": "Conserto do carro R$ 800 em 06/11",
+                "status": "calculado",
+                "linhas": [
+                  {
+                    "data": "2026-10-30",
+                    "evento_id": "G1",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1000,
+                      "dias": 7,
+                      "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 7000,
+                    "saldo_apos_centavos": 243000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-04",
+                    "evento_id": "E1",
+                    "descricao": "Mensalidade escolar",
+                    "tipo": "saida",
+                    "meio": "boleto",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 90000,
+                    "saldo_apos_centavos": 153000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-05",
+                    "evento_id": "E2",
+                    "descricao": "Fatura do cartão",
+                    "tipo": "saida",
+                    "meio": "debito",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 125000,
+                    "saldo_apos_centavos": 28000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-06",
+                    "evento_id": "G2",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1000,
+                      "dias": 7,
+                      "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 7000,
+                    "saldo_apos_centavos": 21000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-06",
+                    "evento_id": "H1.1",
+                    "descricao": "Conserto do carro",
+                    "tipo": "saida",
+                    "meio": "pix",
+                    "origem": "hipotese",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 80000,
+                    "saldo_apos_centavos": -59000,
+                    "rotulo": "Saldo insuficiente (faltam R$ 590,00)",
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-13",
+                    "evento_id": "G3",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1000,
+                      "dias": 7,
+                      "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 7000,
+                    "saldo_apos_centavos": -66000,
+                    "rotulo": "Saldo insuficiente (faltam R$ 660,00)",
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-13",
+                    "evento_id": "E3",
+                    "descricao": "Salário",
+                    "tipo": "entrada",
+                    "meio": "salario",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": true,
+                    "valor_centavos": 420000,
+                    "saldo_apos_centavos": 354000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-18",
+                    "evento_id": "E4",
+                    "descricao": "Financiamento",
+                    "tipo": "saida",
+                    "meio": "debito_automatico",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 130000,
+                    "saldo_apos_centavos": 224000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-20",
+                    "evento_id": "G4",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1000,
+                      "dias": 7,
+                      "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 7000,
+                    "saldo_apos_centavos": 217000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-27",
+                    "evento_id": "G5",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1000,
+                      "dias": 3,
+                      "texto": "estimado: R$ 10,00 por dia × 3 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 3000,
+                    "saldo_apos_centavos": 214000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-28",
+                    "evento_id": "E5",
+                    "descricao": "Condomínio",
+                    "tipo": "saida",
+                    "meio": "boleto",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 65000,
+                    "saldo_apos_centavos": 149000,
+                    "rotulo": null,
+                    "original": null
+                  }
+                ],
+                "indicadores": {
+                  "saldo_inicial_centavos": 250000,
+                  "saldo_minimo_centavos": -66000,
+                  "data_saldo_minimo": "2026-11-13",
+                  "primeira_falta": {
+                    "data": "2026-11-06",
+                    "valor_descoberto_centavos": 59000,
+                    "saidas_do_dia": [
+                      "G2",
+                      "H1.1"
+                    ]
+                  },
+                  "insuficiencia_centavos": 66000,
+                  "margem_hoje_centavos": 0,
+                  "saldo_final_centavos": 149000,
+                  "sem_recebimentos": {
+                    "insuficiencia_centavos": 271000,
+                    "primeira_falta": {
+                      "data": "2026-11-06",
+                      "valor_descoberto_centavos": 59000,
+                      "saidas_do_dia": [
+                        "G2",
+                        "H1.1"
+                      ]
+                    },
+                    "saldo_final_centavos": -271000
+                  }
+                },
+                "faturas_afetadas": [],
+                "datas_ordem_relevante": [],
+                "avisos": [
+                  "saldo_final_positivo_com_falta",
+                  "falta_maior_sem_recebimento"
+                ]
+              }
+            ],
+            "valores_formatados": {
+              "indicadores.saldo_inicial_centavos": "R$ 2.500,00",
+              "indicadores.saldo_minimo_centavos": "-R$ 660,00",
+              "indicadores.primeira_falta.valor_descoberto_centavos": "R$ 590,00",
+              "indicadores.insuficiencia_centavos": "R$ 660,00",
+              "indicadores.margem_hoje_centavos": "R$ 0,00",
+              "indicadores.saldo_final_centavos": "R$ 1.490,00",
+              "indicadores.sem_recebimentos.insuficiencia_centavos": "R$ 2.710,00",
+              "indicadores.sem_recebimentos.primeira_falta.valor_descoberto_centavos": "R$ 590,00",
+              "indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 2.710,00",
+              "cenarios[0].linhas[0].estimativa.valor_por_dia_centavos": "R$ 10,00",
+              "cenarios[0].linhas[0].valor_centavos": "R$ 70,00",
+              "cenarios[0].linhas[0].saldo_apos_centavos": "R$ 2.430,00",
+              "cenarios[0].linhas[1].valor_centavos": "R$ 900,00",
+              "cenarios[0].linhas[1].saldo_apos_centavos": "R$ 1.530,00",
+              "cenarios[0].linhas[2].valor_centavos": "R$ 1.250,00",
+              "cenarios[0].linhas[2].saldo_apos_centavos": "R$ 280,00",
+              "cenarios[0].linhas[3].estimativa.valor_por_dia_centavos": "R$ 10,00",
+              "cenarios[0].linhas[3].valor_centavos": "R$ 70,00",
+              "cenarios[0].linhas[3].saldo_apos_centavos": "R$ 210,00",
+              "cenarios[0].linhas[4].estimativa.valor_por_dia_centavos": "R$ 10,00",
+              "cenarios[0].linhas[4].valor_centavos": "R$ 70,00",
+              "cenarios[0].linhas[4].saldo_apos_centavos": "R$ 140,00",
+              "cenarios[0].linhas[5].valor_centavos": "R$ 4.200,00",
+              "cenarios[0].linhas[5].saldo_apos_centavos": "R$ 4.340,00",
+              "cenarios[0].linhas[6].valor_centavos": "R$ 1.300,00",
+              "cenarios[0].linhas[6].saldo_apos_centavos": "R$ 3.040,00",
+              "cenarios[0].linhas[7].estimativa.valor_por_dia_centavos": "R$ 10,00",
+              "cenarios[0].linhas[7].valor_centavos": "R$ 70,00",
+              "cenarios[0].linhas[7].saldo_apos_centavos": "R$ 2.970,00",
+              "cenarios[0].linhas[8].estimativa.valor_por_dia_centavos": "R$ 10,00",
+              "cenarios[0].linhas[8].valor_centavos": "R$ 30,00",
+              "cenarios[0].linhas[8].saldo_apos_centavos": "R$ 2.940,00",
+              "cenarios[0].linhas[9].valor_centavos": "R$ 650,00",
+              "cenarios[0].linhas[9].saldo_apos_centavos": "R$ 2.290,00",
+              "cenarios[0].indicadores.saldo_inicial_centavos": "R$ 2.500,00",
+              "cenarios[0].indicadores.saldo_minimo_centavos": "R$ 140,00",
+              "cenarios[0].indicadores.insuficiencia_centavos": "R$ 0,00",
+              "cenarios[0].indicadores.margem_hoje_centavos": "R$ 140,00",
+              "cenarios[0].indicadores.saldo_final_centavos": "R$ 2.290,00",
+              "cenarios[0].indicadores.sem_recebimentos.insuficiencia_centavos": "R$ 1.910,00",
+              "cenarios[0].indicadores.sem_recebimentos.primeira_falta.valor_descoberto_centavos": "R$ 1.160,00",
+              "cenarios[0].indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 1.910,00",
+              "cenarios[1].linhas[0].estimativa.valor_por_dia_centavos": "R$ 10,00",
+              "cenarios[1].linhas[0].valor_centavos": "R$ 70,00",
+              "cenarios[1].linhas[0].saldo_apos_centavos": "R$ 2.430,00",
+              "cenarios[1].linhas[1].valor_centavos": "R$ 900,00",
+              "cenarios[1].linhas[1].saldo_apos_centavos": "R$ 1.530,00",
+              "cenarios[1].linhas[2].valor_centavos": "R$ 1.250,00",
+              "cenarios[1].linhas[2].saldo_apos_centavos": "R$ 280,00",
+              "cenarios[1].linhas[3].estimativa.valor_por_dia_centavos": "R$ 10,00",
+              "cenarios[1].linhas[3].valor_centavos": "R$ 70,00",
+              "cenarios[1].linhas[3].saldo_apos_centavos": "R$ 210,00",
+              "cenarios[1].linhas[4].valor_centavos": "R$ 800,00",
+              "cenarios[1].linhas[4].saldo_apos_centavos": "-R$ 590,00",
+              "cenarios[1].linhas[5].estimativa.valor_por_dia_centavos": "R$ 10,00",
+              "cenarios[1].linhas[5].valor_centavos": "R$ 70,00",
+              "cenarios[1].linhas[5].saldo_apos_centavos": "-R$ 660,00",
+              "cenarios[1].linhas[6].valor_centavos": "R$ 4.200,00",
+              "cenarios[1].linhas[6].saldo_apos_centavos": "R$ 3.540,00",
+              "cenarios[1].linhas[7].valor_centavos": "R$ 1.300,00",
+              "cenarios[1].linhas[7].saldo_apos_centavos": "R$ 2.240,00",
+              "cenarios[1].linhas[8].estimativa.valor_por_dia_centavos": "R$ 10,00",
+              "cenarios[1].linhas[8].valor_centavos": "R$ 70,00",
+              "cenarios[1].linhas[8].saldo_apos_centavos": "R$ 2.170,00",
+              "cenarios[1].linhas[9].estimativa.valor_por_dia_centavos": "R$ 10,00",
+              "cenarios[1].linhas[9].valor_centavos": "R$ 30,00",
+              "cenarios[1].linhas[9].saldo_apos_centavos": "R$ 2.140,00",
+              "cenarios[1].linhas[10].valor_centavos": "R$ 650,00",
+              "cenarios[1].linhas[10].saldo_apos_centavos": "R$ 1.490,00",
+              "cenarios[1].indicadores.saldo_inicial_centavos": "R$ 2.500,00",
+              "cenarios[1].indicadores.saldo_minimo_centavos": "-R$ 660,00",
+              "cenarios[1].indicadores.primeira_falta.valor_descoberto_centavos": "R$ 590,00",
+              "cenarios[1].indicadores.insuficiencia_centavos": "R$ 660,00",
+              "cenarios[1].indicadores.margem_hoje_centavos": "R$ 0,00",
+              "cenarios[1].indicadores.saldo_final_centavos": "R$ 1.490,00",
+              "cenarios[1].indicadores.sem_recebimentos.insuficiencia_centavos": "R$ 2.710,00",
+              "cenarios[1].indicadores.sem_recebimentos.primeira_falta.valor_descoberto_centavos": "R$ 590,00",
+              "cenarios[1].indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 2.710,00"
+            }
+          },
+          "duracao_ms": 2
+        }
+      ],
+      "chamadas_modelo": 3,
+      "turnos": [
+        {
+          "mensagem": "Quero simular um imprevisto: conserto do carro de R$ 800 no dia 6.",
+          "estado_entrada": {
+            "versao": 0,
+            "persona_id": "p3",
+            "mercado": {
+              "ao_vivo": false,
+              "obtido_em": "2026-10-28T12:39:47-03:00",
+              "tentou_ao_vivo": false,
+              "cdi": {
+                "taxa_diaria_pct": "0.050788",
+                "data_ref": "2026-10-27",
+                "fonte": "BCB SGS 12"
+              },
+              "precos": {
+                "PETR4": {
+                  "preco_centavos": 5279,
+                  "data_hora": "2026-10-27T18:00:00-03:00",
+                  "fonte": "brapi"
+                },
+                "BTC": {
+                  "preco_centavos": 43008618,
+                  "data_hora": "2026-10-27T21:00:00-03:00",
+                  "fonte": "CoinGecko"
+                }
+              }
+            },
+            "conversa": [],
+            "declaracoes": [],
+            "operacoes": [],
+            "operacao_pendente": null,
+            "hipoteses": [],
+            "contadores": {
+              "D": 0,
+              "H": 0,
+              "OP": 0
+            }
+          },
+          "resposta": {
+            "status": "ok",
+            "estado": {
+              "versao": 1,
+              "persona_id": "p3",
+              "mercado": {
+                "ao_vivo": false,
+                "obtido_em": "2026-10-28T12:39:47-03:00",
+                "tentou_ao_vivo": false,
+                "cdi": {
+                  "taxa_diaria_pct": "0.050788",
+                  "data_ref": "2026-10-27",
+                  "fonte": "BCB SGS 12"
+                },
+                "precos": {
+                  "PETR4": {
+                    "preco_centavos": 5279,
+                    "data_hora": "2026-10-27T18:00:00-03:00",
+                    "fonte": "brapi"
+                  },
+                  "BTC": {
+                    "preco_centavos": 43008618,
+                    "data_hora": "2026-10-27T21:00:00-03:00",
+                    "fonte": "CoinGecko"
+                  }
+                }
+              },
+              "conversa": [
+                {
+                  "mensagem_id": "CV-12-r1-m1",
+                  "papel": "usuario",
+                  "texto": "Quero simular um imprevisto: conserto do carro de R$ 800 no dia 6.",
+                  "versao": 1,
+                  "cartoes": [],
+                  "rastro": []
+                },
+                {
+                  "mensagem_id": "CV-12-r1-m1-r",
+                  "papel": "assistente",
+                  "texto": "Qual será o meio de pagamento do conserto: Pix, débito, boleto, débito automático ou cartão de crédito?",
+                  "versao": 1,
+                  "cartoes": [],
+                  "rastro": []
+                }
+              ],
+              "declaracoes": [],
+              "operacoes": [],
+              "operacao_pendente": null,
+              "hipoteses": [],
+              "contadores": {
+                "D": 0,
+                "H": 0,
+                "OP": 0
+              }
+            },
+            "texto": "Qual será o meio de pagamento do conserto: Pix, débito, boleto, débito automático ou cartão de crédito?",
+            "cartoes": [],
+            "avisos": [],
+            "rastro": [],
+            "visao": {
+              "marca": "neutra",
+              "prototipo": true,
+              "persona": {
+                "id": "p3",
+                "nome": "Duda (fictícia)"
+              },
+              "conta": {
+                "saldo_disponivel_hoje_centavos": 250000,
+                "saldo_inicio_hoje_centavos": 250000,
+                "operacoes_hoje": []
+              },
+              "extrato": [
+                {
+                  "id": "L30024",
+                  "data": "2026-10-28",
+                  "descricao": "Condomínio",
+                  "tipo": "saida",
+                  "meio": "boleto",
+                  "categoria": "moradia",
+                  "valor_centavos": 65000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30025",
+                  "data": "2026-10-23",
+                  "descricao": "Consulta pediatria",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "saude",
+                  "valor_centavos": 6700,
+                  "simulado": false
+                },
+                {
+                  "id": "L30034",
+                  "data": "2026-10-21",
+                  "descricao": "Lanche Tarde",
+                  "tipo": "saida",
+                  "meio": "pix",
+                  "categoria": "restaurante",
+                  "valor_centavos": 9500,
+                  "simulado": false
+                },
+                {
+                  "id": "L30021",
+                  "data": "2026-10-18",
+                  "descricao": "Financiamento",
+                  "tipo": "saida",
+                  "meio": "debito_automatico",
+                  "categoria": "outros",
+                  "valor_centavos": 130000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30033",
+                  "data": "2026-10-14",
+                  "descricao": "Transporte Escolar",
+                  "tipo": "saida",
+                  "meio": "pix",
+                  "categoria": "transporte",
+                  "valor_centavos": 11000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30018",
+                  "data": "2026-10-13",
+                  "descricao": "Salário",
+                  "tipo": "entrada",
+                  "meio": "salario",
+                  "categoria": "receitas",
+                  "valor_centavos": 420000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30032",
+                  "data": "2026-10-06",
+                  "descricao": "Hortifruti",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "mercado",
+                  "valor_centavos": 10500,
+                  "simulado": false
+                },
+                {
+                  "id": "L30012",
+                  "data": "2026-10-05",
+                  "descricao": "Pagamento fatura cartão",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "fatura",
+                  "valor_centavos": 89000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30015",
+                  "data": "2026-10-04",
+                  "descricao": "Mensalidade escolar",
+                  "tipo": "saida",
+                  "meio": "boleto",
+                  "categoria": "educacao",
+                  "valor_centavos": 90000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30023",
+                  "data": "2026-09-28",
+                  "descricao": "Condomínio",
+                  "tipo": "saida",
+                  "meio": "boleto",
+                  "categoria": "moradia",
+                  "valor_centavos": 65000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30031",
+                  "data": "2026-09-25",
+                  "descricao": "Papelaria",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "compras",
+                  "valor_centavos": 9200,
+                  "simulado": false
+                },
+                {
+                  "id": "L30020",
+                  "data": "2026-09-18",
+                  "descricao": "Financiamento",
+                  "tipo": "saida",
+                  "meio": "debito_automatico",
+                  "categoria": "outros",
+                  "valor_centavos": 130000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30017",
+                  "data": "2026-09-13",
+                  "descricao": "Salário",
+                  "tipo": "entrada",
+                  "meio": "salario",
+                  "categoria": "receitas",
+                  "valor_centavos": 420000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30030",
+                  "data": "2026-09-12",
+                  "descricao": "Transporte Escolar",
+                  "tipo": "saida",
+                  "meio": "pix",
+                  "categoria": "transporte",
+                  "valor_centavos": 11000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30011",
+                  "data": "2026-09-05",
+                  "descricao": "Pagamento fatura cartão",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "fatura",
+                  "valor_centavos": 91000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30014",
+                  "data": "2026-09-04",
+                  "descricao": "Mensalidade escolar",
+                  "tipo": "saida",
+                  "meio": "boleto",
+                  "categoria": "educacao",
+                  "valor_centavos": 90000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30029",
+                  "data": "2026-09-02",
+                  "descricao": "Hortifruti",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "mercado",
+                  "valor_centavos": 9800,
+                  "simulado": false
+                },
+                {
+                  "id": "L30022",
+                  "data": "2026-08-28",
+                  "descricao": "Condomínio",
+                  "tipo": "saida",
+                  "meio": "boleto",
+                  "categoria": "moradia",
+                  "valor_centavos": 65000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30028",
+                  "data": "2026-08-23",
+                  "descricao": "Lazer Parque",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "lazer",
+                  "valor_centavos": 10500,
+                  "simulado": false
+                },
+                {
+                  "id": "L30019",
+                  "data": "2026-08-18",
+                  "descricao": "Financiamento",
+                  "tipo": "saida",
+                  "meio": "debito_automatico",
+                  "categoria": "outros",
+                  "valor_centavos": 130000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30016",
+                  "data": "2026-08-13",
+                  "descricao": "Salário",
+                  "tipo": "entrada",
+                  "meio": "salario",
+                  "categoria": "receitas",
+                  "valor_centavos": 420000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30027",
+                  "data": "2026-08-12",
+                  "descricao": "Transporte Escolar",
+                  "tipo": "saida",
+                  "meio": "pix",
+                  "categoria": "transporte",
+                  "valor_centavos": 11000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30010",
+                  "data": "2026-08-05",
+                  "descricao": "Pagamento fatura cartão",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "fatura",
+                  "valor_centavos": 68000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30013",
+                  "data": "2026-08-04",
+                  "descricao": "Mensalidade escolar",
+                  "tipo": "saida",
+                  "meio": "boleto",
+                  "categoria": "educacao",
+                  "valor_centavos": 90000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30026",
+                  "data": "2026-08-03",
+                  "descricao": "Padaria Família",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "mercado",
+                  "valor_centavos": 9500,
+                  "simulado": false
+                }
+              ],
+              "proximos_pagamentos": [
+                {
+                  "evento_id": "E1",
+                  "data": "2026-11-04",
+                  "descricao": "Mensalidade escolar",
+                  "tipo": "saida",
+                  "meio": "boleto",
+                  "valor_centavos": 90000,
+                  "previsto": false,
+                  "estimativa_texto": null,
+                  "origem": "dados_base"
+                },
+                {
+                  "evento_id": "E2",
+                  "data": "2026-11-05",
+                  "descricao": "Fatura do cartão",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "valor_centavos": 125000,
+                  "previsto": false,
+                  "estimativa_texto": null,
+                  "origem": "dados_base"
+                },
+                {
+                  "evento_id": "E3",
+                  "data": "2026-11-13",
+                  "descricao": "Salário",
+                  "tipo": "entrada",
+                  "meio": "salario",
+                  "valor_centavos": 420000,
+                  "previsto": true,
+                  "estimativa_texto": null,
+                  "origem": "dados_base"
+                },
+                {
+                  "evento_id": "E4",
+                  "data": "2026-11-18",
+                  "descricao": "Financiamento",
+                  "tipo": "saida",
+                  "meio": "debito_automatico",
+                  "valor_centavos": 130000,
+                  "previsto": false,
+                  "estimativa_texto": null,
+                  "origem": "dados_base"
+                },
+                {
+                  "evento_id": "E5",
+                  "data": "2026-11-28",
+                  "descricao": "Condomínio",
+                  "tipo": "saida",
+                  "meio": "boleto",
+                  "valor_centavos": 65000,
+                  "previsto": false,
+                  "estimativa_texto": null,
+                  "origem": "dados_base"
+                }
+              ],
+              "cartao": {
+                "limite_centavos": 600000,
+                "dia_fechamento": 29,
+                "dia_vencimento": 5,
+                "fatura_fechada": {
+                  "fatura_id": "E2",
+                  "fechamento": "2026-10-29",
+                  "vencimento": "2026-11-05",
+                  "status": "fechada",
+                  "valor_centavos": 125000,
+                  "itens": [
+                    {
+                      "lancamento_id": "L30006",
+                      "data": "2026-10-03",
+                      "descricao": "Supermercado",
+                      "valor_centavos": 48000,
+                      "parcelamento_id": null,
+                      "parcela": null,
+                      "origem": "dados_base"
+                    },
+                    {
+                      "lancamento_id": "L30007",
+                      "data": "2026-10-09",
+                      "descricao": "Combustível",
+                      "valor_centavos": 32000,
+                      "parcelamento_id": null,
+                      "parcela": null,
+                      "origem": "dados_base"
+                    },
+                    {
+                      "lancamento_id": "L30008",
+                      "data": "2026-10-16",
+                      "descricao": "Restaurante",
+                      "valor_centavos": 20000,
+                      "parcelamento_id": null,
+                      "parcela": null,
+                      "origem": "dados_base"
+                    },
+                    {
+                      "lancamento_id": null,
+                      "data": null,
+                      "descricao": "Geladeira",
+                      "valor_centavos": 25000,
+                      "parcelamento_id": "PC1",
+                      "parcela": "3/10",
+                      "origem": "dados_base"
+                    }
+                  ]
+                },
+                "fatura_aberta": {
+                  "fatura_id": "F2612",
+                  "fechamento": "2026-11-29",
+                  "vencimento": "2026-12-05",
+                  "status": "aberta",
+                  "valor_centavos": 32600,
+                  "itens": [
+                    {
+                      "lancamento_id": null,
+                      "data": null,
+                      "descricao": "Geladeira",
+                      "valor_centavos": 25000,
+                      "parcelamento_id": "PC1",
+                      "parcela": "4/10",
+                      "origem": "dados_base"
+                    },
+                    {
+                      "lancamento_id": "L30009",
+                      "data": "2026-10-29",
+                      "descricao": "Café e padaria",
+                      "valor_centavos": 7600,
+                      "parcelamento_id": null,
+                      "parcela": null,
+                      "origem": "dados_base"
+                    }
+                  ]
+                },
+                "proximas": [
+                  {
+                    "fatura_id": "F2701",
+                    "fechamento": "2026-12-29",
+                    "vencimento": "2027-01-05",
+                    "status": "futura",
+                    "valor_centavos": 25000,
+                    "itens": [
+                      {
+                        "lancamento_id": null,
+                        "data": "2026-08-15",
+                        "descricao": "Geladeira",
+                        "valor_centavos": 25000,
+                        "parcelamento_id": "PC1",
+                        "parcela": "5/10",
+                        "origem": "dados_base"
+                      }
+                    ]
+                  },
+                  {
+                    "fatura_id": "F2702",
+                    "fechamento": "2027-01-29",
+                    "vencimento": "2027-02-05",
+                    "status": "futura",
+                    "valor_centavos": 25000,
+                    "itens": [
+                      {
+                        "lancamento_id": null,
+                        "data": "2026-08-15",
+                        "descricao": "Geladeira",
+                        "valor_centavos": 25000,
+                        "parcelamento_id": "PC1",
+                        "parcela": "6/10",
+                        "origem": "dados_base"
+                      }
+                    ]
+                  },
+                  {
+                    "fatura_id": "F2703",
+                    "fechamento": "2027-02-28",
+                    "vencimento": "2027-03-05",
+                    "status": "futura",
+                    "valor_centavos": 25000,
+                    "itens": [
+                      {
+                        "lancamento_id": null,
+                        "data": "2026-08-15",
+                        "descricao": "Geladeira",
+                        "valor_centavos": 25000,
+                        "parcelamento_id": "PC1",
+                        "parcela": "7/10",
+                        "origem": "dados_base"
+                      }
+                    ]
+                  },
+                  {
+                    "fatura_id": "F2704",
+                    "fechamento": "2027-03-29",
+                    "vencimento": "2027-04-05",
+                    "status": "futura",
+                    "valor_centavos": 25000,
+                    "itens": [
+                      {
+                        "lancamento_id": null,
+                        "data": "2026-08-15",
+                        "descricao": "Geladeira",
+                        "valor_centavos": 25000,
+                        "parcelamento_id": "PC1",
+                        "parcela": "8/10",
+                        "origem": "dados_base"
+                      }
+                    ]
+                  },
+                  {
+                    "fatura_id": "F2705",
+                    "fechamento": "2027-04-29",
+                    "vencimento": "2027-05-05",
+                    "status": "futura",
+                    "valor_centavos": 25000,
+                    "itens": [
+                      {
+                        "lancamento_id": null,
+                        "data": "2026-08-15",
+                        "descricao": "Geladeira",
+                        "valor_centavos": 25000,
+                        "parcelamento_id": "PC1",
+                        "parcela": "9/10",
+                        "origem": "dados_base"
+                      }
+                    ]
+                  },
+                  {
+                    "fatura_id": "F2706",
+                    "fechamento": "2027-05-29",
+                    "vencimento": "2027-06-05",
+                    "status": "futura",
+                    "valor_centavos": 25000,
+                    "itens": [
+                      {
+                        "lancamento_id": null,
+                        "data": "2026-08-15",
+                        "descricao": "Geladeira",
+                        "valor_centavos": 25000,
+                        "parcelamento_id": "PC1",
+                        "parcela": "10/10",
+                        "origem": "dados_base"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "posicoes": [
+                {
+                  "id": "SEP",
+                  "nome": "Saldo separado",
+                  "categoria": "saldo_separado",
+                  "cdi_pct": null,
+                  "ticker": null,
+                  "quantidade": null,
+                  "valor_atual_centavos": 0,
+                  "aplicado_centavos": 0,
+                  "resultado_centavos": 0,
+                  "rentabilidade_pct": "0.00",
+                  "valorizacao_periodo_pct": null,
+                  "data_disponibilidade": "2026-10-30",
+                  "protecao": null,
+                  "restricao": null,
+                  "estimado": false,
+                  "fonte": "sem rendimento"
+                },
+                {
+                  "id": "INV6",
+                  "nome": "Caixinha Reserva de emergência",
+                  "categoria": "caixinha",
+                  "cdi_pct": 100,
+                  "ticker": null,
+                  "quantidade": null,
+                  "valor_atual_centavos": 329112,
+                  "aplicado_centavos": 300000,
+                  "resultado_centavos": 29112,
+                  "rentabilidade_pct": "9.70",
+                  "valorizacao_periodo_pct": null,
+                  "data_disponibilidade": "2026-10-30",
+                  "protecao": {
+                    "tipo": "integral"
+                  },
+                  "restricao": null,
+                  "estimado": false,
+                  "fonte": "BCB SGS 12, gravado em 28/10"
+                },
+                {
+                  "id": "INV7",
+                  "nome": "CDB liquidez diária",
+                  "categoria": "cdb_liquidez_diaria",
+                  "cdi_pct": 110,
+                  "ticker": null,
+                  "quantidade": null,
+                  "valor_atual_centavos": 158794,
+                  "aplicado_centavos": 150000,
+                  "resultado_centavos": 8794,
+                  "rentabilidade_pct": "5.86",
+                  "valorizacao_periodo_pct": null,
+                  "data_disponibilidade": "2026-10-30",
+                  "protecao": null,
+                  "restricao": null,
+                  "estimado": false,
+                  "fonte": "BCB SGS 12, gravado em 28/10"
+                }
+              ],
+              "mercado": {
+                "ao_vivo": false,
+                "obtido_em": "2026-10-28T12:39:47-03:00",
+                "tentou_ao_vivo": false,
+                "cdi": {
+                  "taxa_diaria_pct": "0.050788",
+                  "data_ref": "2026-10-27",
+                  "fonte": "BCB SGS 12"
+                },
+                "precos": {
+                  "PETR4": {
+                    "preco_centavos": 5279,
+                    "data_hora": "2026-10-27T18:00:00-03:00",
+                    "fonte": "brapi"
+                  },
+                  "BTC": {
+                    "preco_centavos": 43008618,
+                    "data_hora": "2026-10-27T21:00:00-03:00",
+                    "fonte": "CoinGecko"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "mensagem": "No Pix.",
+          "estado_entrada": {
+            "versao": 1,
+            "persona_id": "p3",
+            "mercado": {
+              "ao_vivo": false,
+              "obtido_em": "2026-10-28T12:39:47-03:00",
+              "tentou_ao_vivo": false,
+              "cdi": {
+                "taxa_diaria_pct": "0.050788",
+                "data_ref": "2026-10-27",
+                "fonte": "BCB SGS 12"
+              },
+              "precos": {
+                "PETR4": {
+                  "preco_centavos": 5279,
+                  "data_hora": "2026-10-27T18:00:00-03:00",
+                  "fonte": "brapi"
+                },
+                "BTC": {
+                  "preco_centavos": 43008618,
+                  "data_hora": "2026-10-27T21:00:00-03:00",
+                  "fonte": "CoinGecko"
+                }
+              }
+            },
+            "conversa": [
+              {
+                "mensagem_id": "CV-12-r1-m1",
+                "papel": "usuario",
+                "texto": "Quero simular um imprevisto: conserto do carro de R$ 800 no dia 6.",
+                "versao": 1,
+                "cartoes": [],
+                "rastro": []
+              },
+              {
+                "mensagem_id": "CV-12-r1-m1-r",
+                "papel": "assistente",
+                "texto": "Qual será o meio de pagamento do conserto: Pix, débito, boleto, débito automático ou cartão de crédito?",
+                "versao": 1,
+                "cartoes": [],
+                "rastro": []
+              }
+            ],
+            "declaracoes": [],
+            "operacoes": [],
+            "operacao_pendente": null,
+            "hipoteses": [],
+            "contadores": {
+              "D": 0,
+              "H": 0,
+              "OP": 0
+            }
+          },
+          "resposta": {
+            "status": "ok",
+            "estado": {
+              "versao": 2,
+              "persona_id": "p3",
+              "mercado": {
+                "ao_vivo": false,
+                "obtido_em": "2026-10-28T12:39:47-03:00",
+                "tentou_ao_vivo": false,
+                "cdi": {
+                  "taxa_diaria_pct": "0.050788",
+                  "data_ref": "2026-10-27",
+                  "fonte": "BCB SGS 12"
+                },
+                "precos": {
+                  "PETR4": {
+                    "preco_centavos": 5279,
+                    "data_hora": "2026-10-27T18:00:00-03:00",
+                    "fonte": "brapi"
+                  },
+                  "BTC": {
+                    "preco_centavos": 43008618,
+                    "data_hora": "2026-10-27T21:00:00-03:00",
+                    "fonte": "CoinGecko"
+                  }
+                }
+              },
+              "conversa": [
+                {
+                  "mensagem_id": "CV-12-r1-m1",
+                  "papel": "usuario",
+                  "texto": "Quero simular um imprevisto: conserto do carro de R$ 800 no dia 6.",
+                  "versao": 1,
+                  "cartoes": [],
+                  "rastro": []
+                },
+                {
+                  "mensagem_id": "CV-12-r1-m1-r",
+                  "papel": "assistente",
+                  "texto": "Qual será o meio de pagamento do conserto: Pix, débito, boleto, débito automático ou cartão de crédito?",
+                  "versao": 1,
+                  "cartoes": [],
+                  "rastro": []
+                },
+                {
+                  "mensagem_id": "CV-12-r1-m2",
+                  "papel": "usuario",
+                  "texto": "No Pix.",
+                  "versao": 2,
+                  "cartoes": [],
+                  "rastro": []
+                },
+                {
+                  "mensagem_id": "CV-12-r1-m2-r",
+                  "papel": "assistente",
+                  "texto": "Simulação criada: H1 — Conserto do carro R$ 800 em 06/11 (Pix). É só hipótese; nada muda na situação atual.\n\n- Primeira falta: 06/11, com R$ 590,00 descobertos.\n- Menor saldo: -R$ 660,00, em 13/11.\n- Falta total no período: R$ 660,00.\n- Saldo final: R$ 1.490,00 — mas depende do salário previsto em 13/11; a falta de 06/11 continua.\n\nOs gastos do dia a dia são estimativas.",
+                  "versao": 2,
+                  "cartoes": [
+                    {
+                      "tipo": "comparacao",
+                      "cenarios": [
+                        {
+                          "cenario_id": "atual",
+                          "nome": "Situação atual",
+                          "status": "calculado",
+                          "linhas": [
+                            {
+                              "data": "2026-10-30",
+                              "evento_id": "G1",
+                              "descricao": "Gastos do dia a dia (estimado)",
+                              "tipo": "saida",
+                              "meio": "pix_ou_debito",
+                              "origem": "estimado",
+                              "estimativa": {
+                                "metodo": "gasto_diario",
+                                "valor_por_dia_centavos": 1000,
+                                "dias": 7,
+                                "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                              },
+                              "previsto": false,
+                              "valor_centavos": 7000,
+                              "saldo_apos_centavos": 243000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-04",
+                              "evento_id": "E1",
+                              "descricao": "Mensalidade escolar",
+                              "tipo": "saida",
+                              "meio": "boleto",
+                              "origem": "dados_base",
+                              "estimativa": null,
+                              "previsto": false,
+                              "valor_centavos": 90000,
+                              "saldo_apos_centavos": 153000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-05",
+                              "evento_id": "E2",
+                              "descricao": "Fatura do cartão",
+                              "tipo": "saida",
+                              "meio": "debito",
+                              "origem": "dados_base",
+                              "estimativa": null,
+                              "previsto": false,
+                              "valor_centavos": 125000,
+                              "saldo_apos_centavos": 28000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-06",
+                              "evento_id": "G2",
+                              "descricao": "Gastos do dia a dia (estimado)",
+                              "tipo": "saida",
+                              "meio": "pix_ou_debito",
+                              "origem": "estimado",
+                              "estimativa": {
+                                "metodo": "gasto_diario",
+                                "valor_por_dia_centavos": 1000,
+                                "dias": 7,
+                                "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                              },
+                              "previsto": false,
+                              "valor_centavos": 7000,
+                              "saldo_apos_centavos": 21000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-13",
+                              "evento_id": "G3",
+                              "descricao": "Gastos do dia a dia (estimado)",
+                              "tipo": "saida",
+                              "meio": "pix_ou_debito",
+                              "origem": "estimado",
+                              "estimativa": {
+                                "metodo": "gasto_diario",
+                                "valor_por_dia_centavos": 1000,
+                                "dias": 7,
+                                "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                              },
+                              "previsto": false,
+                              "valor_centavos": 7000,
+                              "saldo_apos_centavos": 14000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-13",
+                              "evento_id": "E3",
+                              "descricao": "Salário",
+                              "tipo": "entrada",
+                              "meio": "salario",
+                              "origem": "dados_base",
+                              "estimativa": null,
+                              "previsto": true,
+                              "valor_centavos": 420000,
+                              "saldo_apos_centavos": 434000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-18",
+                              "evento_id": "E4",
+                              "descricao": "Financiamento",
+                              "tipo": "saida",
+                              "meio": "debito_automatico",
+                              "origem": "dados_base",
+                              "estimativa": null,
+                              "previsto": false,
+                              "valor_centavos": 130000,
+                              "saldo_apos_centavos": 304000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-20",
+                              "evento_id": "G4",
+                              "descricao": "Gastos do dia a dia (estimado)",
+                              "tipo": "saida",
+                              "meio": "pix_ou_debito",
+                              "origem": "estimado",
+                              "estimativa": {
+                                "metodo": "gasto_diario",
+                                "valor_por_dia_centavos": 1000,
+                                "dias": 7,
+                                "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                              },
+                              "previsto": false,
+                              "valor_centavos": 7000,
+                              "saldo_apos_centavos": 297000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-27",
+                              "evento_id": "G5",
+                              "descricao": "Gastos do dia a dia (estimado)",
+                              "tipo": "saida",
+                              "meio": "pix_ou_debito",
+                              "origem": "estimado",
+                              "estimativa": {
+                                "metodo": "gasto_diario",
+                                "valor_por_dia_centavos": 1000,
+                                "dias": 3,
+                                "texto": "estimado: R$ 10,00 por dia × 3 dias, pela média do histórico"
+                              },
+                              "previsto": false,
+                              "valor_centavos": 3000,
+                              "saldo_apos_centavos": 294000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-28",
+                              "evento_id": "E5",
+                              "descricao": "Condomínio",
+                              "tipo": "saida",
+                              "meio": "boleto",
+                              "origem": "dados_base",
+                              "estimativa": null,
+                              "previsto": false,
+                              "valor_centavos": 65000,
+                              "saldo_apos_centavos": 229000,
+                              "rotulo": null,
+                              "original": null
+                            }
+                          ],
+                          "indicadores": {
+                            "saldo_inicial_centavos": 250000,
+                            "saldo_minimo_centavos": 14000,
+                            "data_saldo_minimo": "2026-11-13",
+                            "primeira_falta": null,
+                            "insuficiencia_centavos": 0,
+                            "margem_hoje_centavos": 14000,
+                            "saldo_final_centavos": 229000,
+                            "sem_recebimentos": {
+                              "insuficiencia_centavos": 191000,
+                              "primeira_falta": {
+                                "data": "2026-11-18",
+                                "valor_descoberto_centavos": 116000,
+                                "saidas_do_dia": [
+                                  "E4"
+                                ]
+                              },
+                              "saldo_final_centavos": -191000
+                            }
+                          },
+                          "faturas_afetadas": [],
+                          "datas_ordem_relevante": [],
+                          "avisos": [
+                            "cobertura_depende_de_recebimento"
+                          ]
+                        },
+                        {
+                          "cenario_id": "H1",
+                          "nome": "Conserto do carro R$ 800 em 06/11",
+                          "status": "calculado",
+                          "linhas": [
+                            {
+                              "data": "2026-10-30",
+                              "evento_id": "G1",
+                              "descricao": "Gastos do dia a dia (estimado)",
+                              "tipo": "saida",
+                              "meio": "pix_ou_debito",
+                              "origem": "estimado",
+                              "estimativa": {
+                                "metodo": "gasto_diario",
+                                "valor_por_dia_centavos": 1000,
+                                "dias": 7,
+                                "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                              },
+                              "previsto": false,
+                              "valor_centavos": 7000,
+                              "saldo_apos_centavos": 243000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-04",
+                              "evento_id": "E1",
+                              "descricao": "Mensalidade escolar",
+                              "tipo": "saida",
+                              "meio": "boleto",
+                              "origem": "dados_base",
+                              "estimativa": null,
+                              "previsto": false,
+                              "valor_centavos": 90000,
+                              "saldo_apos_centavos": 153000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-05",
+                              "evento_id": "E2",
+                              "descricao": "Fatura do cartão",
+                              "tipo": "saida",
+                              "meio": "debito",
+                              "origem": "dados_base",
+                              "estimativa": null,
+                              "previsto": false,
+                              "valor_centavos": 125000,
+                              "saldo_apos_centavos": 28000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-06",
+                              "evento_id": "G2",
+                              "descricao": "Gastos do dia a dia (estimado)",
+                              "tipo": "saida",
+                              "meio": "pix_ou_debito",
+                              "origem": "estimado",
+                              "estimativa": {
+                                "metodo": "gasto_diario",
+                                "valor_por_dia_centavos": 1000,
+                                "dias": 7,
+                                "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                              },
+                              "previsto": false,
+                              "valor_centavos": 7000,
+                              "saldo_apos_centavos": 21000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-06",
+                              "evento_id": "H1.1",
+                              "descricao": "Conserto do carro",
+                              "tipo": "saida",
+                              "meio": "pix",
+                              "origem": "hipotese",
+                              "estimativa": null,
+                              "previsto": false,
+                              "valor_centavos": 80000,
+                              "saldo_apos_centavos": -59000,
+                              "rotulo": "Saldo insuficiente (faltam R$ 590,00)",
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-13",
+                              "evento_id": "G3",
+                              "descricao": "Gastos do dia a dia (estimado)",
+                              "tipo": "saida",
+                              "meio": "pix_ou_debito",
+                              "origem": "estimado",
+                              "estimativa": {
+                                "metodo": "gasto_diario",
+                                "valor_por_dia_centavos": 1000,
+                                "dias": 7,
+                                "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                              },
+                              "previsto": false,
+                              "valor_centavos": 7000,
+                              "saldo_apos_centavos": -66000,
+                              "rotulo": "Saldo insuficiente (faltam R$ 660,00)",
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-13",
+                              "evento_id": "E3",
+                              "descricao": "Salário",
+                              "tipo": "entrada",
+                              "meio": "salario",
+                              "origem": "dados_base",
+                              "estimativa": null,
+                              "previsto": true,
+                              "valor_centavos": 420000,
+                              "saldo_apos_centavos": 354000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-18",
+                              "evento_id": "E4",
+                              "descricao": "Financiamento",
+                              "tipo": "saida",
+                              "meio": "debito_automatico",
+                              "origem": "dados_base",
+                              "estimativa": null,
+                              "previsto": false,
+                              "valor_centavos": 130000,
+                              "saldo_apos_centavos": 224000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-20",
+                              "evento_id": "G4",
+                              "descricao": "Gastos do dia a dia (estimado)",
+                              "tipo": "saida",
+                              "meio": "pix_ou_debito",
+                              "origem": "estimado",
+                              "estimativa": {
+                                "metodo": "gasto_diario",
+                                "valor_por_dia_centavos": 1000,
+                                "dias": 7,
+                                "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                              },
+                              "previsto": false,
+                              "valor_centavos": 7000,
+                              "saldo_apos_centavos": 217000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-27",
+                              "evento_id": "G5",
+                              "descricao": "Gastos do dia a dia (estimado)",
+                              "tipo": "saida",
+                              "meio": "pix_ou_debito",
+                              "origem": "estimado",
+                              "estimativa": {
+                                "metodo": "gasto_diario",
+                                "valor_por_dia_centavos": 1000,
+                                "dias": 3,
+                                "texto": "estimado: R$ 10,00 por dia × 3 dias, pela média do histórico"
+                              },
+                              "previsto": false,
+                              "valor_centavos": 3000,
+                              "saldo_apos_centavos": 214000,
+                              "rotulo": null,
+                              "original": null
+                            },
+                            {
+                              "data": "2026-11-28",
+                              "evento_id": "E5",
+                              "descricao": "Condomínio",
+                              "tipo": "saida",
+                              "meio": "boleto",
+                              "origem": "dados_base",
+                              "estimativa": null,
+                              "previsto": false,
+                              "valor_centavos": 65000,
+                              "saldo_apos_centavos": 149000,
+                              "rotulo": null,
+                              "original": null
+                            }
+                          ],
+                          "indicadores": {
+                            "saldo_inicial_centavos": 250000,
+                            "saldo_minimo_centavos": -66000,
+                            "data_saldo_minimo": "2026-11-13",
+                            "primeira_falta": {
+                              "data": "2026-11-06",
+                              "valor_descoberto_centavos": 59000,
+                              "saidas_do_dia": [
+                                "G2",
+                                "H1.1"
+                              ]
+                            },
+                            "insuficiencia_centavos": 66000,
+                            "margem_hoje_centavos": 0,
+                            "saldo_final_centavos": 149000,
+                            "sem_recebimentos": {
+                              "insuficiencia_centavos": 271000,
+                              "primeira_falta": {
+                                "data": "2026-11-06",
+                                "valor_descoberto_centavos": 59000,
+                                "saidas_do_dia": [
+                                  "G2",
+                                  "H1.1"
+                                ]
+                              },
+                              "saldo_final_centavos": -271000
+                            }
+                          },
+                          "faturas_afetadas": [],
+                          "datas_ordem_relevante": [],
+                          "avisos": [
+                            "saldo_final_positivo_com_falta",
+                            "falta_maior_sem_recebimento"
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "rastro": [
+                    {
+                      "chamada": 1,
+                      "ferramenta": "criar_hipotese",
+                      "argumentos": {
+                        "nome": "Conserto do carro R$ 800 em 06/11",
+                        "a_partir_de": "atual",
+                        "alteracoes": [
+                          {
+                            "operacao": "adicionar_evento",
+                            "tipo": "saida",
+                            "descricao": "Conserto do carro",
+                            "data": "2026-11-06",
+                            "valor": "800",
+                            "meio": "pix"
+                          }
+                        ]
+                      },
+                      "resultado": {
+                        "ok": true,
+                        "hipotese_id": "H1",
+                        "indicadores": {
+                          "saldo_inicial_centavos": 250000,
+                          "saldo_minimo_centavos": -66000,
+                          "data_saldo_minimo": "2026-11-13",
+                          "primeira_falta": {
+                            "data": "2026-11-06",
+                            "valor_descoberto_centavos": 59000,
+                            "saidas_do_dia": [
+                              "G2",
+                              "H1.1"
+                            ]
+                          },
+                          "insuficiencia_centavos": 66000,
+                          "margem_hoje_centavos": 0,
+                          "saldo_final_centavos": 149000,
+                          "sem_recebimentos": {
+                            "insuficiencia_centavos": 271000,
+                            "primeira_falta": {
+                              "data": "2026-11-06",
+                              "valor_descoberto_centavos": 59000,
+                              "saidas_do_dia": [
+                                "G2",
+                                "H1.1"
+                              ]
+                            },
+                            "saldo_final_centavos": -271000
+                          }
+                        },
+                        "cenarios": [
+                          {
+                            "cenario_id": "atual",
+                            "nome": "Situação atual",
+                            "status": "calculado",
+                            "linhas": [
+                              {
+                                "data": "2026-10-30",
+                                "evento_id": "G1",
+                                "descricao": "Gastos do dia a dia (estimado)",
+                                "tipo": "saida",
+                                "meio": "pix_ou_debito",
+                                "origem": "estimado",
+                                "estimativa": {
+                                  "metodo": "gasto_diario",
+                                  "valor_por_dia_centavos": 1000,
+                                  "dias": 7,
+                                  "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                                },
+                                "previsto": false,
+                                "valor_centavos": 7000,
+                                "saldo_apos_centavos": 243000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-04",
+                                "evento_id": "E1",
+                                "descricao": "Mensalidade escolar",
+                                "tipo": "saida",
+                                "meio": "boleto",
+                                "origem": "dados_base",
+                                "estimativa": null,
+                                "previsto": false,
+                                "valor_centavos": 90000,
+                                "saldo_apos_centavos": 153000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-05",
+                                "evento_id": "E2",
+                                "descricao": "Fatura do cartão",
+                                "tipo": "saida",
+                                "meio": "debito",
+                                "origem": "dados_base",
+                                "estimativa": null,
+                                "previsto": false,
+                                "valor_centavos": 125000,
+                                "saldo_apos_centavos": 28000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-06",
+                                "evento_id": "G2",
+                                "descricao": "Gastos do dia a dia (estimado)",
+                                "tipo": "saida",
+                                "meio": "pix_ou_debito",
+                                "origem": "estimado",
+                                "estimativa": {
+                                  "metodo": "gasto_diario",
+                                  "valor_por_dia_centavos": 1000,
+                                  "dias": 7,
+                                  "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                                },
+                                "previsto": false,
+                                "valor_centavos": 7000,
+                                "saldo_apos_centavos": 21000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-13",
+                                "evento_id": "G3",
+                                "descricao": "Gastos do dia a dia (estimado)",
+                                "tipo": "saida",
+                                "meio": "pix_ou_debito",
+                                "origem": "estimado",
+                                "estimativa": {
+                                  "metodo": "gasto_diario",
+                                  "valor_por_dia_centavos": 1000,
+                                  "dias": 7,
+                                  "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                                },
+                                "previsto": false,
+                                "valor_centavos": 7000,
+                                "saldo_apos_centavos": 14000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-13",
+                                "evento_id": "E3",
+                                "descricao": "Salário",
+                                "tipo": "entrada",
+                                "meio": "salario",
+                                "origem": "dados_base",
+                                "estimativa": null,
+                                "previsto": true,
+                                "valor_centavos": 420000,
+                                "saldo_apos_centavos": 434000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-18",
+                                "evento_id": "E4",
+                                "descricao": "Financiamento",
+                                "tipo": "saida",
+                                "meio": "debito_automatico",
+                                "origem": "dados_base",
+                                "estimativa": null,
+                                "previsto": false,
+                                "valor_centavos": 130000,
+                                "saldo_apos_centavos": 304000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-20",
+                                "evento_id": "G4",
+                                "descricao": "Gastos do dia a dia (estimado)",
+                                "tipo": "saida",
+                                "meio": "pix_ou_debito",
+                                "origem": "estimado",
+                                "estimativa": {
+                                  "metodo": "gasto_diario",
+                                  "valor_por_dia_centavos": 1000,
+                                  "dias": 7,
+                                  "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                                },
+                                "previsto": false,
+                                "valor_centavos": 7000,
+                                "saldo_apos_centavos": 297000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-27",
+                                "evento_id": "G5",
+                                "descricao": "Gastos do dia a dia (estimado)",
+                                "tipo": "saida",
+                                "meio": "pix_ou_debito",
+                                "origem": "estimado",
+                                "estimativa": {
+                                  "metodo": "gasto_diario",
+                                  "valor_por_dia_centavos": 1000,
+                                  "dias": 3,
+                                  "texto": "estimado: R$ 10,00 por dia × 3 dias, pela média do histórico"
+                                },
+                                "previsto": false,
+                                "valor_centavos": 3000,
+                                "saldo_apos_centavos": 294000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-28",
+                                "evento_id": "E5",
+                                "descricao": "Condomínio",
+                                "tipo": "saida",
+                                "meio": "boleto",
+                                "origem": "dados_base",
+                                "estimativa": null,
+                                "previsto": false,
+                                "valor_centavos": 65000,
+                                "saldo_apos_centavos": 229000,
+                                "rotulo": null,
+                                "original": null
+                              }
+                            ],
+                            "indicadores": {
+                              "saldo_inicial_centavos": 250000,
+                              "saldo_minimo_centavos": 14000,
+                              "data_saldo_minimo": "2026-11-13",
+                              "primeira_falta": null,
+                              "insuficiencia_centavos": 0,
+                              "margem_hoje_centavos": 14000,
+                              "saldo_final_centavos": 229000,
+                              "sem_recebimentos": {
+                                "insuficiencia_centavos": 191000,
+                                "primeira_falta": {
+                                  "data": "2026-11-18",
+                                  "valor_descoberto_centavos": 116000,
+                                  "saidas_do_dia": [
+                                    "E4"
+                                  ]
+                                },
+                                "saldo_final_centavos": -191000
+                              }
+                            },
+                            "faturas_afetadas": [],
+                            "datas_ordem_relevante": [],
+                            "avisos": [
+                              "cobertura_depende_de_recebimento"
+                            ]
+                          },
+                          {
+                            "cenario_id": "H1",
+                            "nome": "Conserto do carro R$ 800 em 06/11",
+                            "status": "calculado",
+                            "linhas": [
+                              {
+                                "data": "2026-10-30",
+                                "evento_id": "G1",
+                                "descricao": "Gastos do dia a dia (estimado)",
+                                "tipo": "saida",
+                                "meio": "pix_ou_debito",
+                                "origem": "estimado",
+                                "estimativa": {
+                                  "metodo": "gasto_diario",
+                                  "valor_por_dia_centavos": 1000,
+                                  "dias": 7,
+                                  "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                                },
+                                "previsto": false,
+                                "valor_centavos": 7000,
+                                "saldo_apos_centavos": 243000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-04",
+                                "evento_id": "E1",
+                                "descricao": "Mensalidade escolar",
+                                "tipo": "saida",
+                                "meio": "boleto",
+                                "origem": "dados_base",
+                                "estimativa": null,
+                                "previsto": false,
+                                "valor_centavos": 90000,
+                                "saldo_apos_centavos": 153000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-05",
+                                "evento_id": "E2",
+                                "descricao": "Fatura do cartão",
+                                "tipo": "saida",
+                                "meio": "debito",
+                                "origem": "dados_base",
+                                "estimativa": null,
+                                "previsto": false,
+                                "valor_centavos": 125000,
+                                "saldo_apos_centavos": 28000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-06",
+                                "evento_id": "G2",
+                                "descricao": "Gastos do dia a dia (estimado)",
+                                "tipo": "saida",
+                                "meio": "pix_ou_debito",
+                                "origem": "estimado",
+                                "estimativa": {
+                                  "metodo": "gasto_diario",
+                                  "valor_por_dia_centavos": 1000,
+                                  "dias": 7,
+                                  "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                                },
+                                "previsto": false,
+                                "valor_centavos": 7000,
+                                "saldo_apos_centavos": 21000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-06",
+                                "evento_id": "H1.1",
+                                "descricao": "Conserto do carro",
+                                "tipo": "saida",
+                                "meio": "pix",
+                                "origem": "hipotese",
+                                "estimativa": null,
+                                "previsto": false,
+                                "valor_centavos": 80000,
+                                "saldo_apos_centavos": -59000,
+                                "rotulo": "Saldo insuficiente (faltam R$ 590,00)",
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-13",
+                                "evento_id": "G3",
+                                "descricao": "Gastos do dia a dia (estimado)",
+                                "tipo": "saida",
+                                "meio": "pix_ou_debito",
+                                "origem": "estimado",
+                                "estimativa": {
+                                  "metodo": "gasto_diario",
+                                  "valor_por_dia_centavos": 1000,
+                                  "dias": 7,
+                                  "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                                },
+                                "previsto": false,
+                                "valor_centavos": 7000,
+                                "saldo_apos_centavos": -66000,
+                                "rotulo": "Saldo insuficiente (faltam R$ 660,00)",
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-13",
+                                "evento_id": "E3",
+                                "descricao": "Salário",
+                                "tipo": "entrada",
+                                "meio": "salario",
+                                "origem": "dados_base",
+                                "estimativa": null,
+                                "previsto": true,
+                                "valor_centavos": 420000,
+                                "saldo_apos_centavos": 354000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-18",
+                                "evento_id": "E4",
+                                "descricao": "Financiamento",
+                                "tipo": "saida",
+                                "meio": "debito_automatico",
+                                "origem": "dados_base",
+                                "estimativa": null,
+                                "previsto": false,
+                                "valor_centavos": 130000,
+                                "saldo_apos_centavos": 224000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-20",
+                                "evento_id": "G4",
+                                "descricao": "Gastos do dia a dia (estimado)",
+                                "tipo": "saida",
+                                "meio": "pix_ou_debito",
+                                "origem": "estimado",
+                                "estimativa": {
+                                  "metodo": "gasto_diario",
+                                  "valor_por_dia_centavos": 1000,
+                                  "dias": 7,
+                                  "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                                },
+                                "previsto": false,
+                                "valor_centavos": 7000,
+                                "saldo_apos_centavos": 217000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-27",
+                                "evento_id": "G5",
+                                "descricao": "Gastos do dia a dia (estimado)",
+                                "tipo": "saida",
+                                "meio": "pix_ou_debito",
+                                "origem": "estimado",
+                                "estimativa": {
+                                  "metodo": "gasto_diario",
+                                  "valor_por_dia_centavos": 1000,
+                                  "dias": 3,
+                                  "texto": "estimado: R$ 10,00 por dia × 3 dias, pela média do histórico"
+                                },
+                                "previsto": false,
+                                "valor_centavos": 3000,
+                                "saldo_apos_centavos": 214000,
+                                "rotulo": null,
+                                "original": null
+                              },
+                              {
+                                "data": "2026-11-28",
+                                "evento_id": "E5",
+                                "descricao": "Condomínio",
+                                "tipo": "saida",
+                                "meio": "boleto",
+                                "origem": "dados_base",
+                                "estimativa": null,
+                                "previsto": false,
+                                "valor_centavos": 65000,
+                                "saldo_apos_centavos": 149000,
+                                "rotulo": null,
+                                "original": null
+                              }
+                            ],
+                            "indicadores": {
+                              "saldo_inicial_centavos": 250000,
+                              "saldo_minimo_centavos": -66000,
+                              "data_saldo_minimo": "2026-11-13",
+                              "primeira_falta": {
+                                "data": "2026-11-06",
+                                "valor_descoberto_centavos": 59000,
+                                "saidas_do_dia": [
+                                  "G2",
+                                  "H1.1"
+                                ]
+                              },
+                              "insuficiencia_centavos": 66000,
+                              "margem_hoje_centavos": 0,
+                              "saldo_final_centavos": 149000,
+                              "sem_recebimentos": {
+                                "insuficiencia_centavos": 271000,
+                                "primeira_falta": {
+                                  "data": "2026-11-06",
+                                  "valor_descoberto_centavos": 59000,
+                                  "saidas_do_dia": [
+                                    "G2",
+                                    "H1.1"
+                                  ]
+                                },
+                                "saldo_final_centavos": -271000
+                              }
+                            },
+                            "faturas_afetadas": [],
+                            "datas_ordem_relevante": [],
+                            "avisos": [
+                              "saldo_final_positivo_com_falta",
+                              "falta_maior_sem_recebimento"
+                            ]
+                          }
+                        ],
+                        "valores_formatados": {
+                          "indicadores.saldo_inicial_centavos": "R$ 2.500,00",
+                          "indicadores.saldo_minimo_centavos": "-R$ 660,00",
+                          "indicadores.primeira_falta.valor_descoberto_centavos": "R$ 590,00",
+                          "indicadores.insuficiencia_centavos": "R$ 660,00",
+                          "indicadores.margem_hoje_centavos": "R$ 0,00",
+                          "indicadores.saldo_final_centavos": "R$ 1.490,00",
+                          "indicadores.sem_recebimentos.insuficiencia_centavos": "R$ 2.710,00",
+                          "indicadores.sem_recebimentos.primeira_falta.valor_descoberto_centavos": "R$ 590,00",
+                          "indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 2.710,00",
+                          "cenarios[0].linhas[0].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                          "cenarios[0].linhas[0].valor_centavos": "R$ 70,00",
+                          "cenarios[0].linhas[0].saldo_apos_centavos": "R$ 2.430,00",
+                          "cenarios[0].linhas[1].valor_centavos": "R$ 900,00",
+                          "cenarios[0].linhas[1].saldo_apos_centavos": "R$ 1.530,00",
+                          "cenarios[0].linhas[2].valor_centavos": "R$ 1.250,00",
+                          "cenarios[0].linhas[2].saldo_apos_centavos": "R$ 280,00",
+                          "cenarios[0].linhas[3].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                          "cenarios[0].linhas[3].valor_centavos": "R$ 70,00",
+                          "cenarios[0].linhas[3].saldo_apos_centavos": "R$ 210,00",
+                          "cenarios[0].linhas[4].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                          "cenarios[0].linhas[4].valor_centavos": "R$ 70,00",
+                          "cenarios[0].linhas[4].saldo_apos_centavos": "R$ 140,00",
+                          "cenarios[0].linhas[5].valor_centavos": "R$ 4.200,00",
+                          "cenarios[0].linhas[5].saldo_apos_centavos": "R$ 4.340,00",
+                          "cenarios[0].linhas[6].valor_centavos": "R$ 1.300,00",
+                          "cenarios[0].linhas[6].saldo_apos_centavos": "R$ 3.040,00",
+                          "cenarios[0].linhas[7].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                          "cenarios[0].linhas[7].valor_centavos": "R$ 70,00",
+                          "cenarios[0].linhas[7].saldo_apos_centavos": "R$ 2.970,00",
+                          "cenarios[0].linhas[8].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                          "cenarios[0].linhas[8].valor_centavos": "R$ 30,00",
+                          "cenarios[0].linhas[8].saldo_apos_centavos": "R$ 2.940,00",
+                          "cenarios[0].linhas[9].valor_centavos": "R$ 650,00",
+                          "cenarios[0].linhas[9].saldo_apos_centavos": "R$ 2.290,00",
+                          "cenarios[0].indicadores.saldo_inicial_centavos": "R$ 2.500,00",
+                          "cenarios[0].indicadores.saldo_minimo_centavos": "R$ 140,00",
+                          "cenarios[0].indicadores.insuficiencia_centavos": "R$ 0,00",
+                          "cenarios[0].indicadores.margem_hoje_centavos": "R$ 140,00",
+                          "cenarios[0].indicadores.saldo_final_centavos": "R$ 2.290,00",
+                          "cenarios[0].indicadores.sem_recebimentos.insuficiencia_centavos": "R$ 1.910,00",
+                          "cenarios[0].indicadores.sem_recebimentos.primeira_falta.valor_descoberto_centavos": "R$ 1.160,00",
+                          "cenarios[0].indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 1.910,00",
+                          "cenarios[1].linhas[0].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                          "cenarios[1].linhas[0].valor_centavos": "R$ 70,00",
+                          "cenarios[1].linhas[0].saldo_apos_centavos": "R$ 2.430,00",
+                          "cenarios[1].linhas[1].valor_centavos": "R$ 900,00",
+                          "cenarios[1].linhas[1].saldo_apos_centavos": "R$ 1.530,00",
+                          "cenarios[1].linhas[2].valor_centavos": "R$ 1.250,00",
+                          "cenarios[1].linhas[2].saldo_apos_centavos": "R$ 280,00",
+                          "cenarios[1].linhas[3].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                          "cenarios[1].linhas[3].valor_centavos": "R$ 70,00",
+                          "cenarios[1].linhas[3].saldo_apos_centavos": "R$ 210,00",
+                          "cenarios[1].linhas[4].valor_centavos": "R$ 800,00",
+                          "cenarios[1].linhas[4].saldo_apos_centavos": "-R$ 590,00",
+                          "cenarios[1].linhas[5].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                          "cenarios[1].linhas[5].valor_centavos": "R$ 70,00",
+                          "cenarios[1].linhas[5].saldo_apos_centavos": "-R$ 660,00",
+                          "cenarios[1].linhas[6].valor_centavos": "R$ 4.200,00",
+                          "cenarios[1].linhas[6].saldo_apos_centavos": "R$ 3.540,00",
+                          "cenarios[1].linhas[7].valor_centavos": "R$ 1.300,00",
+                          "cenarios[1].linhas[7].saldo_apos_centavos": "R$ 2.240,00",
+                          "cenarios[1].linhas[8].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                          "cenarios[1].linhas[8].valor_centavos": "R$ 70,00",
+                          "cenarios[1].linhas[8].saldo_apos_centavos": "R$ 2.170,00",
+                          "cenarios[1].linhas[9].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                          "cenarios[1].linhas[9].valor_centavos": "R$ 30,00",
+                          "cenarios[1].linhas[9].saldo_apos_centavos": "R$ 2.140,00",
+                          "cenarios[1].linhas[10].valor_centavos": "R$ 650,00",
+                          "cenarios[1].linhas[10].saldo_apos_centavos": "R$ 1.490,00",
+                          "cenarios[1].indicadores.saldo_inicial_centavos": "R$ 2.500,00",
+                          "cenarios[1].indicadores.saldo_minimo_centavos": "-R$ 660,00",
+                          "cenarios[1].indicadores.primeira_falta.valor_descoberto_centavos": "R$ 590,00",
+                          "cenarios[1].indicadores.insuficiencia_centavos": "R$ 660,00",
+                          "cenarios[1].indicadores.margem_hoje_centavos": "R$ 0,00",
+                          "cenarios[1].indicadores.saldo_final_centavos": "R$ 1.490,00",
+                          "cenarios[1].indicadores.sem_recebimentos.insuficiencia_centavos": "R$ 2.710,00",
+                          "cenarios[1].indicadores.sem_recebimentos.primeira_falta.valor_descoberto_centavos": "R$ 590,00",
+                          "cenarios[1].indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 2.710,00"
+                        }
+                      },
+                      "duracao_ms": 2
+                    }
+                  ]
+                }
+              ],
+              "declaracoes": [],
+              "operacoes": [],
+              "operacao_pendente": null,
+              "hipoteses": [
+                {
+                  "id": "H1",
+                  "nome": "Conserto do carro R$ 800 em 06/11",
+                  "a_partir_de": "atual",
+                  "mensagem_id": "CV-12-r1-m2",
+                  "alteracoes": [
+                    {
+                      "id": "H1.1",
+                      "copiado_de": null,
+                      "alteracao": {
+                        "operacao": "adicionar_evento",
+                        "tipo": "saida",
+                        "descricao": "Conserto do carro",
+                        "data": "2026-11-06",
+                        "valor": "800",
+                        "meio": "pix"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "contadores": {
+                "D": 0,
+                "H": 1,
+                "OP": 0
+              }
+            },
+            "texto": "Simulação criada: H1 — Conserto do carro R$ 800 em 06/11 (Pix). É só hipótese; nada muda na situação atual.\n\n- Primeira falta: 06/11, com R$ 590,00 descobertos.\n- Menor saldo: -R$ 660,00, em 13/11.\n- Falta total no período: R$ 660,00.\n- Saldo final: R$ 1.490,00 — mas depende do salário previsto em 13/11; a falta de 06/11 continua.\n\nOs gastos do dia a dia são estimativas.",
+            "cartoes": [
+              {
+                "tipo": "comparacao",
+                "cenarios": [
+                  {
+                    "cenario_id": "atual",
+                    "nome": "Situação atual",
+                    "status": "calculado",
+                    "linhas": [
+                      {
+                        "data": "2026-10-30",
+                        "evento_id": "G1",
+                        "descricao": "Gastos do dia a dia (estimado)",
+                        "tipo": "saida",
+                        "meio": "pix_ou_debito",
+                        "origem": "estimado",
+                        "estimativa": {
+                          "metodo": "gasto_diario",
+                          "valor_por_dia_centavos": 1000,
+                          "dias": 7,
+                          "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                        },
+                        "previsto": false,
+                        "valor_centavos": 7000,
+                        "saldo_apos_centavos": 243000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-04",
+                        "evento_id": "E1",
+                        "descricao": "Mensalidade escolar",
+                        "tipo": "saida",
+                        "meio": "boleto",
+                        "origem": "dados_base",
+                        "estimativa": null,
+                        "previsto": false,
+                        "valor_centavos": 90000,
+                        "saldo_apos_centavos": 153000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-05",
+                        "evento_id": "E2",
+                        "descricao": "Fatura do cartão",
+                        "tipo": "saida",
+                        "meio": "debito",
+                        "origem": "dados_base",
+                        "estimativa": null,
+                        "previsto": false,
+                        "valor_centavos": 125000,
+                        "saldo_apos_centavos": 28000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-06",
+                        "evento_id": "G2",
+                        "descricao": "Gastos do dia a dia (estimado)",
+                        "tipo": "saida",
+                        "meio": "pix_ou_debito",
+                        "origem": "estimado",
+                        "estimativa": {
+                          "metodo": "gasto_diario",
+                          "valor_por_dia_centavos": 1000,
+                          "dias": 7,
+                          "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                        },
+                        "previsto": false,
+                        "valor_centavos": 7000,
+                        "saldo_apos_centavos": 21000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-13",
+                        "evento_id": "G3",
+                        "descricao": "Gastos do dia a dia (estimado)",
+                        "tipo": "saida",
+                        "meio": "pix_ou_debito",
+                        "origem": "estimado",
+                        "estimativa": {
+                          "metodo": "gasto_diario",
+                          "valor_por_dia_centavos": 1000,
+                          "dias": 7,
+                          "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                        },
+                        "previsto": false,
+                        "valor_centavos": 7000,
+                        "saldo_apos_centavos": 14000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-13",
+                        "evento_id": "E3",
+                        "descricao": "Salário",
+                        "tipo": "entrada",
+                        "meio": "salario",
+                        "origem": "dados_base",
+                        "estimativa": null,
+                        "previsto": true,
+                        "valor_centavos": 420000,
+                        "saldo_apos_centavos": 434000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-18",
+                        "evento_id": "E4",
+                        "descricao": "Financiamento",
+                        "tipo": "saida",
+                        "meio": "debito_automatico",
+                        "origem": "dados_base",
+                        "estimativa": null,
+                        "previsto": false,
+                        "valor_centavos": 130000,
+                        "saldo_apos_centavos": 304000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-20",
+                        "evento_id": "G4",
+                        "descricao": "Gastos do dia a dia (estimado)",
+                        "tipo": "saida",
+                        "meio": "pix_ou_debito",
+                        "origem": "estimado",
+                        "estimativa": {
+                          "metodo": "gasto_diario",
+                          "valor_por_dia_centavos": 1000,
+                          "dias": 7,
+                          "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                        },
+                        "previsto": false,
+                        "valor_centavos": 7000,
+                        "saldo_apos_centavos": 297000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-27",
+                        "evento_id": "G5",
+                        "descricao": "Gastos do dia a dia (estimado)",
+                        "tipo": "saida",
+                        "meio": "pix_ou_debito",
+                        "origem": "estimado",
+                        "estimativa": {
+                          "metodo": "gasto_diario",
+                          "valor_por_dia_centavos": 1000,
+                          "dias": 3,
+                          "texto": "estimado: R$ 10,00 por dia × 3 dias, pela média do histórico"
+                        },
+                        "previsto": false,
+                        "valor_centavos": 3000,
+                        "saldo_apos_centavos": 294000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-28",
+                        "evento_id": "E5",
+                        "descricao": "Condomínio",
+                        "tipo": "saida",
+                        "meio": "boleto",
+                        "origem": "dados_base",
+                        "estimativa": null,
+                        "previsto": false,
+                        "valor_centavos": 65000,
+                        "saldo_apos_centavos": 229000,
+                        "rotulo": null,
+                        "original": null
+                      }
+                    ],
+                    "indicadores": {
+                      "saldo_inicial_centavos": 250000,
+                      "saldo_minimo_centavos": 14000,
+                      "data_saldo_minimo": "2026-11-13",
+                      "primeira_falta": null,
+                      "insuficiencia_centavos": 0,
+                      "margem_hoje_centavos": 14000,
+                      "saldo_final_centavos": 229000,
+                      "sem_recebimentos": {
+                        "insuficiencia_centavos": 191000,
+                        "primeira_falta": {
+                          "data": "2026-11-18",
+                          "valor_descoberto_centavos": 116000,
+                          "saidas_do_dia": [
+                            "E4"
+                          ]
+                        },
+                        "saldo_final_centavos": -191000
+                      }
+                    },
+                    "faturas_afetadas": [],
+                    "datas_ordem_relevante": [],
+                    "avisos": [
+                      "cobertura_depende_de_recebimento"
+                    ]
+                  },
+                  {
+                    "cenario_id": "H1",
+                    "nome": "Conserto do carro R$ 800 em 06/11",
+                    "status": "calculado",
+                    "linhas": [
+                      {
+                        "data": "2026-10-30",
+                        "evento_id": "G1",
+                        "descricao": "Gastos do dia a dia (estimado)",
+                        "tipo": "saida",
+                        "meio": "pix_ou_debito",
+                        "origem": "estimado",
+                        "estimativa": {
+                          "metodo": "gasto_diario",
+                          "valor_por_dia_centavos": 1000,
+                          "dias": 7,
+                          "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                        },
+                        "previsto": false,
+                        "valor_centavos": 7000,
+                        "saldo_apos_centavos": 243000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-04",
+                        "evento_id": "E1",
+                        "descricao": "Mensalidade escolar",
+                        "tipo": "saida",
+                        "meio": "boleto",
+                        "origem": "dados_base",
+                        "estimativa": null,
+                        "previsto": false,
+                        "valor_centavos": 90000,
+                        "saldo_apos_centavos": 153000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-05",
+                        "evento_id": "E2",
+                        "descricao": "Fatura do cartão",
+                        "tipo": "saida",
+                        "meio": "debito",
+                        "origem": "dados_base",
+                        "estimativa": null,
+                        "previsto": false,
+                        "valor_centavos": 125000,
+                        "saldo_apos_centavos": 28000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-06",
+                        "evento_id": "G2",
+                        "descricao": "Gastos do dia a dia (estimado)",
+                        "tipo": "saida",
+                        "meio": "pix_ou_debito",
+                        "origem": "estimado",
+                        "estimativa": {
+                          "metodo": "gasto_diario",
+                          "valor_por_dia_centavos": 1000,
+                          "dias": 7,
+                          "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                        },
+                        "previsto": false,
+                        "valor_centavos": 7000,
+                        "saldo_apos_centavos": 21000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-06",
+                        "evento_id": "H1.1",
+                        "descricao": "Conserto do carro",
+                        "tipo": "saida",
+                        "meio": "pix",
+                        "origem": "hipotese",
+                        "estimativa": null,
+                        "previsto": false,
+                        "valor_centavos": 80000,
+                        "saldo_apos_centavos": -59000,
+                        "rotulo": "Saldo insuficiente (faltam R$ 590,00)",
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-13",
+                        "evento_id": "G3",
+                        "descricao": "Gastos do dia a dia (estimado)",
+                        "tipo": "saida",
+                        "meio": "pix_ou_debito",
+                        "origem": "estimado",
+                        "estimativa": {
+                          "metodo": "gasto_diario",
+                          "valor_por_dia_centavos": 1000,
+                          "dias": 7,
+                          "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                        },
+                        "previsto": false,
+                        "valor_centavos": 7000,
+                        "saldo_apos_centavos": -66000,
+                        "rotulo": "Saldo insuficiente (faltam R$ 660,00)",
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-13",
+                        "evento_id": "E3",
+                        "descricao": "Salário",
+                        "tipo": "entrada",
+                        "meio": "salario",
+                        "origem": "dados_base",
+                        "estimativa": null,
+                        "previsto": true,
+                        "valor_centavos": 420000,
+                        "saldo_apos_centavos": 354000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-18",
+                        "evento_id": "E4",
+                        "descricao": "Financiamento",
+                        "tipo": "saida",
+                        "meio": "debito_automatico",
+                        "origem": "dados_base",
+                        "estimativa": null,
+                        "previsto": false,
+                        "valor_centavos": 130000,
+                        "saldo_apos_centavos": 224000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-20",
+                        "evento_id": "G4",
+                        "descricao": "Gastos do dia a dia (estimado)",
+                        "tipo": "saida",
+                        "meio": "pix_ou_debito",
+                        "origem": "estimado",
+                        "estimativa": {
+                          "metodo": "gasto_diario",
+                          "valor_por_dia_centavos": 1000,
+                          "dias": 7,
+                          "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                        },
+                        "previsto": false,
+                        "valor_centavos": 7000,
+                        "saldo_apos_centavos": 217000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-27",
+                        "evento_id": "G5",
+                        "descricao": "Gastos do dia a dia (estimado)",
+                        "tipo": "saida",
+                        "meio": "pix_ou_debito",
+                        "origem": "estimado",
+                        "estimativa": {
+                          "metodo": "gasto_diario",
+                          "valor_por_dia_centavos": 1000,
+                          "dias": 3,
+                          "texto": "estimado: R$ 10,00 por dia × 3 dias, pela média do histórico"
+                        },
+                        "previsto": false,
+                        "valor_centavos": 3000,
+                        "saldo_apos_centavos": 214000,
+                        "rotulo": null,
+                        "original": null
+                      },
+                      {
+                        "data": "2026-11-28",
+                        "evento_id": "E5",
+                        "descricao": "Condomínio",
+                        "tipo": "saida",
+                        "meio": "boleto",
+                        "origem": "dados_base",
+                        "estimativa": null,
+                        "previsto": false,
+                        "valor_centavos": 65000,
+                        "saldo_apos_centavos": 149000,
+                        "rotulo": null,
+                        "original": null
+                      }
+                    ],
+                    "indicadores": {
+                      "saldo_inicial_centavos": 250000,
+                      "saldo_minimo_centavos": -66000,
+                      "data_saldo_minimo": "2026-11-13",
+                      "primeira_falta": {
+                        "data": "2026-11-06",
+                        "valor_descoberto_centavos": 59000,
+                        "saidas_do_dia": [
+                          "G2",
+                          "H1.1"
+                        ]
+                      },
+                      "insuficiencia_centavos": 66000,
+                      "margem_hoje_centavos": 0,
+                      "saldo_final_centavos": 149000,
+                      "sem_recebimentos": {
+                        "insuficiencia_centavos": 271000,
+                        "primeira_falta": {
+                          "data": "2026-11-06",
+                          "valor_descoberto_centavos": 59000,
+                          "saidas_do_dia": [
+                            "G2",
+                            "H1.1"
+                          ]
+                        },
+                        "saldo_final_centavos": -271000
+                      }
+                    },
+                    "faturas_afetadas": [],
+                    "datas_ordem_relevante": [],
+                    "avisos": [
+                      "saldo_final_positivo_com_falta",
+                      "falta_maior_sem_recebimento"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "avisos": [],
+            "rastro": [
+              {
+                "chamada": 1,
+                "ferramenta": "criar_hipotese",
+                "argumentos": {
+                  "nome": "Conserto do carro R$ 800 em 06/11",
+                  "a_partir_de": "atual",
+                  "alteracoes": [
+                    {
+                      "operacao": "adicionar_evento",
+                      "tipo": "saida",
+                      "descricao": "Conserto do carro",
+                      "data": "2026-11-06",
+                      "valor": "800",
+                      "meio": "pix"
+                    }
+                  ]
+                },
+                "resultado": {
+                  "ok": true,
+                  "hipotese_id": "H1",
+                  "indicadores": {
+                    "saldo_inicial_centavos": 250000,
+                    "saldo_minimo_centavos": -66000,
+                    "data_saldo_minimo": "2026-11-13",
+                    "primeira_falta": {
+                      "data": "2026-11-06",
+                      "valor_descoberto_centavos": 59000,
+                      "saidas_do_dia": [
+                        "G2",
+                        "H1.1"
+                      ]
+                    },
+                    "insuficiencia_centavos": 66000,
+                    "margem_hoje_centavos": 0,
+                    "saldo_final_centavos": 149000,
+                    "sem_recebimentos": {
+                      "insuficiencia_centavos": 271000,
+                      "primeira_falta": {
+                        "data": "2026-11-06",
+                        "valor_descoberto_centavos": 59000,
+                        "saidas_do_dia": [
+                          "G2",
+                          "H1.1"
+                        ]
+                      },
+                      "saldo_final_centavos": -271000
+                    }
+                  },
+                  "cenarios": [
+                    {
+                      "cenario_id": "atual",
+                      "nome": "Situação atual",
+                      "status": "calculado",
+                      "linhas": [
+                        {
+                          "data": "2026-10-30",
+                          "evento_id": "G1",
+                          "descricao": "Gastos do dia a dia (estimado)",
+                          "tipo": "saida",
+                          "meio": "pix_ou_debito",
+                          "origem": "estimado",
+                          "estimativa": {
+                            "metodo": "gasto_diario",
+                            "valor_por_dia_centavos": 1000,
+                            "dias": 7,
+                            "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                          },
+                          "previsto": false,
+                          "valor_centavos": 7000,
+                          "saldo_apos_centavos": 243000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-04",
+                          "evento_id": "E1",
+                          "descricao": "Mensalidade escolar",
+                          "tipo": "saida",
+                          "meio": "boleto",
+                          "origem": "dados_base",
+                          "estimativa": null,
+                          "previsto": false,
+                          "valor_centavos": 90000,
+                          "saldo_apos_centavos": 153000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-05",
+                          "evento_id": "E2",
+                          "descricao": "Fatura do cartão",
+                          "tipo": "saida",
+                          "meio": "debito",
+                          "origem": "dados_base",
+                          "estimativa": null,
+                          "previsto": false,
+                          "valor_centavos": 125000,
+                          "saldo_apos_centavos": 28000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-06",
+                          "evento_id": "G2",
+                          "descricao": "Gastos do dia a dia (estimado)",
+                          "tipo": "saida",
+                          "meio": "pix_ou_debito",
+                          "origem": "estimado",
+                          "estimativa": {
+                            "metodo": "gasto_diario",
+                            "valor_por_dia_centavos": 1000,
+                            "dias": 7,
+                            "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                          },
+                          "previsto": false,
+                          "valor_centavos": 7000,
+                          "saldo_apos_centavos": 21000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-13",
+                          "evento_id": "G3",
+                          "descricao": "Gastos do dia a dia (estimado)",
+                          "tipo": "saida",
+                          "meio": "pix_ou_debito",
+                          "origem": "estimado",
+                          "estimativa": {
+                            "metodo": "gasto_diario",
+                            "valor_por_dia_centavos": 1000,
+                            "dias": 7,
+                            "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                          },
+                          "previsto": false,
+                          "valor_centavos": 7000,
+                          "saldo_apos_centavos": 14000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-13",
+                          "evento_id": "E3",
+                          "descricao": "Salário",
+                          "tipo": "entrada",
+                          "meio": "salario",
+                          "origem": "dados_base",
+                          "estimativa": null,
+                          "previsto": true,
+                          "valor_centavos": 420000,
+                          "saldo_apos_centavos": 434000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-18",
+                          "evento_id": "E4",
+                          "descricao": "Financiamento",
+                          "tipo": "saida",
+                          "meio": "debito_automatico",
+                          "origem": "dados_base",
+                          "estimativa": null,
+                          "previsto": false,
+                          "valor_centavos": 130000,
+                          "saldo_apos_centavos": 304000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-20",
+                          "evento_id": "G4",
+                          "descricao": "Gastos do dia a dia (estimado)",
+                          "tipo": "saida",
+                          "meio": "pix_ou_debito",
+                          "origem": "estimado",
+                          "estimativa": {
+                            "metodo": "gasto_diario",
+                            "valor_por_dia_centavos": 1000,
+                            "dias": 7,
+                            "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                          },
+                          "previsto": false,
+                          "valor_centavos": 7000,
+                          "saldo_apos_centavos": 297000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-27",
+                          "evento_id": "G5",
+                          "descricao": "Gastos do dia a dia (estimado)",
+                          "tipo": "saida",
+                          "meio": "pix_ou_debito",
+                          "origem": "estimado",
+                          "estimativa": {
+                            "metodo": "gasto_diario",
+                            "valor_por_dia_centavos": 1000,
+                            "dias": 3,
+                            "texto": "estimado: R$ 10,00 por dia × 3 dias, pela média do histórico"
+                          },
+                          "previsto": false,
+                          "valor_centavos": 3000,
+                          "saldo_apos_centavos": 294000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-28",
+                          "evento_id": "E5",
+                          "descricao": "Condomínio",
+                          "tipo": "saida",
+                          "meio": "boleto",
+                          "origem": "dados_base",
+                          "estimativa": null,
+                          "previsto": false,
+                          "valor_centavos": 65000,
+                          "saldo_apos_centavos": 229000,
+                          "rotulo": null,
+                          "original": null
+                        }
+                      ],
+                      "indicadores": {
+                        "saldo_inicial_centavos": 250000,
+                        "saldo_minimo_centavos": 14000,
+                        "data_saldo_minimo": "2026-11-13",
+                        "primeira_falta": null,
+                        "insuficiencia_centavos": 0,
+                        "margem_hoje_centavos": 14000,
+                        "saldo_final_centavos": 229000,
+                        "sem_recebimentos": {
+                          "insuficiencia_centavos": 191000,
+                          "primeira_falta": {
+                            "data": "2026-11-18",
+                            "valor_descoberto_centavos": 116000,
+                            "saidas_do_dia": [
+                              "E4"
+                            ]
+                          },
+                          "saldo_final_centavos": -191000
+                        }
+                      },
+                      "faturas_afetadas": [],
+                      "datas_ordem_relevante": [],
+                      "avisos": [
+                        "cobertura_depende_de_recebimento"
+                      ]
+                    },
+                    {
+                      "cenario_id": "H1",
+                      "nome": "Conserto do carro R$ 800 em 06/11",
+                      "status": "calculado",
+                      "linhas": [
+                        {
+                          "data": "2026-10-30",
+                          "evento_id": "G1",
+                          "descricao": "Gastos do dia a dia (estimado)",
+                          "tipo": "saida",
+                          "meio": "pix_ou_debito",
+                          "origem": "estimado",
+                          "estimativa": {
+                            "metodo": "gasto_diario",
+                            "valor_por_dia_centavos": 1000,
+                            "dias": 7,
+                            "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                          },
+                          "previsto": false,
+                          "valor_centavos": 7000,
+                          "saldo_apos_centavos": 243000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-04",
+                          "evento_id": "E1",
+                          "descricao": "Mensalidade escolar",
+                          "tipo": "saida",
+                          "meio": "boleto",
+                          "origem": "dados_base",
+                          "estimativa": null,
+                          "previsto": false,
+                          "valor_centavos": 90000,
+                          "saldo_apos_centavos": 153000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-05",
+                          "evento_id": "E2",
+                          "descricao": "Fatura do cartão",
+                          "tipo": "saida",
+                          "meio": "debito",
+                          "origem": "dados_base",
+                          "estimativa": null,
+                          "previsto": false,
+                          "valor_centavos": 125000,
+                          "saldo_apos_centavos": 28000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-06",
+                          "evento_id": "G2",
+                          "descricao": "Gastos do dia a dia (estimado)",
+                          "tipo": "saida",
+                          "meio": "pix_ou_debito",
+                          "origem": "estimado",
+                          "estimativa": {
+                            "metodo": "gasto_diario",
+                            "valor_por_dia_centavos": 1000,
+                            "dias": 7,
+                            "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                          },
+                          "previsto": false,
+                          "valor_centavos": 7000,
+                          "saldo_apos_centavos": 21000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-06",
+                          "evento_id": "H1.1",
+                          "descricao": "Conserto do carro",
+                          "tipo": "saida",
+                          "meio": "pix",
+                          "origem": "hipotese",
+                          "estimativa": null,
+                          "previsto": false,
+                          "valor_centavos": 80000,
+                          "saldo_apos_centavos": -59000,
+                          "rotulo": "Saldo insuficiente (faltam R$ 590,00)",
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-13",
+                          "evento_id": "G3",
+                          "descricao": "Gastos do dia a dia (estimado)",
+                          "tipo": "saida",
+                          "meio": "pix_ou_debito",
+                          "origem": "estimado",
+                          "estimativa": {
+                            "metodo": "gasto_diario",
+                            "valor_por_dia_centavos": 1000,
+                            "dias": 7,
+                            "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                          },
+                          "previsto": false,
+                          "valor_centavos": 7000,
+                          "saldo_apos_centavos": -66000,
+                          "rotulo": "Saldo insuficiente (faltam R$ 660,00)",
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-13",
+                          "evento_id": "E3",
+                          "descricao": "Salário",
+                          "tipo": "entrada",
+                          "meio": "salario",
+                          "origem": "dados_base",
+                          "estimativa": null,
+                          "previsto": true,
+                          "valor_centavos": 420000,
+                          "saldo_apos_centavos": 354000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-18",
+                          "evento_id": "E4",
+                          "descricao": "Financiamento",
+                          "tipo": "saida",
+                          "meio": "debito_automatico",
+                          "origem": "dados_base",
+                          "estimativa": null,
+                          "previsto": false,
+                          "valor_centavos": 130000,
+                          "saldo_apos_centavos": 224000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-20",
+                          "evento_id": "G4",
+                          "descricao": "Gastos do dia a dia (estimado)",
+                          "tipo": "saida",
+                          "meio": "pix_ou_debito",
+                          "origem": "estimado",
+                          "estimativa": {
+                            "metodo": "gasto_diario",
+                            "valor_por_dia_centavos": 1000,
+                            "dias": 7,
+                            "texto": "estimado: R$ 10,00 por dia × 7 dias, pela média do histórico"
+                          },
+                          "previsto": false,
+                          "valor_centavos": 7000,
+                          "saldo_apos_centavos": 217000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-27",
+                          "evento_id": "G5",
+                          "descricao": "Gastos do dia a dia (estimado)",
+                          "tipo": "saida",
+                          "meio": "pix_ou_debito",
+                          "origem": "estimado",
+                          "estimativa": {
+                            "metodo": "gasto_diario",
+                            "valor_por_dia_centavos": 1000,
+                            "dias": 3,
+                            "texto": "estimado: R$ 10,00 por dia × 3 dias, pela média do histórico"
+                          },
+                          "previsto": false,
+                          "valor_centavos": 3000,
+                          "saldo_apos_centavos": 214000,
+                          "rotulo": null,
+                          "original": null
+                        },
+                        {
+                          "data": "2026-11-28",
+                          "evento_id": "E5",
+                          "descricao": "Condomínio",
+                          "tipo": "saida",
+                          "meio": "boleto",
+                          "origem": "dados_base",
+                          "estimativa": null,
+                          "previsto": false,
+                          "valor_centavos": 65000,
+                          "saldo_apos_centavos": 149000,
+                          "rotulo": null,
+                          "original": null
+                        }
+                      ],
+                      "indicadores": {
+                        "saldo_inicial_centavos": 250000,
+                        "saldo_minimo_centavos": -66000,
+                        "data_saldo_minimo": "2026-11-13",
+                        "primeira_falta": {
+                          "data": "2026-11-06",
+                          "valor_descoberto_centavos": 59000,
+                          "saidas_do_dia": [
+                            "G2",
+                            "H1.1"
+                          ]
+                        },
+                        "insuficiencia_centavos": 66000,
+                        "margem_hoje_centavos": 0,
+                        "saldo_final_centavos": 149000,
+                        "sem_recebimentos": {
+                          "insuficiencia_centavos": 271000,
+                          "primeira_falta": {
+                            "data": "2026-11-06",
+                            "valor_descoberto_centavos": 59000,
+                            "saidas_do_dia": [
+                              "G2",
+                              "H1.1"
+                            ]
+                          },
+                          "saldo_final_centavos": -271000
+                        }
+                      },
+                      "faturas_afetadas": [],
+                      "datas_ordem_relevante": [],
+                      "avisos": [
+                        "saldo_final_positivo_com_falta",
+                        "falta_maior_sem_recebimento"
+                      ]
+                    }
+                  ],
+                  "valores_formatados": {
+                    "indicadores.saldo_inicial_centavos": "R$ 2.500,00",
+                    "indicadores.saldo_minimo_centavos": "-R$ 660,00",
+                    "indicadores.primeira_falta.valor_descoberto_centavos": "R$ 590,00",
+                    "indicadores.insuficiencia_centavos": "R$ 660,00",
+                    "indicadores.margem_hoje_centavos": "R$ 0,00",
+                    "indicadores.saldo_final_centavos": "R$ 1.490,00",
+                    "indicadores.sem_recebimentos.insuficiencia_centavos": "R$ 2.710,00",
+                    "indicadores.sem_recebimentos.primeira_falta.valor_descoberto_centavos": "R$ 590,00",
+                    "indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 2.710,00",
+                    "cenarios[0].linhas[0].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                    "cenarios[0].linhas[0].valor_centavos": "R$ 70,00",
+                    "cenarios[0].linhas[0].saldo_apos_centavos": "R$ 2.430,00",
+                    "cenarios[0].linhas[1].valor_centavos": "R$ 900,00",
+                    "cenarios[0].linhas[1].saldo_apos_centavos": "R$ 1.530,00",
+                    "cenarios[0].linhas[2].valor_centavos": "R$ 1.250,00",
+                    "cenarios[0].linhas[2].saldo_apos_centavos": "R$ 280,00",
+                    "cenarios[0].linhas[3].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                    "cenarios[0].linhas[3].valor_centavos": "R$ 70,00",
+                    "cenarios[0].linhas[3].saldo_apos_centavos": "R$ 210,00",
+                    "cenarios[0].linhas[4].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                    "cenarios[0].linhas[4].valor_centavos": "R$ 70,00",
+                    "cenarios[0].linhas[4].saldo_apos_centavos": "R$ 140,00",
+                    "cenarios[0].linhas[5].valor_centavos": "R$ 4.200,00",
+                    "cenarios[0].linhas[5].saldo_apos_centavos": "R$ 4.340,00",
+                    "cenarios[0].linhas[6].valor_centavos": "R$ 1.300,00",
+                    "cenarios[0].linhas[6].saldo_apos_centavos": "R$ 3.040,00",
+                    "cenarios[0].linhas[7].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                    "cenarios[0].linhas[7].valor_centavos": "R$ 70,00",
+                    "cenarios[0].linhas[7].saldo_apos_centavos": "R$ 2.970,00",
+                    "cenarios[0].linhas[8].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                    "cenarios[0].linhas[8].valor_centavos": "R$ 30,00",
+                    "cenarios[0].linhas[8].saldo_apos_centavos": "R$ 2.940,00",
+                    "cenarios[0].linhas[9].valor_centavos": "R$ 650,00",
+                    "cenarios[0].linhas[9].saldo_apos_centavos": "R$ 2.290,00",
+                    "cenarios[0].indicadores.saldo_inicial_centavos": "R$ 2.500,00",
+                    "cenarios[0].indicadores.saldo_minimo_centavos": "R$ 140,00",
+                    "cenarios[0].indicadores.insuficiencia_centavos": "R$ 0,00",
+                    "cenarios[0].indicadores.margem_hoje_centavos": "R$ 140,00",
+                    "cenarios[0].indicadores.saldo_final_centavos": "R$ 2.290,00",
+                    "cenarios[0].indicadores.sem_recebimentos.insuficiencia_centavos": "R$ 1.910,00",
+                    "cenarios[0].indicadores.sem_recebimentos.primeira_falta.valor_descoberto_centavos": "R$ 1.160,00",
+                    "cenarios[0].indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 1.910,00",
+                    "cenarios[1].linhas[0].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                    "cenarios[1].linhas[0].valor_centavos": "R$ 70,00",
+                    "cenarios[1].linhas[0].saldo_apos_centavos": "R$ 2.430,00",
+                    "cenarios[1].linhas[1].valor_centavos": "R$ 900,00",
+                    "cenarios[1].linhas[1].saldo_apos_centavos": "R$ 1.530,00",
+                    "cenarios[1].linhas[2].valor_centavos": "R$ 1.250,00",
+                    "cenarios[1].linhas[2].saldo_apos_centavos": "R$ 280,00",
+                    "cenarios[1].linhas[3].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                    "cenarios[1].linhas[3].valor_centavos": "R$ 70,00",
+                    "cenarios[1].linhas[3].saldo_apos_centavos": "R$ 210,00",
+                    "cenarios[1].linhas[4].valor_centavos": "R$ 800,00",
+                    "cenarios[1].linhas[4].saldo_apos_centavos": "-R$ 590,00",
+                    "cenarios[1].linhas[5].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                    "cenarios[1].linhas[5].valor_centavos": "R$ 70,00",
+                    "cenarios[1].linhas[5].saldo_apos_centavos": "-R$ 660,00",
+                    "cenarios[1].linhas[6].valor_centavos": "R$ 4.200,00",
+                    "cenarios[1].linhas[6].saldo_apos_centavos": "R$ 3.540,00",
+                    "cenarios[1].linhas[7].valor_centavos": "R$ 1.300,00",
+                    "cenarios[1].linhas[7].saldo_apos_centavos": "R$ 2.240,00",
+                    "cenarios[1].linhas[8].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                    "cenarios[1].linhas[8].valor_centavos": "R$ 70,00",
+                    "cenarios[1].linhas[8].saldo_apos_centavos": "R$ 2.170,00",
+                    "cenarios[1].linhas[9].estimativa.valor_por_dia_centavos": "R$ 10,00",
+                    "cenarios[1].linhas[9].valor_centavos": "R$ 30,00",
+                    "cenarios[1].linhas[9].saldo_apos_centavos": "R$ 2.140,00",
+                    "cenarios[1].linhas[10].valor_centavos": "R$ 650,00",
+                    "cenarios[1].linhas[10].saldo_apos_centavos": "R$ 1.490,00",
+                    "cenarios[1].indicadores.saldo_inicial_centavos": "R$ 2.500,00",
+                    "cenarios[1].indicadores.saldo_minimo_centavos": "-R$ 660,00",
+                    "cenarios[1].indicadores.primeira_falta.valor_descoberto_centavos": "R$ 590,00",
+                    "cenarios[1].indicadores.insuficiencia_centavos": "R$ 660,00",
+                    "cenarios[1].indicadores.margem_hoje_centavos": "R$ 0,00",
+                    "cenarios[1].indicadores.saldo_final_centavos": "R$ 1.490,00",
+                    "cenarios[1].indicadores.sem_recebimentos.insuficiencia_centavos": "R$ 2.710,00",
+                    "cenarios[1].indicadores.sem_recebimentos.primeira_falta.valor_descoberto_centavos": "R$ 590,00",
+                    "cenarios[1].indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 2.710,00"
+                  }
+                },
+                "duracao_ms": 2
+              }
+            ],
+            "visao": {
+              "marca": "neutra",
+              "prototipo": true,
+              "persona": {
+                "id": "p3",
+                "nome": "Duda (fictícia)"
+              },
+              "conta": {
+                "saldo_disponivel_hoje_centavos": 250000,
+                "saldo_inicio_hoje_centavos": 250000,
+                "operacoes_hoje": []
+              },
+              "extrato": [
+                {
+                  "id": "L30024",
+                  "data": "2026-10-28",
+                  "descricao": "Condomínio",
+                  "tipo": "saida",
+                  "meio": "boleto",
+                  "categoria": "moradia",
+                  "valor_centavos": 65000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30025",
+                  "data": "2026-10-23",
+                  "descricao": "Consulta pediatria",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "saude",
+                  "valor_centavos": 6700,
+                  "simulado": false
+                },
+                {
+                  "id": "L30034",
+                  "data": "2026-10-21",
+                  "descricao": "Lanche Tarde",
+                  "tipo": "saida",
+                  "meio": "pix",
+                  "categoria": "restaurante",
+                  "valor_centavos": 9500,
+                  "simulado": false
+                },
+                {
+                  "id": "L30021",
+                  "data": "2026-10-18",
+                  "descricao": "Financiamento",
+                  "tipo": "saida",
+                  "meio": "debito_automatico",
+                  "categoria": "outros",
+                  "valor_centavos": 130000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30033",
+                  "data": "2026-10-14",
+                  "descricao": "Transporte Escolar",
+                  "tipo": "saida",
+                  "meio": "pix",
+                  "categoria": "transporte",
+                  "valor_centavos": 11000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30018",
+                  "data": "2026-10-13",
+                  "descricao": "Salário",
+                  "tipo": "entrada",
+                  "meio": "salario",
+                  "categoria": "receitas",
+                  "valor_centavos": 420000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30032",
+                  "data": "2026-10-06",
+                  "descricao": "Hortifruti",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "mercado",
+                  "valor_centavos": 10500,
+                  "simulado": false
+                },
+                {
+                  "id": "L30012",
+                  "data": "2026-10-05",
+                  "descricao": "Pagamento fatura cartão",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "fatura",
+                  "valor_centavos": 89000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30015",
+                  "data": "2026-10-04",
+                  "descricao": "Mensalidade escolar",
+                  "tipo": "saida",
+                  "meio": "boleto",
+                  "categoria": "educacao",
+                  "valor_centavos": 90000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30023",
+                  "data": "2026-09-28",
+                  "descricao": "Condomínio",
+                  "tipo": "saida",
+                  "meio": "boleto",
+                  "categoria": "moradia",
+                  "valor_centavos": 65000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30031",
+                  "data": "2026-09-25",
+                  "descricao": "Papelaria",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "compras",
+                  "valor_centavos": 9200,
+                  "simulado": false
+                },
+                {
+                  "id": "L30020",
+                  "data": "2026-09-18",
+                  "descricao": "Financiamento",
+                  "tipo": "saida",
+                  "meio": "debito_automatico",
+                  "categoria": "outros",
+                  "valor_centavos": 130000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30017",
+                  "data": "2026-09-13",
+                  "descricao": "Salário",
+                  "tipo": "entrada",
+                  "meio": "salario",
+                  "categoria": "receitas",
+                  "valor_centavos": 420000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30030",
+                  "data": "2026-09-12",
+                  "descricao": "Transporte Escolar",
+                  "tipo": "saida",
+                  "meio": "pix",
+                  "categoria": "transporte",
+                  "valor_centavos": 11000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30011",
+                  "data": "2026-09-05",
+                  "descricao": "Pagamento fatura cartão",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "fatura",
+                  "valor_centavos": 91000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30014",
+                  "data": "2026-09-04",
+                  "descricao": "Mensalidade escolar",
+                  "tipo": "saida",
+                  "meio": "boleto",
+                  "categoria": "educacao",
+                  "valor_centavos": 90000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30029",
+                  "data": "2026-09-02",
+                  "descricao": "Hortifruti",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "mercado",
+                  "valor_centavos": 9800,
+                  "simulado": false
+                },
+                {
+                  "id": "L30022",
+                  "data": "2026-08-28",
+                  "descricao": "Condomínio",
+                  "tipo": "saida",
+                  "meio": "boleto",
+                  "categoria": "moradia",
+                  "valor_centavos": 65000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30028",
+                  "data": "2026-08-23",
+                  "descricao": "Lazer Parque",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "lazer",
+                  "valor_centavos": 10500,
+                  "simulado": false
+                },
+                {
+                  "id": "L30019",
+                  "data": "2026-08-18",
+                  "descricao": "Financiamento",
+                  "tipo": "saida",
+                  "meio": "debito_automatico",
+                  "categoria": "outros",
+                  "valor_centavos": 130000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30016",
+                  "data": "2026-08-13",
+                  "descricao": "Salário",
+                  "tipo": "entrada",
+                  "meio": "salario",
+                  "categoria": "receitas",
+                  "valor_centavos": 420000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30027",
+                  "data": "2026-08-12",
+                  "descricao": "Transporte Escolar",
+                  "tipo": "saida",
+                  "meio": "pix",
+                  "categoria": "transporte",
+                  "valor_centavos": 11000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30010",
+                  "data": "2026-08-05",
+                  "descricao": "Pagamento fatura cartão",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "fatura",
+                  "valor_centavos": 68000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30013",
+                  "data": "2026-08-04",
+                  "descricao": "Mensalidade escolar",
+                  "tipo": "saida",
+                  "meio": "boleto",
+                  "categoria": "educacao",
+                  "valor_centavos": 90000,
+                  "simulado": false
+                },
+                {
+                  "id": "L30026",
+                  "data": "2026-08-03",
+                  "descricao": "Padaria Família",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "categoria": "mercado",
+                  "valor_centavos": 9500,
+                  "simulado": false
+                }
+              ],
+              "proximos_pagamentos": [
+                {
+                  "evento_id": "E1",
+                  "data": "2026-11-04",
+                  "descricao": "Mensalidade escolar",
+                  "tipo": "saida",
+                  "meio": "boleto",
+                  "valor_centavos": 90000,
+                  "previsto": false,
+                  "estimativa_texto": null,
+                  "origem": "dados_base"
+                },
+                {
+                  "evento_id": "E2",
+                  "data": "2026-11-05",
+                  "descricao": "Fatura do cartão",
+                  "tipo": "saida",
+                  "meio": "debito",
+                  "valor_centavos": 125000,
+                  "previsto": false,
+                  "estimativa_texto": null,
+                  "origem": "dados_base"
+                },
+                {
+                  "evento_id": "E3",
+                  "data": "2026-11-13",
+                  "descricao": "Salário",
+                  "tipo": "entrada",
+                  "meio": "salario",
+                  "valor_centavos": 420000,
+                  "previsto": true,
+                  "estimativa_texto": null,
+                  "origem": "dados_base"
+                },
+                {
+                  "evento_id": "E4",
+                  "data": "2026-11-18",
+                  "descricao": "Financiamento",
+                  "tipo": "saida",
+                  "meio": "debito_automatico",
+                  "valor_centavos": 130000,
+                  "previsto": false,
+                  "estimativa_texto": null,
+                  "origem": "dados_base"
+                },
+                {
+                  "evento_id": "E5",
+                  "data": "2026-11-28",
+                  "descricao": "Condomínio",
+                  "tipo": "saida",
+                  "meio": "boleto",
+                  "valor_centavos": 65000,
+                  "previsto": false,
+                  "estimativa_texto": null,
+                  "origem": "dados_base"
+                }
+              ],
+              "cartao": {
+                "limite_centavos": 600000,
+                "dia_fechamento": 29,
+                "dia_vencimento": 5,
+                "fatura_fechada": {
+                  "fatura_id": "E2",
+                  "fechamento": "2026-10-29",
+                  "vencimento": "2026-11-05",
+                  "status": "fechada",
+                  "valor_centavos": 125000,
+                  "itens": [
+                    {
+                      "lancamento_id": "L30006",
+                      "data": "2026-10-03",
+                      "descricao": "Supermercado",
+                      "valor_centavos": 48000,
+                      "parcelamento_id": null,
+                      "parcela": null,
+                      "origem": "dados_base"
+                    },
+                    {
+                      "lancamento_id": "L30007",
+                      "data": "2026-10-09",
+                      "descricao": "Combustível",
+                      "valor_centavos": 32000,
+                      "parcelamento_id": null,
+                      "parcela": null,
+                      "origem": "dados_base"
+                    },
+                    {
+                      "lancamento_id": "L30008",
+                      "data": "2026-10-16",
+                      "descricao": "Restaurante",
+                      "valor_centavos": 20000,
+                      "parcelamento_id": null,
+                      "parcela": null,
+                      "origem": "dados_base"
+                    },
+                    {
+                      "lancamento_id": null,
+                      "data": null,
+                      "descricao": "Geladeira",
+                      "valor_centavos": 25000,
+                      "parcelamento_id": "PC1",
+                      "parcela": "3/10",
+                      "origem": "dados_base"
+                    }
+                  ]
+                },
+                "fatura_aberta": {
+                  "fatura_id": "F2612",
+                  "fechamento": "2026-11-29",
+                  "vencimento": "2026-12-05",
+                  "status": "aberta",
+                  "valor_centavos": 32600,
+                  "itens": [
+                    {
+                      "lancamento_id": null,
+                      "data": null,
+                      "descricao": "Geladeira",
+                      "valor_centavos": 25000,
+                      "parcelamento_id": "PC1",
+                      "parcela": "4/10",
+                      "origem": "dados_base"
+                    },
+                    {
+                      "lancamento_id": "L30009",
+                      "data": "2026-10-29",
+                      "descricao": "Café e padaria",
+                      "valor_centavos": 7600,
+                      "parcelamento_id": null,
+                      "parcela": null,
+                      "origem": "dados_base"
+                    }
+                  ]
+                },
+                "proximas": [
+                  {
+                    "fatura_id": "F2701",
+                    "fechamento": "2026-12-29",
+                    "vencimento": "2027-01-05",
+                    "status": "futura",
+                    "valor_centavos": 25000,
+                    "itens": [
+                      {
+                        "lancamento_id": null,
+                        "data": "2026-08-15",
+                        "descricao": "Geladeira",
+                        "valor_centavos": 25000,
+                        "parcelamento_id": "PC1",
+                        "parcela": "5/10",
+                        "origem": "dados_base"
+                      }
+                    ]
+                  },
+                  {
+                    "fatura_id": "F2702",
+                    "fechamento": "2027-01-29",
+                    "vencimento": "2027-02-05",
+                    "status": "futura",
+                    "valor_centavos": 25000,
+                    "itens": [
+                      {
+                        "lancamento_id": null,
+                        "data": "2026-08-15",
+                        "descricao": "Geladeira",
+                        "valor_centavos": 25000,
+                        "parcelamento_id": "PC1",
+                        "parcela": "6/10",
+                        "origem": "dados_base"
+                      }
+                    ]
+                  },
+                  {
+                    "fatura_id": "F2703",
+                    "fechamento": "2027-02-28",
+                    "vencimento": "2027-03-05",
+                    "status": "futura",
+                    "valor_centavos": 25000,
+                    "itens": [
+                      {
+                        "lancamento_id": null,
+                        "data": "2026-08-15",
+                        "descricao": "Geladeira",
+                        "valor_centavos": 25000,
+                        "parcelamento_id": "PC1",
+                        "parcela": "7/10",
+                        "origem": "dados_base"
+                      }
+                    ]
+                  },
+                  {
+                    "fatura_id": "F2704",
+                    "fechamento": "2027-03-29",
+                    "vencimento": "2027-04-05",
+                    "status": "futura",
+                    "valor_centavos": 25000,
+                    "itens": [
+                      {
+                        "lancamento_id": null,
+                        "data": "2026-08-15",
+                        "descricao": "Geladeira",
+                        "valor_centavos": 25000,
+                        "parcelamento_id": "PC1",
+                        "parcela": "8/10",
+                        "origem": "dados_base"
+                      }
+                    ]
+                  },
+                  {
+                    "fatura_id": "F2705",
+                    "fechamento": "2027-04-29",
+                    "vencimento": "2027-05-05",
+                    "status": "futura",
+                    "valor_centavos": 25000,
+                    "itens": [
+                      {
+                        "lancamento_id": null,
+                        "data": "2026-08-15",
+                        "descricao": "Geladeira",
+                        "valor_centavos": 25000,
+                        "parcelamento_id": "PC1",
+                        "parcela": "9/10",
+                        "origem": "dados_base"
+                      }
+                    ]
+                  },
+                  {
+                    "fatura_id": "F2706",
+                    "fechamento": "2027-05-29",
+                    "vencimento": "2027-06-05",
+                    "status": "futura",
+                    "valor_centavos": 25000,
+                    "itens": [
+                      {
+                        "lancamento_id": null,
+                        "data": "2026-08-15",
+                        "descricao": "Geladeira",
+                        "valor_centavos": 25000,
+                        "parcelamento_id": "PC1",
+                        "parcela": "10/10",
+                        "origem": "dados_base"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "posicoes": [
+                {
+                  "id": "SEP",
+                  "nome": "Saldo separado",
+                  "categoria": "saldo_separado",
+                  "cdi_pct": null,
+                  "ticker": null,
+                  "quantidade": null,
+                  "valor_atual_centavos": 0,
+                  "aplicado_centavos": 0,
+                  "resultado_centavos": 0,
+                  "rentabilidade_pct": "0.00",
+                  "valorizacao_periodo_pct": null,
+                  "data_disponibilidade": "2026-10-30",
+                  "protecao": null,
+                  "restricao": null,
+                  "estimado": false,
+                  "fonte": "sem rendimento"
+                },
+                {
+                  "id": "INV6",
+                  "nome": "Caixinha Reserva de emergência",
+                  "categoria": "caixinha",
+                  "cdi_pct": 100,
+                  "ticker": null,
+                  "quantidade": null,
+                  "valor_atual_centavos": 329112,
+                  "aplicado_centavos": 300000,
+                  "resultado_centavos": 29112,
+                  "rentabilidade_pct": "9.70",
+                  "valorizacao_periodo_pct": null,
+                  "data_disponibilidade": "2026-10-30",
+                  "protecao": {
+                    "tipo": "integral"
+                  },
+                  "restricao": null,
+                  "estimado": false,
+                  "fonte": "BCB SGS 12, gravado em 28/10"
+                },
+                {
+                  "id": "INV7",
+                  "nome": "CDB liquidez diária",
+                  "categoria": "cdb_liquidez_diaria",
+                  "cdi_pct": 110,
+                  "ticker": null,
+                  "quantidade": null,
+                  "valor_atual_centavos": 158794,
+                  "aplicado_centavos": 150000,
+                  "resultado_centavos": 8794,
+                  "rentabilidade_pct": "5.86",
+                  "valorizacao_periodo_pct": null,
+                  "data_disponibilidade": "2026-10-30",
+                  "protecao": null,
+                  "restricao": null,
+                  "estimado": false,
+                  "fonte": "BCB SGS 12, gravado em 28/10"
+                }
+              ],
+              "mercado": {
+                "ao_vivo": false,
+                "obtido_em": "2026-10-28T12:39:47-03:00",
+                "tentou_ao_vivo": false,
+                "cdi": {
+                  "taxa_diaria_pct": "0.050788",
+                  "data_ref": "2026-10-27",
+                  "fonte": "BCB SGS 12"
+                },
+                "precos": {
+                  "PETR4": {
+                    "preco_centavos": 5279,
+                    "data_hora": "2026-10-27T18:00:00-03:00",
+                    "fonte": "brapi"
+                  },
+                  "BTC": {
+                    "preco_centavos": 43008618,
+                    "data_hora": "2026-10-27T21:00:00-03:00",
+                    "fonte": "CoinGecko"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
