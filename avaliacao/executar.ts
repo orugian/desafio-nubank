@@ -555,6 +555,34 @@ function valoresIguaisOuContidos(esperado: unknown, real: unknown, chave?: strin
   return false;
 }
 
+/** Sinônimos legítimos de trechos exigidos (mesmo efeito para a pessoa). */
+const SINONIMOS_TRECHO: Record<string, RegExp> = {
+  bruto: /\bbrut[oa]s?\b/i,
+  "não posso recomendar": /não (posso|vou|faço|faco|dou|consigo) (recomendar|recomendação|recomendações|indicar|sugerir)|não (recomendo|indico) /i,
+};
+
+function escaparRegex(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Trecho exigido pelo efeito: datas DD/MM com ou sem zero; inteiros com ou sem separador de milhar. */
+export function textoContemEquivalente(texto: string, trecho: string): boolean {
+  const sinonimo = SINONIMOS_TRECHO[trecho.toLowerCase()];
+  if (sinonimo) return texto.toLowerCase().includes(trecho.toLowerCase()) || sinonimo.test(texto);
+  // Datas e números são comparados com limites, para que "1/11" não case com "11/11" nem "200" com "2.000".
+  const data = /^(\d{1,2})\/(\d{1,2})$/.exec(trecho);
+  if (data) {
+    const [dia, mes] = [Number(data[1]), Number(data[2])];
+    return new RegExp(`(?<!\\d)0?${dia}\\/0?${mes}(?!\\d)`).test(texto);
+  }
+  if (/^\d{1,3}(\.\d{3})*$|^\d{4,}$/.test(trecho)) {
+    const digitos = trecho.replace(/\./g, "");
+    const comPonto = digitos.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return new RegExp(`(?<![\\d.,])(${escaparRegex(comPonto)}|${escaparRegex(digitos)})(?![\\d]|\\.\\d)`).test(texto);
+  }
+  return texto.toLowerCase().includes(trecho.toLowerCase());
+}
+
 export function avaliarCasoExecutado(
   caso: CasoAvaliacao,
   execucao: {
@@ -595,7 +623,7 @@ export function avaliarCasoExecutado(
   }
 
   for (const trecho of caso.esperado.texto_contem) {
-    if (!textoBaixo.includes(trecho.toLowerCase())) {
+    if (!textoContemEquivalente(execucao.textoFinal, trecho)) {
       motivos.push(`Texto não contém "${trecho}"`);
     }
   }
@@ -622,7 +650,7 @@ export function avaliarCasoExecutado(
     if (!perguntouOrdem) motivos.push("Não perguntou a ordem da entrada e da saída em 08/11");
   }
   const perguntas: Record<string, RegExp[]> = {
-    "CV-04": [/(evento|compromisso)/i, /data|dia|quando/i, /\?/],
+    "CV-04": [/(evento|compromisso|conta|lançamento|lancamento|gasto|despesa|pagamento|item|vencimento)/i, /data|dia|quando/i, /\?/],
     "CV-11": [/(meio|forma|pagamento|pagar|pix|cartão|débito)/i, /\?/],
     "CV-25": [/data|dia|quando/i, /meio|pagamento|pagar|pix|cartão|débito/i, /\?/],
   };

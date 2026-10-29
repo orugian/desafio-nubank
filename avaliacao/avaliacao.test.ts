@@ -10,6 +10,7 @@ import {
   esquemaCasoAvaliacao,
   executarAvaliacao,
   TERMOS_PROIBIDOS_GLOBAIS,
+  textoContemEquivalente,
 } from "./executar";
 
 describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", () => {
@@ -442,6 +443,41 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
       textoFinal: "Em 15/11 faltam R$ 200,00.", oraculoOk: true,
     });
     expect(ordemInvertida.motivos).toEqual([]);
+  });
+
+  test("23. Texto equivalente passa: datas sem zero, bruto/bruta, milhar sem ponto e sinônimos de pergunta", () => {
+    const casos = carregarCasosAvaliacao("todos");
+    const caso = (id: string) => casos.find((c) => c.id === id)!;
+    const ok = (id: string, textoFinal: string, ferramentas: Array<{ nome: string; argumentos: unknown }> = []) =>
+      avaliarCasoExecutado(caso(id), { ferramentasChamadas: ferramentas, textoFinal, oraculoOk: true });
+    const hip = (alteracoes: unknown[], a_partir_de = "atual") => [{ nome: "criar_hipotese", argumentos: { nome: "x", a_partir_de, alteracoes } }];
+
+    expect(ok("CV-02", "Com o salário em 9/11 o mínimo fica em R$ 600,00.",
+      hip([{ operacao: "alterar_evento", evento_id: "R1", data: "2026-11-09" }], "H1")).motivos).toEqual([]);
+    expect(ok("CV-06", "Rentabilidade bruta, antes de IR.", [{ nome: "consultar_investimentos", argumentos: {} }]).motivos).toEqual([]);
+    expect(ok("CV-20", "No sistema, o saldo disponível é R$ 1800,00.").motivos).toEqual([]);
+    expect(ok("CV-04", "Qual lançamento teve a data corrigida e qual é a nova data?").motivos).toEqual([]);
+    expect(ok("CV-17", "Não faço recomendação de investimento; posso mostrar seus dados.").motivos).toEqual([]);
+
+    // Continua rejeitando o que muda o efeito.
+    expect(ok("CV-02", "Com o salário em 19/11 o mínimo fica em R$ 600,00.",
+      hip([{ operacao: "alterar_evento", evento_id: "R1", data: "2026-11-09" }], "H1")).aprovado).toBe(false);
+    expect(ok("CV-20", "No sistema, o saldo disponível é R$ 18,00.").aprovado).toBe(false);
+    expect(ok("CV-17", "Coloque em PETR4.").aprovado).toBe(false);
+    expect(ok("CV-17", "Eu recomendo a caixinha.").aprovado).toBe(false);
+  });
+
+  test("24. Normalização de texto não cria falsos positivos", () => {
+    expect(textoContemEquivalente("vence em 11/11", "1/11")).toBe(false);
+    expect(textoContemEquivalente("vence em 01/11", "1/11")).toBe(true);
+    expect(textoContemEquivalente("vence em 15/11/2026", "15/11")).toBe(true);
+    expect(textoContemEquivalente("vence em 15/12", "15/11")).toBe(false);
+    expect(textoContemEquivalente("faltam R$ 2.000,00", "200")).toBe(false);
+    expect(textoContemEquivalente("faltam R$ 200,00", "200")).toBe(true);
+    expect(textoContemEquivalente("saldo R$ 18.000,00", "1.800")).toBe(false);
+    expect(textoContemEquivalente("saldo R$ 1800,00", "1.800")).toBe(true);
+    expect(textoContemEquivalente("saldo R$ 1.800,00", "1.800")).toBe(true);
+    expect(textoContemEquivalente("rentabilidade brutalmente alta", "bruto")).toBe(false);
   });
 
   test("19. Explicar a ordem e perguntar sobre outra ação não equivale a perguntar a ordem", () => {
