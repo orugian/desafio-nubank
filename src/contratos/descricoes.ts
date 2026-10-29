@@ -10,7 +10,7 @@ export const descricoesFerramentas: Record<NomeFerramenta, string> = {
   consultar_cartao:
     "Mostra o cartão de crédito: fatura fechada, fatura aberta e próximas faturas com parcelas. Somente leitura. Antes de incluir uma compra declarada com descrição e valor, consulte para triar item já existente. Se encontrar correspondência, cite o item e a fatura e pergunte se é outra compra. A consulta não registra compra nem devolve por si só erro tipado de duplicidade.",
   consultar_investimentos:
-    "Mostra cada investimento: valor atual, aplicado, rentabilidade bruta, disponibilidade e proteção, classificado até uma data. Omita ate_data, chamando com {}, salvo quando a pessoa disser uma data explícita: sem ele, o motor usa a data da falta mais próxima, que é a correta para \"posso contar com ele?\". Nunca preencha 2026-11-29 nem outra data por conta própria. Somente leitura; não recomenda nada. Não chame esta ferramenta se a pessoa apenas pedir recomendação de onde investir.",
+    "Mostra cada investimento: valor atual, aplicado, rentabilidade bruta, disponibilidade e proteção, classificado até uma data. Omita ate_data, chamando com {}, salvo quando a pessoa disser uma data explícita: sem ele, o motor usa a data da falta mais próxima, que é a correta para \"posso contar com ele?\". Não use o fim da janela nem outra data por conta própria. Somente leitura; não recomenda nada. Não chame esta ferramenta se a pessoa apenas pedir recomendação de onde investir.",
   projetar_rendimento:
     "Calcula o rendimento bruto estimado de um valor em produto atrelado ao CDI até uma data (no máximo 2026-11-29), com CDI constante. Informe destino (id da posição) ou cdi_pct.",
   registrar_declaracao:
@@ -39,7 +39,7 @@ export const descricoesCampos = {
   confirmar_nao_duplicado: "true só depois de a pessoa confirmar que é outro gasto, diferente do item já existente.",
   a_partir_de: "\"atual\" ou o id da hipótese de origem (ex.: \"H1\").",
   destino: "Id da posição de destino (ex.: \"SEP\", \"INV9\").",
-  ate_data: "Data AAAA-MM-DD até a qual classificar ou projetar (no máximo 2026-11-29). Em consultar_investimentos, omita se a pessoa não disse uma data.",
+  ate_data: "Data AAAA-MM-DD até a qual classificar ou projetar (no máximo 2026-11-29). Use a data da pergunta ou do contexto (ex.: data do salário); o limite máximo não é um valor padrão.",
   operacao_id: "Id da operação pendente (ex.: \"OP1\").",
   alvo_id: "Id da declaração (D<n>) ou da hipótese (H<n>).",
 } as const;
