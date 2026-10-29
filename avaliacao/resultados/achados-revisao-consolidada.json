@@ -1,0 +1,14 @@
+[
+  {
+    "id": "CV-05",
+    "repeticao": 1,
+    "turno": 1,
+    "motivo": "Texto chama R$ 2.202,46 de aplicado, mas esse é o valor atual. O principal das posições soma R$ 1.920,90 (INV1 100000 + INV2 50000 + INV3 42090 centavos). A mesma consulta usa ate_data 29/11, em vez do default 15/11. Evidência: avaliacao-openrouter-consolidada-critico.json, texto_final de CV-05/R1 e cartão do mesmo turno."
+  },
+  {
+    "id": "CV-12",
+    "repeticao": 1,
+    "turno": 2,
+    "motivo": "Texto diz que a cobertura depende do salário previsto em 13/11, mas a hipótese H1 continua com falta de R$ 590 em 06/11 e mínimo de -R$ 660 antes do salário, mesmo incluindo o recebimento. O motor sinaliza saldo_final_positivo_com_falta e falta_maior_sem_recebimento, não cobertura_depende_de_recebimento para H1. Deve distinguir saldo final dependente do salário de cobertura anterior que permanece insuficiente."
+  }
+]

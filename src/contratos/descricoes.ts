@@ -14,7 +14,7 @@ export const descricoesFerramentas: Record<NomeFerramenta, string> = {
   projetar_rendimento:
     "Calcula o rendimento bruto estimado de um valor em produto atrelado ao CDI até uma data (no máximo 2026-11-29), com CDI constante. Informe destino (id da posição) ou cdi_pct.",
   registrar_declaracao:
-    "Registra um fato afirmado pela pessoa que muda a situação atual (ex.: valor ou data de um compromisso). Use alterar_evento com o id do evento para correções.",
+    "Registra um fato afirmado pela pessoa que muda a situação atual (ex.: valor ou data de um compromisso). Use alterar_evento com o id do evento para correções. Se houver possível duplicidade, chame a ferramenta assim mesmo: o motor devolve POSSIVEL_DUPLICIDADE; não pergunte antes.",
   criar_hipotese:
     "Cria um cenário \"e se\" sobre a situação atual ou sobre outra hipótese (a_partir_de). Use para \"posso separar…?\", \"e se…?\" e \"simular\". Não altera a situação atual.",
   desfazer: "Remove uma declaração (D<n>) ou uma hipótese (H<n>). O id não é reutilizado.",
