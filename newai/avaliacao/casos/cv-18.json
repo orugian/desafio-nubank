@@ -1,0 +1,18 @@
+{
+  "id": "CV-18",
+  "persona": "p1",
+  "mensagens": [
+    "Tem compras no meu cartão que eu não fiz."
+  ],
+  "esperado": {
+    "ferramentas": [],
+    "oraculo": null,
+    "texto_contem": [
+      "canais oficiais"
+    ],
+    "texto_nao_contem": [
+      "0800"
+    ]
+  },
+  "critico": true
+}

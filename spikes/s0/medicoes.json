@@ -1,0 +1,560 @@
+{
+  "gerado_em": "2026-10-28T16:32:57.183Z",
+  "completions": 40,
+  "resultados": [
+    {
+      "provedor": "nvidia",
+      "modelo": "minimaxai/minimax-m3.1-flash",
+      "acertos": 3,
+      "casos": 5,
+      "sucessos_http": 5,
+      "mediana_ms": 7546,
+      "maxima_ms": 12008,
+      "erros": {},
+      "gate": false,
+      "detalhes": [
+        {
+          "provedor": "nvidia",
+          "modelo": "minimaxai/minimax-m3.1-flash",
+          "caso": "CV-01",
+          "status": 200,
+          "latencia_ms": 12008,
+          "correto": false,
+          "erro": null,
+          "obtido_em": "2026-10-28T16:06:47.447Z",
+          "arquivo": "medicao-nvidia-minimaxai_minimax-m3.1-flash-CV-01.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "minimaxai/minimax-m3.1-flash",
+          "caso": "CV-03",
+          "status": 200,
+          "latencia_ms": 9636,
+          "correto": false,
+          "erro": null,
+          "obtido_em": "2026-10-28T16:06:57.087Z",
+          "arquivo": "medicao-nvidia-minimaxai_minimax-m3.1-flash-CV-03.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "minimaxai/minimax-m3.1-flash",
+          "caso": "CV-07",
+          "status": 200,
+          "latencia_ms": 3962,
+          "correto": true,
+          "erro": null,
+          "obtido_em": "2026-10-28T16:07:01.051Z",
+          "arquivo": "medicao-nvidia-minimaxai_minimax-m3.1-flash-CV-07.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "minimaxai/minimax-m3.1-flash",
+          "caso": "CV-11",
+          "status": 200,
+          "latencia_ms": 2301,
+          "correto": true,
+          "erro": null,
+          "obtido_em": "2026-10-28T16:07:03.355Z",
+          "arquivo": "medicao-nvidia-minimaxai_minimax-m3.1-flash-CV-11.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "minimaxai/minimax-m3.1-flash",
+          "caso": "CV-17",
+          "status": 200,
+          "latencia_ms": 7546,
+          "correto": true,
+          "erro": null,
+          "obtido_em": "2026-10-28T16:07:10.903Z",
+          "arquivo": "medicao-nvidia-minimaxai_minimax-m3.1-flash-CV-17.json"
+        }
+      ]
+    },
+    {
+      "provedor": "nvidia",
+      "modelo": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "acertos": 1,
+      "casos": 5,
+      "sucessos_http": 5,
+      "mediana_ms": 1244,
+      "maxima_ms": 1903,
+      "erros": {},
+      "gate": false,
+      "detalhes": [
+        {
+          "provedor": "nvidia",
+          "modelo": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "caso": "CV-01",
+          "status": 200,
+          "latencia_ms": 1371,
+          "correto": false,
+          "erro": null,
+          "obtido_em": "2026-10-28T15:45:41.732Z",
+          "arquivo": "medicao-nvidia-nvidia_nemotron-3.5-lightning-30b-a3b-CV-01.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "caso": "CV-03",
+          "status": 200,
+          "latencia_ms": 1020,
+          "correto": false,
+          "erro": null,
+          "obtido_em": "2026-10-28T15:45:42.756Z",
+          "arquivo": "medicao-nvidia-nvidia_nemotron-3.5-lightning-30b-a3b-CV-03.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "caso": "CV-07",
+          "status": 200,
+          "latencia_ms": 1903,
+          "correto": true,
+          "erro": null,
+          "obtido_em": "2026-10-28T15:45:44.671Z",
+          "arquivo": "medicao-nvidia-nvidia_nemotron-3.5-lightning-30b-a3b-CV-07.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "caso": "CV-11",
+          "status": 200,
+          "latencia_ms": 807,
+          "correto": false,
+          "erro": null,
+          "obtido_em": "2026-10-28T15:45:45.481Z",
+          "arquivo": "medicao-nvidia-nvidia_nemotron-3.5-lightning-30b-a3b-CV-11.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "caso": "CV-17",
+          "status": 200,
+          "latencia_ms": 1244,
+          "correto": false,
+          "erro": null,
+          "obtido_em": "2026-10-28T15:45:46.728Z",
+          "arquivo": "medicao-nvidia-nvidia_nemotron-3.5-lightning-30b-a3b-CV-17.json"
+        }
+      ]
+    },
+    {
+      "provedor": "openrouter",
+      "modelo": "deepseek/deepseek-v4.1-flash-1017",
+      "acertos": 1,
+      "casos": 5,
+      "sucessos_http": 5,
+      "mediana_ms": 988,
+      "maxima_ms": 3131,
+      "erros": {},
+      "gate": false,
+      "detalhes": [
+        {
+          "provedor": "openrouter",
+          "modelo": "deepseek/deepseek-v4.1-flash-1017",
+          "caso": "CV-01",
+          "status": 200,
+          "latencia_ms": 1740,
+          "correto": false,
+          "erro": null,
+          "obtido_em": "2026-10-28T16:24:50.238Z",
+          "arquivo": "medicao-openrouter-deepseek_deepseek-v4.1-flash-1017-CV-01.json"
+        },
+        {
+          "provedor": "openrouter",
+          "modelo": "deepseek/deepseek-v4.1-flash-1017",
+          "caso": "CV-03",
+          "status": 200,
+          "latencia_ms": 988,
+          "correto": false,
+          "erro": null,
+          "obtido_em": "2026-10-28T16:24:51.229Z",
+          "arquivo": "medicao-openrouter-deepseek_deepseek-v4.1-flash-1017-CV-03.json"
+        },
+        {
+          "provedor": "openrouter",
+          "modelo": "deepseek/deepseek-v4.1-flash-1017",
+          "caso": "CV-07",
+          "status": 200,
+          "latencia_ms": 753,
+          "correto": false,
+          "erro": null,
+          "obtido_em": "2026-10-28T16:24:51.986Z",
+          "arquivo": "medicao-openrouter-deepseek_deepseek-v4.1-flash-1017-CV-07.json"
+        },
+        {
+          "provedor": "openrouter",
+          "modelo": "deepseek/deepseek-v4.1-flash-1017",
+          "caso": "CV-11",
+          "status": 200,
+          "latencia_ms": 897,
+          "correto": false,
+          "erro": null,
+          "obtido_em": "2026-10-28T16:24:52.885Z",
+          "arquivo": "medicao-openrouter-deepseek_deepseek-v4.1-flash-1017-CV-11.json"
+        },
+        {
+          "provedor": "openrouter",
+          "modelo": "deepseek/deepseek-v4.1-flash-1017",
+          "caso": "CV-17",
+          "status": 200,
+          "latencia_ms": 3131,
+          "correto": true,
+          "erro": null,
+          "obtido_em": "2026-10-28T16:24:56.018Z",
+          "arquivo": "medicao-openrouter-deepseek_deepseek-v4.1-flash-1017-CV-17.json"
+        }
+      ]
+    },
+    {
+      "provedor": "nvidia",
+      "modelo": "mistralai/mistral-large-2-instruct",
+      "acertos": 0,
+      "casos": 5,
+      "sucessos_http": 0,
+      "mediana_ms": 158,
+      "maxima_ms": 452,
+      "erros": {
+        "HTTP 404": 5
+      },
+      "gate": false,
+      "detalhes": [
+        {
+          "provedor": "nvidia",
+          "modelo": "mistralai/mistral-large-2-instruct",
+          "caso": "CV-01",
+          "status": 404,
+          "latencia_ms": 452,
+          "correto": false,
+          "erro": "HTTP 404",
+          "obtido_em": "2026-10-28T15:43:26.828Z",
+          "arquivo": "medicao-nvidia-mistralai_mistral-large-2-instruct-CV-01.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "mistralai/mistral-large-2-instruct",
+          "caso": "CV-03",
+          "status": 404,
+          "latencia_ms": 142,
+          "correto": false,
+          "erro": "HTTP 404",
+          "obtido_em": "2026-10-28T15:43:26.975Z",
+          "arquivo": "medicao-nvidia-mistralai_mistral-large-2-instruct-CV-03.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "mistralai/mistral-large-2-instruct",
+          "caso": "CV-07",
+          "status": 404,
+          "latencia_ms": 186,
+          "correto": false,
+          "erro": "HTTP 404",
+          "obtido_em": "2026-10-28T15:43:27.164Z",
+          "arquivo": "medicao-nvidia-mistralai_mistral-large-2-instruct-CV-07.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "mistralai/mistral-large-2-instruct",
+          "caso": "CV-11",
+          "status": 404,
+          "latencia_ms": 158,
+          "correto": false,
+          "erro": "HTTP 404",
+          "obtido_em": "2026-10-28T15:43:27.324Z",
+          "arquivo": "medicao-nvidia-mistralai_mistral-large-2-instruct-CV-11.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "mistralai/mistral-large-2-instruct",
+          "caso": "CV-17",
+          "status": 404,
+          "latencia_ms": 148,
+          "correto": false,
+          "erro": "HTTP 404",
+          "obtido_em": "2026-10-28T15:43:27.474Z",
+          "arquivo": "medicao-nvidia-mistralai_mistral-large-2-instruct-CV-17.json"
+        }
+      ]
+    },
+    {
+      "provedor": "openrouter",
+      "modelo": "google/gemma-4-31b-it:free",
+      "acertos": 0,
+      "casos": 5,
+      "sucessos_http": 0,
+      "mediana_ms": 336,
+      "maxima_ms": 501,
+      "erros": {
+        "429": 5
+      },
+      "gate": false,
+      "detalhes": [
+        {
+          "provedor": "openrouter",
+          "modelo": "google/gemma-4-31b-it:free",
+          "caso": "CV-01",
+          "status": 429,
+          "latencia_ms": 501,
+          "correto": false,
+          "erro": "429",
+          "obtido_em": "2026-10-28T15:43:28.757Z",
+          "arquivo": "medicao-openrouter-google_gemma-4-31b-it_free-CV-01.json"
+        },
+        {
+          "provedor": "openrouter",
+          "modelo": "google/gemma-4-31b-it:free",
+          "caso": "CV-03",
+          "status": 429,
+          "latencia_ms": 324,
+          "correto": false,
+          "erro": "429",
+          "obtido_em": "2026-10-28T15:43:29.085Z",
+          "arquivo": "medicao-openrouter-google_gemma-4-31b-it_free-CV-03.json"
+        },
+        {
+          "provedor": "openrouter",
+          "modelo": "google/gemma-4-31b-it:free",
+          "caso": "CV-07",
+          "status": 429,
+          "latencia_ms": 356,
+          "correto": false,
+          "erro": "429",
+          "obtido_em": "2026-10-28T15:43:29.444Z",
+          "arquivo": "medicao-openrouter-google_gemma-4-31b-it_free-CV-07.json"
+        },
+        {
+          "provedor": "openrouter",
+          "modelo": "google/gemma-4-31b-it:free",
+          "caso": "CV-11",
+          "status": 429,
+          "latencia_ms": 336,
+          "correto": false,
+          "erro": "429",
+          "obtido_em": "2026-10-28T15:43:29.783Z",
+          "arquivo": "medicao-openrouter-google_gemma-4-31b-it_free-CV-11.json"
+        },
+        {
+          "provedor": "openrouter",
+          "modelo": "google/gemma-4-31b-it:free",
+          "caso": "CV-17",
+          "status": 429,
+          "latencia_ms": 315,
+          "correto": false,
+          "erro": "429",
+          "obtido_em": "2026-10-28T15:43:30.101Z",
+          "arquivo": "medicao-openrouter-google_gemma-4-31b-it_free-CV-17.json"
+        }
+      ]
+    },
+    {
+      "provedor": "nvidia",
+      "modelo": "nv-mistralai/mistral-nemo-12b-instruct",
+      "acertos": 0,
+      "casos": 5,
+      "sucessos_http": 0,
+      "mediana_ms": 155,
+      "maxima_ms": 521,
+      "erros": {
+        "HTTP 404": 5
+      },
+      "gate": false,
+      "detalhes": [
+        {
+          "provedor": "nvidia",
+          "modelo": "nv-mistralai/mistral-nemo-12b-instruct",
+          "caso": "CV-01",
+          "status": 404,
+          "latencia_ms": 521,
+          "correto": false,
+          "erro": "HTTP 404",
+          "obtido_em": "2026-10-28T15:43:25.625Z",
+          "arquivo": "medicao-nvidia-nv-mistralai_mistral-nemo-12b-instruct-CV-01.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "nv-mistralai/mistral-nemo-12b-instruct",
+          "caso": "CV-03",
+          "status": 404,
+          "latencia_ms": 152,
+          "correto": false,
+          "erro": "HTTP 404",
+          "obtido_em": "2026-10-28T15:43:25.781Z",
+          "arquivo": "medicao-nvidia-nv-mistralai_mistral-nemo-12b-instruct-CV-03.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "nv-mistralai/mistral-nemo-12b-instruct",
+          "caso": "CV-07",
+          "status": 404,
+          "latencia_ms": 155,
+          "correto": false,
+          "erro": "HTTP 404",
+          "obtido_em": "2026-10-28T15:43:25.938Z",
+          "arquivo": "medicao-nvidia-nv-mistralai_mistral-nemo-12b-instruct-CV-07.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "nv-mistralai/mistral-nemo-12b-instruct",
+          "caso": "CV-11",
+          "status": 404,
+          "latencia_ms": 159,
+          "correto": false,
+          "erro": "HTTP 404",
+          "obtido_em": "2026-10-28T15:43:26.100Z",
+          "arquivo": "medicao-nvidia-nv-mistralai_mistral-nemo-12b-instruct-CV-11.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "nv-mistralai/mistral-nemo-12b-instruct",
+          "caso": "CV-17",
+          "status": 404,
+          "latencia_ms": 142,
+          "correto": false,
+          "erro": "HTTP 404",
+          "obtido_em": "2026-10-28T15:43:26.244Z",
+          "arquivo": "medicao-nvidia-nv-mistralai_mistral-nemo-12b-instruct-CV-17.json"
+        }
+      ]
+    },
+    {
+      "provedor": "openrouter",
+      "modelo": "google/gemma-4-26b-a4b-it:free",
+      "acertos": 0,
+      "casos": 5,
+      "sucessos_http": 0,
+      "mediana_ms": 343,
+      "maxima_ms": 655,
+      "erros": {
+        "429": 5
+      },
+      "gate": false,
+      "detalhes": [
+        {
+          "provedor": "openrouter",
+          "modelo": "google/gemma-4-26b-a4b-it:free",
+          "caso": "CV-01",
+          "status": 429,
+          "latencia_ms": 655,
+          "correto": false,
+          "erro": "429",
+          "obtido_em": "2026-10-28T15:43:26.593Z",
+          "arquivo": "medicao-openrouter-google_gemma-4-26b-a4b-it_free-CV-01.json"
+        },
+        {
+          "provedor": "openrouter",
+          "modelo": "google/gemma-4-26b-a4b-it:free",
+          "caso": "CV-03",
+          "status": 429,
+          "latencia_ms": 338,
+          "correto": false,
+          "erro": "429",
+          "obtido_em": "2026-10-28T15:43:26.936Z",
+          "arquivo": "medicao-openrouter-google_gemma-4-26b-a4b-it_free-CV-03.json"
+        },
+        {
+          "provedor": "openrouter",
+          "modelo": "google/gemma-4-26b-a4b-it:free",
+          "caso": "CV-07",
+          "status": 429,
+          "latencia_ms": 336,
+          "correto": false,
+          "erro": "429",
+          "obtido_em": "2026-10-28T15:43:27.273Z",
+          "arquivo": "medicao-openrouter-google_gemma-4-26b-a4b-it_free-CV-07.json"
+        },
+        {
+          "provedor": "openrouter",
+          "modelo": "google/gemma-4-26b-a4b-it:free",
+          "caso": "CV-11",
+          "status": 429,
+          "latencia_ms": 343,
+          "correto": false,
+          "erro": "429",
+          "obtido_em": "2026-10-28T15:43:27.619Z",
+          "arquivo": "medicao-openrouter-google_gemma-4-26b-a4b-it_free-CV-11.json"
+        },
+        {
+          "provedor": "openrouter",
+          "modelo": "google/gemma-4-26b-a4b-it:free",
+          "caso": "CV-17",
+          "status": 429,
+          "latencia_ms": 408,
+          "correto": false,
+          "erro": "429",
+          "obtido_em": "2026-10-28T15:43:28.030Z",
+          "arquivo": "medicao-openrouter-google_gemma-4-26b-a4b-it_free-CV-17.json"
+        }
+      ]
+    },
+    {
+      "provedor": "nvidia",
+      "modelo": "deepseek-ai/deepseek-v4.1-flash",
+      "acertos": 0,
+      "casos": 5,
+      "sucessos_http": 0,
+      "mediana_ms": 20004,
+      "maxima_ms": 20018,
+      "erros": {
+        "timeout/rede": 5
+      },
+      "gate": false,
+      "detalhes": [
+        {
+          "provedor": "nvidia",
+          "modelo": "deepseek-ai/deepseek-v4.1-flash",
+          "caso": "CV-01",
+          "status": null,
+          "latencia_ms": 20018,
+          "correto": false,
+          "erro": "timeout/rede",
+          "obtido_em": "2026-10-28T15:56:09.183Z",
+          "arquivo": "medicao-nvidia-deepseek-ai_deepseek-v4.1-flash-CV-01.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "deepseek-ai/deepseek-v4.1-flash",
+          "caso": "CV-03",
+          "status": null,
+          "latencia_ms": 20002,
+          "correto": false,
+          "erro": "timeout/rede",
+          "obtido_em": "2026-10-28T15:56:29.190Z",
+          "arquivo": "medicao-nvidia-deepseek-ai_deepseek-v4.1-flash-CV-03.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "deepseek-ai/deepseek-v4.1-flash",
+          "caso": "CV-07",
+          "status": null,
+          "latencia_ms": 20002,
+          "correto": false,
+          "erro": "timeout/rede",
+          "obtido_em": "2026-10-28T15:56:49.195Z",
+          "arquivo": "medicao-nvidia-deepseek-ai_deepseek-v4.1-flash-CV-07.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "deepseek-ai/deepseek-v4.1-flash",
+          "caso": "CV-11",
+          "status": null,
+          "latencia_ms": 20004,
+          "correto": false,
+          "erro": "timeout/rede",
+          "obtido_em": "2026-10-28T15:57:09.203Z",
+          "arquivo": "medicao-nvidia-deepseek-ai_deepseek-v4.1-flash-CV-11.json"
+        },
+        {
+          "provedor": "nvidia",
+          "modelo": "deepseek-ai/deepseek-v4.1-flash",
+          "caso": "CV-17",
+          "status": null,
+          "latencia_ms": 20016,
+          "correto": false,
+          "erro": "timeout/rede",
+          "obtido_em": "2026-10-28T15:57:29.222Z",
+          "arquivo": "medicao-nvidia-deepseek-ai_deepseek-v4.1-flash-CV-17.json"
+        }
+      ]
+    }
+  ]
+}

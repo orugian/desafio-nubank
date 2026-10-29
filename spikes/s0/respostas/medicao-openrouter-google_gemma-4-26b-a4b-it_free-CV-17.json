@@ -1,0 +1,10 @@
+{
+  "provedor": "openrouter",
+  "modelo": "google/gemma-4-26b-a4b-it:free",
+  "caso": "CV-17",
+  "status": 429,
+  "latencia_ms": 408,
+  "correto": false,
+  "erro": "429",
+  "obtido_em": "2026-10-28T15:43:28.030Z"
+}

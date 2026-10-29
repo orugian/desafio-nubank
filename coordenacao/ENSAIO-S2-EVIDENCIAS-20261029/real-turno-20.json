@@ -1,0 +1,1265 @@
+{
+  "numero": 20,
+  "mensagem": "Quero transferir R$ 300 via Pix da minha conta para o meu sobrinho agora.",
+  "tempo_ms": 1311,
+  "estado_entrada": {
+    "versao": 2,
+    "persona_id": "p3",
+    "mercado": {
+      "ao_vivo": false,
+      "obtido_em": "2026-10-28T12:39:47-03:00",
+      "tentou_ao_vivo": false,
+      "cdi": {
+        "taxa_diaria_pct": "0.050788",
+        "data_ref": "2026-10-27",
+        "fonte": "BCB SGS 12"
+      },
+      "precos": {
+        "PETR4": {
+          "preco_centavos": 5279,
+          "data_hora": "2026-10-27T18:00:00-03:00",
+          "fonte": "brapi"
+        },
+        "BTC": {
+          "preco_centavos": 43008618,
+          "data_hora": "2026-10-27T21:00:00-03:00",
+          "fonte": "CoinGecko"
+        }
+      }
+    },
+    "conversa": [
+      {
+        "mensagem_id": "msg-1793302103882-13",
+        "papel": "usuario",
+        "texto": "Posso resgatar R$ 1.500 da minha reserva de emergência para reformar o quintal?",
+        "versao": 1,
+        "cartoes": [],
+        "rastro": []
+      },
+      {
+        "mensagem_id": "msg-1793302103882-13-r",
+        "papel": "assistente",
+        "texto": "A Caixinha Reserva de emergência tem proteção integral: o valor atual é R$ 3.291,12 e nada dela está resgatável até 29/11/2026. Ou seja, não dá para tirar R$ 1.500 dela.\n\nO que está resgatável é o CDB liquidez diária: valor atual R$ 1.587,94, aplicado R$ 1.500,00, disponível a partir de 30/10/2026, sem proteção. Rentabilidade bruta, antes de IR, IOF e custos; não anualizado.\n\nQuer que eu simule o resgate de R$ 1.500 do CDB? Tudo é simulação, nada foi movimentado.",
+        "versao": 1,
+        "cartoes": [
+          {
+            "tipo": "investimentos",
+            "resultado": {
+              "ate_data": "2026-11-29",
+              "ate_data_origem": "informada",
+              "posicoes": [
+                {
+                  "posicao_id": "SEP",
+                  "nome": "Saldo separado",
+                  "categoria": "saldo_separado",
+                  "cdi_pct": null,
+                  "ticker": null,
+                  "quantidade": null,
+                  "aplicado_centavos": 0,
+                  "valor_atual_centavos": 0,
+                  "resultado_centavos": 0,
+                  "rentabilidade_pct": "0.00",
+                  "valorizacao_periodo_pct": null,
+                  "data_disponibilidade": "2026-10-30",
+                  "classificacao": "resgatavel_ate_data",
+                  "protegido_centavos": 0,
+                  "nao_resgatavel_centavos": 0,
+                  "resgatavel_centavos": 0,
+                  "protecao": null,
+                  "restricao": null,
+                  "estimado": false,
+                  "rotulo_estimativa": null,
+                  "fonte": "sem rendimento"
+                },
+                {
+                  "posicao_id": "INV6",
+                  "nome": "Caixinha Reserva de emergência",
+                  "categoria": "caixinha",
+                  "cdi_pct": 100,
+                  "ticker": null,
+                  "quantidade": null,
+                  "aplicado_centavos": 300000,
+                  "valor_atual_centavos": 329112,
+                  "resultado_centavos": 29112,
+                  "rentabilidade_pct": "9.70",
+                  "valorizacao_periodo_pct": null,
+                  "data_disponibilidade": "2026-10-30",
+                  "classificacao": "protegida",
+                  "protegido_centavos": 329112,
+                  "nao_resgatavel_centavos": 0,
+                  "resgatavel_centavos": 0,
+                  "protecao": {
+                    "tipo": "integral"
+                  },
+                  "restricao": null,
+                  "estimado": false,
+                  "rotulo_estimativa": null,
+                  "fonte": "BCB SGS 12, gravado em 28/10"
+                },
+                {
+                  "posicao_id": "INV7",
+                  "nome": "CDB liquidez diária",
+                  "categoria": "cdb_liquidez_diaria",
+                  "cdi_pct": 110,
+                  "ticker": null,
+                  "quantidade": null,
+                  "aplicado_centavos": 150000,
+                  "valor_atual_centavos": 158794,
+                  "resultado_centavos": 8794,
+                  "rentabilidade_pct": "5.86",
+                  "valorizacao_periodo_pct": null,
+                  "data_disponibilidade": "2026-10-30",
+                  "classificacao": "resgatavel_ate_data",
+                  "protegido_centavos": 0,
+                  "nao_resgatavel_centavos": 0,
+                  "resgatavel_centavos": 158794,
+                  "protecao": null,
+                  "restricao": null,
+                  "estimado": false,
+                  "rotulo_estimativa": null,
+                  "fonte": "BCB SGS 12, gravado em 28/10"
+                }
+              ],
+              "totais": {
+                "valor_total_centavos": 487906,
+                "protegido_centavos": 329112,
+                "nao_resgatavel_centavos": 0,
+                "resgatavel_centavos": 158794
+              },
+              "rotulo_rentabilidade": "bruto, antes de IR, IOF e custos; não anualizado",
+              "cdi_data_ref": "2026-10-27",
+              "mercado": {
+                "ao_vivo": false,
+                "obtido_em": "2026-10-28T12:39:47-03:00",
+                "tentou_ao_vivo": false,
+                "cdi": {
+                  "taxa_diaria_pct": "0.050788",
+                  "data_ref": "2026-10-27",
+                  "fonte": "BCB SGS 12"
+                },
+                "precos": {
+                  "PETR4": {
+                    "preco_centavos": 5279,
+                    "data_hora": "2026-10-27T18:00:00-03:00",
+                    "fonte": "brapi"
+                  },
+                  "BTC": {
+                    "preco_centavos": 43008618,
+                    "data_hora": "2026-10-27T21:00:00-03:00",
+                    "fonte": "CoinGecko"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "rastro": [
+          {
+            "chamada": 1,
+            "ferramenta": "consultar_investimentos",
+            "argumentos": {
+              "ate_data": "2026-11-29"
+            },
+            "resultado": {
+              "ok": true,
+              "ate_data": "2026-11-29",
+              "ate_data_origem": "informada",
+              "posicoes": [
+                {
+                  "posicao_id": "SEP",
+                  "nome": "Saldo separado",
+                  "categoria": "saldo_separado",
+                  "cdi_pct": null,
+                  "ticker": null,
+                  "quantidade": null,
+                  "aplicado_centavos": 0,
+                  "valor_atual_centavos": 0,
+                  "resultado_centavos": 0,
+                  "rentabilidade_pct": "0.00",
+                  "valorizacao_periodo_pct": null,
+                  "data_disponibilidade": "2026-10-30",
+                  "classificacao": "resgatavel_ate_data",
+                  "protegido_centavos": 0,
+                  "nao_resgatavel_centavos": 0,
+                  "resgatavel_centavos": 0,
+                  "protecao": null,
+                  "restricao": null,
+                  "estimado": false,
+                  "rotulo_estimativa": null,
+                  "fonte": "sem rendimento"
+                },
+                {
+                  "posicao_id": "INV6",
+                  "nome": "Caixinha Reserva de emergência",
+                  "categoria": "caixinha",
+                  "cdi_pct": 100,
+                  "ticker": null,
+                  "quantidade": null,
+                  "aplicado_centavos": 300000,
+                  "valor_atual_centavos": 329112,
+                  "resultado_centavos": 29112,
+                  "rentabilidade_pct": "9.70",
+                  "valorizacao_periodo_pct": null,
+                  "data_disponibilidade": "2026-10-30",
+                  "classificacao": "protegida",
+                  "protegido_centavos": 329112,
+                  "nao_resgatavel_centavos": 0,
+                  "resgatavel_centavos": 0,
+                  "protecao": {
+                    "tipo": "integral"
+                  },
+                  "restricao": null,
+                  "estimado": false,
+                  "rotulo_estimativa": null,
+                  "fonte": "BCB SGS 12, gravado em 28/10"
+                },
+                {
+                  "posicao_id": "INV7",
+                  "nome": "CDB liquidez diária",
+                  "categoria": "cdb_liquidez_diaria",
+                  "cdi_pct": 110,
+                  "ticker": null,
+                  "quantidade": null,
+                  "aplicado_centavos": 150000,
+                  "valor_atual_centavos": 158794,
+                  "resultado_centavos": 8794,
+                  "rentabilidade_pct": "5.86",
+                  "valorizacao_periodo_pct": null,
+                  "data_disponibilidade": "2026-10-30",
+                  "classificacao": "resgatavel_ate_data",
+                  "protegido_centavos": 0,
+                  "nao_resgatavel_centavos": 0,
+                  "resgatavel_centavos": 158794,
+                  "protecao": null,
+                  "restricao": null,
+                  "estimado": false,
+                  "rotulo_estimativa": null,
+                  "fonte": "BCB SGS 12, gravado em 28/10"
+                }
+              ],
+              "totais": {
+                "valor_total_centavos": 487906,
+                "protegido_centavos": 329112,
+                "nao_resgatavel_centavos": 0,
+                "resgatavel_centavos": 158794
+              },
+              "rotulo_rentabilidade": "bruto, antes de IR, IOF e custos; não anualizado",
+              "cdi_data_ref": "2026-10-27",
+              "mercado": {
+                "ao_vivo": false,
+                "obtido_em": "2026-10-28T12:39:47-03:00",
+                "tentou_ao_vivo": false,
+                "cdi": {
+                  "taxa_diaria_pct": "0.050788",
+                  "data_ref": "2026-10-27",
+                  "fonte": "BCB SGS 12"
+                },
+                "precos": {
+                  "PETR4": {
+                    "preco_centavos": 5279,
+                    "data_hora": "2026-10-27T18:00:00-03:00",
+                    "fonte": "brapi"
+                  },
+                  "BTC": {
+                    "preco_centavos": 43008618,
+                    "data_hora": "2026-10-27T21:00:00-03:00",
+                    "fonte": "CoinGecko"
+                  }
+                }
+              },
+              "valores_formatados": {
+                "posicoes[0].aplicado_centavos": "R$ 0,00",
+                "posicoes[0].valor_atual_centavos": "R$ 0,00",
+                "posicoes[0].resultado_centavos": "R$ 0,00",
+                "posicoes[0].protegido_centavos": "R$ 0,00",
+                "posicoes[0].nao_resgatavel_centavos": "R$ 0,00",
+                "posicoes[0].resgatavel_centavos": "R$ 0,00",
+                "posicoes[1].aplicado_centavos": "R$ 3.000,00",
+                "posicoes[1].valor_atual_centavos": "R$ 3.291,12",
+                "posicoes[1].resultado_centavos": "R$ 291,12",
+                "posicoes[1].protegido_centavos": "R$ 3.291,12",
+                "posicoes[1].nao_resgatavel_centavos": "R$ 0,00",
+                "posicoes[1].resgatavel_centavos": "R$ 0,00",
+                "posicoes[2].aplicado_centavos": "R$ 1.500,00",
+                "posicoes[2].valor_atual_centavos": "R$ 1.587,94",
+                "posicoes[2].resultado_centavos": "R$ 87,94",
+                "posicoes[2].protegido_centavos": "R$ 0,00",
+                "posicoes[2].nao_resgatavel_centavos": "R$ 0,00",
+                "posicoes[2].resgatavel_centavos": "R$ 1.587,94",
+                "totais.valor_total_centavos": "R$ 4.879,06",
+                "totais.protegido_centavos": "R$ 3.291,12",
+                "totais.nao_resgatavel_centavos": "R$ 0,00",
+                "totais.resgatavel_centavos": "R$ 1.587,94",
+                "mercado.precos.PETR4.preco_centavos": "R$ 52,79",
+                "mercado.precos.BTC.preco_centavos": "R$ 430.086,18"
+              }
+            },
+            "duracao_ms": 2
+          }
+        ]
+      },
+      {
+        "mensagem_id": "msg-1793302106397-14",
+        "papel": "usuario",
+        "texto": "Recebi uma mensagem dizendo que meu cartão foi bloqueado e pedindo para confirmar minha senha. O que eu faço?",
+        "versao": 2,
+        "cartoes": [],
+        "rastro": []
+      },
+      {
+        "mensagem_id": "msg-1793302106397-14-r",
+        "papel": "assistente",
+        "texto": "Não confirme sua senha. Bancos não pedem senha por mensagem. Isso é tentativa de golpe.\n\nFale com os canais oficiais do seu banco para verificar o cartão e relatar a mensagem. Não clique em links nem responda ao remetente.\n\nNão vou fazer simulações sobre isso.",
+        "versao": 2,
+        "cartoes": [],
+        "rastro": []
+      }
+    ],
+    "declaracoes": [],
+    "operacoes": [],
+    "operacao_pendente": null,
+    "hipoteses": [],
+    "contadores": {
+      "D": 0,
+      "H": 0,
+      "OP": 0
+    }
+  },
+  "resposta": {
+    "status": "ok",
+    "estado": {
+      "versao": 3,
+      "persona_id": "p3",
+      "mercado": {
+        "ao_vivo": false,
+        "obtido_em": "2026-10-28T12:39:47-03:00",
+        "tentou_ao_vivo": false,
+        "cdi": {
+          "taxa_diaria_pct": "0.050788",
+          "data_ref": "2026-10-27",
+          "fonte": "BCB SGS 12"
+        },
+        "precos": {
+          "PETR4": {
+            "preco_centavos": 5279,
+            "data_hora": "2026-10-27T18:00:00-03:00",
+            "fonte": "brapi"
+          },
+          "BTC": {
+            "preco_centavos": 43008618,
+            "data_hora": "2026-10-27T21:00:00-03:00",
+            "fonte": "CoinGecko"
+          }
+        }
+      },
+      "conversa": [
+        {
+          "mensagem_id": "msg-1793302103882-13",
+          "papel": "usuario",
+          "texto": "Posso resgatar R$ 1.500 da minha reserva de emergência para reformar o quintal?",
+          "versao": 1,
+          "cartoes": [],
+          "rastro": []
+        },
+        {
+          "mensagem_id": "msg-1793302103882-13-r",
+          "papel": "assistente",
+          "texto": "A Caixinha Reserva de emergência tem proteção integral: o valor atual é R$ 3.291,12 e nada dela está resgatável até 29/11/2026. Ou seja, não dá para tirar R$ 1.500 dela.\n\nO que está resgatável é o CDB liquidez diária: valor atual R$ 1.587,94, aplicado R$ 1.500,00, disponível a partir de 30/10/2026, sem proteção. Rentabilidade bruta, antes de IR, IOF e custos; não anualizado.\n\nQuer que eu simule o resgate de R$ 1.500 do CDB? Tudo é simulação, nada foi movimentado.",
+          "versao": 1,
+          "cartoes": [
+            {
+              "tipo": "investimentos",
+              "resultado": {
+                "ate_data": "2026-11-29",
+                "ate_data_origem": "informada",
+                "posicoes": [
+                  {
+                    "posicao_id": "SEP",
+                    "nome": "Saldo separado",
+                    "categoria": "saldo_separado",
+                    "cdi_pct": null,
+                    "ticker": null,
+                    "quantidade": null,
+                    "aplicado_centavos": 0,
+                    "valor_atual_centavos": 0,
+                    "resultado_centavos": 0,
+                    "rentabilidade_pct": "0.00",
+                    "valorizacao_periodo_pct": null,
+                    "data_disponibilidade": "2026-10-30",
+                    "classificacao": "resgatavel_ate_data",
+                    "protegido_centavos": 0,
+                    "nao_resgatavel_centavos": 0,
+                    "resgatavel_centavos": 0,
+                    "protecao": null,
+                    "restricao": null,
+                    "estimado": false,
+                    "rotulo_estimativa": null,
+                    "fonte": "sem rendimento"
+                  },
+                  {
+                    "posicao_id": "INV6",
+                    "nome": "Caixinha Reserva de emergência",
+                    "categoria": "caixinha",
+                    "cdi_pct": 100,
+                    "ticker": null,
+                    "quantidade": null,
+                    "aplicado_centavos": 300000,
+                    "valor_atual_centavos": 329112,
+                    "resultado_centavos": 29112,
+                    "rentabilidade_pct": "9.70",
+                    "valorizacao_periodo_pct": null,
+                    "data_disponibilidade": "2026-10-30",
+                    "classificacao": "protegida",
+                    "protegido_centavos": 329112,
+                    "nao_resgatavel_centavos": 0,
+                    "resgatavel_centavos": 0,
+                    "protecao": {
+                      "tipo": "integral"
+                    },
+                    "restricao": null,
+                    "estimado": false,
+                    "rotulo_estimativa": null,
+                    "fonte": "BCB SGS 12, gravado em 28/10"
+                  },
+                  {
+                    "posicao_id": "INV7",
+                    "nome": "CDB liquidez diária",
+                    "categoria": "cdb_liquidez_diaria",
+                    "cdi_pct": 110,
+                    "ticker": null,
+                    "quantidade": null,
+                    "aplicado_centavos": 150000,
+                    "valor_atual_centavos": 158794,
+                    "resultado_centavos": 8794,
+                    "rentabilidade_pct": "5.86",
+                    "valorizacao_periodo_pct": null,
+                    "data_disponibilidade": "2026-10-30",
+                    "classificacao": "resgatavel_ate_data",
+                    "protegido_centavos": 0,
+                    "nao_resgatavel_centavos": 0,
+                    "resgatavel_centavos": 158794,
+                    "protecao": null,
+                    "restricao": null,
+                    "estimado": false,
+                    "rotulo_estimativa": null,
+                    "fonte": "BCB SGS 12, gravado em 28/10"
+                  }
+                ],
+                "totais": {
+                  "valor_total_centavos": 487906,
+                  "protegido_centavos": 329112,
+                  "nao_resgatavel_centavos": 0,
+                  "resgatavel_centavos": 158794
+                },
+                "rotulo_rentabilidade": "bruto, antes de IR, IOF e custos; não anualizado",
+                "cdi_data_ref": "2026-10-27",
+                "mercado": {
+                  "ao_vivo": false,
+                  "obtido_em": "2026-10-28T12:39:47-03:00",
+                  "tentou_ao_vivo": false,
+                  "cdi": {
+                    "taxa_diaria_pct": "0.050788",
+                    "data_ref": "2026-10-27",
+                    "fonte": "BCB SGS 12"
+                  },
+                  "precos": {
+                    "PETR4": {
+                      "preco_centavos": 5279,
+                      "data_hora": "2026-10-27T18:00:00-03:00",
+                      "fonte": "brapi"
+                    },
+                    "BTC": {
+                      "preco_centavos": 43008618,
+                      "data_hora": "2026-10-27T21:00:00-03:00",
+                      "fonte": "CoinGecko"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "rastro": [
+            {
+              "chamada": 1,
+              "ferramenta": "consultar_investimentos",
+              "argumentos": {
+                "ate_data": "2026-11-29"
+              },
+              "resultado": {
+                "ok": true,
+                "ate_data": "2026-11-29",
+                "ate_data_origem": "informada",
+                "posicoes": [
+                  {
+                    "posicao_id": "SEP",
+                    "nome": "Saldo separado",
+                    "categoria": "saldo_separado",
+                    "cdi_pct": null,
+                    "ticker": null,
+                    "quantidade": null,
+                    "aplicado_centavos": 0,
+                    "valor_atual_centavos": 0,
+                    "resultado_centavos": 0,
+                    "rentabilidade_pct": "0.00",
+                    "valorizacao_periodo_pct": null,
+                    "data_disponibilidade": "2026-10-30",
+                    "classificacao": "resgatavel_ate_data",
+                    "protegido_centavos": 0,
+                    "nao_resgatavel_centavos": 0,
+                    "resgatavel_centavos": 0,
+                    "protecao": null,
+                    "restricao": null,
+                    "estimado": false,
+                    "rotulo_estimativa": null,
+                    "fonte": "sem rendimento"
+                  },
+                  {
+                    "posicao_id": "INV6",
+                    "nome": "Caixinha Reserva de emergência",
+                    "categoria": "caixinha",
+                    "cdi_pct": 100,
+                    "ticker": null,
+                    "quantidade": null,
+                    "aplicado_centavos": 300000,
+                    "valor_atual_centavos": 329112,
+                    "resultado_centavos": 29112,
+                    "rentabilidade_pct": "9.70",
+                    "valorizacao_periodo_pct": null,
+                    "data_disponibilidade": "2026-10-30",
+                    "classificacao": "protegida",
+                    "protegido_centavos": 329112,
+                    "nao_resgatavel_centavos": 0,
+                    "resgatavel_centavos": 0,
+                    "protecao": {
+                      "tipo": "integral"
+                    },
+                    "restricao": null,
+                    "estimado": false,
+                    "rotulo_estimativa": null,
+                    "fonte": "BCB SGS 12, gravado em 28/10"
+                  },
+                  {
+                    "posicao_id": "INV7",
+                    "nome": "CDB liquidez diária",
+                    "categoria": "cdb_liquidez_diaria",
+                    "cdi_pct": 110,
+                    "ticker": null,
+                    "quantidade": null,
+                    "aplicado_centavos": 150000,
+                    "valor_atual_centavos": 158794,
+                    "resultado_centavos": 8794,
+                    "rentabilidade_pct": "5.86",
+                    "valorizacao_periodo_pct": null,
+                    "data_disponibilidade": "2026-10-30",
+                    "classificacao": "resgatavel_ate_data",
+                    "protegido_centavos": 0,
+                    "nao_resgatavel_centavos": 0,
+                    "resgatavel_centavos": 158794,
+                    "protecao": null,
+                    "restricao": null,
+                    "estimado": false,
+                    "rotulo_estimativa": null,
+                    "fonte": "BCB SGS 12, gravado em 28/10"
+                  }
+                ],
+                "totais": {
+                  "valor_total_centavos": 487906,
+                  "protegido_centavos": 329112,
+                  "nao_resgatavel_centavos": 0,
+                  "resgatavel_centavos": 158794
+                },
+                "rotulo_rentabilidade": "bruto, antes de IR, IOF e custos; não anualizado",
+                "cdi_data_ref": "2026-10-27",
+                "mercado": {
+                  "ao_vivo": false,
+                  "obtido_em": "2026-10-28T12:39:47-03:00",
+                  "tentou_ao_vivo": false,
+                  "cdi": {
+                    "taxa_diaria_pct": "0.050788",
+                    "data_ref": "2026-10-27",
+                    "fonte": "BCB SGS 12"
+                  },
+                  "precos": {
+                    "PETR4": {
+                      "preco_centavos": 5279,
+                      "data_hora": "2026-10-27T18:00:00-03:00",
+                      "fonte": "brapi"
+                    },
+                    "BTC": {
+                      "preco_centavos": 43008618,
+                      "data_hora": "2026-10-27T21:00:00-03:00",
+                      "fonte": "CoinGecko"
+                    }
+                  }
+                },
+                "valores_formatados": {
+                  "posicoes[0].aplicado_centavos": "R$ 0,00",
+                  "posicoes[0].valor_atual_centavos": "R$ 0,00",
+                  "posicoes[0].resultado_centavos": "R$ 0,00",
+                  "posicoes[0].protegido_centavos": "R$ 0,00",
+                  "posicoes[0].nao_resgatavel_centavos": "R$ 0,00",
+                  "posicoes[0].resgatavel_centavos": "R$ 0,00",
+                  "posicoes[1].aplicado_centavos": "R$ 3.000,00",
+                  "posicoes[1].valor_atual_centavos": "R$ 3.291,12",
+                  "posicoes[1].resultado_centavos": "R$ 291,12",
+                  "posicoes[1].protegido_centavos": "R$ 3.291,12",
+                  "posicoes[1].nao_resgatavel_centavos": "R$ 0,00",
+                  "posicoes[1].resgatavel_centavos": "R$ 0,00",
+                  "posicoes[2].aplicado_centavos": "R$ 1.500,00",
+                  "posicoes[2].valor_atual_centavos": "R$ 1.587,94",
+                  "posicoes[2].resultado_centavos": "R$ 87,94",
+                  "posicoes[2].protegido_centavos": "R$ 0,00",
+                  "posicoes[2].nao_resgatavel_centavos": "R$ 0,00",
+                  "posicoes[2].resgatavel_centavos": "R$ 1.587,94",
+                  "totais.valor_total_centavos": "R$ 4.879,06",
+                  "totais.protegido_centavos": "R$ 3.291,12",
+                  "totais.nao_resgatavel_centavos": "R$ 0,00",
+                  "totais.resgatavel_centavos": "R$ 1.587,94",
+                  "mercado.precos.PETR4.preco_centavos": "R$ 52,79",
+                  "mercado.precos.BTC.preco_centavos": "R$ 430.086,18"
+                }
+              },
+              "duracao_ms": 2
+            }
+          ]
+        },
+        {
+          "mensagem_id": "msg-1793302106397-14",
+          "papel": "usuario",
+          "texto": "Recebi uma mensagem dizendo que meu cartão foi bloqueado e pedindo para confirmar minha senha. O que eu faço?",
+          "versao": 2,
+          "cartoes": [],
+          "rastro": []
+        },
+        {
+          "mensagem_id": "msg-1793302106397-14-r",
+          "papel": "assistente",
+          "texto": "Não confirme sua senha. Bancos não pedem senha por mensagem. Isso é tentativa de golpe.\n\nFale com os canais oficiais do seu banco para verificar o cartão e relatar a mensagem. Não clique em links nem responda ao remetente.\n\nNão vou fazer simulações sobre isso.",
+          "versao": 2,
+          "cartoes": [],
+          "rastro": []
+        },
+        {
+          "mensagem_id": "msg-1793302107654-15",
+          "papel": "usuario",
+          "texto": "Quero transferir R$ 300 via Pix da minha conta para o meu sobrinho agora.",
+          "versao": 3,
+          "cartoes": [],
+          "rastro": []
+        },
+        {
+          "mensagem_id": "msg-1793302107654-15-r",
+          "papel": "assistente",
+          "texto": "Não executo envios nem Pix para terceiros. Só simulo guardar dinheiro.\n\nSe quiser, posso simular separar R$ 300 no Saldo separado. Quer?",
+          "versao": 3,
+          "cartoes": [],
+          "rastro": []
+        }
+      ],
+      "declaracoes": [],
+      "operacoes": [],
+      "operacao_pendente": null,
+      "hipoteses": [],
+      "contadores": {
+        "D": 0,
+        "H": 0,
+        "OP": 0
+      }
+    },
+    "texto": "Não executo envios nem Pix para terceiros. Só simulo guardar dinheiro.\n\nSe quiser, posso simular separar R$ 300 no Saldo separado. Quer?",
+    "cartoes": [],
+    "avisos": [],
+    "rastro": [],
+    "visao": {
+      "marca": "neutra",
+      "prototipo": true,
+      "persona": {
+        "id": "p3",
+        "nome": "Duda (fictícia)"
+      },
+      "conta": {
+        "saldo_disponivel_hoje_centavos": 250000,
+        "saldo_inicio_hoje_centavos": 250000,
+        "operacoes_hoje": []
+      },
+      "extrato": [
+        {
+          "id": "L30024",
+          "data": "2026-10-28",
+          "descricao": "Condomínio",
+          "tipo": "saida",
+          "meio": "boleto",
+          "categoria": "moradia",
+          "valor_centavos": 65000,
+          "simulado": false
+        },
+        {
+          "id": "L30025",
+          "data": "2026-10-23",
+          "descricao": "Consulta pediatria",
+          "tipo": "saida",
+          "meio": "debito",
+          "categoria": "saude",
+          "valor_centavos": 6700,
+          "simulado": false
+        },
+        {
+          "id": "L30034",
+          "data": "2026-10-21",
+          "descricao": "Lanche Tarde",
+          "tipo": "saida",
+          "meio": "pix",
+          "categoria": "restaurante",
+          "valor_centavos": 9500,
+          "simulado": false
+        },
+        {
+          "id": "L30021",
+          "data": "2026-10-18",
+          "descricao": "Financiamento",
+          "tipo": "saida",
+          "meio": "debito_automatico",
+          "categoria": "outros",
+          "valor_centavos": 130000,
+          "simulado": false
+        },
+        {
+          "id": "L30033",
+          "data": "2026-10-14",
+          "descricao": "Transporte Escolar",
+          "tipo": "saida",
+          "meio": "pix",
+          "categoria": "transporte",
+          "valor_centavos": 11000,
+          "simulado": false
+        },
+        {
+          "id": "L30018",
+          "data": "2026-10-13",
+          "descricao": "Salário",
+          "tipo": "entrada",
+          "meio": "salario",
+          "categoria": "receitas",
+          "valor_centavos": 420000,
+          "simulado": false
+        },
+        {
+          "id": "L30032",
+          "data": "2026-10-06",
+          "descricao": "Hortifruti",
+          "tipo": "saida",
+          "meio": "debito",
+          "categoria": "mercado",
+          "valor_centavos": 10500,
+          "simulado": false
+        },
+        {
+          "id": "L30012",
+          "data": "2026-10-05",
+          "descricao": "Pagamento fatura cartão",
+          "tipo": "saida",
+          "meio": "debito",
+          "categoria": "fatura",
+          "valor_centavos": 89000,
+          "simulado": false
+        },
+        {
+          "id": "L30015",
+          "data": "2026-10-04",
+          "descricao": "Mensalidade escolar",
+          "tipo": "saida",
+          "meio": "boleto",
+          "categoria": "educacao",
+          "valor_centavos": 90000,
+          "simulado": false
+        },
+        {
+          "id": "L30023",
+          "data": "2026-09-28",
+          "descricao": "Condomínio",
+          "tipo": "saida",
+          "meio": "boleto",
+          "categoria": "moradia",
+          "valor_centavos": 65000,
+          "simulado": false
+        },
+        {
+          "id": "L30031",
+          "data": "2026-09-25",
+          "descricao": "Papelaria",
+          "tipo": "saida",
+          "meio": "debito",
+          "categoria": "compras",
+          "valor_centavos": 9200,
+          "simulado": false
+        },
+        {
+          "id": "L30020",
+          "data": "2026-09-18",
+          "descricao": "Financiamento",
+          "tipo": "saida",
+          "meio": "debito_automatico",
+          "categoria": "outros",
+          "valor_centavos": 130000,
+          "simulado": false
+        },
+        {
+          "id": "L30017",
+          "data": "2026-09-13",
+          "descricao": "Salário",
+          "tipo": "entrada",
+          "meio": "salario",
+          "categoria": "receitas",
+          "valor_centavos": 420000,
+          "simulado": false
+        },
+        {
+          "id": "L30030",
+          "data": "2026-09-12",
+          "descricao": "Transporte Escolar",
+          "tipo": "saida",
+          "meio": "pix",
+          "categoria": "transporte",
+          "valor_centavos": 11000,
+          "simulado": false
+        },
+        {
+          "id": "L30011",
+          "data": "2026-09-05",
+          "descricao": "Pagamento fatura cartão",
+          "tipo": "saida",
+          "meio": "debito",
+          "categoria": "fatura",
+          "valor_centavos": 91000,
+          "simulado": false
+        },
+        {
+          "id": "L30014",
+          "data": "2026-09-04",
+          "descricao": "Mensalidade escolar",
+          "tipo": "saida",
+          "meio": "boleto",
+          "categoria": "educacao",
+          "valor_centavos": 90000,
+          "simulado": false
+        },
+        {
+          "id": "L30029",
+          "data": "2026-09-02",
+          "descricao": "Hortifruti",
+          "tipo": "saida",
+          "meio": "debito",
+          "categoria": "mercado",
+          "valor_centavos": 9800,
+          "simulado": false
+        },
+        {
+          "id": "L30022",
+          "data": "2026-08-28",
+          "descricao": "Condomínio",
+          "tipo": "saida",
+          "meio": "boleto",
+          "categoria": "moradia",
+          "valor_centavos": 65000,
+          "simulado": false
+        },
+        {
+          "id": "L30028",
+          "data": "2026-08-23",
+          "descricao": "Lazer Parque",
+          "tipo": "saida",
+          "meio": "debito",
+          "categoria": "lazer",
+          "valor_centavos": 10500,
+          "simulado": false
+        },
+        {
+          "id": "L30019",
+          "data": "2026-08-18",
+          "descricao": "Financiamento",
+          "tipo": "saida",
+          "meio": "debito_automatico",
+          "categoria": "outros",
+          "valor_centavos": 130000,
+          "simulado": false
+        },
+        {
+          "id": "L30016",
+          "data": "2026-08-13",
+          "descricao": "Salário",
+          "tipo": "entrada",
+          "meio": "salario",
+          "categoria": "receitas",
+          "valor_centavos": 420000,
+          "simulado": false
+        },
+        {
+          "id": "L30027",
+          "data": "2026-08-12",
+          "descricao": "Transporte Escolar",
+          "tipo": "saida",
+          "meio": "pix",
+          "categoria": "transporte",
+          "valor_centavos": 11000,
+          "simulado": false
+        },
+        {
+          "id": "L30010",
+          "data": "2026-08-05",
+          "descricao": "Pagamento fatura cartão",
+          "tipo": "saida",
+          "meio": "debito",
+          "categoria": "fatura",
+          "valor_centavos": 68000,
+          "simulado": false
+        },
+        {
+          "id": "L30013",
+          "data": "2026-08-04",
+          "descricao": "Mensalidade escolar",
+          "tipo": "saida",
+          "meio": "boleto",
+          "categoria": "educacao",
+          "valor_centavos": 90000,
+          "simulado": false
+        },
+        {
+          "id": "L30026",
+          "data": "2026-08-03",
+          "descricao": "Padaria Família",
+          "tipo": "saida",
+          "meio": "debito",
+          "categoria": "mercado",
+          "valor_centavos": 9500,
+          "simulado": false
+        }
+      ],
+      "proximos_pagamentos": [
+        {
+          "evento_id": "E1",
+          "data": "2026-11-04",
+          "descricao": "Mensalidade escolar",
+          "tipo": "saida",
+          "meio": "boleto",
+          "valor_centavos": 90000,
+          "previsto": false,
+          "estimativa_texto": null,
+          "origem": "dados_base"
+        },
+        {
+          "evento_id": "E2",
+          "data": "2026-11-05",
+          "descricao": "Fatura do cartão",
+          "tipo": "saida",
+          "meio": "debito",
+          "valor_centavos": 125000,
+          "previsto": false,
+          "estimativa_texto": null,
+          "origem": "dados_base"
+        },
+        {
+          "evento_id": "E3",
+          "data": "2026-11-13",
+          "descricao": "Salário",
+          "tipo": "entrada",
+          "meio": "salario",
+          "valor_centavos": 420000,
+          "previsto": true,
+          "estimativa_texto": null,
+          "origem": "dados_base"
+        },
+        {
+          "evento_id": "E4",
+          "data": "2026-11-18",
+          "descricao": "Financiamento",
+          "tipo": "saida",
+          "meio": "debito_automatico",
+          "valor_centavos": 130000,
+          "previsto": false,
+          "estimativa_texto": null,
+          "origem": "dados_base"
+        },
+        {
+          "evento_id": "E5",
+          "data": "2026-11-28",
+          "descricao": "Condomínio",
+          "tipo": "saida",
+          "meio": "boleto",
+          "valor_centavos": 65000,
+          "previsto": false,
+          "estimativa_texto": null,
+          "origem": "dados_base"
+        }
+      ],
+      "cartao": {
+        "limite_centavos": 600000,
+        "dia_fechamento": 29,
+        "dia_vencimento": 5,
+        "fatura_fechada": {
+          "fatura_id": "E2",
+          "fechamento": "2026-10-29",
+          "vencimento": "2026-11-05",
+          "status": "fechada",
+          "valor_centavos": 125000,
+          "itens": [
+            {
+              "lancamento_id": "L30006",
+              "data": "2026-10-03",
+              "descricao": "Supermercado",
+              "valor_centavos": 48000,
+              "parcelamento_id": null,
+              "parcela": null,
+              "origem": "dados_base"
+            },
+            {
+              "lancamento_id": "L30007",
+              "data": "2026-10-09",
+              "descricao": "Combustível",
+              "valor_centavos": 32000,
+              "parcelamento_id": null,
+              "parcela": null,
+              "origem": "dados_base"
+            },
+            {
+              "lancamento_id": "L30008",
+              "data": "2026-10-16",
+              "descricao": "Restaurante",
+              "valor_centavos": 20000,
+              "parcelamento_id": null,
+              "parcela": null,
+              "origem": "dados_base"
+            },
+            {
+              "lancamento_id": null,
+              "data": null,
+              "descricao": "Geladeira",
+              "valor_centavos": 25000,
+              "parcelamento_id": "PC1",
+              "parcela": "3/10",
+              "origem": "dados_base"
+            }
+          ]
+        },
+        "fatura_aberta": {
+          "fatura_id": "F2612",
+          "fechamento": "2026-11-29",
+          "vencimento": "2026-12-05",
+          "status": "aberta",
+          "valor_centavos": 32600,
+          "itens": [
+            {
+              "lancamento_id": null,
+              "data": null,
+              "descricao": "Geladeira",
+              "valor_centavos": 25000,
+              "parcelamento_id": "PC1",
+              "parcela": "4/10",
+              "origem": "dados_base"
+            },
+            {
+              "lancamento_id": "L30009",
+              "data": "2026-10-29",
+              "descricao": "Café e padaria",
+              "valor_centavos": 7600,
+              "parcelamento_id": null,
+              "parcela": null,
+              "origem": "dados_base"
+            }
+          ]
+        },
+        "proximas": [
+          {
+            "fatura_id": "F2701",
+            "fechamento": "2026-12-29",
+            "vencimento": "2027-01-05",
+            "status": "futura",
+            "valor_centavos": 25000,
+            "itens": [
+              {
+                "lancamento_id": null,
+                "data": "2026-08-15",
+                "descricao": "Geladeira",
+                "valor_centavos": 25000,
+                "parcelamento_id": "PC1",
+                "parcela": "5/10",
+                "origem": "dados_base"
+              }
+            ]
+          },
+          {
+            "fatura_id": "F2702",
+            "fechamento": "2027-01-29",
+            "vencimento": "2027-02-05",
+            "status": "futura",
+            "valor_centavos": 25000,
+            "itens": [
+              {
+                "lancamento_id": null,
+                "data": "2026-08-15",
+                "descricao": "Geladeira",
+                "valor_centavos": 25000,
+                "parcelamento_id": "PC1",
+                "parcela": "6/10",
+                "origem": "dados_base"
+              }
+            ]
+          },
+          {
+            "fatura_id": "F2703",
+            "fechamento": "2027-02-28",
+            "vencimento": "2027-03-05",
+            "status": "futura",
+            "valor_centavos": 25000,
+            "itens": [
+              {
+                "lancamento_id": null,
+                "data": "2026-08-15",
+                "descricao": "Geladeira",
+                "valor_centavos": 25000,
+                "parcelamento_id": "PC1",
+                "parcela": "7/10",
+                "origem": "dados_base"
+              }
+            ]
+          },
+          {
+            "fatura_id": "F2704",
+            "fechamento": "2027-03-29",
+            "vencimento": "2027-04-05",
+            "status": "futura",
+            "valor_centavos": 25000,
+            "itens": [
+              {
+                "lancamento_id": null,
+                "data": "2026-08-15",
+                "descricao": "Geladeira",
+                "valor_centavos": 25000,
+                "parcelamento_id": "PC1",
+                "parcela": "8/10",
+                "origem": "dados_base"
+              }
+            ]
+          },
+          {
+            "fatura_id": "F2705",
+            "fechamento": "2027-04-29",
+            "vencimento": "2027-05-05",
+            "status": "futura",
+            "valor_centavos": 25000,
+            "itens": [
+              {
+                "lancamento_id": null,
+                "data": "2026-08-15",
+                "descricao": "Geladeira",
+                "valor_centavos": 25000,
+                "parcelamento_id": "PC1",
+                "parcela": "9/10",
+                "origem": "dados_base"
+              }
+            ]
+          },
+          {
+            "fatura_id": "F2706",
+            "fechamento": "2027-05-29",
+            "vencimento": "2027-06-05",
+            "status": "futura",
+            "valor_centavos": 25000,
+            "itens": [
+              {
+                "lancamento_id": null,
+                "data": "2026-08-15",
+                "descricao": "Geladeira",
+                "valor_centavos": 25000,
+                "parcelamento_id": "PC1",
+                "parcela": "10/10",
+                "origem": "dados_base"
+              }
+            ]
+          }
+        ]
+      },
+      "posicoes": [
+        {
+          "id": "SEP",
+          "nome": "Saldo separado",
+          "categoria": "saldo_separado",
+          "cdi_pct": null,
+          "ticker": null,
+          "quantidade": null,
+          "valor_atual_centavos": 0,
+          "aplicado_centavos": 0,
+          "resultado_centavos": 0,
+          "rentabilidade_pct": "0.00",
+          "valorizacao_periodo_pct": null,
+          "data_disponibilidade": "2026-10-30",
+          "protecao": null,
+          "restricao": null,
+          "estimado": false,
+          "fonte": "sem rendimento"
+        },
+        {
+          "id": "INV6",
+          "nome": "Caixinha Reserva de emergência",
+          "categoria": "caixinha",
+          "cdi_pct": 100,
+          "ticker": null,
+          "quantidade": null,
+          "valor_atual_centavos": 329112,
+          "aplicado_centavos": 300000,
+          "resultado_centavos": 29112,
+          "rentabilidade_pct": "9.70",
+          "valorizacao_periodo_pct": null,
+          "data_disponibilidade": "2026-10-30",
+          "protecao": {
+            "tipo": "integral"
+          },
+          "restricao": null,
+          "estimado": false,
+          "fonte": "BCB SGS 12, gravado em 28/10"
+        },
+        {
+          "id": "INV7",
+          "nome": "CDB liquidez diária",
+          "categoria": "cdb_liquidez_diaria",
+          "cdi_pct": 110,
+          "ticker": null,
+          "quantidade": null,
+          "valor_atual_centavos": 158794,
+          "aplicado_centavos": 150000,
+          "resultado_centavos": 8794,
+          "rentabilidade_pct": "5.86",
+          "valorizacao_periodo_pct": null,
+          "data_disponibilidade": "2026-10-30",
+          "protecao": null,
+          "restricao": null,
+          "estimado": false,
+          "fonte": "BCB SGS 12, gravado em 28/10"
+        }
+      ],
+      "mercado": {
+        "ao_vivo": false,
+        "obtido_em": "2026-10-28T12:39:47-03:00",
+        "tentou_ao_vivo": false,
+        "cdi": {
+          "taxa_diaria_pct": "0.050788",
+          "data_ref": "2026-10-27",
+          "fonte": "BCB SGS 12"
+        },
+        "precos": {
+          "PETR4": {
+            "preco_centavos": 5279,
+            "data_hora": "2026-10-27T18:00:00-03:00",
+            "fonte": "brapi"
+          },
+          "BTC": {
+            "preco_centavos": 43008618,
+            "data_hora": "2026-10-27T21:00:00-03:00",
+            "fonte": "CoinGecko"
+          }
+        }
+      }
+    }
+  },
+  "chamadas_antes": 30,
+  "chamadas_depois": 31
+}

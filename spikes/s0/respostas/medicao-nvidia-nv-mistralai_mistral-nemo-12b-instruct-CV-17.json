@@ -1,0 +1,10 @@
+{
+  "provedor": "nvidia",
+  "modelo": "nv-mistralai/mistral-nemo-12b-instruct",
+  "caso": "CV-17",
+  "status": 404,
+  "latencia_ms": 142,
+  "correto": false,
+  "erro": "HTTP 404",
+  "obtido_em": "2026-10-28T15:43:26.244Z"
+}

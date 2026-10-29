@@ -1,0 +1,381 @@
+{
+  "versao": "auditoria-offline-2-comparacao-simetrica",
+  "mensagens": 20,
+  "resultados": [
+    {
+      "numero": 1,
+      "sessao": "A",
+      "persona": "p1",
+      "latencia_ms": 4572,
+      "http_tentadas": 3,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "cartoes_comparacao_contra_motor": true
+      }
+    },
+    {
+      "numero": 2,
+      "sessao": "A",
+      "persona": "p1",
+      "latencia_ms": 3046,
+      "http_tentadas": 2,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "cartoes_comparacao_contra_motor": true
+      }
+    },
+    {
+      "numero": 3,
+      "sessao": "A",
+      "persona": "p1",
+      "latencia_ms": 13514,
+      "http_tentadas": 2,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "cartoes_comparacao_contra_motor": true
+      }
+    },
+    {
+      "numero": 4,
+      "sessao": "A",
+      "persona": "p1",
+      "latencia_ms": 2546,
+      "http_tentadas": 2,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "cartoes_comparacao_contra_motor": true,
+        "negocio_sem_mutacao": true
+      }
+    },
+    {
+      "numero": 5,
+      "sessao": "A",
+      "persona": "p1",
+      "latencia_ms": 4914,
+      "http_tentadas": 2,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "cartoes_comparacao_contra_motor": true
+      }
+    },
+    {
+      "numero": 6,
+      "sessao": "B",
+      "persona": "p1",
+      "latencia_ms": 3109,
+      "http_tentadas": 2,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "proposta_e_rendimento_contra_motor": true
+      }
+    },
+    {
+      "numero": 7,
+      "sessao": "B",
+      "persona": "p1",
+      "latencia_ms": 2376,
+      "http_tentadas": 2,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true
+      }
+    },
+    {
+      "numero": 8,
+      "sessao": "B",
+      "persona": "p1",
+      "latencia_ms": 4932,
+      "http_tentadas": 2,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "negocio_sem_mutacao": true
+      }
+    },
+    {
+      "numero": 9,
+      "sessao": "C",
+      "persona": "p2",
+      "latencia_ms": 9702,
+      "http_tentadas": 3,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "cartoes_comparacao_contra_motor": true
+      }
+    },
+    {
+      "numero": 10,
+      "sessao": "C",
+      "persona": "p2",
+      "latencia_ms": 11822,
+      "http_tentadas": 2,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "cartoes_comparacao_contra_motor": true
+      }
+    },
+    {
+      "numero": 11,
+      "sessao": "C",
+      "persona": "p2",
+      "latencia_ms": 5954,
+      "http_tentadas": 2,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "cartoes_comparacao_contra_motor": true
+      }
+    },
+    {
+      "numero": 12,
+      "sessao": "C",
+      "persona": "p2",
+      "latencia_ms": 9382,
+      "http_tentadas": 2,
+      "falhas": [
+        "historico_conforme_outubro_pedido"
+      ],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "negocio_sem_mutacao": true,
+        "consulta_contra_motor_mesmo_filtro": true,
+        "cartao_contra_motor_mesmo_filtro": true,
+        "historico_conforme_outubro_pedido": false
+      }
+    },
+    {
+      "numero": 13,
+      "sessao": "C",
+      "persona": "p2",
+      "latencia_ms": 4575,
+      "http_tentadas": 2,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "negocio_sem_mutacao": true,
+        "consulta_contra_motor_mesmo_filtro": true,
+        "cartao_contra_motor_mesmo_filtro": true
+      }
+    },
+    {
+      "numero": 14,
+      "sessao": "D",
+      "persona": "p3",
+      "latencia_ms": 1957,
+      "http_tentadas": 1,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "negocio_sem_mutacao": true,
+        "visao_cartao_inalterada": true
+      }
+    },
+    {
+      "numero": 15,
+      "sessao": "D",
+      "persona": "p3",
+      "latencia_ms": 4875,
+      "http_tentadas": 2,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "cartoes_comparacao_contra_motor": true,
+        "caixa_inalterado_por_parcelamento": true,
+        "parcelas_exatas": true,
+        "visao_cartao_inalterada": true
+      }
+    },
+    {
+      "numero": 16,
+      "sessao": "D",
+      "persona": "p3",
+      "latencia_ms": 4270,
+      "http_tentadas": 2,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "cartoes_comparacao_contra_motor": true,
+        "visao_cartao_inalterada": true
+      }
+    },
+    {
+      "numero": 17,
+      "sessao": "D",
+      "persona": "p3",
+      "latencia_ms": 7295,
+      "http_tentadas": 2,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "cartoes_comparacao_contra_motor": true,
+        "visao_cartao_inalterada": true
+      }
+    },
+    {
+      "numero": 18,
+      "sessao": "E",
+      "persona": "p3",
+      "latencia_ms": 3084,
+      "http_tentadas": 2,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "negocio_sem_mutacao": true,
+        "consulta_contra_motor_mesmo_filtro": true,
+        "cartao_contra_motor_mesmo_filtro": true,
+        "protecao_e_liquidez": true
+      }
+    },
+    {
+      "numero": 19,
+      "sessao": "E",
+      "persona": "p3",
+      "latencia_ms": 1467,
+      "http_tentadas": 1,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "negocio_sem_mutacao": true
+      }
+    },
+    {
+      "numero": 20,
+      "sessao": "E",
+      "persona": "p3",
+      "latencia_ms": 2138,
+      "http_tentadas": 1,
+      "falhas": [],
+      "checagens": {
+        "mensagem_original": true,
+        "resposta_ok": true,
+        "texto_visivel": true,
+        "versao_incrementada": true,
+        "persona_preservada": true,
+        "http_emparelhado": true,
+        "negocio_sem_mutacao": true
+      }
+    }
+  ],
+  "http": {
+    "tentadas": 39,
+    "sucesso_http_2xx": 39,
+    "falhas_http": 0,
+    "erros_transporte": 0,
+    "ids_unicos": true,
+    "pareados": true,
+    "contadas_nos_turnos": 39,
+    "chamadas_externas_nao_autorizadas_bloqueadas": 2
+  },
+  "latencia_ms": {
+    "minimo": 1467,
+    "mediana": 4573.5,
+    "maximo": 13514
+  },
+  "alertas": [
+    "Turno 12: motor para outubro retorna 1 item(ns), 6500 centavos; cartão efetivo retorna 4 item(ns), 29700 centavos, no período 2026-07-30 a 2026-10-29."
+  ],
+  "observacao": "Verificações mecânicas selecionadas; a classificação final exige revisão semântica humana dos textos e dos critérios de cada turno."
+}

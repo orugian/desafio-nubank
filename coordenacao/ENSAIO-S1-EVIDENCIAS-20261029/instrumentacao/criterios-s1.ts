@@ -1,0 +1,48 @@
+// Verificação numérica e de transição das evidências já coletadas; sem modelo/rede.
+import { readFileSync, writeFileSync } from 'node:fs';
+import { isDeepStrictEqual } from 'node:util';
+import { criarExecutores } from '../src/conversa/executores';
+const dir = 'C:/Users/orugi/Documents/Projetos/salesforce/intern/coordenacao/ENSAIO-S1-EVIDENCIAS-20261029';
+const todos = Array.from({ length: 20 }, (_, i) => JSON.parse(readFileSync(`${dir}/turno-${String(i + 1).padStart(2, '0')}.json`, 'utf8')));
+const ex = criarExecutores();
+const estado = (n: number) => todos[n - 1].resposta.estado;
+const hip = (n: number, id: string) => estado(n).hipoteses.find((x: any) => x.id === id);
+const alt = (h: any, operacao: string) => h?.alteracoes.find((x: any) => x.alteracao.operacao === operacao)?.alteracao;
+const declaracao = (n: number, operacao: string, id?: string) => estado(n).declaracoes.find((x: any) => x.alteracao.operacao === operacao && (!id || x.alteracao.evento_id === id))?.alteracao;
+const cenario = (n: number, id: string) => todos[n - 1].resposta.cartoes.find((x: any) => x.tipo === 'comparacao')?.cenarios.find((x: any) => x.cenario_id === id);
+const indicadores = (n: number, id: string) => cenario(n, id)?.indicadores;
+const semNegocio = (e: any) => ({ persona_id: e.persona_id, declaracoes: e.declaracoes, hipoteses: e.hipoteses, operacoes: e.operacoes, operacao_pendente: e.operacao_pendente, contadores: e.contadores });
+const igualNegocio = (n: number) => isDeepStrictEqual(semNegocio(todos[n - 1].estado_antes), semNegocio(estado(n)));
+const itemInvest = (n: number, id: string) => todos[n - 1].resposta.cartoes.find((x: any) => x.tipo === 'investimentos')?.resultado.posicoes.find((x: any) => x.posicao_id === id);
+function salvarChecagens() {
+  const checks: Record<number, Record<string, boolean>> = {};
+  checks[1] = { separacao: alt(hip(1, 'H1'), 'separar')?.valor === '420', valores: indicadores(1,'H1')?.saldo_minimo_centavos === -12000 && indicadores(1,'H1')?.data_saldo_minimo === '2026-11-15' && indicadores(1,'H1')?.primeira_falta?.valor_descoberto_centavos === 12000 && indicadores(1,'H1')?.saldo_final_centavos === 288000, nenhuma_operacao: estado(1).operacoes.length === 0 };
+  checks[2] = { derivacao: hip(2,'H2')?.a_partir_de === 'H1' && alt(hip(2,'H2'),'separar')?.valor === '420' && alt(hip(2,'H2'),'alterar_evento')?.data === '2026-11-09', valores: indicadores(2,'H2')?.saldo_minimo_centavos === 68000 && indicadores(2,'H2')?.data_saldo_minimo === '2026-11-05' && indicadores(2,'H2')?.primeira_falta === null && indicadores(2,'H2')?.saldo_final_centavos === 288000 };
+  checks[3] = { declaracao: declaracao(3,'alterar_evento','C')?.valor === '175' && estado(3).declaracoes.length === 1, recalculo: indicadores(3,'atual')?.saldo_minimo_centavos === 32500 && indicadores(3,'H1')?.saldo_minimo_centavos === -9500 && indicadores(3,'H2')?.saldo_minimo_centavos === 68000 };
+  checks[4] = { sem_mutacao: igualNegocio(4), comparacao_tres: cenario(4,'atual') && cenario(4,'H1') && cenario(4,'H2') } as any;
+  checks[5] = { alvo_correto: estado(5).hipoteses.length === 1 && hip(5,'H1') && !hip(5,'H2') && estado(5).contadores.H === 2, declaracao_preservada: declaracao(5,'alterar_evento','C')?.valor === '175' } as any;
+  const op6 = estado(6).operacao_pendente; const card6 = todos[5].resposta.cartoes.find((x: any) => x.tipo === 'operacao_pendente');
+  checks[6] = { pendente: op6?.valor_centavos === 35000 && op6?.destino === 'INV9' && estado(6).operacoes.length === 0, alerta: card6?.impacto?.indicadores?.saldo_minimo_centavos === -5000 && card6?.impacto?.indicadores?.primeira_falta?.valor_descoberto_centavos === 5000 && card6?.rendimento_estimado?.rendimento_bruto_centavos === 232, saldo: todos[5].resposta.visao.conta.saldo_disponivel_hoje_centavos === 180000 };
+  checks[7] = { cancelada: estado(7).operacao_pendente === null && estado(7).operacoes.length === 0 && todos[6].resposta.visao.conta.saldo_disponivel_hoje_centavos === 180000 };
+  checks[8] = { sem_recriar: igualNegocio(8), nao_executada: estado(8).operacao_pendente === null && estado(8).operacoes.length === 0 };
+  checks[9] = { separacao: alt(hip(9,'H1'),'separar')?.valor === '180' && todos[8].resposta.visao.conta.saldo_disponivel_hoje_centavos === 90000, valores: indicadores(9,'H1')?.saldo_minimo_centavos === -71000 && indicadores(9,'H1')?.data_saldo_minimo === '2026-11-08' && indicadores(9,'H1')?.primeira_falta?.valor_descoberto_centavos === 71000 && indicadores(9,'H1')?.saldo_final_centavos === -4500, ordem_relevante: cenario(9,'H1')?.datas_ordem_relevante.includes('2026-11-08') };
+  checks[10] = { declaracao: declaracao(10,'definir_ordem_no_dia')?.ordem === 'entradas_primeiro' && declaracao(10,'definir_ordem_no_dia')?.data === '2026-11-08', valores: indicadores(10,'atual')?.saldo_minimo_centavos === 13500 && indicadores(10,'H1')?.saldo_minimo_centavos === -4500 && indicadores(10,'H1')?.primeira_falta?.data === '2026-11-27' };
+  checks[11] = { correcao: declaracao(11,'alterar_evento','E1')?.valor === '135' && estado(11).declaracoes.length === 2, finais: indicadores(11,'atual')?.saldo_final_centavos === 12000 && indicadores(11,'H1')?.saldo_final_centavos === -6000 };
+  const h12 = todos[11].resposta.cartoes.find((x: any) => x.tipo === 'historico')?.resultado;
+  checks[12] = { negocio_inalterado: igualNegocio(12), recorte_pedido: h12?.de === '2026-10-01' && h12?.ate === '2026-10-29' && h12?.quantidade === 1 && h12?.total_saidas_centavos === 6500 };
+  const btc = itemInvest(13,'INV5');
+  checks[13] = { negocio_inalterado: igualNegocio(13), snapshot_bitcoin: btc?.valor_atual_centavos === 215043 && btc?.valorizacao_periodo_pct === '31.21' && btc?.estimado === true && btc?.fonte?.includes('CoinGecko') };
+  checks[14] = { negocio_inalterado: igualNegocio(14), sem_hipotese: estado(14).hipoteses.length === 0 };
+  const card15 = cenario(15,'H1');
+  checks[15] = { evento: alt(hip(15,'H1'),'adicionar_evento')?.meio === 'cartao_credito' && alt(hip(15,'H1'),'adicionar_evento')?.parcelas === 4 && alt(hip(15,'H1'),'adicionar_evento')?.valor === '639.01', parcelas: isDeepStrictEqual(card15?.faturas_afetadas.map((x: any) => x.total_depois_centavos - x.total_antes_centavos),[15976,15975,15975,15975]) };
+  checks[16] = { independente: hip(16,'H2')?.a_partir_de === 'atual' && alt(hip(16,'H2'),'adicionar_evento')?.meio === 'pix' && hip(16,'H1'), valores: indicadores(16,'H2')?.primeira_falta?.valor_descoberto_centavos === 42901 && indicadores(16,'H2')?.saldo_minimo_centavos === -49901 && indicadores(16,'H2')?.saldo_final_centavos === 165099 } as any;
+  checks[17] = { pix_removido: !hip(17,'H2') && hip(17,'H1') && estado(17).hipoteses.length === 1 } as any;
+  const inv6 = itemInvest(18,'INV6'); const inv7 = itemInvest(18,'INV7');
+  checks[18] = { negocio_inalterado: igualNegocio(18), valores_e_protecao: inv6?.protegido_centavos === 329112 && inv6?.protegido_centavos === inv6?.valor_atual_centavos && inv7?.resgatavel_centavos === 158794 && inv7?.data_disponibilidade === '2026-10-30' };
+  checks[19] = { negocio_inalterado: igualNegocio(19), sem_ferramenta: todos[18].resposta.rastro.length === 0 };
+  checks[20] = { negocio_inalterado: igualNegocio(20), sem_ferramenta: todos[19].resposta.rastro.length === 0 };
+  const saida = Object.entries(checks).map(([n, c]) => ({ numero: Number(n), checagens: Object.fromEntries(Object.entries(c).map(([k,v]) => [k, Boolean(v)])), falhas: Object.entries(c).filter(([,v]) => !v).map(([k]) => k) }));
+  writeFileSync(`${dir}/criterios-numericos.json`, JSON.stringify({ observacao: 'Checagens selecionadas de números e transições; não substituem revisão semântica dos textos.', saida }, null, 2) + '\n', { encoding:'utf8', flag:'wx' });
+  console.log(JSON.stringify({ turnos: saida.length, falhas: saida.filter(x => x.falhas.length) }, null, 2));
+}
+void ex; salvarChecagens();

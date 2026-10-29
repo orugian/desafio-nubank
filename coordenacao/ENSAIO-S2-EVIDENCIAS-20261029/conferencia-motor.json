@@ -1,0 +1,208 @@
+[
+  {
+    "numero": 1,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      },
+      {
+        "nome": "comparacao_0_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 2,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      },
+      {
+        "nome": "comparacao_0_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 5,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      },
+      {
+        "nome": "investimentos_0_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 6,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      },
+      {
+        "nome": "comparacao_0_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 7,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      },
+      {
+        "nome": "comparacao_1_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 8,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      },
+      {
+        "nome": "historico_0_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 9,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 10,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 11,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      },
+      {
+        "nome": "comparacao_0_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 12,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      },
+      {
+        "nome": "comparacao_0_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 13,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      },
+      {
+        "nome": "investimentos_0_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 14,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      },
+      {
+        "nome": "cartao_credito_0_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 15,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 16,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 17,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 18,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      },
+      {
+        "nome": "investimentos_0_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 19,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      }
+    ]
+  },
+  {
+    "numero": 20,
+    "checks": [
+      {
+        "nome": "visao_vs_motor",
+        "igual": true
+      }
+    ]
+  }
+]

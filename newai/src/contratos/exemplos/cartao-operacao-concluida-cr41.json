@@ -1,0 +1,22 @@
+{
+  "exemplo": true,
+  "esquema": "CartaoResposta",
+  "descricao": "Confirmação de OP1 com H1 e H2 ativas (CR-41)",
+  "dados": {
+    "tipo": "operacao_concluida",
+    "operacao_id": "OP1",
+    "valor_centavos": 50000,
+    "destino": {
+      "posicao_id": "INV9",
+      "nome": "Caixinha Viagem",
+      "rende": true,
+      "cdi_pct": 100
+    },
+    "mensagem": "Movimentação simulada: R$ 500,00 para Caixinha Viagem. Nenhum dinheiro real foi movimentado.",
+    "hipoteses_descartadas": [
+      "H1",
+      "H2"
+    ],
+    "saldo_disponivel_hoje_centavos": 130000
+  }
+}

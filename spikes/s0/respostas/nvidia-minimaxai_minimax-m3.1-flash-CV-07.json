@@ -1,0 +1,40 @@
+{
+  "id": "chatcmpl-61a9211e-5981-4b88-89b6-fdb0167aa1de",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "content": null,
+        "refusal": null,
+        "tool_calls": [
+          {
+            "id": "call-6f284e46-cd28-4b10-89f1-0a7697f5a8cc",
+            "type": "function",
+            "function": {
+              "name": "propor_movimentacao",
+              "arguments": "{\"valor\":\"500\",\"destino\":\"INV9\"}"
+            }
+          }
+        ],
+        "role": "assistant",
+        "reasoning_content": "We need propose movement. Destination INV9, value 500."
+      },
+      "finish_reason": "tool_calls",
+      "logprobs": null
+    }
+  ],
+  "created": 1793203660,
+  "model": "minimaxai/minimax-m3.1-flash",
+  "object": "chat.completion",
+  "usage": {
+    "prompt_tokens": 5016,
+    "completion_tokens": 58,
+    "total_tokens": 5074,
+    "prompt_tokens_details": {
+      "cached_tokens": 4992
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 14
+    }
+  }
+}

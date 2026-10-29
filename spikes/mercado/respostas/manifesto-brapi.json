@@ -1,0 +1,17 @@
+{
+  "chamadas": 0,
+  "ticker_escolhido": null,
+  "registros": [
+    {
+      "fonte": "brapi",
+      "erro": "chave ausente",
+      "tickers_nao_testados": [
+        "PETR4",
+        "VALE3",
+        "ITUB4",
+        "MGLU3",
+        "BOVA11"
+      ]
+    }
+  ]
+}

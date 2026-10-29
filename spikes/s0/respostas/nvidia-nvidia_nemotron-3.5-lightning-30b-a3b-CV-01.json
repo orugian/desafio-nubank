@@ -1,0 +1,45 @@
+{
+  "id": "chatcmpl-1be4f671-4d40-4f74-866c-1172319dd254",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call-3196b9cc-89d0-47d7-abb3-145516190183",
+            "type": "function",
+            "function": {
+              "name": "propor_movimentacao",
+              "arguments": "{\"valor\":\"500\",\"destino\":\"INV9\"}"
+            }
+          }
+        ],
+        "role": "assistant",
+        "reasoning_content": null
+      },
+      "finish_reason": "tool_calls",
+      "logprobs": null
+    }
+  ],
+  "created": 1793202384,
+  "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+  "service_tier": null,
+  "system_fingerprint": null,
+  "object": "chat.completion",
+  "usage": {
+    "prompt_tokens": 5515,
+    "completion_tokens": 45,
+    "total_tokens": 5560,
+    "prompt_tokens_details": {
+      "audio_tokens": null,
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": null,
+      "audio_tokens": null,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": null
+    }
+  }
+}

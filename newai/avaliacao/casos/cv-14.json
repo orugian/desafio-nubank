@@ -1,0 +1,21 @@
+{
+  "id": "CV-14",
+  "persona": "p3",
+  "mensagens": [
+    "Inclui também a compra de R$ 480 do supermercado."
+  ],
+  "esperado": {
+    "ferramentas": [
+      {
+        "nome": "consultar_cartao"
+      }
+    ],
+    "oraculo": "CR-15a-triagem",
+    "texto_contem": [
+      "05/11",
+      "480"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": true
+}

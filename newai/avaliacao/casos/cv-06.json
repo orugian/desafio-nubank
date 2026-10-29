@@ -1,0 +1,20 @@
+{
+  "id": "CV-06",
+  "persona": "p1",
+  "mensagens": [
+    "Quanto meus investimentos renderam?"
+  ],
+  "esperado": {
+    "ferramentas": [
+      {
+        "nome": "consultar_investimentos"
+      }
+    ],
+    "oraculo": "CR-06-rendimento",
+    "texto_contem": [
+      "bruto"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": false
+}

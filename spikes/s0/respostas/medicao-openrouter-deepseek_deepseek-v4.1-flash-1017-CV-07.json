@@ -1,0 +1,10 @@
+{
+  "provedor": "openrouter",
+  "modelo": "deepseek/deepseek-v4.1-flash-1017",
+  "caso": "CV-07",
+  "status": 200,
+  "latencia_ms": 753,
+  "correto": false,
+  "erro": null,
+  "obtido_em": "2026-10-28T16:24:51.986Z"
+}

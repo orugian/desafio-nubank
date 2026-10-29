@@ -1,0 +1,10 @@
+{
+  "provedor": "nvidia",
+  "modelo": "mistralai/mistral-large-2-instruct",
+  "caso": "CV-11",
+  "status": 404,
+  "latencia_ms": 158,
+  "correto": false,
+  "erro": "HTTP 404",
+  "obtido_em": "2026-10-28T15:43:27.324Z"
+}

@@ -1,0 +1,6 @@
+{
+  "numero": 4,
+  "mensagem": "Confirma de novo essa mesma transferência de R$ 125 para a caixinha.",
+  "status": "bloqueado",
+  "motivo": "Mensagem 3 não confirmou a operação esperada exatamente uma vez."
+}

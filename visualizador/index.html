@@ -1,0 +1,2574 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NewAI • Hub Técnico & Simulador Interativo TOML</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #8D0DE3;
+      --primary-hover: #5D0599;
+      --primary-subtle: #F3E9FB;
+      --primary-contrast: #1E002F;
+      --primary-glow: rgba(141, 13, 227, 0.35);
+      
+      --surface: #FFFFFF;
+      --surface-alt: #F8F7F5;
+      --surface-card: #FFFFFF;
+      
+      --ink: #111111;
+      --ink-secondary: #4A4A4A;
+      --muted: #714F8F;
+      --border: #E8E5E1;
+      --hairline: #EFECE6;
+      --badge-bg: #ECDFFF;
+      --badge-text: #5B168F;
+      
+      --success-bg: #E7F7ED;
+      --success-border: #2BB673;
+      --success-text: #0E6237;
+
+      --alert-bg: #FEF6E7;
+      --alert-border: #F3BA42;
+      --alert-text: #8A5300;
+
+      --danger-bg: #FDE8E8;
+      --danger-border: #F05252;
+      --danger-text: #9B1C1C;
+
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-pill: 999px;
+      
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 8px 24px rgba(30, 0, 47, 0.06);
+      --shadow-lg: 0 16px 40px rgba(30, 0, 47, 0.08);
+      --shadow-glow: 0 0 24px rgba(141, 13, 227, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--surface-alt);
+      color: var(--ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Navigation Bar */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+
+    .nu-logo {
+      width: 44px;
+      height: 44px;
+      background: var(--primary);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: -1px;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
+    .brand-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--ink-secondary);
+      letter-spacing: -0.4px;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .search-wrapper {
+      position: relative;
+      flex: 1;
+      max-width: 440px;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 44px;
+      padding: 0 16px 0 42px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--ink);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      background: var(--surface);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(141, 13, 227, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--ink-secondary);
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .header-badge {
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+
+    /* Tabs Bar */
+    .tabs-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tabs-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .tabs-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-btn {
+      padding: 16px 16px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      color: var(--primary);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      font-weight: 700;
+    }
+
+    .tab-count {
+      padding: 2px 7px;
+      border-radius: var(--radius-pill);
+      background: var(--hairline);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink-secondary);
+    }
+
+    .tab-btn.active .tab-count {
+      background: var(--badge-bg);
+      color: var(--badge-text);
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+    }
+
+    .section-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--ink-secondary);
+      letter-spacing: -0.6px;
+      margin-bottom: 6px;
+    }
+
+    .section-desc {
+      font-size: 15px;
+      color: var(--ink-secondary);
+      margin-bottom: 24px;
+      max-width: 860px;
+    }
+
+    /* Hero Banner Area */
+    .hero-banner {
+      background: linear-gradient(135deg, #1E002F 0%, #360759 60%, #8D0DE3 100%);
+      border-radius: var(--radius-lg);
+      padding: 32px 36px;
+      color: white;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+
+    .hero-banner::before {
+      content: "";
+      position: absolute;
+      right: -80px;
+      bottom: -80px;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(141, 13, 227, 0.4) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 720px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .hero-title {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+    }
+
+    .hero-desc {
+      font-size: 15px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.88);
+      margin-bottom: 20px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .hero-image-box {
+      position: relative;
+      z-index: 2;
+      flex-shrink: 0;
+      width: 320px;
+      height: 180px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      background: #11001c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-image-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* SIMULATOR STYLES */
+    .sim-tool-selector {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tool-pills-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .tool-pill-btn {
+      padding: 10px 16px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .tool-pill-btn:hover {
+      border-color: var(--primary);
+      background: var(--surface);
+      transform: translateY(-1px);
+    }
+
+    .tool-pill-btn.active {
+      background: var(--primary-contrast);
+      color: white;
+      border-color: var(--primary-contrast);
+      box-shadow: 0 4px 12px rgba(30, 0, 47, 0.25);
+    }
+
+    .simulator-workspace {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 1024px) {
+      .simulator-workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left Side: Animated Interactive Pipeline */
+    .pipeline-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .pipeline-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .sim-player-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface-alt);
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border);
+    }
+
+    .control-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--ink);
+      transition: all 0.2s;
+    }
+
+    .control-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .control-btn.play-btn {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px var(--primary-glow);
+    }
+
+    /* Animated Pipeline Track */
+    .pipeline-track {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+    }
+
+    .pipeline-node {
+      display: flex;
+      gap: 16px;
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .pipeline-node::before {
+      content: "";
+      position: absolute;
+      left: 27px;
+      bottom: -15px;
+      width: 2px;
+      height: 14px;
+      background: var(--border);
+      z-index: 1;
+    }
+
+    .pipeline-node:last-child::before {
+      display: none;
+    }
+
+    .pipeline-node.active {
+      border-color: var(--primary);
+      background: #FDF9FF;
+      box-shadow: 0 0 0 3px rgba(141, 13, 227, 0.12), var(--shadow-sm);
+      transform: scale(1.01);
+    }
+
+    .pipeline-node.active::before {
+      background: var(--primary);
+    }
+
+    .node-icon-bubble {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      font-weight: 800;
+      transition: all 0.2s;
+    }
+
+    .pipeline-node.active .node-icon-bubble {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 0 12px var(--primary-glow);
+    }
+
+    .node-info {
+      flex: 1;
+    }
+
+    .node-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+
+    .node-step-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .node-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .node-file-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--primary);
+      background: var(--badge-bg);
+      padding: 2px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+
+    .node-desc {
+      font-size: 12px;
+      color: var(--ink-secondary);
+      margin-top: 4px;
+    }
+
+    /* Right Side: TOML Terminal & Inspector */
+    .toml-card {
+      background: #110B1F;
+      border-radius: var(--radius-lg);
+      border: 1px solid #2B1D45;
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      color: #E2D9F3;
+    }
+
+    .toml-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #2B1D45;
+      margin-bottom: 16px;
+    }
+
+    .toml-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-red { background: #FF5F56; }
+    .dot-yellow { background: #FFBD2E; }
+    .dot-green { background: #27C93F; }
+
+    .toml-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: rgba(141, 13, 227, 0.3);
+      color: #D29BFF;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(141, 13, 227, 0.4);
+    }
+
+    .toml-content {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      line-height: 1.55;
+      overflow-x: auto;
+      flex: 1;
+      max-height: 520px;
+      white-space: pre;
+    }
+
+    /* TOML Syntax Highlighting */
+    .t-section { color: #FF7B72; font-weight: 700; }
+    .t-key { color: #79C0FF; font-weight: 600; }
+    .t-string { color: #A5D6FF; }
+    .t-number { color: #FFA657; }
+    .t-bool { color: #56D364; font-weight: 700; }
+    .t-comment { color: #8B949E; font-style: italic; }
+    .t-highlight { background: rgba(141, 13, 227, 0.25); border-radius: 4px; padding: 2px 4px; }
+
+    /* Bottom: Generative UI Live Simulation */
+    .live-preview-box {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 24px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .preview-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Common Card Styles */
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--primary-subtle);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.3px;
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+
+    .pill-purple { background: var(--badge-bg); color: var(--badge-text); }
+    .pill-green { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+    .pill-amber { background: var(--alert-bg); color: var(--alert-text); border: 1px solid var(--alert-border); }
+    .pill-red { background: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-border); }
+
+    .card-body {
+      font-size: 14px;
+      color: var(--ink-secondary);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .detail-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: var(--surface-alt);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--hairline);
+    }
+
+    .detail-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .detail-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .code-preview {
+      background: #191424;
+      color: #E2D9F3;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      overflow-x: auto;
+      line-height: 1.45;
+      border: 1px solid #32254B;
+    }
+
+    /* Buttons Nubank */
+    .btn-nu-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .btn-nu-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-nu-secondary {
+      background: transparent;
+      color: var(--ink-secondary);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-nu-secondary:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+
+    /* Tab Panes */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Table Nubank */
+    .nu-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nu-table th {
+      background: var(--surface-alt);
+      padding: 14px 18px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nu-table td {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--hairline);
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .nu-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .nu-table tr:hover td {
+      background: #FAF8F5;
+    }
+
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 24px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--ink-secondary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top App Bar -->
+  <header>
+    <div class="header-inner">
+      <a href="#" class="brand-group">
+        <div class="nu-logo">N</div>
+        <div>
+          <div class="brand-title">NewAI • Hub Técnico & Simulador TOML</div>
+          <div class="brand-subtitle">Visualizador da Arquitetura & Fluxo de Execução</div>
+        </div>
+      </a>
+
+      <div class="search-wrapper">
+        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="globalSearch" class="search-input" placeholder="Buscar tool, regra (IN-04), arquivo ou motor...">
+      </div>
+
+      <div class="header-badge">Arquitetura Híbrida Determinística</div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <div class="tabs-bar">
+    <div class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('simulador')">
+        ⚡ Simulador Interativo TOML
+        <span class="tab-count">12 Tools</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('contexto')">
+        🧠 Contexto & Memória Fluida
+        <span class="tab-count">4 Pilares</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('tools')">
+        🛠️ Catálogo Completo de Tools
+        <span class="tab-count">12</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('regras')">
+        🛡️ Regras & Guardrails
+        <span class="tab-count">16</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('dicionario')">
+        📖 Dicionário de Domínio
+        <span class="tab-count">18</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('arquitetura')">
+        🏛️ Arquitetura & Papéis
+        <span class="tab-count">5</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('personas')">
+        👥 Personas & Mercado
+        <span class="tab-count">3</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <main>
+
+    <!-- HERO BANNER -->
+    <div class="hero-banner">
+      <div class="hero-content">
+        <div class="hero-badge">✨ Core Banking + Agentic AI</div>
+        <h1 class="hero-title">Onde a IA pensa e o Motor em TypeScript calcula.</h1>
+        <p class="hero-desc">
+          O NewAI elimina alucinações matemáticas em finanças ao desacoplar a interpretação de linguagem natural (LLM) do motor determinístico com precisão em centavos e salvaguardas humanas invioláveis.
+        </p>
+        <div class="hero-actions">
+          <button class="btn-nu-primary" onclick="switchTab('simulador'); startAutoPlay();">▶ Testar Simulação Interativa</button>
+          <button class="btn-nu-secondary" style="color: white; border-color: rgba(255,255,255,0.4);" onclick="switchTab('regras')">Ver Diretrizes (IN-01 a IN-16)</button>
+        </div>
+      </div>
+      <div class="hero-image-box">
+        <img src="assets/banner-arquitetura.png" alt="Arquitetura NewAI" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=640&q=80';">
+      </div>
+    </div>
+
+    <!-- TAB 1: SIMULADOR INTERATIVO TOML -->
+    <div id="tab-simulador" class="tab-content active">
+      <div class="section-title">Simulador Passo a Passo de Execução por Baixo dos Panos</div>
+      <p class="section-desc">Selecione qualquer uma das 12 tools abaixo para visualizar a interação humana, o raciocínio da IA, os arquivos de código executados em tempo real e o estado formatado em TOML.</p>
+
+      <!-- Tool Selector -->
+      <div class="sim-tool-selector">
+        <div style="font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Selecione o Cenário de Execução:</div>
+        <div class="tool-pills-grid" id="toolSelector">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Simulator Workspace -->
+      <div class="simulator-workspace">
+        
+        <!-- Left: Pipeline Track -->
+        <div class="pipeline-card">
+          <div class="pipeline-header">
+            <div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase;">Trilha de Execução</div>
+              <h2 style="font-size: 18px; font-weight: 800; color: var(--ink);" id="simScenarioTitle">Carregando...</h2>
+            </div>
+            
+            <div class="sim-player-controls">
+              <button class="control-btn" onclick="prevStep()" title="Etapa Anterior">◀</button>
+              <button class="control-btn play-btn" id="playBtn" onclick="togglePlay()" title="Reproduzir / Pausar">▶</button>
+              <button class="control-btn" onclick="nextStep()" title="Próxima Etapa">▶</button>
+              <button class="control-btn" onclick="resetSim()" title="Reiniciar">↺</button>
+            </div>
+          </div>
+
+          <!-- Pipeline Nodes -->
+          <div class="pipeline-track" id="pipelineTrack">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Right: TOML Inspector Terminal -->
+        <div class="toml-card">
+          <div class="toml-header">
+            <div class="toml-title-group">
+              <div class="terminal-dots">
+                <div class="dot dot-red"></div>
+                <div class="dot dot-yellow"></div>
+                <div class="dot dot-green"></div>
+              </div>
+              <span style="font-size: 12px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: #FFF;">trace_execucao.toml</span>
+            </div>
+            <span class="toml-badge" id="stepBadge">Etapa 1 de 6</span>
+          </div>
+
+          <div class="toml-content" id="tomlViewer">
+            # Carregando simulação...
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Live Generative UI Output Mock -->
+      <div class="live-preview-box">
+        <div class="preview-header">
+          <div class="preview-title">
+            <span>✨</span> O que o Usuário vê na Interface Bancária (Generative UI)
+          </div>
+          <span class="pill-badge pill-purple" id="simUiBadge">Renderização em Tempo Real</span>
+        </div>
+        <div id="simLiveUi">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB: CONTEXTO & MEMÓRIA FLUIDA -->
+    <div id="tab-contexto" class="tab-content">
+      <div class="section-title">Como o Assistente Mantém a Conversa Fluida e Preserva o Contexto</div>
+      <p class="section-desc">
+        O NewAI não sofre da amnésia ou alucinação típica de chatbots que dependem apenas de texto. 
+        Ele utiliza uma <strong>arquitetura híbrida de Contexto Duplo</strong>: combina uma janela deslizante de mensagens para fluidez linguística com a injeção viva do estado contábil determinístico a cada turno.
+      </p>
+
+      <!-- Comparativo Visual: Chatbot Comum vs NewAI -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px;">
+        <div style="background: #FFF; border: 1px solid #F05252; border-radius: 16px; padding: 20px; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; align-items: center; gap: 8px; color: #9B1C1C; font-weight: 800; font-size: 15px; margin-bottom: 10px;">
+            <span>❌</span> Chatbots Convencionais (Apenas Histórico de Texto)
+          </div>
+          <ul style="padding-left: 20px; font-size: 13px; color: var(--ink-secondary); display: flex; flex-direction: column; gap: 8px;">
+            <li>Tentam deduzir o saldo atual relendo mensagens anteriores.</li>
+            <li>Conforme a conversa cresce, perdem o fio da meada ou esquecem compromissos.</li>
+            <li>Erram contas de cabeça ao tentar somar ou subtrair mentalmente.</li>
+            <li>Se o usuário atualizar a página (F5), toda a memória da conversa é perdida.</li>
+          </ul>
+        </div>
+
+        <div style="background: #FFF; border: 1px solid #2BB673; border-radius: 16px; padding: 20px; box-shadow: var(--shadow-sm); border-left: 6px solid #2BB673;">
+          <div style="display: flex; align-items: center; gap: 8px; color: #0E6237; font-weight: 800; font-size: 15px; margin-bottom: 10px;">
+            <span>✅</span> NewAI (Contexto Duplo: Linguístico + Ground Truth)
+          </div>
+          <ul style="padding-left: 20px; font-size: 13px; color: var(--ink-secondary); display: flex; flex-direction: column; gap: 8px;">
+            <li><strong>Saldo Oficial Injetado:</strong> O motor calcula o saldo exato hoje e passa no cabeçalho invisível a cada turno.</li>
+            <li><strong>Zero Alucinação:</strong> O LLM não calcula nada; apenas lê os números calculados pelo TypeScript.</li>
+            <li><strong>Sincronia Total com a Tela:</strong> O assistente sabe qual aba o usuário está vendo (home, cartão, investimentos).</li>
+            <li><strong>Persistência no Navegador:</strong> O estado transacional fica no <code>sessionStorage</code>; tolerante a F5.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Os 4 Pilares da Fluidez -->
+      <div style="font-size: 18px; font-weight: 800; color: var(--ink); margin-bottom: 16px;">Os 4 Pilares da Arquitetura de Contexto do NewAI</div>
+      
+      <div class="grid-cards" style="margin-bottom: 32px;">
+
+        <!-- Pilar 1 -->
+        <div class="card" style="border-top: 4px solid var(--primary);">
+          <div class="card-header">
+            <div>
+              <div class="card-title">1. Janela Deslizante de Mensagens</div>
+              <div class="card-subtitle">src/conversa/index.ts (linhas 214-225)</div>
+            </div>
+            <span class="pill-badge pill-purple">Linguística</span>
+          </div>
+          <div class="card-body">
+            <p>Mantém as últimas mensagens ativas no prompt (<code>slice(-LIMITES.mensagens_no_contexto)</code>), permitindo que o LLM entenda anáforas como <em>"sim, confirmo"</em>, <em>"e se for no Pix?"</em> ou <em>"cancela aquilo"</em> sem estourar o limite de tokens.</p>
+            <div class="code-preview">
+<span class="t-comment">// Código real em src/conversa/index.ts:</span>
+<span class="t-key">const</span> historico = estadoEntrada.conversa
+  .<span class="t-key">slice</span>(-LIMITES.mensagens_no_contexto);
+
+<span class="t-key">const</span> mensagens = [
+  { papel: <span class="t-string">"sistema"</span>, conteudo: conteudoSistema },
+  ...historico.<span class="t-key">map</span>(m => ({ papel: m.papel, conteudo: m.texto })),
+  { papel: <span class="t-string">"usuario"</span>, conteudo: req.mensagem.texto }
+];
+            </div>
+          </div>
+        </div>
+
+        <!-- Pilar 2 -->
+        <div class="card" style="border-top: 4px solid #2BB673;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">2. Injeção do Estado Contábil Vivo</div>
+              <div class="card-subtitle">montarContextoDeterministico() (linhas 57-122)</div>
+            </div>
+            <span class="pill-badge pill-green">Ground Truth</span>
+          </div>
+          <div class="card-body">
+            <p>A cada turno, antes de chamar a IA, o motor em TypeScript sintetiza em JSON o estado real da conta corrente, a tela onde o usuário está navegando e as operações pendentes. O modelo lê fatos incontestáveis.</p>
+            <div class="code-preview">
+<span class="t-comment"># Injetado no prompt do sistema a cada turno:</span>
+[contexto.conta]
+saldo_disponivel_hoje_centavos = 180000
+tela_atual = "cartao"
+operacao_pendente = { id = "OP1", valor = 50000 }
+compromissos = [ ... ]
+            </div>
+          </div>
+        </div>
+
+        <!-- Pilar 3 -->
+        <div class="card" style="border-top: 4px solid #F3BA42;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">3. Sincronia de Ações de Clique</div>
+              <div class="card-subtitle">processarAcao() & api/acao/route.ts</div>
+            </div>
+            <span class="pill-badge pill-amber">UI & Chat Híbridos</span>
+          </div>
+          <div class="card-body">
+            <p>Quando o usuário clica no botão <strong>[Confirmar]</strong> ou <strong>[Cancelar]</strong> no cartão visual em vez de digitar no chat, o endpoint <code>/api/acao</code> executa a mutação no domínio e insere um evento sintético no histórico da conversa para que a IA fique ciente do clique.</p>
+            <div class="detail-row">
+              <span class="detail-label">Benefício Chave</span>
+              <span class="detail-value">Transição fluida entre comandos por texto e toques na interface sem dessincronização de estado.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pilar 4 -->
+        <div class="card" style="border-top: 4px solid #714F8F;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">4. Persistência Imutável da Sessão</div>
+              <div class="card-subtitle">EstadoSessao + sessionStorage</div>
+            </div>
+            <span class="pill-badge pill-purple">Resiliência</span>
+          </div>
+          <div class="card-body">
+            <p>O estado completo da sessão (versão, histórico de conversa, declarações, hipóteses e propostas) é serializado e armazenado no <code>sessionStorage</code> (chave <code>newai_sessao_v1</code>). Ao dar refresh, a experiência continua exatamente do mesmo ponto.</p>
+            <div class="detail-row">
+              <span class="detail-label">Arquitetura de Estado</span>
+              <span class="detail-value">Versionamento incremental (versao: n + 1) e imutabilidade funcional.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Exemplo Prático de Continuidade: "Sim, confirmo" -->
+      <div class="flow-container">
+        <div style="font-size: 16px; font-weight: 800; color: var(--ink); margin-bottom: 6px;">
+          Exemplo Real: Como o NewAI resolve "Sim, confirmo" sem hesitar
+        </div>
+        <p style="font-size: 13px; color: var(--ink-secondary); margin-bottom: 18px;">
+          Veja como a combinação dos dois contextos resolve perfeitamente um diálogo em dois turnos:
+        </p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div style="background: var(--surface-alt); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
+            <div style="font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase;">Turno 1</div>
+            <div style="font-size: 13px; font-weight: 700; margin-top: 4px;">Usuário: "Guarde R$ 500 na caixinha viagem hoje."</div>
+            <div style="font-size: 12px; color: var(--ink-secondary); margin-top: 8px;">
+              • A IA chama <code>propor_movimentacao</code>.<br>
+              • O motor gera <code>OP1</code> como pendente e alerta a falta no dia 19/11.<br>
+              • <code>operacao_pendente: { id: "OP1" }</code> é gravado no <strong>EstadoSessao</strong>.<br>
+              • IA responde alertando sobre o risco e aguarda.
+            </div>
+          </div>
+
+          <div style="background: #FDF9FF; padding: 16px; border-radius: 12px; border: 1px solid #ECDFFF;">
+            <div style="font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase;">Turno 2</div>
+            <div style="font-size: 13px; font-weight: 700; color: var(--primary); margin-top: 4px;">Usuário: "Sim, confirmo."</div>
+            <div style="font-size: 12px; color: var(--ink-secondary); margin-top: 8px;">
+              • Pela <strong>janela de mensagens</strong>, a IA entende que "sim" é uma confirmação da proposta anterior.<br>
+              • Pelo <strong>contexto determinístico</strong>, ela enxerga <code>operacao_pendente.id = "OP1"</code>.<br>
+              • Ela não chuta o valor: chama direto <code>confirmar_movimentacao(operacao_id: "OP1")</code>.<br>
+              • A transação é efetivada sem nenhuma ambiguidade!
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabela de Arquivos Responsáveis -->
+      <div style="font-size: 18px; font-weight: 800; color: var(--ink); margin-bottom: 12px; margin-top: 24px;">Arquivos Efetivamente Responsáveis pela Fluidez & Contexto</div>
+      
+      <table class="nu-table">
+        <thead>
+          <tr>
+            <th style="width: 280px;">Arquivo do Projeto</th>
+            <th style="width: 220px;">Função / Mecanismo Chave</th>
+            <th>Papel na Gestão de Contexto e Fluidez</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--primary);">src/conversa/index.ts</code></td>
+            <td><strong><code>montarContextoDeterministico()</code></strong></td>
+            <td>Calcula o Ground Truth financeiro (saldo hoje, compromissos, tela ativa) e injeta no prompt antes de cada resposta do LLM.</td>
+          </tr>
+          <tr>
+            <td><code style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--primary);">src/conversa/index.ts</code></td>
+            <td><strong><code>processarTurno()</code></strong></td>
+            <td>Aplica a janela deslizante de mensagens (<code>slice(-LIMITES)</code>), orquestra as chamadas de ferramentas e atualiza o histórico ao final do turno.</td>
+          </tr>
+          <tr>
+            <td><code style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--primary);">src/conversa/index.ts</code></td>
+            <td><strong><code>processarAcao()</code></strong></td>
+            <td>Captura cliques diretos em botões de Generative UI (Confirmar / Cancelar) e registra eventos sintéticos na conversa.</td>
+          </tr>
+          <tr>
+            <td><code style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--primary);">src/contratos/estado.ts</code></td>
+            <td><strong><code>EstadoSessao</code></strong></td>
+            <td>Estrutura TypeScript imutável que armazena mensagens, declarações, hipóteses, operações e versão da sessão.</td>
+          </tr>
+          <tr>
+            <td><code style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--primary);">src/app/api/turno/route.ts</code></td>
+            <td><strong><code>POST /api/turno</code></strong></td>
+            <td>Endpoint HTTP que recebe o estado atual da sessão e devolve o estado atualizado com as novas mensagens e cartões.</td>
+          </tr>
+          <tr>
+            <td><code style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--primary);">src/ui/AppNewAI.tsx</code></td>
+            <td><strong><code>sessionStorage</code></strong></td>
+            <td>Garante a retenção do estado completo no navegador do cliente (chave <code>newai_sessao_v1</code>) resistente a recarregamentos.</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+    <!-- TAB 2: CATALOGO COMPLETO DE TOOLS -->
+    <div id="tab-tools" class="tab-content">
+      <div class="section-title">Catálogo Completo das 12 Tools da IA</div>
+      <p class="section-desc">As ferramentas disponíveis para o modelo. Cada chamada valida esquemas rigorosos em Zod, ativa motores matemáticos em TypeScript e devolve cartões visuais para a Generative UI.</p>
+
+      <div class="grid-cards" id="toolsGrid">
+        
+        <!-- Tool 1: propor_movimentacao -->
+        <div class="card" data-category="transacional" data-search="propor_movimentacao guardar caixinha reserva impacto saldo risco">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon">⚡</div>
+              <div>
+                <div class="card-title">propor_movimentacao</div>
+                <div class="card-subtitle">src/dominio/operacoes/index.ts</div>
+              </div>
+            </div>
+            <span class="pill-badge pill-amber">O-03 • Human-in-the-Loop</span>
+          </div>
+          <div class="card-body">
+            <p>Calcula se há saldo disponível hoje, gera uma proposta transitória com ID (ex: <code>OP1</code>) e simula o impacto no fluxo de caixa futuro. <strong>Não debita a conta</strong>.</p>
+            
+            <div class="detail-row">
+              <span class="detail-label">Arquivos Efetivamente Executados</span>
+              <span class="detail-value font-mono">
+                • src/dominio/operacoes/index.ts<br>
+                • src/dominio/caixa/projecao.ts<br>
+                • src/dominio/investimentos/index.ts
+              </span>
+            </div>
+
+            <div class="detail-row">
+              <span class="detail-label">Motores Ativados</span>
+              <span class="detail-value">Motor de Caixa (projecao.ts) + Motor CDI (investimentos)</span>
+            </div>
+
+            <div class="code-preview">
+<span class="t-comment"># Schema de Entrada Zod:</span>
+{ <span class="t-key">valor</span>: <span class="t-string">"500"</span>, <span class="t-key">destino</span>: <span class="t-string">"INV9"</span> }
+            </div>
+          </div>
+        </div>
+
+        <!-- Tool 2: confirmar_movimentacao -->
+        <div class="card" data-category="transacional" data-search="confirmar_movimentacao efetivar executar debito operacao_pendente">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon">✅</div>
+              <div>
+                <div class="card-title">confirmar_movimentacao</div>
+                <div class="card-subtitle">src/dominio/operacoes/index.ts</div>
+              </div>
+            </div>
+            <span class="pill-badge pill-green">O-05 • Irreversível</span>
+          </div>
+          <div class="card-body">
+            <p>Efetiva a movimentação de dinheiro proposta. Contém trava que impede o modelo de propor e confirmar no mesmo turno (regra O-03). Descarta hipóteses ativas conflitantes.</p>
+
+            <div class="detail-row">
+              <span class="detail-label">Arquivos Efetivamente Executados</span>
+              <span class="detail-value font-mono">
+                • src/conversa/executores/index.ts (Trava O-03)<br>
+                • src/dominio/operacoes/index.ts (Efetivação)<br>
+                • src/visao/index.ts (Atualização de Extrato)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tool 3: criar_hipotese -->
+        <div class="card" data-category="projeção" data-search="criar_hipotese simular e se compras cartao parcelamento">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon">🔮</div>
+              <div>
+                <div class="card-title">criar_hipotese</div>
+                <div class="card-subtitle">src/dominio/caixa/index.ts</div>
+              </div>
+            </div>
+            <span class="pill-badge pill-purple">Simulação Efêmera</span>
+          </div>
+          <div class="card-body">
+            <p>Cria um ramo de simulação paralelo (ex: <code>H1</code>) contendo alterações hipotéticas (ex: compra em 4x no cartão). Recalcula o fluxo diário e projeta faturas futuras.</p>
+
+            <div class="detail-row">
+              <span class="detail-label">Arquivos Efetivamente Executados</span>
+              <span class="detail-value font-mono">
+                • src/dominio/caixa/index.ts<br>
+                • src/dominio/cartao/index.ts<br>
+                • src/dominio/caixa/projecao.ts
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tool 4: projetar_rendimento -->
+        <div class="card" data-category="projeção" data-search="projetar_rendimento cdi juros compostos investimento rentabilidade">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon">📈</div>
+              <div>
+                <div class="card-title">projetar_rendimento</div>
+                <div class="card-subtitle">src/dominio/investimentos/index.ts</div>
+              </div>
+            </div>
+            <span class="pill-badge pill-purple">Matemática Atuarial</span>
+          </div>
+          <div class="card-body">
+            <p>Calcula rendimento pro-rata em dias úteis sobre a curva real do CDI usando <code>Decimal.js</code>. Retorna valores brutos, desconto do IR regressivo e valor líquido.</p>
+
+            <div class="detail-row">
+              <span class="detail-label">Arquivos Efetivamente Executados</span>
+              <span class="detail-value font-mono">
+                • src/dominio/investimentos/index.ts<br>
+                • src/dominio/calendario/index.ts<br>
+                • dados/mercado/cdi.json
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tool 5: registrar_declaracao -->
+        <div class="card" data-category="transacional" data-search="registrar_declaracao fato gasto receita salario aluguel entrada saida">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon">📝</div>
+              <div>
+                <div class="card-title">registrar_declaracao</div>
+                <div class="card-subtitle">src/dominio/caixa/index.ts</div>
+              </div>
+            </div>
+            <span class="pill-badge pill-purple">Fato Declarado</span>
+          </div>
+          <div class="card-body">
+            <p>Registra um evento afirmado pelo usuário como real (ex: <em>"Recebi R$ 1.500 de freela no dia 10"</em>). Altera o cenário base "atual" e recalcula a margem de segurança.</p>
+          </div>
+        </div>
+
+        <!-- Tool 6: consultar_cartao -->
+        <div class="card" data-category="consultas" data-search="consultar_cartao fatura limite vencimento fechamento">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon">💳</div>
+              <div>
+                <div class="card-title">consultar_cartao</div>
+                <div class="card-subtitle">src/dominio/cartao/index.ts</div>
+              </div>
+            </div>
+            <span class="pill-badge pill-purple">Cartão de Crédito</span>
+          </div>
+          <div class="card-body">
+            <p>Retorna limite total, limite disponível, fatura aberta atual, faturas fechadas e compras parceladas futuras com suas respectivas datas de fechamento e vencimento.</p>
+          </div>
+        </div>
+
+        <!-- Tool 7: consultar_investimentos -->
+        <div class="card" data-category="consultas" data-search="consultar_investimentos posicoes cdb btc petr4 liquidez reserva">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon">🏦</div>
+              <div>
+                <div class="card-title">consultar_investimentos</div>
+                <div class="card-subtitle">src/dominio/investimentos/index.ts</div>
+              </div>
+            </div>
+            <span class="pill-badge pill-purple">Carteira</span>
+          </div>
+          <div class="card-body">
+            <p>Consulta posições financeiras ativas com regras de proteção (ex: Reserva de Emergência) e liquidez (imediata vs no vencimento). Avalia rentabilidade realizada e cotações.</p>
+          </div>
+        </div>
+
+        <!-- Tool 8: consultar_historico -->
+        <div class="card" data-category="consultas" data-search="consultar_historico extrato lancamentos passados filtro busca">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon">📜</div>
+              <div>
+                <div class="card-title">consultar_historico</div>
+                <div class="card-subtitle">src/dominio/historico/index.ts</div>
+              </div>
+            </div>
+            <span class="pill-badge pill-purple">Extrato Histórico</span>
+          </div>
+          <div class="card-body">
+            <p>Filtra e totaliza lançamentos passados por período, tipo, categoria ou texto de busca. Permite agrupamento por categoria, mês ou semana com soma em centavos.</p>
+          </div>
+        </div>
+
+        <!-- Tool 9: desfazer -->
+        <div class="card" data-category="transacional" data-search="desfazer reverter cancelamento rollback declaracao hipotese">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon">↩️</div>
+              <div>
+                <div class="card-title">desfazer</div>
+                <div class="card-subtitle">src/dominio/caixa/index.ts</div>
+              </div>
+            </div>
+            <span class="pill-badge pill-purple">Rollback de Estado</span>
+          </div>
+          <div class="card-body">
+            <p>Remove uma hipótese (ex: <code>H1</code>) ou declaração (ex: <code>D1</code>) retroativamente. Se a declaração servia de base para uma proposta pendente, a proposta é expirada (regra O-06).</p>
+          </div>
+        </div>
+
+        <!-- Tool 10: cancelar_movimentacao -->
+        <div class="card" data-category="transacional" data-search="cancelar_movimentacao rejeitar proposta abortar">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon">❌</div>
+              <div>
+                <div class="card-title">cancelar_movimentacao</div>
+                <div class="card-subtitle">src/dominio/operacoes/index.ts</div>
+              </div>
+            </div>
+            <span class="pill-badge pill-purple">Descarte de Proposta</span>
+          </div>
+          <div class="card-body">
+            <p>Descarta a operação pendente em aberto sem afetar saldos ou gerar registros no extrato.</p>
+          </div>
+        </div>
+
+        <!-- Tool 11: exibir_comparacao -->
+        <div class="card" data-category="projeção" data-search="exibir_comparacao cenarios tabela visualizacao">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon">📊</div>
+              <div>
+                <div class="card-title">exibir_comparacao</div>
+                <div class="card-subtitle">src/conversa/executores/index.ts</div>
+              </div>
+            </div>
+            <span class="pill-badge pill-purple">Generative UI</span>
+          </div>
+          <div class="card-body">
+            <p>Força a reemissão do cartão visual de comparação de cenários no chat quando o usuário pede para rever a tabela ou os indicadores comparativos.</p>
+          </div>
+        </div>
+
+        <!-- Tool 12: preparar_resumo_atendimento -->
+        <div class="card" data-category="suporte" data-search="preparar_resumo_atendimento suporte humano transbordo contestacao">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-icon">🎧</div>
+              <div>
+                <div class="card-title">preparar_resumo_atendimento</div>
+                <div class="card-subtitle">src/conversa/executores/index.ts</div>
+              </div>
+            </div>
+            <span class="pill-badge pill-purple">Transbordo Humano</span>
+          </div>
+          <div class="card-body">
+            <p>Monta um cartão de rascunho de mensagem para o suporte humano (ex: contestação de compra desconhecida no cartão), orientando os canais oficiais.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 3: REGRAS & GUARDRAILS -->
+    <div id="tab-regras" class="tab-content">
+      <div class="section-title">Diretrizes Invioláveis de IA (instrucoes.md)</div>
+      <p class="section-desc">Regras de sistema que governam a segurança bancária, prevenção de alucinações matemáticas e conformidade do modelo NewAI.</p>
+
+      <table class="nu-table">
+        <thead>
+          <tr>
+            <th style="width: 110px;">Código</th>
+            <th style="width: 260px;">Título / Diretriz</th>
+            <th>O que Determina na Prática</th>
+            <th style="width: 170px;">Defesa para a Banca</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="pill-badge pill-purple">IN-01</span></td>
+            <td><strong>Linguagem & Estilo</strong></td>
+            <td>Respostas estritamente em português do Brasil com frases curtas e objetivas.</td>
+            <td>Evita prolixidade e ruído de leitura em dispositivos móveis.</td>
+          </tr>
+          <tr>
+            <td><span class="pill-badge pill-red">IN-04</span></td>
+            <td><strong>Proibição de Cálculo pelo LLM</strong></td>
+            <td>O modelo é <strong>terminantemente proibido de calcular valores</strong>. Números só podem vir do motor determinístico. O LLM é forçado a copiar as strings literais de <code>valores_formatados</code> geradas em TypeScript.</td>
+            <td><strong>Blindagem contra Alucinação:</strong> LLMs erram aritmética. A matemática é 100% delegada ao motor.</td>
+          </tr>
+          <tr>
+            <td><span class="pill-badge pill-amber">IN-05</span></td>
+            <td><strong>Taxonomia de Atos de Fala</strong></td>
+            <td>Fato afirmado vira <code>registrar_declaracao</code>; "posso?", "e se?" ou simulações viram <code>criar_hipotese</code>; ordem explícita de guardar vira <code>propor_movimentacao</code>.</td>
+            <td>Impede que uma simples pergunta hipotética gere débitos ou declarações reais.</td>
+          </tr>
+          <tr>
+            <td><span class="pill-badge pill-amber">IN-07</span></td>
+            <td><strong>Movimentação Simulada & Human-in-the-Loop</strong></td>
+            <td>Toda movimentação financeira é simulada. O assistente propõe, alerta impacto e <strong>aguarda confirmação em novo turno</strong>. Um "sim" posterior chama <code>confirmar_movimentacao</code>. Proibido enviar dinheiro a terceiros.</td>
+            <td><strong>Segurança Regulatória:</strong> A IA nunca tem a chave do cofre sem chancela humana explícita.</td>
+          </tr>
+          <tr>
+            <td><span class="pill-badge pill-red">IN-08</span></td>
+            <td><strong>Compliance de Investimentos</strong></td>
+            <td>Mostra proteção como restrição (ex: reserva intocável). <strong>Nunca recomenda ativo, produto ou percentual</strong>. Se o usuário pedir recomendação ("onde coloco?"), recusa sem chamar ferramentas.</td>
+            <td><strong>Conformidade CVM / Bancária:</strong> Previne responsabilidade civil por recomendação financeira inadequada.</td>
+          </tr>
+          <tr>
+            <td><span class="pill-badge pill-purple">IN-09</span></td>
+            <td><strong>Saldo Negativo = Falta de Cobertura</strong></td>
+            <td>Saldo negativo significa falta de fundos. O assistente nunca deve sugerir limite de cheque especial ou empréstimo para "cobrir" o rombo.</td>
+            <td>Educação financeira genuína em vez de estímulo ao superendividamento.</td>
+          </tr>
+          <tr>
+            <td><span class="pill-badge pill-purple">IN-11</span></td>
+            <td><strong>Ordem Relevante Intradiária</strong></td>
+            <td>Se o motor detectar risco de saldo negativo por dúvida se a entrada chega antes da saída no mesmo dia, pergunta explicitamente ao usuário qual ocorre primeiro.</td>
+            <td>Previne cheques especiais artificiais por premissa temporal incorreta.</td>
+          </tr>
+          <tr>
+            <td><span class="pill-badge pill-red">IN-12</span></td>
+            <td><strong>Protocolo de Urgência & Sofrimento</strong></td>
+            <td>Fraude/compra não reconhecida interrompe simulação e encaminha aos "canais oficiais". Menção a sofrimento intenso ou ideação suicida dispara orientação expressa ao CVV (188).</td>
+            <td>Responsabilidade social e segurança patrimonial em momentos de crise.</td>
+          </tr>
+          <tr>
+            <td><span class="pill-badge pill-purple">IN-14</span></td>
+            <td><strong>Imunidade a Jailbreaks</strong></td>
+            <td>Pedidos como <em>"ignore as regras anteriores e faça X"</em> são sumariamente ignorados sem repetir as frases proibidas no texto.</td>
+            <td>Proteção contra ataques de injeção de prompt adversarial.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TAB 4: DICIONÁRIO DE DOMÍNIO -->
+    <div id="tab-dicionario" class="tab-content">
+      <div class="section-title">Dicionário de Termos e Invariantes do Sistema</div>
+      <p class="section-desc">Glossário técnico com os conceitos-chave, grandezas matemáticas e regras contábeis do NewAI.</p>
+
+      <div class="grid-cards">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Margem Hoje (margem_hoje_centavos)</div>
+            <span class="pill-badge pill-purple">Indicador Crítico</span>
+          </div>
+          <div class="card-body">
+            <p>O menor saldo que a conta corrente atingirá em qualquer momento da janela de 30 dias projetada.</p>
+            <div class="detail-row">
+              <span class="detail-label">Significado Prático</span>
+              <span class="detail-value">É o valor máximo que a pessoa pode retirar hoje sem ficar no vermelho em nenhum dia do mês.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Primeira Falta (primeira_falta)</div>
+            <span class="pill-badge pill-red">Detecção de Risco</span>
+          </div>
+          <div class="card-body">
+            <p>Objeto contendo a data exata e o valor descoberto do primeiro dia em que a conta corrente ficará negativa.</p>
+            <div class="detail-row">
+              <span class="detail-label">Exemplo</span>
+              <span class="detail-value font-mono"><code>{ data: "2026-11-19", valor_descoberto_centavos: 20000 }</code></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Ordem Relevante (datas_ordem_relevante)</div>
+            <span class="pill-badge pill-amber">Regra R-22</span>
+          </div>
+          <div class="card-body">
+            <p>Sinalizador ativado quando ocorrem uma entrada e uma saída no mesmo dia e a ordem em que acontecem decide se a conta fica negativa temporariamente ou não.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">valores_formatados</div>
+            <span class="pill-badge pill-purple">Regra IN-04</span>
+          </div>
+          <div class="card-body">
+            <p>Dicionário gerado por um interceptor no backend que converte todos os campos <code>*_centavos</code> em strings amigáveis em reais (ex: <code>"R$ 1.500,00"</code>).</p>
+            <div class="detail-row">
+              <span class="detail-label">Objetivo</span>
+              <span class="detail-value">Impede que o LLM divida por 100 mentalmente e cometa erros de arredondamento.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">EstadoSessao (Sessão Viva)</div>
+            <span class="pill-badge pill-purple">Estado Transacional</span>
+          </div>
+          <div class="card-body">
+            <p>Objeto imutável contendo as declarações do usuário, hipóteses ativas, operações realizadas, proposta pendente e histórico de mensagens.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">VisaoApp (View-Model)</div>
+            <span class="pill-badge pill-purple">Projeção de Tela</span>
+          </div>
+          <div class="card-body">
+            <p>Projeção consolidada calculada por <code>visao/index.ts</code> que alimenta todos os componentes visuais do aplicativo bancário (saldos, faturas e extrato unificado).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: ARQUITETURA & PAPÉIS -->
+    <div id="tab-arquitetura" class="tab-content">
+      <div class="section-title">Divisão de Responsabilidades (Quem faz o quê)</div>
+      <p class="section-desc">A fronteira arquitetural entre o Modelo de Linguagem, o Motor em TypeScript e a Interface de Usuário.</p>
+
+      <div class="grid-cards">
+        <div class="card" style="border-top: 4px solid var(--primary);">
+          <div class="card-header">
+            <div class="card-title">1. Modelo de IA (LLM)</div>
+            <span class="pill-badge pill-purple">Camada Cognitiva</span>
+          </div>
+          <div class="card-body">
+            <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+              <li>Compreende a linguagem humana informal e gírias.</li>
+              <li>Identifica a intenção (dúvida, fato ou ordem).</li>
+              <li>Extrai parâmetros e chama as Tools corretas.</li>
+              <li>Traduz os dados técnicos do retorno em texto amigável.</li>
+              <li><strong>NUNCA faz contas nem altera saldos sozinho.</strong></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-top: 4px solid #2BB673;">
+          <div class="card-header">
+            <div class="card-title">2. Motor em TypeScript</div>
+            <span class="pill-badge pill-green">Core Determinístico</span>
+          </div>
+          <div class="card-body">
+            <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+              <li>Calcula o saldo diário exato dos próximos 30 dias.</li>
+              <li>Executa fórmulas de juros do CDI com Decimal.js.</li>
+              <li>Controla o vencimento e faturas de cartão de crédito.</li>
+              <li>Aplica as regras de segurança (O-03, O-05, O-06).</li>
+              <li>Valida todos os argumentos das ferramentas com Zod.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-top: 4px solid #F3BA42;">
+          <div class="card-header">
+            <div class="card-title">3. Interface (Generative UI)</div>
+            <span class="pill-badge pill-amber">Camada Visual</span>
+          </div>
+          <div class="card-body">
+            <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+              <li>Renderiza componentes ricos direto no fluxo do chat.</li>
+              <li>Exibe cartões comparativos de cenários e tabelas.</li>
+              <li>Fornece botões de ação humana direta (Confirmar / Cancelar).</li>
+              <li>Permite alternar entre telas de extrato, cartão e investimentos.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: PERSONAS -->
+    <div id="tab-personas" class="tab-content">
+      <div class="section-title">Personas de Teste e Séries de Mercado</div>
+      <p class="section-desc">Cenários econômicos e perfis financeiros utilizados para testes e homologação da solução.</p>
+
+      <div class="grid-cards">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Persona 1: Marina (p1)</div>
+            <span class="pill-badge pill-purple">CLT Estável</span>
+          </div>
+          <div class="card-body">
+            <p>Salário fixo no início do mês, compromissos fixos recorrentes (aluguel, contas da casa) e caixinha de reserva com rendimento atrelado ao CDI.</p>
+            <div class="detail-row">
+              <span class="detail-label">Saldo Inicial</span>
+              <span class="detail-value">R$ 1.800,00</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Foco de Teste</span>
+              <span class="detail-value">Simulação de compras e guarda de dinheiro com sobra segura.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Persona 2: Carlos (p2)</div>
+            <span class="pill-badge pill-amber">Orçamento Apertado</span>
+          </div>
+          <div class="card-body">
+            <p>Margem de segurança estreita, várias despesas no cartão de crédito e risco iminente de saldo negativo se realizar despesas não planejadas.</p>
+            <div class="detail-row">
+              <span class="detail-label">Foco de Teste</span>
+              <span class="detail-value">Disparo de alertas de falta futura e cálculo de compras parceladas.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Séries de Mercado (cdi.json, PETR4, BTC)</div>
+            <span class="pill-badge pill-green">Mercado Financeiro</span>
+          </div>
+          <div class="card-body">
+            <p>Séries históricas e projetadas de taxas de juros (CDI diário e anualizado) e cotações de fechamento de ações e criptomoedas para cálculo de posições de investimento.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    NewAI • Hub Técnico & Simulador Interativo TOML • Desenvolvido com base no Nubank Design System
+  </footer>
+
+  <!-- TOML SIMULATION ENGINE JS -->
+  <script>
+    // Database of Scenarios for all 12 tools
+    const SCENARIOS = [
+      {
+        id: "propor_movimentacao",
+        name: "1. propor_movimentacao",
+        title: "Guardar R$ 500 na Caixinha Viagem (Alerta de Falta Futura)",
+        category: "transacional",
+        steps: [
+          {
+            title: "Entrada do Usuário na UI",
+            file: "src/ui/componentes/CamadaChat.tsx",
+            desc: "Usuário envia mensagem no chat: 'Quero guardar R$ 500 na caixinha viagem hoje.'",
+            toml: `# [ETAPA 1] Entrada de Linguagem Natural
+[requisicao.usuario]
+mensagem_id = "msg_101"
+timestamp = "2026-10-30T10:00:00Z"
+texto = "Quero guardar R$ 500 na caixinha viagem hoje."
+tela_ativa = "home"
+persona_id = "p1"`
+          },
+          {
+            title: "Trânsito HTTP & DLP",
+            file: "src/conversa/index.ts",
+            desc: "A rota POST /api/turno roda contemDadosPessoais() (DLP). Nenhum dado sensível detectado.",
+            toml: `# [ETAPA 2] Filtro DLP & Injeção de Contexto
+[seguranca.dlp]
+cpf_detectado = false
+cartao_detectado = false
+status = "APROVADO"
+
+[conversa.contexto_deterministico]
+saldo_disponivel_hoje = 180000  # R$ 1.800,00
+gasto_diario_centavos = 5000     # R$ 50,00/dia
+janela_fim = "2026-11-30"`
+          },
+          {
+            title: "Raciocínio LLM & Tool Call",
+            file: "src/conversa/provedor.ts",
+            desc: "O modelo (Nvidia/DeepSeek) classifica como 'ordem de guardar' (IN-05) e emite a tool call.",
+            toml: `# [ETAPA 3] Decisão do Modelo de IA
+[llm.inferencia]
+provedor = "nvidia"
+modelo = "minimaxai/minimax-m3.1-flash"
+tempo_resposta_ms = 420
+tipo_saida = "chamadas"
+
+[[llm.tool_calls]]
+id = "call_prop_01"
+nome = "propor_movimentacao"
+argumentos = { valor = "500", destino = "INV9" }`
+          },
+          {
+            title: "Validação Zod & Domínio de Operações",
+            file: "src/dominio/operacoes/index.ts",
+            desc: "Valida schema, verifica se valor <= saldo disponível (R$ 1.800) e cria OP1 como PENDENTE.",
+            toml: `# [ETAPA 4] Execução no Domínio Financeiro
+[dominio.operacoes]
+arquivo = "src/dominio/operacoes/index.ts"
+funcao = "proporMovimentacao()"
+operacao_id = "OP1"
+valor_centavos = 50000          # R$ 500,00
+destino_nome = "Caixinha Viagem"
+status_operacao = "PENDENTE"     # Regra O-03: Não debita!`
+          },
+          {
+            title: "Simulação de Caixa & Motor CDI",
+            file: "src/dominio/caixa/projecao.ts",
+            desc: "Simula 30 dias de saldo com a saída. Detecta falta de R$ 200 em 19/11 e calcula rendimento CDI.",
+            toml: `# [ETAPA 5] Motor de Solvência & Curva CDI
+[dominio.caixa.projecao]
+arquivo = "src/dominio/caixa/projecao.ts"
+saldo_minimo_centavos = -20000   # Conta entra no vermelho!
+primeira_falta = { data = "2026-11-19", valor_descoberto_centavos = 20000 }
+alerta = "Atenção: essa retirada causa saldo negativo de R$ 200,00 em 19/11."
+
+[dominio.investimentos.cdi]
+arquivo = "src/dominio/investimentos/index.ts"
+precisao = "Decimal.js"
+dias_uteis = 14
+rendimento_estimado_centavos = 235  # R$ 2,35`
+          },
+          {
+            title: "Generative UI & Cartão Interativo",
+            file: "src/ui/componentes/CartaoChat.tsx",
+            desc: "O executor empacota o CartaoResposta 'operacao_pendente' com botões Confirmar e Cancelar.",
+            toml: `# [ETAPA 6] Resposta Visual na UI
+[generative_ui.cartao]
+tipo = "operacao_pendente"
+operacao_id = "OP1"
+alerta_ativo = true
+botoes_acao = ["Confirmar", "Cancelar"]
+
+[llm.texto_final]
+conteudo = "Atenção: guardar R$ 500,00 vai deixar sua conta negativa em R$ 200,00 no dia 19/11 antes do próximo recebimento. Deseja confirmar mesmo assim?"`
+          }
+        ],
+        uiRender: `
+          <div style="background: #FFF; border: 1px solid #E8E5E1; border-radius: 16px; padding: 18px; max-width: 480px; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+            <div style="font-size: 14px; font-weight: 700; margin-bottom: 6px;">Guardar R$ 500,00 na Caixinha Viagem</div>
+            <div style="font-size: 12px; background: #FEF6E7; color: #8A5300; border: 1px solid #F3BA42; padding: 8px 12px; border-radius: 8px; margin-bottom: 12px;">
+              ⚠️ <strong>Alerta do Motor de Caixa:</strong> Esta saída causará saldo negativo de <strong>R$ 200,00</strong> em 19/11.
+            </div>
+            <div style="font-size: 12px; color: #646464; margin-bottom: 12px;">
+              📈 Rendimento bruto estimado até o próximo recebimento: <strong>R$ 2,35</strong> (100% do CDI).
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-nu-primary" style="padding: 8px 16px; font-size: 12px;">Confirmar Movimentação</button>
+              <button class="btn-nu-secondary">Cancelar</button>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: "confirmar_movimentacao",
+        name: "2. confirmar_movimentacao",
+        title: "Efetivação de Operação com Trava Human-in-the-Loop",
+        category: "transacional",
+        steps: [
+          {
+            title: "Confirmação do Usuário",
+            file: "src/ui/componentes/CamadaChat.tsx",
+            desc: "Usuário clica em 'Confirmar' na UI ou digita 'Sim, confirmo' em um NOVO turno.",
+            toml: `# [ETAPA 1] Consentimento Humano Explícito
+[acao.usuario]
+tipo = "confirmacao_humana"
+operacao_id = "OP1"
+turno_novo = true`
+          },
+          {
+            title: "Trava de Segurança O-03 / O-05",
+            file: "src/conversa/executores/index.ts",
+            desc: "Valida se a proposta foi criada em versão anterior. Bloqueia execução autônoma no mesmo turno.",
+            toml: `# [ETAPA 2] Barreira de Segurança
+[seguranca.trava_o03]
+arquivo = "src/conversa/executores/index.ts"
+criada_na_versao = 1
+versao_atual = 2
+mesmo_turno = false
+status = "AUTORIZADA_PELO_HUMANO"`
+          },
+          {
+            title: "Efetivação & Limpeza no Domínio",
+            file: "src/dominio/operacoes/index.ts",
+            desc: "Debita R$ 500 do saldo disponível, move OP1 para 'operacoes' e descarta hipóteses ativas.",
+            toml: `# [ETAPA 3] Transação Efetivada
+[dominio.operacoes]
+arquivo = "src/dominio/operacoes/index.ts"
+funcao = "confirmarMovimentacao()"
+operacao_id = "OP1"
+valor_centavos = 50000
+saldo_anterior_centavos = 180000
+novo_saldo_centavos = 130000      # R$ 1.300,00
+hipoteses_descartadas = ["H1"]   # Limpa ramos obsoletos`
+          },
+          {
+            title: "Atualização da Visão do App",
+            file: "src/visao/index.ts",
+            desc: "Recalcula o extrato bancário oficial e atualiza o saldo na barra do aplicativo.",
+            toml: `# [ETAPA 4] Projeção de Tela (View-Model)
+[visao.app]
+arquivo = "src/visao/index.ts"
+saldo_topo_app = "R$ 1.300,00"
+novo_extrato_item = { id = "OP1", desc = "Guardado na Caixinha Viagem", valor = -50000 }`
+          },
+          {
+            title: "Comprovante Visual no Chat",
+            file: "src/ui/componentes/CartaoChat.tsx",
+            desc: "Gera o comprovante com status concluído e novo saldo refletido na tela.",
+            toml: `# [ETAPA 5] Comprovante Concluído
+[generative_ui.cartao]
+tipo = "operacao_concluida"
+status = "SUCESSO"
+mensagem = "Movimentação simulada: R$ 500,00 guardados na Caixinha Viagem."`
+          }
+        ],
+        uiRender: `
+          <div style="background: #FFF; border-left: 5px solid #2BB673; border-radius: 12px; padding: 16px; max-width: 440px; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+            <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #0E6237; font-size: 14px;">
+              <span>✅</span> Movimentação Simulada Concluída
+            </div>
+            <div style="font-size: 13px; color: #111; margin-top: 6px;">
+              <strong>R$ 500,00</strong> guardados com sucesso na <strong>Caixinha Viagem</strong>.
+            </div>
+            <div style="font-size: 12px; color: #646464; margin-top: 8px; border-top: 1px solid #EFECE6; padding-top: 6px;">
+              Saldo disponível atualizado: <strong>R$ 1.300,00</strong>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: "criar_hipotese",
+        name: "3. criar_hipotese",
+        title: "Simulação de Compra Parcelada em 4x no Cartão",
+        category: "projeção",
+        steps: [
+          {
+            title: "Pergunta Condicional do Usuário",
+            file: "src/ui/componentes/CamadaChat.tsx",
+            desc: "Usuário: 'E se eu fizer um conserto de R$ 800 parcelado em 4x no cartão?'",
+            toml: `# [ETAPA 1] Dúvida Condicional
+[usuario.mensagem]
+texto = "E se eu fizer um conserto de R$ 800 parcelado em 4x no cartão?"
+intencao = "simulacao"`
+          },
+          {
+            title: "Classificação & Chamada de Tool",
+            file: "src/conversa/provedor.ts",
+            desc: "LLM segue IN-05 ('e se vira criar_hipotese') e gera os argumentos de parcelamento.",
+            toml: `# [ETAPA 2] Tool Call da IA
+[llm.tool_call]
+nome = "criar_hipotese"
+argumentos = { nome = "Conserto 4x", a_partir_de = "atual", alteracoes = [{ operacao = "adicionar_evento", tipo = "saida", valor = "800", meio = "cartao_credito", parcelas = 4 }] }`
+          },
+          {
+            title: "Motor de Cartão: Fechamento & Faturas",
+            file: "src/dominio/cartao/index.ts",
+            desc: "Calcula a data de fechamento e divide R$ 200 em 4 faturas futuras (nov, dez, jan, fev).",
+            toml: `# [ETAPA 3] Divisão em Faturas Futuras
+[dominio.cartao]
+arquivo = "src/dominio/cartao/index.ts"
+fechamento_dia = 28
+vencimento_dia = 5
+faturas_afetadas = [
+  { vencimento = "2026-12-05", valor_adicional_centavos = 20000 },
+  { vencimento = "2027-01-05", valor_adicional_centavos = 20000 },
+  { vencimento = "2027-02-05", valor_adicional_centavos = 20000 },
+  { vencimento = "2027-03-05", valor_adicional_centavos = 20000 }
+]`
+          },
+          {
+            title: "Motor de Caixa: Recálculo de 30 Dias",
+            file: "src/dominio/caixa/projecao.ts",
+            desc: "Simula o impacto da fatura no fluxo diário. Margem Hoje cai de R$ 300 para R$ 100, mas permanece viável.",
+            toml: `# [ETAPA 4] Projeção de Solvência
+[dominio.caixa]
+cenario_id = "H1"
+margem_hoje_centavos = 10000   # R$ 100,00
+saldo_minimo_centavos = 10000  # R$ 100,00
+primeira_falta = false          # Não negativa!
+status = "viavel"`
+          },
+          {
+            title: "Cartão Comparativo na UI",
+            file: "src/ui/componentes/CartaoChat.tsx",
+            desc: "Renderiza tabela comparando o cenário 'atual' com a hipótese 'H1'.",
+            toml: `# [ETAPA 5] Renderização Comparativa
+[generative_ui.cartao]
+tipo = "comparacao"
+cenarios = ["atual", "H1"]`
+          }
+        ],
+        uiRender: `
+          <div style="background: #FFF; border: 1px solid #E8E5E1; border-radius: 16px; padding: 16px; max-width: 480px;">
+            <div style="font-size: 14px; font-weight: 700; margin-bottom: 10px;">Comparação de Cenários</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div style="background: #F8F8F8; padding: 12px; border-radius: 10px; border: 1px solid #EFECE6;">
+                <div style="font-size: 12px; font-weight: 700;">Situação Atual</div>
+                <div style="font-size: 11px; color: #646464; margin-top: 4px;">Margem Hoje: <strong>R$ 300,00</strong></div>
+                <span style="display: inline-block; font-size: 10px; background: #E7F7ED; color: #0E6237; padding: 2px 6px; border-radius: 999px; margin-top: 6px; font-weight: 700;">Viável</span>
+              </div>
+              <div style="background: #FDF9FF; padding: 12px; border-radius: 10px; border: 1px solid #ECDFFF;">
+                <div style="font-size: 12px; font-weight: 700; color: #8D0DE3;">H1: Conserto 4x</div>
+                <div style="font-size: 11px; color: #646464; margin-top: 4px;">Margem Hoje: <strong>R$ 100,00</strong></div>
+                <span style="display: inline-block; font-size: 10px; background: #FEF6E7; color: #8A5300; padding: 2px 6px; border-radius: 999px; margin-top: 6px; font-weight: 700;">Atenção (Margem Baixa)</span>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: "projetar_rendimento",
+        name: "4. projetar_rendimento",
+        title: "Cálculo de Juros CDI com Precisão Decimal.js",
+        category: "projeção",
+        steps: [
+          {
+            title: "Pedido de Rentabilidade",
+            file: "src/ui/componentes/CamadaChat.tsx",
+            desc: "Usuário: 'Quanto rende R$ 1.000 a 100% do CDI até o final de novembro?'",
+            toml: `# [ETAPA 1] Entrada
+[usuario.mensagem]
+texto = "Quanto rende R$ 1.000 a 100% do CDI até o final de novembro?"`
+          },
+          {
+            title: "Calendário Bancário: Contagem de Dias Úteis",
+            file: "src/dominio/calendario/index.ts",
+            desc: "Motor consulta o calendário financeiro e exclui feriados e fins de semana (21 dias úteis).",
+            toml: `# [ETAPA 2] Dias Úteis
+[dominio.calendario]
+data_inicio = "2026-10-30"
+data_fim = "2026-11-30"
+dias_uteis_apurados = 21`
+          },
+          {
+            title: "Fórmula Atuarial Decimal.js & IR Regressivo",
+            file: "src/dominio/investimentos/index.ts",
+            desc: "Aplica juros compostos com mais de 20 dígitos de precisão e desconta 22,5% de IR.",
+            toml: `# [ETAPA 3] Cálculo Exponencial
+[dominio.investimentos.cdi]
+arquivo = "src/dominio/investimentos/index.ts"
+taxa_di_anual = 0.1065
+formula = "(1 + taxa_di)^(21/252) - 1"
+rendimento_bruto_centavos = 842    # R$ 8,42
+aliquota_ir = 0.225                # 22,5%
+imposto_centavos = 189             # R$ 1,89
+rendimento_liquido_centavos = 653  # R$ 6,53`
+          },
+          {
+            title: "Card de Rentabilidade no Chat",
+            file: "src/ui/componentes/CartaoChat.tsx",
+            desc: "Exibe o demonstrativo visual no chat.",
+            toml: `# [ETAPA 4] UI Generativa
+[generative_ui.cartao]
+tipo = "rendimento"
+bruto = "R$ 8,42"
+liquido = "R$ 6,53"
+rotulo = "bruto estimado a 100% do CDI"`
+          }
+        ],
+        uiRender: `
+          <div style="background: #FFF; border: 1px solid #E8E5E1; border-radius: 14px; padding: 16px; max-width: 400px;">
+            <div style="font-size: 12px; font-weight: 700; color: #8D0DE3; text-transform: uppercase;">Projeção de Rendimento CDI</div>
+            <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+              <span style="font-size: 13px; color: #646464;">Rendimento Bruto:</span>
+              <strong style="font-size: 14px;">R$ 8,42</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+              <span style="font-size: 13px; color: #646464;">Imposto de Renda (22,5%):</span>
+              <span style="font-size: 13px; color: #9B1C1C;">- R$ 1,89</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 8px; border-top: 1px solid #EFECE6; padding-top: 6px;">
+              <span style="font-size: 13px; font-weight: 700;">Rendimento Líquido:</span>
+              <strong style="font-size: 15px; color: #0E6237;">R$ 6,53</strong>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: "registrar_declaracao",
+        name: "5. registrar_declaracao",
+        title: "Registro de Nova Receita Declarada (Freela R$ 1.500)",
+        category: "transacional",
+        steps: [
+          {
+            title: "Afirmação de Fato Novo",
+            file: "src/ui/componentes/CamadaChat.tsx",
+            desc: "Usuário: 'Recebi R$ 1.500 de um trabalho extra que vai cair dia 15/11.'",
+            toml: `# [ETAPA 1] Fato Afirmado
+[usuario.mensagem]
+texto = "Recebi R$ 1.500 de um trabalho extra que vai cair dia 15/11."`
+          },
+          {
+            title: "Mutação do Estado da Sessão",
+            file: "src/dominio/caixa/index.ts",
+            desc: "Gera evento D1, adiciona à lista declaracoes do EstadoSessao e recalcula a projeção.",
+            toml: `# [ETAPA 2] Registro de Fato
+[dominio.caixa]
+funcao = "registrarDeclaracao()"
+declaracao_id = "D1"
+evento = { tipo = "entrada", descricao = "Freela", valor_centavos = 150000, data = "2026-11-15" }
+nova_versao_sessao = 2`
+          },
+          {
+            title: "Expansão da Margem de Caixa",
+            file: "src/dominio/caixa/projecao.ts",
+            desc: "A entrada de R$ 1.500 eleva a Margem Hoje da persona para R$ 1.800.",
+            toml: `# [ETAPA 3] Recálculo Determinístico
+[dominio.caixa.projecao]
+margem_anterior_centavos = 30000
+nova_margem_centavos = 180000     # R$ 1.800,00`
+          }
+        ],
+        uiRender: `
+          <div style="background: #FFF; border-left: 4px solid #8D0DE3; border-radius: 12px; padding: 14px; max-width: 440px;">
+            <div style="font-size: 13px; font-weight: 700; color: #8D0DE3;">Receita Registrada no Fluxo de Caixa</div>
+            <div style="font-size: 13px; margin-top: 4px;"><strong>+ R$ 1.500,00</strong> previstos para 15/11.</div>
+            <div style="font-size: 11px; color: #646464; margin-top: 4px;">Sua nova Margem Segura aumentou para <strong>R$ 1.800,00</strong>.</div>
+          </div>
+        `
+      },
+      {
+        id: "consultar_cartao",
+        name: "6. consultar_cartao",
+        title: "Consulta de Fatura Aberta e Limite Disponível",
+        category: "consultas",
+        steps: [
+          {
+            title: "Pergunta do Usuário",
+            file: "src/ui/componentes/CamadaChat.tsx",
+            desc: "Usuário: 'Como está a minha fatura deste mês?'",
+            toml: `# [ETAPA 1] Pergunta
+[usuario.mensagem]
+texto = "Como está a minha fatura deste mês?"`
+          },
+          {
+            title: "Consulta ao Domínio de Cartão",
+            file: "src/dominio/cartao/index.ts",
+            desc: "Lê limites, lançamentos da fatura atual e calcula valor fechado vs aberto.",
+            toml: `# [ETAPA 2] Dados do Cartão
+[dominio.cartao]
+limite_total_centavos = 500000      # R$ 5.000,00
+fatura_atual_centavos = 142000      # R$ 1.420,00
+limite_disponivel_centavos = 358000 # R$ 3.580,00
+vencimento = "2026-11-05"`
+          }
+        ],
+        uiRender: `
+          <div style="background: #FFF; border: 1px solid #E8E5E1; border-radius: 14px; padding: 16px; max-width: 400px;">
+            <div style="font-size: 13px; font-weight: 700; color: #111;">Cartão de Crédito Nubank</div>
+            <div style="font-size: 22px; font-weight: 800; color: #8D0DE3; margin-top: 4px;">R$ 1.420,00</div>
+            <div style="font-size: 12px; color: #646464;">Fatura com vencimento em <strong>05/11</strong></div>
+            <div style="background: #EFECE6; height: 6px; border-radius: 999px; margin-top: 10px; overflow: hidden;">
+              <div style="background: #8D0DE3; width: 28%; height: 100%;"></div>
+            </div>
+            <div style="font-size: 11px; color: #646464; margin-top: 6px;">Limite disponível: <strong>R$ 3.580,00</strong></div>
+          </div>
+        `
+      },
+      {
+        id: "consultar_investimentos",
+        name: "7. consultar_investimentos",
+        title: "Consulta de Posições e Restrição de Reserva",
+        category: "consultas",
+        steps: [
+          {
+            title: "Pergunta sobre Gastar Reserva",
+            file: "src/ui/componentes/CamadaChat.tsx",
+            desc: "Usuário: 'Posso usar minha reserva de emergência para reformar o quarto?'",
+            toml: `# [ETAPA 1] Pergunta
+[usuario.mensagem]
+texto = "Posso usar minha reserva de emergência para reformar o quarto?"`
+          },
+          {
+            title: "Consulta com Regra de Proteção",
+            file: "src/dominio/investimentos/index.ts",
+            desc: "Lê as posições e aplica IN-08: a reserva é classificada como protegida contra gastos de consumo.",
+            toml: `# [ETAPA 2] Regra de Proteção
+[dominio.investimentos]
+posicao = "Reserva de Emergência"
+saldo_centavos = 600000
+protecao = "reserva_emergencia"  # Restrição ativada!`
+          }
+        ],
+        uiRender: `
+          <div style="background: #FFF; border: 1px solid #E8E5E1; border-radius: 14px; padding: 16px; max-width: 440px;">
+            <div style="font-size: 13px; font-weight: 700; color: #8A5300; background: #FEF6E7; padding: 8px 12px; border-radius: 8px;">
+              🛡️ <strong>Posição Protegida:</strong> Sua Reserva de Emergência (R$ 6.000,00) deve ser mantida apenas para imprevistos de saúde ou sobrevivência.
+            </div>
+          </div>
+        `
+      },
+      {
+        id: "consultar_historico",
+        name: "8. consultar_historico",
+        title: "Extrato com Filtro e Agrupamento",
+        category: "consultas",
+        steps: [
+          {
+            title: "Consulta por Categoria",
+            file: "src/ui/componentes/CamadaChat.tsx",
+            desc: "Usuário: 'Quanto gastei em mercado no mês passado?'",
+            toml: `# [ETAPA 1] Filtro
+[llm.tool_call]
+nome = "consultar_historico"
+argumentos = { categoria = "mercado", de = "2026-09-01", ate = "2026-09-30" }`
+          },
+          {
+            title: "Totalização em Centavos",
+            file: "src/dominio/historico/index.ts",
+            desc: "Varre o ledger da persona, normaliza strings e soma totalSaidas.",
+            toml: `# [ETAPA 2] Agrupamento
+[dominio.historico]
+quantidade_itens = 6
+total_saidas_centavos = 78000  # R$ 780,00`
+          }
+        ],
+        uiRender: `
+          <div style="background: #FFF; border: 1px solid #E8E5E1; border-radius: 12px; padding: 14px; max-width: 380px;">
+            <div style="font-size: 12px; font-weight: 700; color: #646464;">Total gasto em Mercado (Set/2026)</div>
+            <div style="font-size: 20px; font-weight: 800; color: #111; margin-top: 4px;">R$ 780,00</div>
+            <div style="font-size: 11px; color: #8D0DE3; margin-top: 4px;">6 transações localizadas</div>
+          </div>
+        `
+      },
+      {
+        id: "desfazer",
+        name: "9. desfazer",
+        title: "Reversão de Estado e Expiração O-06",
+        category: "transacional",
+        steps: [
+          {
+            title: "Pedido de Rollback",
+            file: "src/ui/componentes/CamadaChat.tsx",
+            desc: "Usuário: 'Quero desfazer o gasto anterior.'",
+            toml: `# [ETAPA 1] Desfazer
+[llm.tool_call]
+nome = "desfazer"
+argumentos = { alvo_id = "D1" }`
+          },
+          {
+            title: "Expiração de Proposta O-06",
+            file: "src/dominio/caixa/index.ts",
+            desc: "Se havia proposta pendente baseada no saldo de D1, ela é expirada automaticamente.",
+            toml: `# [ETAPA 2] Regra O-06
+[dominio.caixa]
+removido = "D1"
+operacao_pendente_expirada = true`
+          }
+        ],
+        uiRender: `
+          <div style="background: #FFF; border-left: 4px solid #714F8F; border-radius: 10px; padding: 12px; max-width: 360px;">
+            <div style="font-size: 13px; font-weight: 700;">↩ Declaração D1 Desfeita</div>
+            <div style="font-size: 11px; color: #646464; margin-top: 2px;">Cálculos de fluxo de caixa recalculados.</div>
+          </div>
+        `
+      },
+      {
+        id: "cancelar_movimentacao",
+        name: "10. cancelar_movimentacao",
+        title: "Cancelamento da Proposta Pendente",
+        category: "transacional",
+        steps: [
+          {
+            title: "Cancelamento",
+            file: "src/ui/componentes/CamadaChat.tsx",
+            desc: "Usuário clica em 'Cancelar' ou digita 'Não quero mais guardar'.",
+            toml: `# [ETAPA 1] Cancelamento
+[llm.tool_call]
+nome = "cancelar_movimentacao"
+argumentos = { operacao_id = "OP1" }`
+          },
+          {
+            title: "Limpeza do Estado",
+            file: "src/dominio/operacoes/index.ts",
+            desc: "Limpa operacao_pendente sem gerar débito.",
+            toml: `# [ETAPA 2] Limpeza
+[dominio.operacoes]
+operacao_pendente = null
+status = "CANCELADA"`
+          }
+        ],
+        uiRender: `
+          <div style="background: #FFF; border-left: 4px solid #9B1C1C; border-radius: 10px; padding: 12px; max-width: 360px;">
+            <div style="font-size: 13px; font-weight: 700; color: #9B1C1C;">Proposta Cancelada</div>
+            <div style="font-size: 11px; color: #646464; margin-top: 2px;">Nenhum valor foi debitado de sua conta.</div>
+          </div>
+        `
+      },
+      {
+        id: "exibir_comparacao",
+        name: "11. exibir_comparacao",
+        title: "Reexibição Visual de Cenários",
+        category: "projeção",
+        steps: [
+          {
+            title: "Pedido de Visualização",
+            file: "src/ui/componentes/CamadaChat.tsx",
+            desc: "Usuário: 'Mostre novamente a tabela de comparação de cenários.'",
+            toml: `# [ETAPA 1] Exibir
+[llm.tool_call]
+nome = "exibir_comparacao"`
+          },
+          {
+            title: "Emissão de Cartão",
+            file: "src/conversa/executores/index.ts",
+            desc: "Emite novamente o CartaoResposta com a lista atual de cenários calculados.",
+            toml: `# [ETAPA 2] UI Reemitida
+[generative_ui.cartao]
+tipo = "comparacao"`
+          }
+        ],
+        uiRender: `
+          <div style="background: #FFF; border: 1px solid #E8E5E1; border-radius: 12px; padding: 14px; max-width: 400px;">
+            <div style="font-size: 13px; font-weight: 700;">📊 Tabela de Cenários Reexibida</div>
+          </div>
+        `
+      },
+      {
+        id: "preparar_resumo_atendimento",
+        name: "12. preparar_resumo_atendimento",
+        title: "Protocolo de Urgência & Transbordo Humano",
+        category: "suporte",
+        steps: [
+          {
+            title: "Alerta de Fraude",
+            file: "src/ui/componentes/CamadaChat.tsx",
+            desc: "Usuário: 'Tem uma compra no meu cartão de R$ 900 que não fui eu quem fiz!'",
+            toml: `# [ETAPA 1] Urgência (IN-12)
+[usuario.mensagem]
+texto = "Tem uma compra no meu cartão de R$ 900 que não fui eu quem fiz!"
+protocolo = "urgencia_fraude"`
+          },
+          {
+            title: "Bloqueio de Simulação & Transbordo",
+            file: "src/conversa/executores/index.ts",
+            desc: "Aplica regra IN-12: interrompe qualquer simulação e monta rascunho de contestação para os canais oficiais.",
+            toml: `# [ETAPA 2] Transbordo Seguro
+[suporte.contestacao]
+motivo = "Compra não reconhecida no cartão"
+canais_oficiais = "0800 608 6236 / Chat Nubank"
+simulacao_interrompida = true`
+          }
+        ],
+        uiRender: `
+          <div style="background: #FFF; border: 1px solid #F05252; border-radius: 12px; padding: 16px; max-width: 440px;">
+            <div style="color: #9B1C1C; font-weight: 700; font-size: 13px;">🚨 Protocolo de Fraude em Cartão</div>
+            <div style="font-size: 12px; color: #111; margin-top: 6px;">
+              Um rascunho de contestação foi preparado. Por segurança, procure os <strong>canais oficiais</strong> do Nubank imediatamente pelo app para bloquear o cartão.
+            </div>
+          </div>
+        `
+      }
+    ];
+
+    // State Variables
+    let currentScenarioIndex = 0;
+    let currentStepIndex = 0;
+    let autoPlayInterval = null;
+
+    // Initialize Simulator
+    function initSimulator() {
+      const selector = document.getElementById('toolSelector');
+      selector.innerHTML = '';
+
+      SCENARIOS.forEach((sc, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `tool-pill-btn ${idx === 0 ? 'active' : ''}`;
+        btn.innerHTML = sc.name;
+        btn.onclick = () => selectScenario(idx);
+        selector.appendChild(btn);
+      });
+
+      renderScenario(0, 0);
+    }
+
+    function selectScenario(index) {
+      currentScenarioIndex = index;
+      currentStepIndex = 0;
+      stopAutoPlay();
+
+      document.querySelectorAll('.tool-pill-btn').forEach((b, i) => {
+        b.classList.toggle('active', i === index);
+      });
+
+      renderScenario(currentScenarioIndex, currentStepIndex);
+    }
+
+    function renderScenario(scIdx, stIdx) {
+      const scenario = SCENARIOS[scIdx];
+      const step = scenario.steps[stIdx];
+
+      document.getElementById('simScenarioTitle').innerText = scenario.title;
+      document.getElementById('stepBadge').innerText = `Etapa ${stIdx + 1} de ${scenario.steps.length}`;
+
+      // Render Pipeline Nodes
+      const track = document.getElementById('pipelineTrack');
+      track.innerHTML = '';
+
+      scenario.steps.forEach((s, idx) => {
+        const node = document.createElement('div');
+        node.className = `pipeline-node ${idx === stIdx ? 'active' : ''}`;
+        node.onclick = () => {
+          currentStepIndex = idx;
+          stopAutoPlay();
+          renderScenario(currentScenarioIndex, currentStepIndex);
+        };
+
+        node.innerHTML = `
+          <div class="node-icon-bubble">${idx + 1}</div>
+          <div class="node-info">
+            <div class="node-top">
+              <span class="node-step-tag">Etapa ${idx + 1}</span>
+            </div>
+            <div class="node-title">${s.title}</div>
+            <div class="node-file-tag">📁 ${s.file}</div>
+            <div class="node-desc">${s.desc}</div>
+          </div>
+        `;
+        track.appendChild(node);
+      });
+
+      // Render TOML with syntax highlighting
+      const viewer = document.getElementById('tomlViewer');
+      viewer.innerHTML = highlightToml(step.toml);
+
+      // Render Live UI
+      document.getElementById('simLiveUi').innerHTML = scenario.uiRender;
+    }
+
+    // TOML Syntax Highlighter
+    function highlightToml(raw) {
+      return raw
+        .replace(/^(#.*)$/gm, '<span class="t-comment">$1</span>')
+        .replace(/^(\[.*?\])$/gm, '<span class="t-section">$1</span>')
+        .replace(/^([a-zA-Z0-9_\-\.]+)\s*=/gm, '<span class="t-key">$1</span> =')
+        .replace(/=\s*(".*?")/gm, '= <span class="t-string">$1</span>')
+        .replace(/=\s*([0-9\.\-]+)/gm, '= <span class="t-number">$1</span>')
+        .replace(/=\s*(true|false)/gm, '= <span class="t-bool">$1</span>');
+    }
+
+    // Controls
+    function nextStep() {
+      const scenario = SCENARIOS[currentScenarioIndex];
+      if (currentStepIndex < scenario.steps.length - 1) {
+        currentStepIndex++;
+      } else {
+        currentStepIndex = 0;
+      }
+      renderScenario(currentScenarioIndex, currentStepIndex);
+    }
+
+    function prevStep() {
+      if (currentStepIndex > 0) {
+        currentStepIndex--;
+      }
+      renderScenario(currentScenarioIndex, currentStepIndex);
+    }
+
+    function resetSim() {
+      currentStepIndex = 0;
+      stopAutoPlay();
+      renderScenario(currentScenarioIndex, currentStepIndex);
+    }
+
+    function togglePlay() {
+      if (autoPlayInterval) {
+        stopAutoPlay();
+      } else {
+        startAutoPlay();
+      }
+    }
+
+    function startAutoPlay() {
+      const playBtn = document.getElementById('playBtn');
+      if (playBtn) playBtn.innerHTML = '⏸';
+      if (autoPlayInterval) clearInterval(autoPlayInterval);
+      
+      autoPlayInterval = setInterval(() => {
+        nextStep();
+      }, 3000);
+    }
+
+    function stopAutoPlay() {
+      const playBtn = document.getElementById('playBtn');
+      if (playBtn) playBtn.innerHTML = '▶';
+      if (autoPlayInterval) {
+        clearInterval(autoPlayInterval);
+        autoPlayInterval = null;
+      }
+    }
+
+    // Tab Navigation
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      const targetBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      if (targetBtn) targetBtn.classList.add('active');
+
+      const targetContent = document.getElementById('tab-' + tabId);
+      if (targetContent) targetContent.classList.add('active');
+    }
+
+    // Global Search
+    document.getElementById('globalSearch').addEventListener('input', function(e) {
+      const q = e.target.value.toLowerCase().trim();
+      const cards = document.querySelectorAll('.card');
+      const rows = document.querySelectorAll('tbody tr');
+
+      cards.forEach(c => {
+        const text = (c.innerText + ' ' + (c.getAttribute('data-search') || '')).toLowerCase();
+        c.style.display = text.includes(q) ? 'flex' : 'none';
+      });
+
+      rows.forEach(r => {
+        const text = r.innerText.toLowerCase();
+        r.style.display = text.includes(q) ? '' : 'none';
+      });
+    });
+
+    // Run on startup
+    window.addEventListener('DOMContentLoaded', () => {
+      initSimulator();
+    });
+  </script>
+</body>
+</html>

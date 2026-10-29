@@ -1,0 +1,103 @@
+{
+  "provedor": "openrouter",
+  "tentativas": 31,
+  "sucesso_http_2xx": 31,
+  "falhas_http": 0,
+  "erros_rede": 0,
+  "requisições_simuladas_na_rodada_real": 0,
+  "externos_bloqueados": 2,
+  "latencia_http_max_ms": 8383,
+  "tempo_turno_max_ms": 15775,
+  "por_turno": [
+    {
+      "numero": 1,
+      "chamadas": 3,
+      "tempo_ms": 5768
+    },
+    {
+      "numero": 2,
+      "chamadas": 2,
+      "tempo_ms": 5407
+    },
+    {
+      "numero": 5,
+      "chamadas": 2,
+      "tempo_ms": 3405
+    },
+    {
+      "numero": 6,
+      "chamadas": 3,
+      "tempo_ms": 15775
+    },
+    {
+      "numero": 7,
+      "chamadas": 2,
+      "tempo_ms": 11223
+    },
+    {
+      "numero": 8,
+      "chamadas": 2,
+      "tempo_ms": 11684
+    },
+    {
+      "numero": 9,
+      "chamadas": 1,
+      "tempo_ms": 2921
+    },
+    {
+      "numero": 10,
+      "chamadas": 1,
+      "tempo_ms": 1761
+    },
+    {
+      "numero": 11,
+      "chamadas": 2,
+      "tempo_ms": 2150
+    },
+    {
+      "numero": 12,
+      "chamadas": 2,
+      "tempo_ms": 1467
+    },
+    {
+      "numero": 13,
+      "chamadas": 2,
+      "tempo_ms": 1701
+    },
+    {
+      "numero": 14,
+      "chamadas": 2,
+      "tempo_ms": 3194
+    },
+    {
+      "numero": 15,
+      "chamadas": 1,
+      "tempo_ms": 809
+    },
+    {
+      "numero": 16,
+      "chamadas": 1,
+      "tempo_ms": 806
+    },
+    {
+      "numero": 17,
+      "chamadas": 1,
+      "tempo_ms": 1058
+    },
+    {
+      "numero": 18,
+      "chamadas": 2,
+      "tempo_ms": 2486
+    },
+    {
+      "numero": 19,
+      "chamadas": 1,
+      "tempo_ms": 1207
+    },
+    {
+      "numero": 20,
+      "chamadas": 1,
+      "tempo_ms": 1311
+    }
+  ]
+}

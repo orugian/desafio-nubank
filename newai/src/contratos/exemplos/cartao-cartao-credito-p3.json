@@ -1,0 +1,195 @@
+{
+  "exemplo": true,
+  "esquema": "CartaoResposta",
+  "descricao": "consultar_cartao de P3: fatura fechada E2 de 05/11 (1.250), aberta e próximas",
+  "dados": {
+    "tipo": "cartao_credito",
+    "cartao": {
+      "limite_centavos": 600000,
+      "dia_fechamento": 29,
+      "dia_vencimento": 5,
+      "fatura_fechada": {
+        "fatura_id": "E2",
+        "fechamento": "2026-10-29",
+        "vencimento": "2026-11-05",
+        "status": "fechada",
+        "valor_centavos": 125000,
+        "itens": [
+          {
+            "lancamento_id": "L0311",
+            "data": "2026-10-03",
+            "parcelamento_id": null,
+            "parcela": null,
+            "origem": "dados_base",
+            "descricao": "Supermercado",
+            "valor_centavos": 48000
+          },
+          {
+            "lancamento_id": "L0318",
+            "data": "2026-10-09",
+            "parcelamento_id": null,
+            "parcela": null,
+            "origem": "dados_base",
+            "descricao": "Combustível",
+            "valor_centavos": 32000
+          },
+          {
+            "lancamento_id": "L0326",
+            "data": "2026-10-16",
+            "parcelamento_id": null,
+            "parcela": null,
+            "origem": "dados_base",
+            "descricao": "Restaurante",
+            "valor_centavos": 20000
+          },
+          {
+            "lancamento_id": "L0330",
+            "data": null,
+            "parcelamento_id": "PC1",
+            "parcela": "3/10",
+            "origem": "dados_base",
+            "descricao": "Geladeira",
+            "valor_centavos": 25000
+          }
+        ]
+      },
+      "fatura_aberta": {
+        "fatura_id": "F2612",
+        "fechamento": "2026-11-29",
+        "vencimento": "2026-12-05",
+        "status": "aberta",
+        "valor_centavos": 28790,
+        "itens": [
+          {
+            "lancamento_id": null,
+            "data": null,
+            "parcelamento_id": "PC1",
+            "parcela": "4/10",
+            "origem": "dados_base",
+            "descricao": "Geladeira",
+            "valor_centavos": 25000
+          },
+          {
+            "lancamento_id": "L0352",
+            "data": "2026-10-29",
+            "parcelamento_id": null,
+            "parcela": null,
+            "origem": "dados_base",
+            "descricao": "Farmácia",
+            "valor_centavos": 3790
+          }
+        ]
+      },
+      "proximas": [
+        {
+          "fatura_id": "F2701",
+          "fechamento": "2026-12-29",
+          "vencimento": "2027-01-05",
+          "status": "futura",
+          "valor_centavos": 25000,
+          "itens": [
+            {
+              "lancamento_id": null,
+              "data": null,
+              "parcelamento_id": "PC1",
+              "parcela": "5/10",
+              "origem": "dados_base",
+              "descricao": "Geladeira",
+              "valor_centavos": 25000
+            }
+          ]
+        },
+        {
+          "fatura_id": "F2702",
+          "fechamento": "2027-01-29",
+          "vencimento": "2027-02-05",
+          "status": "futura",
+          "valor_centavos": 25000,
+          "itens": [
+            {
+              "lancamento_id": null,
+              "data": null,
+              "parcelamento_id": "PC1",
+              "parcela": "6/10",
+              "origem": "dados_base",
+              "descricao": "Geladeira",
+              "valor_centavos": 25000
+            }
+          ]
+        },
+        {
+          "fatura_id": "F2703",
+          "fechamento": "2027-02-28",
+          "vencimento": "2027-03-05",
+          "status": "futura",
+          "valor_centavos": 25000,
+          "itens": [
+            {
+              "lancamento_id": null,
+              "data": null,
+              "parcelamento_id": "PC1",
+              "parcela": "7/10",
+              "origem": "dados_base",
+              "descricao": "Geladeira",
+              "valor_centavos": 25000
+            }
+          ]
+        },
+        {
+          "fatura_id": "F2704",
+          "fechamento": "2027-03-29",
+          "vencimento": "2027-04-05",
+          "status": "futura",
+          "valor_centavos": 25000,
+          "itens": [
+            {
+              "lancamento_id": null,
+              "data": null,
+              "parcelamento_id": "PC1",
+              "parcela": "8/10",
+              "origem": "dados_base",
+              "descricao": "Geladeira",
+              "valor_centavos": 25000
+            }
+          ]
+        },
+        {
+          "fatura_id": "F2705",
+          "fechamento": "2027-04-29",
+          "vencimento": "2027-05-05",
+          "status": "futura",
+          "valor_centavos": 25000,
+          "itens": [
+            {
+              "lancamento_id": null,
+              "data": null,
+              "parcelamento_id": "PC1",
+              "parcela": "9/10",
+              "origem": "dados_base",
+              "descricao": "Geladeira",
+              "valor_centavos": 25000
+            }
+          ]
+        },
+        {
+          "fatura_id": "F2706",
+          "fechamento": "2027-05-29",
+          "vencimento": "2027-06-05",
+          "status": "futura",
+          "valor_centavos": 25000,
+          "itens": [
+            {
+              "lancamento_id": null,
+              "data": null,
+              "parcelamento_id": "PC1",
+              "parcela": "10/10",
+              "origem": "dados_base",
+              "descricao": "Geladeira",
+              "valor_centavos": 25000
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

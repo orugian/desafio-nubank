@@ -1,0 +1,10 @@
+{
+  "provedor": "nvidia",
+  "modelo": "deepseek-ai/deepseek-v4.1-flash",
+  "caso": "CV-03",
+  "status": null,
+  "latencia_ms": 20002,
+  "correto": false,
+  "erro": "timeout/rede",
+  "obtido_em": "2026-10-28T15:56:29.190Z"
+}

@@ -1,0 +1,50 @@
+{
+  "exemplo": true,
+  "esquema": "RespostaFalha",
+  "descricao": "F-01: modelo não respondeu em 15 s",
+  "dados": {
+    "status": "falha",
+    "falha": {
+      "tipo": "F-01",
+      "codigo": "TIMEOUT",
+      "mensagem": "A assistente não respondeu a tempo. Nada foi alterado.",
+      "pode_tentar_novamente": true
+    },
+    "estado": {
+      "versao": 0,
+      "persona_id": "p1",
+      "mercado": {
+        "ao_vivo": false,
+        "obtido_em": "2026-10-28T11:00:00-03:00",
+        "tentou_ao_vivo": false,
+        "cdi": {
+          "taxa_diaria_pct": "0.05",
+          "data_ref": "2026-10-29",
+          "fonte": "CDI de teste (spec §11.4)"
+        },
+        "precos": {
+          "ITUB4": {
+            "preco_centavos": 3300,
+            "data_hora": "2026-10-27T18:00:00-03:00",
+            "fonte": "brapi"
+          },
+          "BTC": {
+            "preco_centavos": 38000000,
+            "data_hora": "2026-10-27T21:00:00-03:00",
+            "fonte": "CoinGecko"
+          }
+        }
+      },
+      "conversa": [],
+      "declaracoes": [],
+      "operacoes": [],
+      "operacao_pendente": null,
+      "hipoteses": [],
+      "contadores": {
+        "D": 0,
+        "H": 0,
+        "OP": 0
+      }
+    }
+  }
+}

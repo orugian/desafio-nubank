@@ -1,0 +1,10 @@
+{
+  "provedor": "nvidia",
+  "modelo": "nvidia/nemotron-3.5-lightning-30b-a3b",
+  "caso": "CV-01",
+  "status": 200,
+  "latencia_ms": 1371,
+  "correto": false,
+  "erro": null,
+  "obtido_em": "2026-10-28T15:45:41.732Z"
+}

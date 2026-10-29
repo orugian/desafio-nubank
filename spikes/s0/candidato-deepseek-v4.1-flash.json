@@ -1,0 +1,15 @@
+{
+  "provedor": "nvidia",
+  "modelo": "deepseek-ai/deepseek-v4.1-flash",
+  "origem": "Candidato indicado diretamente pelo responsável após a parada S0; teste adicional interpretado como autorizado, não como escolha final do modelo.",
+  "pagina_indicada": "https://build.nvidia.com/deepseek-ai/deepseek-v4.1-flash",
+  "documentacao_endpoint": "https://docs.api.nvidia.com/nim/reference/nvidia-deepseek-v4_1-flash-infer",
+  "model_card": "https://build.nvidia.com/deepseek-ai/deepseek-v4.1-flash/modelcard",
+  "documentacao_esforco": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash",
+  "endpoint": "https://integrate.api.nvidia.com/v1/chat/completions",
+  "parametros": { "temperature": 0, "max_tokens": 700, "stream": false, "reasoning_effort": 1, "tool_choice": "auto" },
+  "suposicao": "O model card documenta esforço numérico 1–100, mas a referência HTTP NVIDIA não explicita esse campo. Esforço mínimo não é alegação de raciocínio desativado; rejeição será registrada sem afrouxar critérios nem fazer retentativa automática.",
+  "comparabilidade": "Mesmos cinco casos, doze ferramentas, instruções, contexto e verificador da rodada anterior; nenhuma mudança para ensinar a resposta esperada.",
+  "orcamento": { "nvidia_antes_incluindo_listagem": 16, "novas_completions_planejadas": 5, "nvidia_total_maximo_apos": 21, "teto_nvidia": 40, "openrouter_novas": 0 },
+  "seguranca": "Segredos apenas por node --env-file no caminho autorizado. Resposta 401/403 ou 402 interrompe envios. Não acessar painel, comprar créditos, aceitar faturamento ou editar segredos."
+}

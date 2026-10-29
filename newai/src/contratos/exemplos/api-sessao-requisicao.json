@@ -1,0 +1,8 @@
+{
+  "exemplo": true,
+  "esquema": "RequisicaoSessao",
+  "descricao": "POST /api/sessao: entrada",
+  "dados": {
+    "persona_id": "p1"
+  }
+}

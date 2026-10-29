@@ -1,0 +1,26 @@
+{
+  "em": "2026-10-29T19:07:49.509Z",
+  "provedor": "openrouter",
+  "modelo": "deepseek/deepseek-v4.1-flash-1017",
+  "contrato": "1.0",
+  "hoje_dominio": "2026-10-30",
+  "mercado_ao_vivo": false,
+  "referencia_cdi": "2026-10-27",
+  "fontes": [
+    {
+      "nome": "BCB SGS 12",
+      "obtido_em": "2026-10-28T12:39:47-03:00"
+    },
+    {
+      "nome": "brapi",
+      "obtido_em": "2026-10-28T12:39:47-03:00"
+    },
+    {
+      "nome": "CoinGecko",
+      "obtido_em": "2026-10-28T12:39:47-03:00"
+    }
+  ],
+  "instrucoes_identicas_ao_arquivo": true,
+  "pagina_como_funciona_conferida": true,
+  "chamadas_modelo": 0
+}

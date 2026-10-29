@@ -1,0 +1,21 @@
+{
+  "id": "CV-10",
+  "persona": "p2",
+  "mensagens": [
+    "Quanto gastei com delivery em setembro?"
+  ],
+  "esperado": {
+    "ferramentas": [
+      {
+        "nome": "consultar_historico"
+      }
+    ],
+    "oraculo": "H-setembro-delivery",
+    "texto_contem": [
+      "delivery",
+      "160"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": false
+}

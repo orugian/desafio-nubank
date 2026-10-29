@@ -1,0 +1,9 @@
+{
+  "exemplo": true,
+  "esquema": "CartaoResposta",
+  "descricao": "tipo de cartão fora do contrato",
+  "dados": {
+    "tipo": "grafico",
+    "pontos": []
+  }
+}

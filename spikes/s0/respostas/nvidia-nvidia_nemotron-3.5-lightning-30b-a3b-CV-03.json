@@ -1,0 +1,45 @@
+{
+  "id": "chatcmpl-4bc04307-5e34-4859-b82c-70c1d475be5c",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call-8f12671e-c8a3-4afc-90be-ee90da107496",
+            "type": "function",
+            "function": {
+              "name": "registrar_declaracao",
+              "arguments": "{\"alteracao\":{\"operacao\":\"alterar_evento\",\"evento_id\":\"C\",\"data\":\"2026-11-15\",\"valor\":\"15000\"}}"
+            }
+          }
+        ],
+        "role": "assistant",
+        "reasoning_content": null
+      },
+      "finish_reason": "tool_calls",
+      "logprobs": null
+    }
+  ],
+  "created": 1793202385,
+  "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+  "service_tier": null,
+  "system_fingerprint": null,
+  "object": "chat.completion",
+  "usage": {
+    "prompt_tokens": 5520,
+    "completion_tokens": 71,
+    "total_tokens": 5591,
+    "prompt_tokens_details": {
+      "audio_tokens": null,
+      "cached_tokens": 4192
+    },
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": null,
+      "audio_tokens": null,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": null
+    }
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "provedor": "openrouter",
+  "modelo": "deepseek/deepseek-v4.1-flash-1017",
+  "casos": [
+    {
+      "caso": "CV-01",
+      "texto": "Simulei (H1). Separar R$ 500,00 hoje não fecha:\n\n- Saldo hoje: R$ 1.800,00.\n- Em 10/11, após aluguel, o saldo fica em R$ 0,00.\n- Em 15/11, contas da casa deixam falta de R$ 200,00.\n- O salário de 19/11 é previsto (R$ 3.000,00) e recupera o saldo depois.\n\nNa situação atual, o saldo mínimo é R$ 300,00 em 15/11, sem falta.\n\nQuer que eu simule um valor menor, ou considere o salário chegando antes?",
+      "ferramentas": [
+        "criar_hipotese"
+      ],
+      "indicadores": {
+        "saldo_inicial_centavos": 180000,
+        "saldo_minimo_centavos": -20000,
+        "data_saldo_minimo": "2026-11-15",
+        "primeira_falta": {
+          "data": "2026-11-15",
+          "valor_descoberto_centavos": 20000,
+          "saidas_do_dia": [
+            "C"
+          ]
+        },
+        "insuficiencia_centavos": 20000,
+        "margem_hoje_centavos": 0,
+        "saldo_final_centavos": 280000,
+        "sem_recebimentos": {
+          "insuficiencia_centavos": 20000,
+          "primeira_falta": {
+            "data": "2026-11-15",
+            "valor_descoberto_centavos": 20000,
+            "saidas_do_dia": [
+              "C"
+            ]
+          },
+          "saldo_final_centavos": -20000
+        }
+      },
+      "versao": 1
+    },
+    {
+      "caso": "CV-07",
+      "texto": "Proposta criada: guardar R$ 500,00 na Caixinha Viagem (OP1). Ainda não executei nada.\n\nAtenção ao impacto: com essa separação, faltariam R$ 200,00 em 15/11 (contas da casa).\n\nRendimento bruto estimado até 19/11: R$ 3,31 (CDI constante, estimativa).\n\nQuer confirmar mesmo assim?",
+      "ferramentas": [
+        "propor_movimentacao"
+      ],
+      "pendente": {
+        "id": "OP1",
+        "valor_centavos": 50000,
+        "destino": "INV9",
+        "criada_na_versao": 0
+      },
+      "operacoes": [],
+      "saldo": 180000
+    },
+    {
+      "caso": "CV-28-confirmacao",
+      "texto": "Confirmado: R$ 500,00 separados na Caixinha Viagem (simulado, sem dinheiro real).\n\nLembrete: a falta de R$ 200,00 em 15/11 continua no cenário.",
+      "ferramentas": [
+        "confirmar_movimentacao"
+      ],
+      "operacoes": [
+        {
+          "id": "OP1",
+          "valor_centavos": 50000,
+          "destino": "INV9",
+          "data": "2026-10-30"
+        }
+      ],
+      "saldo": 130000,
+      "versao": 2
+    },
+    {
+      "caso": "CV-28-repeticao",
+      "texto": "A operação OP1 já foi executada antes. A ferramenta retornou o erro OPERACAO_JA_EXECUTADA, então não há nada novo a confirmar.\n\nNada mais foi movimentado. Quer ver a comparação dos cenários ou simular outro valor?",
+      "rastro": [
+        {
+          "ferramenta": "confirmar_movimentacao",
+          "resultado": {
+            "ok": false,
+            "erro": {
+              "codigo": "OPERACAO_JA_EXECUTADA",
+              "mensagem": "Essa movimentação simulada já foi feita.",
+              "campos": [
+                "operacao_id"
+              ]
+            }
+          }
+        }
+      ],
+      "operacoes": [
+        {
+          "id": "OP1",
+          "valor_centavos": 50000,
+          "destino": "INV9",
+          "data": "2026-10-30"
+        }
+      ],
+      "saldo": 130000,
+      "versao": 3
+    }
+  ]
+}

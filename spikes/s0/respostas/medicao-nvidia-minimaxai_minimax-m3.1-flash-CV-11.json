@@ -1,0 +1,10 @@
+{
+  "provedor": "nvidia",
+  "modelo": "minimaxai/minimax-m3.1-flash",
+  "caso": "CV-11",
+  "status": 200,
+  "latencia_ms": 2301,
+  "correto": true,
+  "erro": null,
+  "obtido_em": "2026-10-28T16:07:03.355Z"
+}

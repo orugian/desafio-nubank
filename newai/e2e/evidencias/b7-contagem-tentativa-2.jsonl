@@ -1,0 +1,12 @@
+{"evento":"inicio","id":"1120-1"}
+{"evento":"fim","id":"1120-1","status":200}
+{"evento":"inicio","id":"1120-2"}
+{"evento":"fim","id":"1120-2","status":200}
+{"evento":"inicio","id":"1120-3"}
+{"evento":"fim","id":"1120-3","status":200}
+{"evento":"inicio","id":"1120-4"}
+{"evento":"fim","id":"1120-4","status":200}
+{"evento":"inicio","id":"1120-5"}
+{"evento":"fim","id":"1120-5","status":200}
+{"evento":"inicio","id":"1120-6"}
+{"evento":"fim","id":"1120-6","status":429}

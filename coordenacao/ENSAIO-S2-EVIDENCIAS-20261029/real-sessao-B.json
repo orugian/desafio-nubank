@@ -1,0 +1,487 @@
+{
+  "letra": "B",
+  "pessoa": "Caio",
+  "inicio": 6,
+  "fim": 10,
+  "persona_id": "p2",
+  "estado_inicial": {
+    "versao": 0,
+    "persona_id": "p2",
+    "mercado": {
+      "ao_vivo": false,
+      "obtido_em": "2026-10-28T12:39:47-03:00",
+      "tentou_ao_vivo": false,
+      "cdi": {
+        "taxa_diaria_pct": "0.050788",
+        "data_ref": "2026-10-27",
+        "fonte": "BCB SGS 12"
+      },
+      "precos": {
+        "PETR4": {
+          "preco_centavos": 5279,
+          "data_hora": "2026-10-27T18:00:00-03:00",
+          "fonte": "brapi"
+        },
+        "BTC": {
+          "preco_centavos": 43008618,
+          "data_hora": "2026-10-27T21:00:00-03:00",
+          "fonte": "CoinGecko"
+        }
+      }
+    },
+    "conversa": [],
+    "declaracoes": [],
+    "operacoes": [],
+    "operacao_pendente": null,
+    "hipoteses": [],
+    "contadores": {
+      "D": 0,
+      "H": 0,
+      "OP": 0
+    }
+  },
+  "visao_inicial": {
+    "marca": "neutra",
+    "prototipo": true,
+    "persona": {
+      "id": "p2",
+      "nome": "Caio (fictício)"
+    },
+    "conta": {
+      "saldo_disponivel_hoje_centavos": 90000,
+      "saldo_inicio_hoje_centavos": 90000,
+      "operacoes_hoje": []
+    },
+    "extrato": [
+      {
+        "id": "L20027",
+        "data": "2026-10-26",
+        "descricao": "Feira Livre",
+        "tipo": "saida",
+        "meio": "pix",
+        "categoria": "mercado",
+        "valor_centavos": 6800,
+        "simulado": false
+      },
+      {
+        "id": "L20026",
+        "data": "2026-10-20",
+        "descricao": "Restaurante Bairro",
+        "tipo": "saida",
+        "meio": "debito",
+        "categoria": "restaurante",
+        "valor_centavos": 8200,
+        "simulado": false
+      },
+      {
+        "id": "L20025",
+        "data": "2026-10-16",
+        "descricao": "Transporte Urbano",
+        "tipo": "saida",
+        "meio": "pix",
+        "categoria": "transporte",
+        "valor_centavos": 7000,
+        "simulado": false
+      },
+      {
+        "id": "L20012",
+        "data": "2026-10-15",
+        "descricao": "Serviço prestado a cliente",
+        "tipo": "entrada",
+        "meio": "pix",
+        "categoria": "receitas",
+        "valor_centavos": 245000,
+        "simulado": false
+      },
+      {
+        "id": "L20003",
+        "data": "2026-10-12",
+        "descricao": "Conta de luz",
+        "tipo": "saida",
+        "meio": "debito_automatico",
+        "categoria": "contas_casa",
+        "valor_centavos": 19500,
+        "simulado": false
+      },
+      {
+        "id": "L20024",
+        "data": "2026-10-11",
+        "descricao": "Delivery Lanches",
+        "tipo": "saida",
+        "meio": "pix",
+        "categoria": "delivery",
+        "valor_centavos": 6500,
+        "simulado": false
+      },
+      {
+        "id": "L20009",
+        "data": "2026-10-08",
+        "descricao": "Aluguel",
+        "tipo": "saida",
+        "meio": "pix",
+        "categoria": "moradia",
+        "valor_centavos": 110000,
+        "simulado": false
+      },
+      {
+        "id": "L20023",
+        "data": "2026-10-03",
+        "descricao": "Mercado da Esquina",
+        "tipo": "saida",
+        "meio": "debito",
+        "categoria": "mercado",
+        "valor_centavos": 17500,
+        "simulado": false
+      },
+      {
+        "id": "L20006",
+        "data": "2026-10-03",
+        "descricao": "Internet",
+        "tipo": "saida",
+        "meio": "debito_automatico",
+        "categoria": "assinaturas",
+        "valor_centavos": 12000,
+        "simulado": false
+      },
+      {
+        "id": "L20022",
+        "data": "2026-09-25",
+        "descricao": "Lazer e Cultura",
+        "tipo": "saida",
+        "meio": "debito",
+        "categoria": "lazer",
+        "valor_centavos": 8500,
+        "simulado": false
+      },
+      {
+        "id": "L20021",
+        "data": "2026-09-18",
+        "descricao": "Delivery Japonês",
+        "tipo": "saida",
+        "meio": "pix",
+        "categoria": "delivery",
+        "valor_centavos": 9600,
+        "simulado": false
+      },
+      {
+        "id": "L20011",
+        "data": "2026-09-15",
+        "descricao": "Serviço prestado a cliente",
+        "tipo": "entrada",
+        "meio": "pix",
+        "categoria": "receitas",
+        "valor_centavos": 230000,
+        "simulado": false
+      },
+      {
+        "id": "L20002",
+        "data": "2026-09-12",
+        "descricao": "Conta de luz",
+        "tipo": "saida",
+        "meio": "debito_automatico",
+        "categoria": "contas_casa",
+        "valor_centavos": 18000,
+        "simulado": false
+      },
+      {
+        "id": "L20020",
+        "data": "2026-09-11",
+        "descricao": "Supermercado Sul",
+        "tipo": "saida",
+        "meio": "debito",
+        "categoria": "mercado",
+        "valor_centavos": 18500,
+        "simulado": false
+      },
+      {
+        "id": "L20008",
+        "data": "2026-09-08",
+        "descricao": "Aluguel",
+        "tipo": "saida",
+        "meio": "pix",
+        "categoria": "moradia",
+        "valor_centavos": 110000,
+        "simulado": false
+      },
+      {
+        "id": "L20019",
+        "data": "2026-09-04",
+        "descricao": "Delivery Hambúrguer",
+        "tipo": "saida",
+        "meio": "pix",
+        "categoria": "delivery",
+        "valor_centavos": 6400,
+        "simulado": false
+      },
+      {
+        "id": "L20005",
+        "data": "2026-09-03",
+        "descricao": "Internet",
+        "tipo": "saida",
+        "meio": "debito_automatico",
+        "categoria": "assinaturas",
+        "valor_centavos": 12000,
+        "simulado": false
+      },
+      {
+        "id": "L20018",
+        "data": "2026-08-27",
+        "descricao": "Restaurante Prato Feito",
+        "tipo": "saida",
+        "meio": "debito",
+        "categoria": "restaurante",
+        "valor_centavos": 7500,
+        "simulado": false
+      },
+      {
+        "id": "L20017",
+        "data": "2026-08-21",
+        "descricao": "Transporte Urbano",
+        "tipo": "saida",
+        "meio": "pix",
+        "categoria": "transporte",
+        "valor_centavos": 6800,
+        "simulado": false
+      },
+      {
+        "id": "L20010",
+        "data": "2026-08-15",
+        "descricao": "Serviço prestado a cliente",
+        "tipo": "entrada",
+        "meio": "pix",
+        "categoria": "receitas",
+        "valor_centavos": 240000,
+        "simulado": false
+      },
+      {
+        "id": "L20016",
+        "data": "2026-08-14",
+        "descricao": "Supermercado Sul",
+        "tipo": "saida",
+        "meio": "debito",
+        "categoria": "mercado",
+        "valor_centavos": 19000,
+        "simulado": false
+      },
+      {
+        "id": "L20001",
+        "data": "2026-08-12",
+        "descricao": "Conta de luz",
+        "tipo": "saida",
+        "meio": "debito_automatico",
+        "categoria": "contas_casa",
+        "valor_centavos": 16500,
+        "simulado": false
+      },
+      {
+        "id": "L20013",
+        "data": "2026-08-10",
+        "descricao": "Compra Bitcoin (0.005 BTC)",
+        "tipo": "saida",
+        "meio": "pix",
+        "categoria": "investimentos",
+        "valor_centavos": 164858,
+        "simulado": false
+      },
+      {
+        "id": "L20007",
+        "data": "2026-08-08",
+        "descricao": "Aluguel",
+        "tipo": "saida",
+        "meio": "pix",
+        "categoria": "moradia",
+        "valor_centavos": 110000,
+        "simulado": false
+      },
+      {
+        "id": "L20015",
+        "data": "2026-08-07",
+        "descricao": "Delivery Pizza",
+        "tipo": "saida",
+        "meio": "pix",
+        "categoria": "delivery",
+        "valor_centavos": 7200,
+        "simulado": false
+      },
+      {
+        "id": "L20004",
+        "data": "2026-08-03",
+        "descricao": "Internet",
+        "tipo": "saida",
+        "meio": "debito_automatico",
+        "categoria": "assinaturas",
+        "valor_centavos": 12000,
+        "simulado": false
+      },
+      {
+        "id": "L20014",
+        "data": "2026-08-02",
+        "descricao": "Padaria Central",
+        "tipo": "saida",
+        "meio": "debito",
+        "categoria": "mercado",
+        "valor_centavos": 8500,
+        "simulado": false
+      }
+    ],
+    "proximos_pagamentos": [
+      {
+        "evento_id": "E1",
+        "data": "2026-11-03",
+        "descricao": "Internet",
+        "tipo": "saida",
+        "meio": "debito_automatico",
+        "valor_centavos": 12000,
+        "previsto": false,
+        "estimativa_texto": null,
+        "origem": "dados_base"
+      },
+      {
+        "evento_id": "E2",
+        "data": "2026-11-08",
+        "descricao": "Aluguel",
+        "tipo": "saida",
+        "meio": "pix",
+        "valor_centavos": 110000,
+        "previsto": false,
+        "estimativa_texto": null,
+        "origem": "dados_base"
+      },
+      {
+        "evento_id": "E3",
+        "data": "2026-11-08",
+        "descricao": "Cobrança Pix a cliente",
+        "tipo": "entrada",
+        "meio": "pix",
+        "valor_centavos": 150000,
+        "previsto": true,
+        "estimativa_texto": null,
+        "origem": "dados_base"
+      },
+      {
+        "evento_id": "E4",
+        "data": "2026-11-12",
+        "descricao": "Conta de luz",
+        "tipo": "saida",
+        "meio": "debito_automatico",
+        "valor_centavos": 18000,
+        "previsto": false,
+        "estimativa_texto": "estimado: média de R$ 165,00, R$ 180,00 e R$ 195,00",
+        "origem": "dados_base"
+      },
+      {
+        "evento_id": "E5",
+        "data": "2026-11-25",
+        "descricao": "Curso",
+        "tipo": "saida",
+        "meio": "boleto",
+        "valor_centavos": 40000,
+        "previsto": false,
+        "estimativa_texto": null,
+        "origem": "dados_base"
+      }
+    ],
+    "cartao": null,
+    "posicoes": [
+      {
+        "id": "SEP",
+        "nome": "Saldo separado",
+        "categoria": "saldo_separado",
+        "cdi_pct": null,
+        "ticker": null,
+        "quantidade": null,
+        "valor_atual_centavos": 0,
+        "aplicado_centavos": 0,
+        "resultado_centavos": 0,
+        "rentabilidade_pct": "0.00",
+        "valorizacao_periodo_pct": null,
+        "data_disponibilidade": "2026-10-30",
+        "protecao": null,
+        "restricao": null,
+        "estimado": false,
+        "fonte": "sem rendimento"
+      },
+      {
+        "id": "INV10",
+        "nome": "Caixinha",
+        "categoria": "caixinha",
+        "cdi_pct": 100,
+        "ticker": null,
+        "quantidade": null,
+        "valor_atual_centavos": 0,
+        "aplicado_centavos": 0,
+        "resultado_centavos": 0,
+        "rentabilidade_pct": "0.00",
+        "valorizacao_periodo_pct": null,
+        "data_disponibilidade": "2026-10-30",
+        "protecao": null,
+        "restricao": null,
+        "estimado": false,
+        "fonte": "BCB SGS 12, gravado em 28/10"
+      },
+      {
+        "id": "INV4",
+        "nome": "Fundo DI Fictício",
+        "categoria": "fundo",
+        "cdi_pct": 98,
+        "ticker": null,
+        "quantidade": null,
+        "valor_atual_centavos": 213296,
+        "aplicado_centavos": 200000,
+        "resultado_centavos": 13296,
+        "rentabilidade_pct": "6.65",
+        "valorizacao_periodo_pct": null,
+        "data_disponibilidade": "2026-11-03",
+        "protecao": {
+          "tipo": "parcial",
+          "valor_centavos": 120000
+        },
+        "restricao": null,
+        "estimado": false,
+        "fonte": "BCB SGS 12, gravado em 28/10"
+      },
+      {
+        "id": "INV5",
+        "nome": "Bitcoin",
+        "categoria": "cripto",
+        "cdi_pct": null,
+        "ticker": "BTC",
+        "quantidade": "0.005",
+        "valor_atual_centavos": 215043,
+        "aplicado_centavos": 164858,
+        "resultado_centavos": 50185,
+        "rentabilidade_pct": "30.44",
+        "valorizacao_periodo_pct": "31.21",
+        "data_disponibilidade": "2026-10-30",
+        "protecao": null,
+        "restricao": null,
+        "estimado": true,
+        "fonte": "CoinGecko, gravado em 28/10"
+      }
+    ],
+    "mercado": {
+      "ao_vivo": false,
+      "obtido_em": "2026-10-28T12:39:47-03:00",
+      "tentou_ao_vivo": false,
+      "cdi": {
+        "taxa_diaria_pct": "0.050788",
+        "data_ref": "2026-10-27",
+        "fonte": "BCB SGS 12"
+      },
+      "precos": {
+        "PETR4": {
+          "preco_centavos": 5279,
+          "data_hora": "2026-10-27T18:00:00-03:00",
+          "fonte": "brapi"
+        },
+        "BTC": {
+          "preco_centavos": 43008618,
+          "data_hora": "2026-10-27T21:00:00-03:00",
+          "fonte": "CoinGecko"
+        }
+      }
+    }
+  },
+  "provedor": "openrouter",
+  "modelo": "deepseek/deepseek-v4.1-flash-1017"
+}

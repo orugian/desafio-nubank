@@ -1,0 +1,20 @@
+{
+  "id": "CV-16",
+  "persona": "p3",
+  "mensagens": [
+    "Posso usar minha reserva para o conserto?"
+  ],
+  "esperado": {
+    "ferramentas": [
+      {
+        "nome": "consultar_investimentos"
+      }
+    ],
+    "oraculo": "CR-16",
+    "texto_contem": [
+      "reserva"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": false
+}

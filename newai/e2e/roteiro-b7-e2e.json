@@ -1,0 +1,56 @@
+{
+  "descricao": "Roteiro B7 E2E: separar 500 hoje (CV-01 -> CR-02) e guardar 500 na Caixinha Viagem (CV-07 -> CR-40).",
+  "turnos": [
+    {
+      "mensagem": "Posso separar R$ 500 hoje para minha viagem?",
+      "respostas": [
+        {
+          "tipo": "chamadas",
+          "chamadas": [
+            {
+              "id": "call_b7_cv01",
+              "nome": "criar_hipotese",
+              "argumentos": {
+                "nome": "Separar R$ 500 hoje",
+                "a_partir_de": "atual",
+                "alteracoes": [
+                  {
+                    "operacao": "separar",
+                    "valor": "500",
+                    "data": "2026-10-30"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "tipo": "texto",
+          "texto": "Se você separar R$ 500 hoje, o saldo zera em 10/11, no aluguel, e faltam R$ 200,00 em 15/11, no débito das contas da casa."
+        }
+      ]
+    },
+    {
+      "mensagem": "Guarda R$ 500 na caixinha da viagem.",
+      "respostas": [
+        {
+          "tipo": "chamadas",
+          "chamadas": [
+            {
+              "id": "call_b7_cv07",
+              "nome": "propor_movimentacao",
+              "argumentos": {
+                "valor": "500",
+                "destino": "INV9"
+              }
+            }
+          ]
+        },
+        {
+          "tipo": "texto",
+          "texto": "Preparei a proposta de movimentação simulada de R$ 500,00 para Caixinha Viagem. Atenção: com essa movimentação, faltariam R$ 200,00 em 15/11. Confirma?"
+        }
+      ]
+    }
+  ]
+}

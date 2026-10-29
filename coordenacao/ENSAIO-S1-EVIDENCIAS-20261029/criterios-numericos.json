@@ -1,0 +1,168 @@
+{
+  "observacao": "Checagens selecionadas de números e transições; não substituem revisão semântica dos textos.",
+  "saida": [
+    {
+      "numero": 1,
+      "checagens": {
+        "separacao": true,
+        "valores": true,
+        "nenhuma_operacao": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 2,
+      "checagens": {
+        "derivacao": true,
+        "valores": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 3,
+      "checagens": {
+        "declaracao": true,
+        "recalculo": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 4,
+      "checagens": {
+        "sem_mutacao": true,
+        "comparacao_tres": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 5,
+      "checagens": {
+        "alvo_correto": true,
+        "declaracao_preservada": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 6,
+      "checagens": {
+        "pendente": true,
+        "alerta": true,
+        "saldo": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 7,
+      "checagens": {
+        "cancelada": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 8,
+      "checagens": {
+        "sem_recriar": true,
+        "nao_executada": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 9,
+      "checagens": {
+        "separacao": true,
+        "valores": true,
+        "ordem_relevante": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 10,
+      "checagens": {
+        "declaracao": true,
+        "valores": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 11,
+      "checagens": {
+        "correcao": true,
+        "finais": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 12,
+      "checagens": {
+        "negocio_inalterado": true,
+        "recorte_pedido": false
+      },
+      "falhas": [
+        "recorte_pedido"
+      ]
+    },
+    {
+      "numero": 13,
+      "checagens": {
+        "negocio_inalterado": true,
+        "snapshot_bitcoin": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 14,
+      "checagens": {
+        "negocio_inalterado": true,
+        "sem_hipotese": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 15,
+      "checagens": {
+        "evento": true,
+        "parcelas": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 16,
+      "checagens": {
+        "independente": true,
+        "valores": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 17,
+      "checagens": {
+        "pix_removido": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 18,
+      "checagens": {
+        "negocio_inalterado": true,
+        "valores_e_protecao": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 19,
+      "checagens": {
+        "negocio_inalterado": true,
+        "sem_ferramenta": true
+      },
+      "falhas": []
+    },
+    {
+      "numero": 20,
+      "checagens": {
+        "negocio_inalterado": true,
+        "sem_ferramenta": true
+      },
+      "falhas": []
+    }
+  ]
+}

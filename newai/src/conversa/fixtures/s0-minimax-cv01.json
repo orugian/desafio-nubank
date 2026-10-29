@@ -1,0 +1,40 @@
+{
+  "id": "chatcmpl-a2372aef-1efd-4044-848d-590c07b08654",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "content": null,
+        "refusal": null,
+        "tool_calls": [
+          {
+            "id": "call-22257aab-41c5-4d44-8f42-322df89b74dd",
+            "type": "function",
+            "function": {
+              "name": "criar_hipotese",
+              "arguments": "{\"nome\":\"Separar R$ 500 para viagem\",\"a_partir_de\":\"atual\",\"alteracoes\":[{\"operacao\":\"separar\",\"valor\":\"500.00\",\"data\":\"2026-10-30\"}]}"
+            }
+          }
+        ],
+        "role": "assistant",
+        "reasoning_content": "We need propose movement because explicit \"posso separar\" creates hypothesis? IN-05 says posso creates hypothesis, but tool description says only order explicit guardar/separar creates proposal. User asks \"Posso separar\" ambiguous, likely simulation. Need create hypothesis with separar 500 today, destination? Hypothesis alteracoes separar requires data, no destination field. Could use criar_hipotese. But perhaps need assess impact. Let's create hypothesis named \"Separar R$ 500 para viagem\" a_partir_de atual, alteracoes separar valor 500 data 2026-10-30."
+      },
+      "finish_reason": "tool_calls",
+      "logprobs": null
+    }
+  ],
+  "created": 1793203639,
+  "model": "minimaxai/minimax-m3.1-flash",
+  "object": "chat.completion",
+  "usage": {
+    "prompt_tokens": 5015,
+    "completion_tokens": 233,
+    "total_tokens": 5248,
+    "prompt_tokens_details": {
+      "cached_tokens": 128
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 122
+    }
+  }
+}

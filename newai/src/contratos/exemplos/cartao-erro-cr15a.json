@@ -1,0 +1,10 @@
+{
+  "exemplo": true,
+  "esquema": "CartaoResposta",
+  "descricao": "CV-14 (P3): possível duplicidade com Supermercado 480,00 da fatura de 05/11 (CR-15a)",
+  "dados": {
+    "tipo": "erro",
+    "codigo": "POSSIVEL_DUPLICIDADE",
+    "mensagem": "Já existe Supermercado R$ 480,00 na fatura de 05/11. Se for outra compra, confirme."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "CV-07",
+  "persona": "p1",
+  "mensagens": [
+    "Guarda R$ 500 na caixinha da viagem."
+  ],
+  "esperado": {
+    "ferramentas": [
+      {
+        "nome": "propor_movimentacao",
+        "argumentos_contem": {
+          "valor": "500",
+          "destino": "INV9"
+        }
+      }
+    ],
+    "oraculo": "CR-40",
+    "texto_contem": [
+      "200",
+      "15/11"
+    ],
+    "texto_nao_contem": []
+  },
+  "critico": true
+}

@@ -1,0 +1,7 @@
+{
+  "status": "ok",
+  "provedor": "openrouter",
+  "modelo": "deepseek/deepseek-v4.1-flash-1017",
+  "chamadas_simuladas": 1,
+  "chamadas_reais": 0
+}

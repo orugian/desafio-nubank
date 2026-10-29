@@ -1,0 +1,256 @@
+{
+  "fonte": "brapi",
+  "url": "https://brapi.dev/api/quote/PETR4?range=3mo&interval=1d",
+  "obtido_em": "2026-10-28T13:45:39-03:00",
+  "ticker": "PETR4",
+  "serie": [
+    {
+      "data": "2026-07-30",
+      "preco_centavos": 4284
+    },
+    {
+      "data": "2026-07-31",
+      "preco_centavos": 4342
+    },
+    {
+      "data": "2026-08-03",
+      "preco_centavos": 4305
+    },
+    {
+      "data": "2026-08-04",
+      "preco_centavos": 4250
+    },
+    {
+      "data": "2026-08-05",
+      "preco_centavos": 4193
+    },
+    {
+      "data": "2026-08-06",
+      "preco_centavos": 4213
+    },
+    {
+      "data": "2026-08-07",
+      "preco_centavos": 4087
+    },
+    {
+      "data": "2026-08-10",
+      "preco_centavos": 4223
+    },
+    {
+      "data": "2026-08-11",
+      "preco_centavos": 4166
+    },
+    {
+      "data": "2026-08-12",
+      "preco_centavos": 4145
+    },
+    {
+      "data": "2026-08-13",
+      "preco_centavos": 4190
+    },
+    {
+      "data": "2026-08-14",
+      "preco_centavos": 4209
+    },
+    {
+      "data": "2026-08-17",
+      "preco_centavos": 4247
+    },
+    {
+      "data": "2026-08-18",
+      "preco_centavos": 4260
+    },
+    {
+      "data": "2026-08-19",
+      "preco_centavos": 4311
+    },
+    {
+      "data": "2026-08-20",
+      "preco_centavos": 4432
+    },
+    {
+      "data": "2026-08-21",
+      "preco_centavos": 4430
+    },
+    {
+      "data": "2026-08-24",
+      "preco_centavos": 4211
+    },
+    {
+      "data": "2026-08-25",
+      "preco_centavos": 4135
+    },
+    {
+      "data": "2026-08-26",
+      "preco_centavos": 4145
+    },
+    {
+      "data": "2026-08-27",
+      "preco_centavos": 4270
+    },
+    {
+      "data": "2026-08-28",
+      "preco_centavos": 4355
+    },
+    {
+      "data": "2026-08-31",
+      "preco_centavos": 4502
+    },
+    {
+      "data": "2026-09-01",
+      "preco_centavos": 4687
+    },
+    {
+      "data": "2026-09-02",
+      "preco_centavos": 4820
+    },
+    {
+      "data": "2026-09-03",
+      "preco_centavos": 4756
+    },
+    {
+      "data": "2026-09-04",
+      "preco_centavos": 4711
+    },
+    {
+      "data": "2026-09-08",
+      "preco_centavos": 4809
+    },
+    {
+      "data": "2026-09-09",
+      "preco_centavos": 4842
+    },
+    {
+      "data": "2026-09-10",
+      "preco_centavos": 4912
+    },
+    {
+      "data": "2026-09-11",
+      "preco_centavos": 4900
+    },
+    {
+      "data": "2026-09-14",
+      "preco_centavos": 4892
+    },
+    {
+      "data": "2026-09-15",
+      "preco_centavos": 5043
+    },
+    {
+      "data": "2026-09-16",
+      "preco_centavos": 4865
+    },
+    {
+      "data": "2026-09-17",
+      "preco_centavos": 4861
+    },
+    {
+      "data": "2026-09-18",
+      "preco_centavos": 4850
+    },
+    {
+      "data": "2026-09-21",
+      "preco_centavos": 4800
+    },
+    {
+      "data": "2026-09-22",
+      "preco_centavos": 4835
+    },
+    {
+      "data": "2026-09-23",
+      "preco_centavos": 4960
+    },
+    {
+      "data": "2026-09-24",
+      "preco_centavos": 4926
+    },
+    {
+      "data": "2026-09-25",
+      "preco_centavos": 4799
+    },
+    {
+      "data": "2026-09-28",
+      "preco_centavos": 4872
+    },
+    {
+      "data": "2026-09-29",
+      "preco_centavos": 4910
+    },
+    {
+      "data": "2026-09-30",
+      "preco_centavos": 4912
+    },
+    {
+      "data": "2026-10-01",
+      "preco_centavos": 4977
+    },
+    {
+      "data": "2026-10-02",
+      "preco_centavos": 5117
+    },
+    {
+      "data": "2026-10-05",
+      "preco_centavos": 5536
+    },
+    {
+      "data": "2026-10-06",
+      "preco_centavos": 5382
+    },
+    {
+      "data": "2026-10-07",
+      "preco_centavos": 5433
+    },
+    {
+      "data": "2026-10-08",
+      "preco_centavos": 5548
+    },
+    {
+      "data": "2026-10-09",
+      "preco_centavos": 5600
+    },
+    {
+      "data": "2026-10-13",
+      "preco_centavos": 5685
+    },
+    {
+      "data": "2026-10-14",
+      "preco_centavos": 5811
+    },
+    {
+      "data": "2026-10-15",
+      "preco_centavos": 5736
+    },
+    {
+      "data": "2026-10-16",
+      "preco_centavos": 5968
+    },
+    {
+      "data": "2026-10-19",
+      "preco_centavos": 5800
+    },
+    {
+      "data": "2026-10-20",
+      "preco_centavos": 5821
+    },
+    {
+      "data": "2026-10-21",
+      "preco_centavos": 5775
+    },
+    {
+      "data": "2026-10-22",
+      "preco_centavos": 5783
+    },
+    {
+      "data": "2026-10-23",
+      "preco_centavos": 5868
+    },
+    {
+      "data": "2026-10-26",
+      "preco_centavos": 5388
+    },
+    {
+      "data": "2026-10-27",
+      "preco_centavos": 5279
+    }
+  ]
+}

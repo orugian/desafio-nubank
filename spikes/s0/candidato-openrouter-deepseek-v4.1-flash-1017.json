@@ -1,0 +1,15 @@
+{
+  "provedor": "openrouter",
+  "modelo": "deepseek/deepseek-v4.1-flash-1017",
+  "origem": "Escolha direta do responsável no chat; seguir no modelo pago temporariamente e buscar gratuito depois.",
+  "autorizacao_financeira": "Uso pago expressamente autorizado; o responsável informou teto alto de desenvolvimento e limites próprios da API. Nenhum novo teto monetário será exigido para os cinco casos desta rodada.",
+  "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+  "catalogo_origem": "https://openrouter.ai/api/v1/models",
+  "catalogo_gravado": "spikes/s0/respostas/openrouter-modelos.json",
+  "parametros": { "temperature": 0, "max_tokens": 700, "stream": false, "reasoning": { "enabled": false }, "tool_choice": "auto" },
+  "comparabilidade": "Mesmos cinco casos, contexto, doze ferramentas, instruções e verificador literal; sem modificar teste ou resultados antigos.",
+  "orcamento_de_execucao": { "requisicoes_openrouter_anteriores_incluindo_listagem": 11, "novas_completions": 5, "total_maximo_nesta_rodada": 16, "novas_listagens": 0, "retentativas_automaticas": 0 },
+  "suposicao_processo": "A autorização para seguir com o modelo pago cobre os cinco casos adicionais, registrando o total 16 em vez do antigo teto exploratório 15; sem contornar limites reais do provedor.",
+  "gates_nao_dispensados": ["M0 APROVADO antes de B4", "gate S0 de pelo menos 4/5 e máxima abaixo de 15 s", "M1", "B6", "sigilo de credenciais e dados pessoais"],
+  "seguranca": "Chaves somente por node --env-file no arquivo autorizado. Não editar segredos nem ativar faturamento ou comprar créditos. 401/403 e 402 interrompem a execução."
+}

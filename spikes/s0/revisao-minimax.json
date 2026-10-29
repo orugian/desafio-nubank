@@ -1,0 +1,68 @@
+{
+  "fonte_normativa": "docs/NEWAI-SPECS.md §4.5, linha 190, e CR-17b",
+  "limite_da_auditoria": "Somente equivalência textual decimal em cópia na memória. Não é execução do contrato 1.0 nem do motor da S1; não altera teste nem aprova gate automaticamente.",
+  "automatico_original": 3,
+  "revisao_equivalencia": 5,
+  "total": 5,
+  "registros": [
+    {
+      "caso": "CV-01",
+      "arquivo": "nvidia-minimaxai_minimax-m3.1-flash-CV-01.json",
+      "resultado_automatico_original": false,
+      "revisao_equivalencia_monetaria": true,
+      "alteracoes": [
+        {
+          "campo": "valor",
+          "antes": "500.00",
+          "depois": "500",
+          "somente_na_copia_em_memoria": true
+        }
+      ],
+      "bruto_inalterado": true,
+      "sha256_bruto": "2a5b64459cc10357a13e49150506356a96a9f435c6d224acdd2e2859409729a4"
+    },
+    {
+      "caso": "CV-03",
+      "arquivo": "nvidia-minimaxai_minimax-m3.1-flash-CV-03.json",
+      "resultado_automatico_original": false,
+      "revisao_equivalencia_monetaria": true,
+      "alteracoes": [
+        {
+          "campo": "valor",
+          "antes": "150.00",
+          "depois": "150",
+          "somente_na_copia_em_memoria": true
+        }
+      ],
+      "bruto_inalterado": true,
+      "sha256_bruto": "158300a776cbe6653b73798da4d7553da6e9bedf36dbb8671a45611bbd4bb5c8"
+    },
+    {
+      "caso": "CV-07",
+      "arquivo": "nvidia-minimaxai_minimax-m3.1-flash-CV-07.json",
+      "resultado_automatico_original": true,
+      "revisao_equivalencia_monetaria": true,
+      "alteracoes": [],
+      "bruto_inalterado": true,
+      "sha256_bruto": "9e33e936c17f64b97b2322b4b4e213dfc721c660c65492ec87c15a55b9014d38"
+    },
+    {
+      "caso": "CV-11",
+      "arquivo": "nvidia-minimaxai_minimax-m3.1-flash-CV-11.json",
+      "resultado_automatico_original": true,
+      "revisao_equivalencia_monetaria": true,
+      "alteracoes": [],
+      "bruto_inalterado": true,
+      "sha256_bruto": "b62175b99b17e71ab8a4576ad328fe096445486d3e621cf5ce3eba9985abcbd3"
+    },
+    {
+      "caso": "CV-17",
+      "arquivo": "nvidia-minimaxai_minimax-m3.1-flash-CV-17.json",
+      "resultado_automatico_original": true,
+      "revisao_equivalencia_monetaria": true,
+      "alteracoes": [],
+      "bruto_inalterado": true,
+      "sha256_bruto": "65c4637d61bebfb4baf376da64ac462771af9fec2ad22428e3b704cad461e22e"
+    }
+  ]
+}

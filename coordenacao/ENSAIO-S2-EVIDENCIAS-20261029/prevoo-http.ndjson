@@ -1,0 +1,4 @@
+{"instante":"2026-10-29T19:23:11.811Z","pid":54560,"tipo":"externo_bloqueado"}
+{"instante":"2026-10-29T19:23:25.331Z","pid":54560,"tipo":"externo_bloqueado"}
+{"instante":"2026-10-29T19:23:27.160Z","pid":54560,"tipo":"tentativa","id":"59af32fb-44d4-4c0e-8ea9-648cf4285089","provedor":"openrouter","teste":true}
+{"instante":"2026-10-29T19:23:27.162Z","pid":54560,"tipo":"resultado","id":"59af32fb-44d4-4c0e-8ea9-648cf4285089","http_status":200,"duracao_ms":2}

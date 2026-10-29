@@ -1,0 +1,56 @@
+{
+  "chamadas": 5,
+  "ticker_escolhido": "PETR4",
+  "registros": [
+    {
+      "fonte": "brapi-PETR4",
+      "url": "https://brapi.dev/api/quote/PETR4?range=3mo&interval=1d",
+      "obtido_em": "2026-10-28T16:45:39.307Z",
+      "status": 200,
+      "latencia_ms": 727,
+      "primeira_data": "2026-07-30",
+      "ultima_data": "2026-10-28",
+      "quantidade": 63
+    },
+    {
+      "fonte": "brapi-VALE3",
+      "url": "https://brapi.dev/api/quote/VALE3?range=3mo&interval=1d",
+      "obtido_em": "2026-10-28T16:45:39.484Z",
+      "status": 200,
+      "latencia_ms": 167,
+      "primeira_data": "2026-07-30",
+      "ultima_data": "2026-10-28",
+      "quantidade": 63
+    },
+    {
+      "fonte": "brapi-ITUB4",
+      "url": "https://brapi.dev/api/quote/ITUB4?range=3mo&interval=1d",
+      "obtido_em": "2026-10-28T16:45:39.630Z",
+      "status": 200,
+      "latencia_ms": 143,
+      "primeira_data": "2026-07-30",
+      "ultima_data": "2026-10-28",
+      "quantidade": 63
+    },
+    {
+      "fonte": "brapi-MGLU3",
+      "url": "https://brapi.dev/api/quote/MGLU3?range=3mo&interval=1d",
+      "obtido_em": "2026-10-28T16:45:39.796Z",
+      "status": 200,
+      "latencia_ms": 163,
+      "primeira_data": "2026-07-30",
+      "ultima_data": "2026-10-28",
+      "quantidade": 63
+    },
+    {
+      "fonte": "brapi-BOVA11",
+      "url": "https://brapi.dev/api/quote/BOVA11?range=3mo&interval=1d",
+      "obtido_em": "2026-10-28T16:45:39.984Z",
+      "status": 200,
+      "latencia_ms": 186,
+      "primeira_data": "2026-07-30",
+      "ultima_data": "2026-10-28",
+      "quantidade": 63
+    }
+  ]
+}

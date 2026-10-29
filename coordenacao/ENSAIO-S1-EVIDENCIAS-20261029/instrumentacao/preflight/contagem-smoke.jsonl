@@ -1,0 +1,5 @@
+{"evento":"tentativa","id":"dbe2e49d-2f25-4389-9018-8b4bfa7c1e60","em":"2026-10-29T19:01:48.755Z","provedor":"openrouter"}
+{"evento":"resultado","id":"dbe2e49d-2f25-4389-9018-8b4bfa7c1e60","em":"2026-10-29T19:01:48.792Z","status":200,"duracao_ms":37}
+{"evento":"tentativa","id":"b95bb9f5-9ff9-4aa7-91fa-23716758df50","em":"2026-10-29T19:01:48.793Z","provedor":"openrouter"}
+{"evento":"resultado","id":"b95bb9f5-9ff9-4aa7-91fa-23716758df50","em":"2026-10-29T19:01:48.795Z","status":429,"duracao_ms":2}
+{"evento":"rede_bloqueada","em":"2026-10-29T19:01:48.797Z"}

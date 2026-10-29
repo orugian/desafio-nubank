@@ -1,0 +1,18 @@
+{
+  "criterios": "IDs presentes nos catálogos reais; ferramentas documentadas e português/multilinguismo; sem raciocínio longo. Dois candidatos por provedor, mesmos cinco casos, temperature 0, max_tokens 700. OpenRouter com reasoning.enabled=false.",
+  "candidatos": [
+    { "provedor": "nvidia", "modelo": "nv-mistralai/mistral-nemo-12b-instruct", "motivo": "Instruct 12B não thinking, tool calling nativo e benchmark de português publicados pelo autor.", "fonte": "https://huggingface.co/mistralai/Mistral-Nemo-Instruct-2407" },
+    { "provedor": "nvidia", "modelo": "mistralai/mistral-large-2-instruct", "motivo": "Instruct com function calling/JSON nativos, português publicado; contraste de capacidade com o NeMo.", "fonte": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2407" },
+    { "provedor": "nvidia", "modelo": "nvidia/nemotron-3.5-lightning-30b-a3b", "motivo": "Terceiro candidato após 404 nos dois Mistral. Ferramentas e instruction following documentados; pré-treino contém português, mas não é idioma listado como otimizado: qualidade será medida no spike. reasoning_budget=0 para evitar raciocínio longo; stream=false explícito.", "fonte": "https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3-5-lightning-30b-a3b-infer" },
+    { "provedor": "openrouter", "modelo": "google/gemma-4-26b-a4b-it:free", "motivo": "Instruct MoE com cerca de 4B parâmetros ativos, multilinguismo e function calling nativo; reasoning desligado.", "fonte": "https://ai.google.dev/gemma/docs/core/model_card_4" },
+    { "provedor": "openrouter", "modelo": "google/gemma-4-31b-it:free", "motivo": "Instruct denso, multilinguismo e function calling nativo; contraste de capacidade com MoE; reasoning desligado.", "fonte": "https://ai.google.dev/gemma/docs/core/model_card_4" }
+  ],
+  "controle_reasoning": "https://openrouter.ai/docs/guides/best-practices/reasoning-tokens",
+  "orcamento": { "nvidia_completions": 15, "openrouter_completions": 10, "nvidia_listagens": 1, "openrouter_listagens": 1 },
+  "observacoes": [
+    "IDs antigos de Llama 3.3 e Mistral Small 3.1 não constavam na listagem; não foram presumidos disponíveis.",
+    "Documentação NVIDIA antiga dos dois candidatos retornou 404; a justificativa de ferramentas/idioma veio dos model cards dos autores. A compatibilidade do endpoint será medida, não presumida.",
+    "Não houve autenticação no Hugging Face nem download de pesos; apenas consulta ao model card público. Nenhuma aceitação de licença foi realizada.",
+    "A seleção final é exclusiva do responsável, depois da tabela S0."
+  ]
+}

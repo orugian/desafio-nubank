@@ -1,0 +1,30 @@
+{
+  "id": "chatcmpl-effbc6c9-fed2-4a94-8813-4c083f86a3d2",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "content": "Não posso recomendar um investimento. Posso simular os R$ 500 nas opções disponíveis.\n\nQual é o objetivo: reserva, viagem ou rentabilidade? E há alguma proteção que você queira preservar?",
+        "refusal": null,
+        "role": "assistant",
+        "reasoning_content": "We need answer no recommendation. Could mention options and ask if wants simulation. Need perhaps consult investments for current values? User asks where to put 500. We can say can't recommend, but can compare. Since known positions, maybe explain INV1 protected, INV9 travel, INV2 locked, INV3 variable. Need current results via tool if discussing. Could ask objective. But \"pergunte somente o que não está no sistema.\" Objective not in system. Ask what purpose. Also explicit \"coloco\" maybe order to put? But no destination specified. Need clarify destination and purpose. Could say \"Para eu simular...\" Maybe no tool yet because need destination."
+      },
+      "finish_reason": "stop",
+      "logprobs": null
+    }
+  ],
+  "created": 1793203666,
+  "model": "minimaxai/minimax-m3.1-flash",
+  "object": "chat.completion",
+  "usage": {
+    "prompt_tokens": 5014,
+    "completion_tokens": 178,
+    "total_tokens": 5192,
+    "prompt_tokens_details": {
+      "cached_tokens": 4992
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 136
+    }
+  }
+}

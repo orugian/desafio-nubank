@@ -1,0 +1,15 @@
+{
+  "provedor": "nvidia",
+  "modelo": "minimaxai/minimax-m3.1-flash",
+  "origem": "Teste explicitamente pedido pelo responsável após S0; quinto candidato NVIDIA autorizado especificamente.",
+  "pagina_indicada": "https://build.nvidia.com/minimaxai/minimax-m3.1-flash",
+  "documentacao_endpoint": "https://docs.api.nvidia.com/nim/reference/minimaxai-minimax-m3-1-flash-infer",
+  "model_card": "https://build.nvidia.com/minimaxai/minimax-m3.1-flash/modelcard",
+  "endpoint": "https://integrate.api.nvidia.com/v1/chat/completions",
+  "parametros": { "temperature": 0, "max_tokens": 700, "stream": false, "chat_template_kwargs": { "reasoning_effort": "low" }, "tool_choice": "auto" },
+  "suposicao": "O model card configura reasoning_effort no chat template; a aceitação do campo extra no transporte NVIDIA e o raciocínio efetivo só poderão ser conferidos na resposta. Não se afirma que raciocínio está desativado.",
+  "comparabilidade": "Mesmos cinco casos, doze ferramentas, instruções, contexto e verificador das rodadas anteriores. Sem adaptação para ensinar respostas esperadas.",
+  "orcamento": { "nvidia_antes_incluindo_listagem": 21, "novas_completions_planejadas": 5, "nvidia_total_maximo_apos": 26, "teto_nvidia": 40, "openrouter_novas_nesta_etapa": 0 },
+  "fallback_pedido": { "provedor": "openrouter", "modelo": "deepseek/deepseek-v4.1-flash-1017", "condicao": "MiniMax não atende gate", "gate_do_fallback": "Custo/orçamento e teto de requisições precisam ser esclarecidos; B4 exige M0 APROVADO." },
+  "seguranca": "Segredos apenas por node --env-file no caminho autorizado. 401/403 ou 402 interrompem envios. Sem editar segredos, aceitar cobrança ou modificar arquivos da S1."
+}
