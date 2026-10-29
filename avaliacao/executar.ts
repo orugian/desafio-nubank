@@ -122,7 +122,7 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
     esperado: {
       ferramentas: [],
       oraculo: null,
-      texto_contem: ["?"],
+      texto_contem: [],
       texto_nao_contem: [],
     },
     critico: false,
@@ -232,7 +232,7 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
     esperado: {
       ferramentas: [],
       oraculo: null,
-      texto_contem: ["?"],
+      texto_contem: [],
       texto_nao_contem: [],
     },
     critico: true,
@@ -440,7 +440,7 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
     esperado: {
       ferramentas: [],
       oraculo: null,
-      texto_contem: ["?"],
+      texto_contem: [],
       texto_nao_contem: [],
     },
     critico: false,
@@ -558,6 +558,8 @@ function valoresIguaisOuContidos(esperado: unknown, real: unknown, chave?: strin
 /** Sinônimos legítimos de trechos exigidos (mesmo efeito para a pessoa). */
 const SINONIMOS_TRECHO: Record<string, RegExp> = {
   bruto: /\bbrut[oa]s?\b/i,
+  // Limite "é simulação": simulado/simulação/simular ou declaração explícita de que nada real foi movimentado.
+  simulad: /simula(d|ç|c|r)|nada (real )?foi movimentado|não (é|foi) (uma )?(movimentação|operação|transferência) real|sem dinheiro real|nenhum dinheiro real/i,
   "não posso recomendar": /não (posso|vou|faço|faco|dou|consigo) (recomendar|recomendação|recomendações|indicar|sugerir)|não (recomendo|indico) /i,
 };
 
@@ -653,10 +655,12 @@ export function avaliarCasoExecutado(
     );
     if (!perguntouOrdem) motivos.push("Não perguntou a ordem da entrada e da saída em 08/11");
   }
+  // Pedido de esclarecimento pelo efeito: pergunta com "?" ou pedido explícito ("preciso de", "me diga", "informe").
+  const PEDIDO = /\?|preciso (de|saber)|me (diga|informe|conte|passe)|informe|qual (é|seria|será)|quais|poderia (me )?(dizer|informar)/i;
   const perguntas: Record<string, RegExp[]> = {
-    "CV-04": [/(evento|compromisso|conta|lançamento|lancamento|gasto|despesa|pagamento|item|vencimento)/i, /data|dia|quando/i, /\?/],
-    "CV-11": [/(meio|forma|pagamento|pagar|pix|cartão|débito)/i, /\?/],
-    "CV-25": [/data|dia|quando/i, /meio|pagamento|pagar|pix|cartão|débito/i, /\?/],
+    "CV-04": [/(evento|compromisso|conta|lançamento|lancamento|gasto|despesa|pagamento|item|vencimento)/i, /data|dia|quando/i, PEDIDO],
+    "CV-11": [/(meio|forma|pagamento|pagar|pix|cartão|débito)/i, PEDIDO],
+    "CV-25": [/data|dia|quando/i, /meio|pagamento|pagar|pix|cartão|débito/i, PEDIDO],
   };
   if (perguntas[caso.id]?.some((regra) => !regra.test(execucao.textoFinal))) {
     motivos.push("Pergunta não solicita os esclarecimentos exigidos pelo caso");

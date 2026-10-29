@@ -478,6 +478,9 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     expect(textoContemEquivalente("saldo R$ 1800,00", "1.800")).toBe(true);
     expect(textoContemEquivalente("saldo R$ 1.800,00", "1.800")).toBe(true);
     expect(textoContemEquivalente("rentabilidade brutalmente alta", "bruto")).toBe(false);
+    expect(textoContemEquivalente("Tudo isso é uma simulação.", "simulad")).toBe(true);
+    expect(textoContemEquivalente("Nada foi movimentado de verdade.", "simulad")).toBe(true);
+    expect(textoContemEquivalente("Separei R$ 500 na caixinha.", "simulad")).toBe(false);
   });
 
   test("25. CV-08 aceita pergunta de ordem que remete aos eventos citados na frase anterior", () => {
@@ -536,6 +539,19 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     });
     expect(relatorio.resultados[0]!.aprovado).toBe(false);
     expect(relatorio.resultados[0]!.motivos.some((m) => m.startsWith("Turno 3:"))).toBe(true);
+  });
+
+  test("28. Pedido de esclarecimento sem '?' conta como pergunta (efeito), mas exige os dados certos", () => {
+    const casos = carregarCasosAvaliacao("todos");
+    const ok = (id: string, textoFinal: string) =>
+      avaliarCasoExecutado(casos.find((c) => c.id === id)!, { ferramentasChamadas: [], textoFinal, oraculoOk: true });
+    expect(ok("CV-25", "Para simular, preciso de dois dados: a data e o meio de pagamento.").motivos).toEqual([]);
+    expect(ok("CV-25", "Me diga a data e o meio de pagamento desse gasto.").motivos).toEqual([]);
+    expect(ok("CV-11", "Preciso saber o meio de pagamento do conserto.").motivos).toEqual([]);
+    expect(ok("CV-04", "Informe qual compromisso e a nova data.").motivos).toEqual([]);
+    // Sem pedido algum, ou sem pedir a data em CV-25, continua reprovando.
+    expect(ok("CV-25", "Certo, anotado o gasto de R$ 300.").aprovado).toBe(false);
+    expect(ok("CV-25", "Qual o meio de pagamento?").aprovado).toBe(false);
   });
 
   test("19. Explicar a ordem e perguntar sobre outra ação não equivale a perguntar a ordem", () => {
