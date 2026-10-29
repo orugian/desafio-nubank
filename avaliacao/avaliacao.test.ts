@@ -106,6 +106,8 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     expect(relatorio.resultados.map((r) => r.id)).toEqual(["CV-01", "CV-17"]);
     expect(relatorio.resultados[0]?.falha).toBeNull();
     expect(relatorio.resultados[0]?.rastro[0]?.ferramenta).toBe("criar_hipotese");
+    expect(relatorio.total_chamadas_modelo).toBe(3);
+    expect(relatorio.resultados.map((r) => r.chamadas_modelo)).toEqual([2, 1]);
   });
 
   test("5. Todos os 27 casos passam pelos oráculos reais com o provedor roteirizado", async () => {

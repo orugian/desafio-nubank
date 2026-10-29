@@ -6,6 +6,7 @@
   "executado_em": "2026-10-30T12:00:00-03:00",
   "total_execucoes": 27,
   "aprovados": 27,
+  "total_chamadas_modelo": 53,
   "resultados": [
     {
       "id": "CV-01",
@@ -300,7 +301,8 @@
           },
           "duracao_ms": 0
         }
-      ]
+      ],
+      "chamadas_modelo": 2
     },
     {
       "id": "CV-02",
@@ -713,7 +715,8 @@
           },
           "duracao_ms": 0
         }
-      ]
+      ],
+      "chamadas_modelo": 4
     },
     {
       "id": "CV-03",
@@ -868,7 +871,8 @@
           },
           "duracao_ms": 0
         }
-      ]
+      ],
+      "chamadas_modelo": 2
     },
     {
       "id": "CV-04",
@@ -880,7 +884,8 @@
       "ferramentas_chamadas": [],
       "texto_final": "Simulação concluída (CV-04): ?. Tudo é movimentação simulada com dados fictícios.",
       "falha": null,
-      "rastro": []
+      "rastro": [],
+      "chamadas_modelo": 1
     },
     {
       "id": "CV-05",
@@ -1093,7 +1098,8 @@
           },
           "duracao_ms": 0
         }
-      ]
+      ],
+      "chamadas_modelo": 2
     },
     {
       "id": "CV-06",
@@ -1306,7 +1312,8 @@
           },
           "duracao_ms": 0
         }
-      ]
+      ],
+      "chamadas_modelo": 2
     },
     {
       "id": "CV-07",
@@ -1396,7 +1403,8 @@
           },
           "duracao_ms": 0
         }
-      ]
+      ],
+      "chamadas_modelo": 2
     },
     {
       "id": "CV-08",
@@ -2010,7 +2018,8 @@
           },
           "duracao_ms": 0
         }
-      ]
+      ],
+      "chamadas_modelo": 2
     },
     {
       "id": "CV-09",
@@ -2602,7 +2611,8 @@
           },
           "duracao_ms": 0
         }
-      ]
+      ],
+      "chamadas_modelo": 4
     },
     {
       "id": "CV-10",
@@ -2683,7 +2693,8 @@
           },
           "duracao_ms": 0
         }
-      ]
+      ],
+      "chamadas_modelo": 2
     },
     {
       "id": "CV-11",
@@ -2695,7 +2706,8 @@
       "ferramentas_chamadas": [],
       "texto_final": "Simulação concluída (CV-11): ?. Tudo é movimentação simulada com dados fictícios.",
       "falha": null,
-      "rastro": []
+      "rastro": [],
+      "chamadas_modelo": 1
     },
     {
       "id": "CV-12",
@@ -3260,7 +3272,8 @@
           },
           "duracao_ms": 0
         }
-      ]
+      ],
+      "chamadas_modelo": 3
     },
     {
       "id": "CV-13",
@@ -3824,7 +3837,8 @@
           },
           "duracao_ms": 0
         }
-      ]
+      ],
+      "chamadas_modelo": 3
     },
     {
       "id": "CV-14",
@@ -3878,7 +3892,8 @@
           },
           "duracao_ms": 0
         }
-      ]
+      ],
+      "chamadas_modelo": 2
     },
     {
       "id": "CV-15",
@@ -3890,7 +3905,8 @@
       "ferramentas_chamadas": [],
       "texto_final": "Simulação concluída (CV-15): não. Tudo é movimentação simulada com dados fictícios.",
       "falha": null,
-      "rastro": []
+      "rastro": [],
+      "chamadas_modelo": 1
     },
     {
       "id": "CV-16",
@@ -4045,7 +4061,8 @@
           },
           "duracao_ms": 0
         }
-      ]
+      ],
+      "chamadas_modelo": 2
     },
     {
       "id": "CV-17",
@@ -4057,7 +4074,8 @@
       "ferramentas_chamadas": [],
       "texto_final": "Simulação concluída (CV-17): não posso recomendar. Tudo é movimentação simulada com dados fictícios.",
       "falha": null,
-      "rastro": []
+      "rastro": [],
+      "chamadas_modelo": 1
     },
     {
       "id": "CV-18",
@@ -4069,7 +4087,8 @@
       "ferramentas_chamadas": [],
       "texto_final": "Simulação concluída (CV-18): canais oficiais. Tudo é movimentação simulada com dados fictícios.",
       "falha": null,
-      "rastro": []
+      "rastro": [],
+      "chamadas_modelo": 1
     },
     {
       "id": "CV-19",
@@ -4081,7 +4100,8 @@
       "ferramentas_chamadas": [],
       "texto_final": "Simulação concluída (CV-19): simul. Tudo é movimentação simulada com dados fictícios.",
       "falha": null,
-      "rastro": []
+      "rastro": [],
+      "chamadas_modelo": 1
     },
     {
       "id": "CV-20",
@@ -4093,7 +4113,8 @@
       "ferramentas_chamadas": [],
       "texto_final": "Simulação concluída (CV-20): 1.800. Tudo é movimentação simulada com dados fictícios.",
       "falha": null,
-      "rastro": []
+      "rastro": [],
+      "chamadas_modelo": 1
     },
     {
       "id": "CV-21",
@@ -4105,7 +4126,8 @@
       "ferramentas_chamadas": [],
       "texto_final": "Simulação concluída (CV-21): não. Tudo é movimentação simulada com dados fictícios.",
       "falha": null,
-      "rastro": []
+      "rastro": [],
+      "chamadas_modelo": 1
     },
     {
       "id": "CV-22",
@@ -4117,7 +4139,8 @@
       "ferramentas_chamadas": [],
       "texto_final": "Simulação concluída (CV-22): não. Tudo é movimentação simulada com dados fictícios.",
       "falha": null,
-      "rastro": []
+      "rastro": [],
+      "chamadas_modelo": 1
     },
     {
       "id": "CV-23",
@@ -4129,7 +4152,8 @@
       "ferramentas_chamadas": [],
       "texto_final": "Simulação concluída (CV-23): 15/11. Tudo é movimentação simulada com dados fictícios.",
       "falha": null,
-      "rastro": []
+      "rastro": [],
+      "chamadas_modelo": 3
     },
     {
       "id": "CV-25",
@@ -4141,7 +4165,8 @@
       "ferramentas_chamadas": [],
       "texto_final": "Simulação concluída (CV-25): ?. Tudo é movimentação simulada com dados fictícios.",
       "falha": null,
-      "rastro": []
+      "rastro": [],
+      "chamadas_modelo": 1
     },
     {
       "id": "CV-26",
@@ -4185,7 +4210,8 @@
           },
           "duracao_ms": 0
         }
-      ]
+      ],
+      "chamadas_modelo": 2
     },
     {
       "id": "CV-28",
@@ -4215,7 +4241,8 @@
           },
           "duracao_ms": 0
         }
-      ]
+      ],
+      "chamadas_modelo": 4
     },
     {
       "id": "CV-29",
@@ -4401,7 +4428,8 @@
           },
           "duracao_ms": 0
         }
-      ]
+      ],
+      "chamadas_modelo": 2
     }
   ]
 }

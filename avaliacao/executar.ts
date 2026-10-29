@@ -720,6 +720,7 @@ export type ResultadoCasoB6 = {
   texto_final: string;
   falha: Falha | null;
   rastro: ItemRastro[];
+  chamadas_modelo: number;
 };
 
 export type RelatorioAvaliacaoB6 = {
@@ -730,6 +731,7 @@ export type RelatorioAvaliacaoB6 = {
   executado_em: string;
   total_execucoes: number;
   aprovados: number;
+  total_chamadas_modelo: number;
   resultados: ResultadoCasoB6[];
 };
 
@@ -754,15 +756,32 @@ export async function executarAvaliacao(opcoes: {
 
   let nomeProvedor = "roteirizado";
   let nomeModelo = "roteirizado-b6";
+  let ultimaChamadaReal = 0;
 
   for (let rep = 1; rep <= repeticoes; rep++) {
     for (const caso of casos) {
       const depsBase = criarDepsPadrao(
         usarRoteirizado ? { provedor: "roteirizado" } : undefined,
       );
-      const provedor = usarRoteirizado
+      const provedorOriginal = usarRoteirizado
         ? criarProvedorRoteirizadoParaCaso(caso)
         : depsBase.provedor;
+      let chamadasModeloCaso = 0;
+      const provedor: Provedor = {
+        nome: provedorOriginal.nome,
+        modelo: provedorOriginal.modelo,
+        async gerar(mensagens, ferramentas, opcoesGeracao) {
+          if (!usarRoteirizado) {
+            const restante = 1500 - (performance.now() - ultimaChamadaReal);
+            if (restante > 0) {
+              await new Promise((resolve) => setTimeout(resolve, restante));
+            }
+            ultimaChamadaReal = performance.now();
+          }
+          chamadasModeloCaso += 1;
+          return provedorOriginal.gerar(mensagens, ferramentas, opcoesGeracao);
+        },
+      };
       nomeProvedor = provedor.nome;
       nomeModelo = provedor.modelo;
 
@@ -825,6 +844,7 @@ export async function executarAvaliacao(opcoes: {
                 duracao_ms: usarRoteirizado ? 0 : item.duracao_ms,
               }))
             : [],
+        chamadas_modelo: chamadasModeloCaso,
       });
     }
   }
@@ -837,6 +857,7 @@ export async function executarAvaliacao(opcoes: {
     executado_em: usarRoteirizado ? "2026-10-30T12:00:00-03:00" : new Date().toISOString(),
     total_execucoes: resultados.length,
     aprovados: resultados.filter((r) => r.aprovado).length,
+    total_chamadas_modelo: resultados.reduce((soma, r) => soma + r.chamadas_modelo, 0),
     resultados,
   };
 
@@ -856,12 +877,13 @@ export async function executarAvaliacao(opcoes: {
     "",
     `- Provedor: \`${relatorio.provedor}\` · Modelo: \`${relatorio.modelo}\``,
     `- Resultado: **${relatorio.aprovados}/${relatorio.total_execucoes}** aprovados`,
+    `- Chamadas ao modelo: **${relatorio.total_chamadas_modelo}** (limite de 40 requisições/minuto no modo real)`,
     "",
-    "| Caso | Rep | Status | Latência (ms) | Ferramentas | Observações |",
-    "|---|---|---|---|---|---|",
+    "| Caso | Rep | Status | Latência (ms) | Chamadas | Ferramentas | Observações |",
+    "|---|---|---|---|---|---|---|",
     ...relatorio.resultados.map(
       (r) =>
-        `| ${r.id} | ${r.repeticao} | ${r.aprovado ? "OK" : "FALHA"} | ${r.latencia_ms} | ${
+        `| ${r.id} | ${r.repeticao} | ${r.aprovado ? "OK" : "FALHA"} | ${r.latencia_ms} | ${r.chamadas_modelo} | ${
           r.ferramentas_chamadas.join(", ") || "—"
         } | ${[...r.motivos, r.falha ? `${r.falha.tipo}/${r.falha.codigo}` : null]
           .filter(Boolean)
