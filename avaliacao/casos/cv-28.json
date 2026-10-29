@@ -3,7 +3,8 @@
   "persona": "p1",
   "mensagens": [
     "Guarda R$ 500 na caixinha da viagem.",
-    "Confirmo a movimentação OP1."
+    "sim",
+    "sim"
   ],
   "esperado": {
     "ferramentas": [
@@ -14,7 +15,7 @@
         }
       }
     ],
-    "oraculo": "CR-41",
+    "oraculo": "CR-48",
     "texto_contem": [
       "movimentação simulada"
     ],

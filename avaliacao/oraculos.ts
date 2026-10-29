@@ -108,6 +108,7 @@ export function verificarOraculoB6(
   oraculo: string | null,
   resposta: RespostaTurno | null,
   estado: EstadoSessao,
+  respostasAnteriores: RespostaTurno[] = [],
 ): string[] {
   if (!resposta || resposta.status !== "ok") return ["Turno não concluído com status ok"];
   if (!oraculo) return [];
@@ -233,6 +234,35 @@ export function verificarOraculoB6(
       else if (!contem({ primeira_falta: { data: "2026-11-15", valor_descoberto_centavos: 20000 } }, cartao.impacto.indicadores)) {
         motivos.push("Impacto da proposta divergente de CR-02");
       }
+      return motivos;
+    }
+    case "CR-48": {
+      const motivos = verificarOraculoB6("CR-41", resposta, estado);
+      const [proposta, confirmacao] = respostasAnteriores;
+      if (proposta?.status !== "ok" || confirmacao?.status !== "ok") {
+        motivos.push("Sequência de proposta e confirmação anterior ausente (CR-48)");
+        return motivos;
+      }
+      if (proposta.estado.versao !== 1 || confirmacao.estado.versao !== 2 || estado.versao !== 3) {
+        motivos.push("Versões da sequência diferentes de 1 → 2 → 3 (CR-48)");
+      }
+      if (proposta.estado.operacao_pendente?.id !== "OP1" || proposta.estado.operacoes.length !== 0) {
+        motivos.push("Primeiro turno não deixou somente OP1 pendente (CR-48)");
+      }
+      const confirmouAntes = confirmacao.rastro.some((r) =>
+        r.ferramenta === "confirmar_movimentacao" && contem({ operacao_id: "OP1" }, r.argumentos) &&
+        contem({ ok: true }, r.resultado),
+      );
+      if (!confirmouAntes) motivos.push("Segundo turno não confirmou OP1 pelo motor (CR-48)");
+      const repetiu = resposta.rastro.some((r) =>
+        r.ferramenta === "confirmar_movimentacao" && contem({ operacao_id: "OP1" }, r.argumentos) &&
+        contem({ ok: false, erro: { codigo: "OPERACAO_JA_EXECUTADA" } }, r.resultado),
+      );
+      if (!repetiu) motivos.push("Terceiro turno não devolveu OPERACAO_JA_EXECUTADA ao modelo (CR-48)");
+      const { conversa: _c2, versao: _v2, ...antes } = confirmacao.estado;
+      const { conversa: _c3, versao: _v3, ...depois } = estado;
+      if (JSON.stringify(antes) !== JSON.stringify(depois)) motivos.push("Estado de negócio mudou na confirmação repetida (CR-48)");
+      if (JSON.stringify(confirmacao.visao) !== JSON.stringify(resposta.visao)) motivos.push("Visão mudou na confirmação repetida (CR-48)");
       return motivos;
     }
     case "CR-41": {

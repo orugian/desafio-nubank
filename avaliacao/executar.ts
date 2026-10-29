@@ -451,7 +451,7 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
   {
     id: "CV-28",
     persona: "p1",
-    mensagens: ["Guarda R$ 500 na caixinha da viagem.", "Confirmo a movimentação OP1."],
+    mensagens: ["Guarda R$ 500 na caixinha da viagem.", "sim", "sim"],
     esperado: {
       ferramentas: [
         {
@@ -459,7 +459,7 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
           argumentos_contem: { operacao_id: "OP1" },
         },
       ],
-      oraculo: "CR-41",
+      oraculo: "CR-48",
       texto_contem: ["movimentação simulada"],
       texto_nao_contem: [],
     },
@@ -634,11 +634,17 @@ function criarProvedorRoteirizadoParaCaso(caso: CasoAvaliacao): Provedor {
           return {
             tipo: "chamadas",
             chamadas: [
-              {
-                id: "prep_op1",
-                nome: "propor_movimentacao",
-                argumentos: JSON.stringify({ valor: "500", destino: "INV9" }),
-              },
+              indiceMensagemUsuario === 1
+                ? {
+                    id: "prep_op1",
+                    nome: "propor_movimentacao",
+                    argumentos: JSON.stringify({ valor: "500", destino: "INV9" }),
+                  }
+                : {
+                    id: "confirma_op1",
+                    nome: "confirmar_movimentacao",
+                    argumentos: JSON.stringify({ operacao_id: "OP1" }),
+                  },
             ],
           };
         }
@@ -829,7 +835,10 @@ export async function executarAvaliacao(opcoes: {
           ? ultimaResposta.rastro.map((r) => ({ nome: r.ferramenta, argumentos: r.argumentos }))
           : [];
       const textoFinal = ultimaResposta?.status === "ok" ? ultimaResposta.texto : "";
-      const motivosOraculo = verificarOraculoB6(caso.esperado.oraculo, ultimaResposta, estado);
+      const motivosOraculo = verificarOraculoB6(
+        caso.esperado.oraculo, ultimaResposta, estado,
+        turnos.slice(0, -1).map((t) => t.resposta),
+      );
       const oraculoOk = motivosOraculo.length === 0;
 
       const aval = avaliarCasoExecutado(caso, {

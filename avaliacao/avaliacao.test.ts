@@ -152,4 +152,32 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     const gravado = JSON.parse(readFileSync(join(dirSaida, "avaliacao-roteirizado.json"), "utf8"));
     expect(gravado.resultados[0].turnos).toEqual(turnos);
   });
+
+  test("7. CV-28 executa CR-48 completo: proposta, sim, sim, erro tipado e nenhuma duplicação", async () => {
+    const caso = carregarCasosAvaliacao("critico").find((c) => c.id === "CV-28")!;
+    expect(caso.mensagens).toEqual(["Guarda R$ 500 na caixinha da viagem.", "sim", "sim"]);
+    expect(caso.esperado.oraculo).toBe("CR-48");
+    const relatorio = await executarAvaliacao({
+      conjunto: "critico",
+      ids: ["CV-28"],
+      usarRoteirizado: true,
+      dirSaida: mkdtempSync(join(tmpdir(), "newai-b6-cr48-")),
+    });
+    const resultado = relatorio.resultados[0]!;
+    expect(resultado.motivos).toEqual([]);
+    expect(resultado.aprovado).toBe(true);
+    const respostas = resultado.turnos.map((t) => t.resposta);
+    expect(respostas.map((r) => r.estado?.versao)).toEqual([1, 2, 3]);
+    expect(respostas.map((r) => r.estado?.operacoes.length)).toEqual([0, 1, 1]);
+    const ultima = respostas[2]!;
+    expect(ultima.status).toBe("ok");
+    if (ultima.status !== "ok") throw new Error("turno falhou");
+    expect(ultima.rastro[0]?.ferramenta).toBe("confirmar_movimentacao");
+    expect(ultima.rastro[0]?.resultado).toMatchObject({
+      ok: false, erro: { codigo: "OPERACAO_JA_EXECUTADA" },
+    });
+    const { conversa: _c2, versao: _v2, ...antes } = respostas[1]!.estado!;
+    const { conversa: _c3, versao: _v3, ...depois } = ultima.estado;
+    expect(depois).toEqual(antes);
+  });
 });
