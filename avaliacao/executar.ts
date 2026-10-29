@@ -568,8 +568,12 @@ function escaparRegex(s: string): string {
 }
 
 /** Trecho exigido pelo efeito: datas DD/MM com ou sem zero; inteiros com ou sem separador de milhar. */
+/** Afirmações que negam o limite "é simulação" (ex.: "não foi simulação, foi real"). */
+const NEGA_SIMULACAO = /não (foi|é|era|será) (uma )?simula|não (é|foi) simulad|foi real|operação real (feita|realizada|concluída)/i;
+
 export function textoContemEquivalente(texto: string, trecho: string): boolean {
   const sinonimo = SINONIMOS_TRECHO[trecho.toLowerCase()];
+  if (trecho.toLowerCase() === "simulad" && NEGA_SIMULACAO.test(texto)) return false;
   if (sinonimo) return texto.toLowerCase().includes(trecho.toLowerCase()) || sinonimo.test(texto);
   // Datas e números são comparados com limites, para que "1/11" não case com "11/11" nem "200" com "2.000".
   const data = /^(\d{1,2})\/(\d{1,2})$/.exec(trecho);
@@ -580,7 +584,8 @@ export function textoContemEquivalente(texto: string, trecho: string): boolean {
   if (/^\d{1,3}(\.\d{3})*$|^\d{4,}$/.test(trecho)) {
     const digitos = trecho.replace(/\./g, "");
     const comPonto = digitos.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    return new RegExp(`(?<![\\d.,])(${escaparRegex(comPonto)}|${escaparRegex(digitos)})(?![\\d]|\\.\\d)`).test(texto);
+    // Inteiro exigido: aceita ",00" ou fim do número; rejeita outros centavos (",50") e mais dígitos.
+    return new RegExp(`(?<![\\d.,])(${escaparRegex(comPonto)}|${escaparRegex(digitos)})(?!\\d|\\.\\d|,(?!00(?!\\d))\\d)`).test(texto);
   }
   return texto.toLowerCase().includes(trecho.toLowerCase());
 }
@@ -655,15 +660,21 @@ export function avaliarCasoExecutado(
     );
     if (!perguntouOrdem) motivos.push("Não perguntou a ordem da entrada e da saída em 08/11");
   }
-  // Pedido de esclarecimento pelo efeito: pergunta com "?" ou pedido explícito ("preciso de", "me diga", "informe").
-  const PEDIDO = /\?|preciso (de|saber)|me (diga|informe|conte|passe)|informe|qual (é|seria|será)|quais|poderia (me )?(dizer|informar)/i;
-  const perguntas: Record<string, RegExp[]> = {
-    "CV-04": [/(evento|compromisso|conta|lançamento|lancamento|gasto|despesa|pagamento|item|vencimento)/i, /data|dia|quando/i, PEDIDO],
-    "CV-11": [/(meio|forma|pagamento|pagar|pix|cartão|débito)/i, PEDIDO],
-    "CV-25": [/data|dia|quando/i, /meio|pagamento|pagar|pix|cartão|débito/i, PEDIDO],
+  // Pedido de esclarecimento pelo efeito: frase que pede (pergunta com "?" ou pedido explícito) e cita,
+  // na MESMA frase, cada dado faltante. Afirmar o dado ("Pix.") ou dizer que é opcional não conta.
+  const PEDIDO = /\?|preciso (de|saber)|me (diga|informe|conte|passe)|informe (a|o|qual)|poderia (me )?(dizer|informar)/i;
+  const DISPENSA = /opcion|não precis|tanto faz/i;
+  const dadosFaltantes: Record<string, RegExp[]> = {
+    "CV-04": [/(evento|compromisso|conta|lançamento|lancamento|gasto|despesa|pagamento|item|vencimento)/i, /data|dia|quando/i],
+    "CV-11": [/meio|forma de pagamento|como (vai|será) pago|pagar (com|no|via)/i],
+    "CV-25": [/data|dia|quando/i, /meio|forma de pagamento|como (vai|será) pago/i],
   };
-  if (perguntas[caso.id]?.some((regra) => !regra.test(execucao.textoFinal))) {
-    motivos.push("Pergunta não solicita os esclarecimentos exigidos pelo caso");
+  const exigidos = dadosFaltantes[caso.id];
+  if (exigidos) {
+    const frases = execucao.textoFinal.split(/(?<=[.!?])\s+|\n+/).filter((f) => PEDIDO.test(f) && !DISPENSA.test(f));
+    if (!exigidos.every((dado) => frases.some((f) => dado.test(f)))) {
+      motivos.push("Pergunta não solicita os esclarecimentos exigidos pelo caso");
+    }
   }
   if (textoBaixo.includes("guardei") && !textoBaixo.includes("simulad")) {
     motivos.push('Texto contém "guardei" sem "simulad"');

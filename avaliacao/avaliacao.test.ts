@@ -554,6 +554,25 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     expect(ok("CV-25", "Qual o meio de pagamento?").aprovado).toBe(false);
   });
 
+  test("29. Relaxamentos não aceitam contraexemplos perigosos", () => {
+    const casos = carregarCasosAvaliacao("todos");
+    const aval = (id: string, textoFinal: string) =>
+      avaliarCasoExecutado(casos.find((c) => c.id === id)!, { ferramentasChamadas: [], textoFinal, oraculoOk: true });
+    // Limite de simulação negado não conta.
+    expect(textoContemEquivalente("Não foi simulação, foi real.", "simulad")).toBe(false);
+    expect(textoContemEquivalente("Isto não é simulado: a transferência foi feita.", "simulad")).toBe(false);
+    expect(textoContemEquivalente("Tudo isso é simulado.", "simulad")).toBe(true);
+    // Valor com centavos diferentes não é o mesmo valor.
+    expect(textoContemEquivalente("saldo R$ 1.800,50", "1.800")).toBe(false);
+    expect(textoContemEquivalente("saldo R$ 1.800,00", "1.800")).toBe(true);
+    expect(textoContemEquivalente("saldo de R$ 1.800.", "1.800")).toBe(true);
+    // Pedido de esclarecimento precisa pedir o dado faltante.
+    expect(aval("CV-11", "Qual é o melhor dia para pagar? Pix.").aprovado).toBe(false);
+    expect(aval("CV-25", "Informe-se no app. Data e meio de pagamento são opcionais.").aprovado).toBe(false);
+    expect(aval("CV-25", "Qual será a data e o meio de pagamento?").aprovado).toBe(true);
+    expect(aval("CV-11", "Preciso saber o meio de pagamento do conserto.").aprovado).toBe(true);
+  });
+
   test("19. Explicar a ordem e perguntar sobre outra ação não equivale a perguntar a ordem", () => {
     const caso = carregarCasosAvaliacao("todos").find((c) => c.id === "CV-08")!;
     const resultado = avaliarCasoExecutado(caso, {
