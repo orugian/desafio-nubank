@@ -389,6 +389,32 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     );
   });
 
+  test("21. CV-10 avalia o efeito da consulta: filtro equivalente passa, período errado falha", async () => {
+    const caso = carregarCasosAvaliacao("todos").find((c) => c.id === "CV-10")!;
+    expect(caso.esperado.oraculo).toBe("H-setembro-delivery");
+    const executar = (argumentos: Record<string, string>, texto: string) => executarAvaliacao({
+      ids: ["CV-10"], conjunto: "todos", usarRoteirizado: true,
+      dirSaida: mkdtempSync(join(tmpdir(), "newai-b6-cv10-")),
+      provedor: (() => {
+        let passo = 0;
+        return { nome: "roteirizado", modelo: "cv10-efeito", async gerar() {
+          passo += 1;
+          return passo === 1
+            ? { tipo: "chamadas", chamadas: [{ id: "h", nome: "consultar_historico", argumentos: JSON.stringify(argumentos) }] }
+            : { tipo: "texto", texto };
+        } } satisfies Provedor;
+      })(),
+    });
+    const setembro = { de: "2026-09-01", ate: "2026-09-30" };
+    const porCategoria = await executar({ ...setembro, categoria: "delivery" }, "Em setembro, delivery somou R$ 160,00.");
+    expect(porCategoria.resultados[0]!.motivos).toEqual([]);
+    const porBusca = await executar({ ...setembro, busca: "delivery" }, "Em setembro, delivery somou R$ 160,00.");
+    expect(porBusca.resultados[0]!.motivos).toEqual([]);
+    const semPeriodo = await executar({ categoria: "delivery" }, "Com delivery você gastou R$ 160,00.");
+    expect(semPeriodo.resultados[0]!.aprovado).toBe(false);
+    expect(semPeriodo.resultados[0]!.motivos.join(" ")).toContain("setembro");
+  });
+
   test("19. Explicar a ordem e perguntar sobre outra ação não equivale a perguntar a ordem", () => {
     const caso = carregarCasosAvaliacao("todos").find((c) => c.id === "CV-08")!;
     const resultado = avaliarCasoExecutado(caso, {

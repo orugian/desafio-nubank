@@ -10,6 +10,7 @@ import {
 import { carregarPersona } from "@/dados";
 import { criarCalendario } from "@/dominio/calendario";
 import { calcularCenarios, paraCentavos } from "@/dominio/caixa";
+import { consultarHistorico } from "@/dominio/historico";
 import { consultarInvestimentos, projetarRendimento } from "@/dominio/investimentos";
 import cdiJson from "../dados/mercado/cdi.json";
 import btcJson from "../dados/mercado/fechamentos-BTC.json";
@@ -216,6 +217,24 @@ export function verificarOraculoB6(
       const { conversa: _c, versao: _v, ...negocio } = estado;
       const { conversa: _ci, versao: _vi, ...inicial } = estadoInicial(estado.persona_id, estado.mercado);
       if (JSON.stringify(negocio) !== JSON.stringify(inicial)) motivos.push("Estado de negócio mudou apesar da duplicidade");
+      return motivos;
+    }
+    case "H-setembro-delivery": {
+      // Efeito, não forma: categoria "delivery" ou busca equivalente valem se o período e o total
+      // forem os de setembro calculados pelo motor.
+      const esperado = consultarHistorico(rPersona.persona, { de: "2026-09-01", ate: "2026-09-30", categoria: "delivery" });
+      if (!esperado.ok) return [`Oráculo de histórico falhou: ${esperado.erro.codigo}`];
+      const cartao = cartaoDe(resposta.cartoes, "historico");
+      if (!cartao) return ["Cartão de histórico ausente"];
+      const r = cartao.resultado;
+      const motivos: string[] = [];
+      if (r.de !== "2026-09-01" || r.ate !== "2026-09-30") {
+        motivos.push(`Consulta não limitada a setembro (período ${r.de} a ${r.ate})`);
+      }
+      const ids = (itens: Array<{ id: string }>) => itens.map((i) => i.id).sort();
+      if (r.total_saidas_centavos !== esperado.total_saidas_centavos || !isDeepStrictEqual(ids(r.itens), ids(esperado.itens))) {
+        motivos.push("Lançamentos/total de delivery em setembro divergem do motor");
+      }
       return motivos;
     }
     case "CR-15a-triagem": {

@@ -217,12 +217,9 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
     mensagens: ["Quanto gastei com delivery em setembro?"],
     esperado: {
       ferramentas: [
-        {
-          nome: "consultar_historico",
-          argumentos_contem: { categoria: "delivery" },
-        },
+        { nome: "consultar_historico" },
       ],
-      oraculo: null,
+      oraculo: "H-setembro-delivery",
       texto_contem: ["delivery"],
       texto_nao_contem: [],
     },
@@ -744,6 +741,9 @@ function criarProvedorRoteirizadoParaCaso(caso: CasoAvaliacao): Provedor {
         }
         if (f.nome === "projetar_rendimento" && !("destino" in args) && !("cdi_pct" in args)) {
           args = { destino: "INV9", ...args };
+        }
+        if (caso.id === "CV-10") {
+          args = { de: "2026-09-01", ate: "2026-09-30", categoria: "delivery" };
         }
         return {
           tipo: "chamadas",

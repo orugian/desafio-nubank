@@ -7,13 +7,10 @@
   "esperado": {
     "ferramentas": [
       {
-        "nome": "consultar_historico",
-        "argumentos_contem": {
-          "categoria": "delivery"
-        }
+        "nome": "consultar_historico"
       }
     ],
-    "oraculo": null,
+    "oraculo": "H-setembro-delivery",
     "texto_contem": [
       "delivery"
     ],

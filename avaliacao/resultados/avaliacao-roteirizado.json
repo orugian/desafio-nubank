@@ -24145,29 +24145,24 @@
           "chamada": 1,
           "ferramenta": "consultar_historico",
           "argumentos": {
+            "de": "2026-09-01",
+            "ate": "2026-09-30",
             "categoria": "delivery"
           },
           "resultado": {
             "ok": true,
             "filtro": {
+              "de": "2026-09-01",
+              "ate": "2026-09-30",
               "categoria": "delivery"
             },
-            "de": "2026-07-30",
-            "ate": "2026-10-29",
-            "quantidade": 4,
-            "total_saidas_centavos": 29700,
+            "de": "2026-09-01",
+            "ate": "2026-09-30",
+            "quantidade": 2,
+            "total_saidas_centavos": 16000,
             "total_entradas_centavos": 0,
             "grupos": [],
             "itens": [
-              {
-                "id": "L20024",
-                "data": "2026-10-11",
-                "descricao": "Delivery Lanches",
-                "tipo": "saida",
-                "meio": "pix",
-                "categoria": "delivery",
-                "valor_centavos": 6500
-              },
               {
                 "id": "L20021",
                 "data": "2026-09-18",
@@ -24185,24 +24180,13 @@
                 "meio": "pix",
                 "categoria": "delivery",
                 "valor_centavos": 6400
-              },
-              {
-                "id": "L20015",
-                "data": "2026-08-07",
-                "descricao": "Delivery Pizza",
-                "tipo": "saida",
-                "meio": "pix",
-                "categoria": "delivery",
-                "valor_centavos": 7200
               }
             ],
             "valores_formatados": {
-              "total_saidas_centavos": "R$ 297,00",
+              "total_saidas_centavos": "R$ 160,00",
               "total_entradas_centavos": "R$ 0,00",
-              "itens[0].valor_centavos": "R$ 65,00",
-              "itens[1].valor_centavos": "R$ 96,00",
-              "itens[2].valor_centavos": "R$ 64,00",
-              "itens[3].valor_centavos": "R$ 72,00"
+              "itens[0].valor_centavos": "R$ 96,00",
+              "itens[1].valor_centavos": "R$ 64,00"
             }
           },
           "duracao_ms": 0
@@ -24294,24 +24278,17 @@
                       "tipo": "historico",
                       "resultado": {
                         "filtro": {
+                          "de": "2026-09-01",
+                          "ate": "2026-09-30",
                           "categoria": "delivery"
                         },
-                        "de": "2026-07-30",
-                        "ate": "2026-10-29",
-                        "quantidade": 4,
-                        "total_saidas_centavos": 29700,
+                        "de": "2026-09-01",
+                        "ate": "2026-09-30",
+                        "quantidade": 2,
+                        "total_saidas_centavos": 16000,
                         "total_entradas_centavos": 0,
                         "grupos": [],
                         "itens": [
-                          {
-                            "id": "L20024",
-                            "data": "2026-10-11",
-                            "descricao": "Delivery Lanches",
-                            "tipo": "saida",
-                            "meio": "pix",
-                            "categoria": "delivery",
-                            "valor_centavos": 6500
-                          },
                           {
                             "id": "L20021",
                             "data": "2026-09-18",
@@ -24329,15 +24306,6 @@
                             "meio": "pix",
                             "categoria": "delivery",
                             "valor_centavos": 6400
-                          },
-                          {
-                            "id": "L20015",
-                            "data": "2026-08-07",
-                            "descricao": "Delivery Pizza",
-                            "tipo": "saida",
-                            "meio": "pix",
-                            "categoria": "delivery",
-                            "valor_centavos": 7200
                           }
                         ]
                       }
@@ -24348,29 +24316,24 @@
                       "chamada": 1,
                       "ferramenta": "consultar_historico",
                       "argumentos": {
+                        "de": "2026-09-01",
+                        "ate": "2026-09-30",
                         "categoria": "delivery"
                       },
                       "resultado": {
                         "ok": true,
                         "filtro": {
+                          "de": "2026-09-01",
+                          "ate": "2026-09-30",
                           "categoria": "delivery"
                         },
-                        "de": "2026-07-30",
-                        "ate": "2026-10-29",
-                        "quantidade": 4,
-                        "total_saidas_centavos": 29700,
+                        "de": "2026-09-01",
+                        "ate": "2026-09-30",
+                        "quantidade": 2,
+                        "total_saidas_centavos": 16000,
                         "total_entradas_centavos": 0,
                         "grupos": [],
                         "itens": [
-                          {
-                            "id": "L20024",
-                            "data": "2026-10-11",
-                            "descricao": "Delivery Lanches",
-                            "tipo": "saida",
-                            "meio": "pix",
-                            "categoria": "delivery",
-                            "valor_centavos": 6500
-                          },
                           {
                             "id": "L20021",
                             "data": "2026-09-18",
@@ -24388,24 +24351,13 @@
                             "meio": "pix",
                             "categoria": "delivery",
                             "valor_centavos": 6400
-                          },
-                          {
-                            "id": "L20015",
-                            "data": "2026-08-07",
-                            "descricao": "Delivery Pizza",
-                            "tipo": "saida",
-                            "meio": "pix",
-                            "categoria": "delivery",
-                            "valor_centavos": 7200
                           }
                         ],
                         "valores_formatados": {
-                          "total_saidas_centavos": "R$ 297,00",
+                          "total_saidas_centavos": "R$ 160,00",
                           "total_entradas_centavos": "R$ 0,00",
-                          "itens[0].valor_centavos": "R$ 65,00",
-                          "itens[1].valor_centavos": "R$ 96,00",
-                          "itens[2].valor_centavos": "R$ 64,00",
-                          "itens[3].valor_centavos": "R$ 72,00"
+                          "itens[0].valor_centavos": "R$ 96,00",
+                          "itens[1].valor_centavos": "R$ 64,00"
                         }
                       },
                       "duracao_ms": 0
@@ -24429,24 +24381,17 @@
                 "tipo": "historico",
                 "resultado": {
                   "filtro": {
+                    "de": "2026-09-01",
+                    "ate": "2026-09-30",
                     "categoria": "delivery"
                   },
-                  "de": "2026-07-30",
-                  "ate": "2026-10-29",
-                  "quantidade": 4,
-                  "total_saidas_centavos": 29700,
+                  "de": "2026-09-01",
+                  "ate": "2026-09-30",
+                  "quantidade": 2,
+                  "total_saidas_centavos": 16000,
                   "total_entradas_centavos": 0,
                   "grupos": [],
                   "itens": [
-                    {
-                      "id": "L20024",
-                      "data": "2026-10-11",
-                      "descricao": "Delivery Lanches",
-                      "tipo": "saida",
-                      "meio": "pix",
-                      "categoria": "delivery",
-                      "valor_centavos": 6500
-                    },
                     {
                       "id": "L20021",
                       "data": "2026-09-18",
@@ -24464,15 +24409,6 @@
                       "meio": "pix",
                       "categoria": "delivery",
                       "valor_centavos": 6400
-                    },
-                    {
-                      "id": "L20015",
-                      "data": "2026-08-07",
-                      "descricao": "Delivery Pizza",
-                      "tipo": "saida",
-                      "meio": "pix",
-                      "categoria": "delivery",
-                      "valor_centavos": 7200
                     }
                   ]
                 }
@@ -24484,29 +24420,24 @@
                 "chamada": 1,
                 "ferramenta": "consultar_historico",
                 "argumentos": {
+                  "de": "2026-09-01",
+                  "ate": "2026-09-30",
                   "categoria": "delivery"
                 },
                 "resultado": {
                   "ok": true,
                   "filtro": {
+                    "de": "2026-09-01",
+                    "ate": "2026-09-30",
                     "categoria": "delivery"
                   },
-                  "de": "2026-07-30",
-                  "ate": "2026-10-29",
-                  "quantidade": 4,
-                  "total_saidas_centavos": 29700,
+                  "de": "2026-09-01",
+                  "ate": "2026-09-30",
+                  "quantidade": 2,
+                  "total_saidas_centavos": 16000,
                   "total_entradas_centavos": 0,
                   "grupos": [],
                   "itens": [
-                    {
-                      "id": "L20024",
-                      "data": "2026-10-11",
-                      "descricao": "Delivery Lanches",
-                      "tipo": "saida",
-                      "meio": "pix",
-                      "categoria": "delivery",
-                      "valor_centavos": 6500
-                    },
                     {
                       "id": "L20021",
                       "data": "2026-09-18",
@@ -24524,24 +24455,13 @@
                       "meio": "pix",
                       "categoria": "delivery",
                       "valor_centavos": 6400
-                    },
-                    {
-                      "id": "L20015",
-                      "data": "2026-08-07",
-                      "descricao": "Delivery Pizza",
-                      "tipo": "saida",
-                      "meio": "pix",
-                      "categoria": "delivery",
-                      "valor_centavos": 7200
                     }
                   ],
                   "valores_formatados": {
-                    "total_saidas_centavos": "R$ 297,00",
+                    "total_saidas_centavos": "R$ 160,00",
                     "total_entradas_centavos": "R$ 0,00",
-                    "itens[0].valor_centavos": "R$ 65,00",
-                    "itens[1].valor_centavos": "R$ 96,00",
-                    "itens[2].valor_centavos": "R$ 64,00",
-                    "itens[3].valor_centavos": "R$ 72,00"
+                    "itens[0].valor_centavos": "R$ 96,00",
+                    "itens[1].valor_centavos": "R$ 64,00"
                   }
                 },
                 "duracao_ms": 0
