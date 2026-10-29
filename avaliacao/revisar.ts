@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { basename } from "node:path";
 import { avaliarCasoExecutado, carregarCasosAvaliacao, type RelatorioAvaliacaoB6 } from "./executar";
+import { verificarOraculoB6 } from "./oraculos";
 
 export type AchadoManualB6 = { id: string; repeticao: number; turno: number; motivo: string };
 
@@ -23,13 +24,19 @@ export function revisarRelatorioGravado(original: RelatorioAvaliacaoB6, achados:
       const esperado = casos.find((c) => c.id === id);
       if (!esperado) throw new Error(`Critério por turno ausente: ${caso.id}/${indice + 1}`);
       const r = turno.resposta;
+      // Reaplica o oráculo atual sobre o estado/cartões gravados (sem chamar o modelo).
+      const oraculo = caso.modo === "instrucoes_local"
+        ? "CR-02"
+        : caso.id === "CV-28" && !ultimo && indice === 1 ? "CR-41" : esperado.esperado.oraculo;
+      const motivosOraculo = r.status === "ok"
+        ? verificarOraculoB6(oraculo, r, r.estado, resultado.turnos.slice(0, indice).map((t) => t.resposta))
+        : [];
       const aval = avaliarCasoExecutado(esperado, {
         ferramentasChamadas: r.status === "ok" ? r.rastro.map((item) => ({ nome: item.ferramenta, argumentos: item.argumentos })) : [],
         textoFinal: r.status === "ok" ? r.texto : "",
-        // Os oráculos originais continuam nos motivos; esta etapa só reforça texto/argumentos.
-        oraculoOk: r.status === "ok",
+        oraculoOk: r.status === "ok" && motivosOraculo.length === 0,
       });
-      resultado.motivos.push(...aval.motivos.map((m) => ultimo ? m : `Turno ${indice + 1}: ${m}`));
+      resultado.motivos.push(...[...aval.motivos, ...motivosOraculo].map((m) => ultimo ? m : `Turno ${indice + 1}: ${m}`));
     }
     resultado.motivos.push(...achados
       .filter((a) => a.id === resultado.id && a.repeticao === resultado.repeticao)

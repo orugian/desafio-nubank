@@ -221,7 +221,7 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     expect(resultado.motivos).toContain("Ferramenta não permitida neste caso: registrar_declaracao");
   });
 
-  test("10. CV-14 usa a mensagem original e rejeita qualquer mutação de negócio após duplicidade", async () => {
+  test("10. CV-14 usa a mensagem original e rejeita qualquer mutação de negócio na triagem", async () => {
     const caso = carregarCasosAvaliacao("critico").find((c) => c.id === "CV-14")!;
     expect(caso.mensagens).toEqual(["Inclui também a compra de R$ 480 do supermercado."]);
     const relatorio = await executarAvaliacao({
@@ -233,8 +233,8 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     if (resposta.status !== "ok") throw new Error("turno falhou");
     const adulterada = structuredClone(resposta);
     adulterada.estado.contadores.OP += 1;
-    expect(verificarOraculoB6("CR-15a", adulterada, adulterada.estado)).toContain(
-      "Estado de negócio mudou apesar da duplicidade",
+    expect(verificarOraculoB6("CR-15a-triagem", adulterada, adulterada.estado)).toContain(
+      "Estado de negócio mudou na triagem",
     );
   });
 
@@ -349,10 +349,7 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
   test("18. CV-05 deve usar a data padrão e CV-08 deve perguntar a ordem em 08/11", () => {
     const casos = carregarCasosAvaliacao("todos");
     const cv05 = casos.find((c) => c.id === "CV-05")!;
-    expect(avaliarCasoExecutado(cv05, {
-      ferramentasChamadas: [{ nome: "consultar_investimentos", argumentos: { ate_data: "2026-11-29" } }],
-      textoFinal: "Reserva protegida; resultado bruto até 29/11.", oraculoOk: true,
-    }).aprovado).toBe(false);
+    expect(cv05.esperado.oraculo).toBe("CR-06");
     const cv08 = casos.find((c) => c.id === "CV-08")!;
     const ferramentasChamadas = [{ nome: "criar_hipotese", argumentos: {
       a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "300" }],
@@ -363,6 +360,33 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     expect(avaliarCasoExecutado(cv08, { ferramentasChamadas,
       textoFinal: "Em 08/11 falta cobertura. A entrada chega antes da saída do aluguel?", oraculoOk: true,
     }).aprovado).toBe(true);
+  });
+
+  test("20. CV-05 avalia o efeito da data: aceita ate_data igual ao default do motor e rejeita outra", async () => {
+    const caso = carregarCasosAvaliacao("critico").find((c) => c.id === "CV-05")!;
+    const executar = (argumentos: Record<string, string>) => executarAvaliacao({
+      ids: ["CV-05"], conjunto: "critico", usarRoteirizado: true,
+      dirSaida: mkdtempSync(join(tmpdir(), "newai-b6-cv05-default-")),
+      provedor: (() => {
+        let passo = 0;
+        return { nome: "roteirizado", modelo: "cv05-default", async gerar() {
+          passo += 1;
+          return passo === 1
+            ? { tipo: "chamadas", chamadas: [{ id: "inv", nome: "consultar_investimentos", argumentos: JSON.stringify(argumentos) }] }
+            : { tipo: "texto", texto: "Reserva protegida como restrição; rentabilidade bruto, antes de IR, IOF e custos." };
+        } } satisfies Provedor;
+      })(),
+    });
+    expect(caso.esperado.oraculo).toBe("CR-06");
+    const semData = await executar({});
+    expect(semData.resultados[0]!.motivos).toEqual([]);
+    const mesmaData = await executar({ ate_data: "2026-11-15" });
+    expect(mesmaData.resultados[0]!.motivos).toEqual([]);
+    const outraData = await executar({ ate_data: "2026-11-29" });
+    expect(outraData.resultados[0]!.aprovado).toBe(false);
+    expect(outraData.resultados[0]!.motivos).toContain(
+      "Consulta classificou até 2026-11-29, mas a data padrão do motor é 2026-11-15",
+    );
   });
 
   test("19. Explicar a ordem e perguntar sobre outra ação não equivale a perguntar a ordem", () => {

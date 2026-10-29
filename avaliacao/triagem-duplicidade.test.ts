@@ -23,23 +23,41 @@ async function rodarCV14(provedor: Provedor) {
   return { entrada, resposta };
 }
 
-test("CV-14 admite leitura preparatória da fatura sem dispensar registro e oráculo tipado", () => {
+test("CV-14 (PEDIDO 4, opção A): exige a triagem consultar_cartao sem registro; oráculo CR-15a-triagem", () => {
   const caso = carregarCasosAvaliacao("critico").find((c) => c.id === "CV-14")!;
   expect(caso.mensagens).toEqual(["Inclui também a compra de R$ 480 do supermercado."]);
+  expect(caso.esperado.oraculo).toBe("CR-15a-triagem");
+  expect(caso.esperado.ferramentas).toEqual([{ nome: "consultar_cartao" }]);
   const consulta = { nome: "consultar_cartao", argumentos: {} };
-  const registro = { nome: "registrar_declaracao", argumentos: {} };
-  const textoFinal = "Possível duplicidade: Supermercado R$ 480,00 na fatura de 05/11. É outra compra?";
-  const comErroTipado = avaliarCasoExecutado(caso, {
-    ferramentasChamadas: [consulta, registro], textoFinal, oraculoOk: true,
-  });
-  expect(comErroTipado.aprovado).toBe(true);
+  const textoFinal = "Já existe Supermercado de R$ 480,00 na fatura de 05/11. É outra compra?";
+  expect(avaliarCasoExecutado(caso, { ferramentasChamadas: [consulta], textoFinal, oraculoOk: true }).aprovado).toBe(true);
 
-  const soTriagem = avaliarCasoExecutado(caso, {
-    ferramentasChamadas: [consulta], textoFinal, oraculoOk: false,
+  const semPergunta = avaliarCasoExecutado(caso, {
+    ferramentasChamadas: [consulta], textoFinal: "Supermercado de R$ 480,00 na fatura de 05/11.", oraculoOk: true,
   });
-  expect(soTriagem.aprovado).toBe(false);
-  expect(soTriagem.motivos).toContain("Ferramenta esperada ausente ou com argumentos divergentes: registrar_declaracao");
-  expect(soTriagem.motivos).toContain("Oráculo CR-15a não atendido");
+  expect(semPergunta.motivos).toContain("Não perguntou se é outra compra, diferente do item da fatura");
+
+  const semConsulta = avaliarCasoExecutado(caso, { ferramentasChamadas: [], textoFinal, oraculoOk: false });
+  expect(semConsulta.motivos).toContain("Ferramenta esperada ausente ou com argumentos divergentes: consultar_cartao");
+});
+
+test("CR-15a-triagem rejeita registro com dados inventados e aceita erro tipado legítimo", async () => {
+  // Erro tipado só é legítimo com dados próprios completos; o roteiro abaixo inventa data e meio.
+  const inventado: RespostaProvedor[] = [
+    { tipo: "chamadas", chamadas: [{ id: "c1", nome: "consultar_cartao", argumentos: "{}" }] },
+    { tipo: "chamadas", chamadas: [{ id: "r1", nome: "registrar_declaracao", argumentos: JSON.stringify({
+      alteracao: { operacao: "adicionar_evento", tipo: "saida", descricao: "Supermercado", data: "2026-10-30", valor: "480", meio: "cartao_credito" },
+    }) }] },
+    { tipo: "texto", texto: "Possível duplicidade: Supermercado R$ 480,00 na fatura de 05/11. É outra compra?" },
+  ];
+  const { resposta } = await rodarCV14({
+    nome: "roteirizado", modelo: "cv14-inventado",
+    async gerar() { const r = inventado.shift(); if (!r) throw new Error("roteiro esgotado"); return r; },
+  });
+  if (resposta.status !== "ok") throw new Error("turno falhou");
+  expect(verificarOraculoB6("CR-15a-triagem", resposta, resposta.estado)).toContain(
+    "Registro de nova compra sem data e meio informados pela pessoa",
+  );
 });
 
 test("triagem pública consulta o item existente sem inventar nem registrar uma nova compra", async () => {
@@ -72,7 +90,7 @@ test("triagem pública consulta o item existente sem inventar nem registrar uma 
     const { conversa: _c1, versao: _v1, ...antes } = entrada;
     const { conversa: _c2, versao: _v2, ...depois } = resposta.estado;
     expect(depois).toEqual(antes);
-    expect(verificarOraculoB6("CR-15a", resposta, resposta.estado)).toContain("POSSIVEL_DUPLICIDADE não devolvido ao modelo");
+    expect(verificarOraculoB6("CR-15a-triagem", resposta, resposta.estado)).toEqual([]);
     expect(rede).not.toHaveBeenCalled();
   } finally { rede.mockRestore(); }
 });

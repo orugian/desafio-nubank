@@ -303,8 +303,8 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
     persona: "p3",
     mensagens: ["Inclui também a compra de R$ 480 do supermercado."],
     esperado: {
-      ferramentas: [{ nome: "registrar_declaracao" }],
-      oraculo: "CR-15a",
+      ferramentas: [{ nome: "consultar_cartao" }],
+      oraculo: "CR-15a-triagem",
       texto_contem: ["05/11", "480"],
       texto_nao_contem: [],
     },
@@ -568,7 +568,6 @@ export function avaliarCasoExecutado(
 
   const ferramentasPermitidas = new Set(caso.esperado.ferramentas.map((f) => f.nome));
   if (caso.esperado.ferramentas.length > 0 || caso.id === "CV-23") ferramentasPermitidas.add("exibir_comparacao");
-  if (caso.id === "CV-14") ferramentasPermitidas.add("consultar_cartao");
   for (const ferramenta of execucao.ferramentasChamadas) {
     if (!ferramentasPermitidas.has(ferramenta.nome)) {
       motivos.push(`Ferramenta não permitida neste caso: ${ferramenta.nome}`);
@@ -596,10 +595,13 @@ export function avaliarCasoExecutado(
     }
   }
 
-  if (caso.id === "CV-05" && execucao.ferramentasChamadas.some((f) =>
-    f.nome === "consultar_investimentos" && typeof f.argumentos === "object" && f.argumentos !== null &&
-    "ate_data" in f.argumentos && f.argumentos.ate_data !== undefined,
-  )) motivos.push("Consulta inicial deve usar a data padrão de 15/11, sem filtro ate_data");
+  // CV-05: a data padrão é verificada pelo efeito no oráculo CR-06 (ver oraculos.ts), não pela forma do argumento.
+  if (caso.id === "CV-14") {
+    const perguntas = execucao.textoFinal.match(/[^.!?]+\?/g) ?? [];
+    if (!perguntas.some((p) => /outr[ao]|diferente|mesm[ao]|nova compra|já (está|foi)/i.test(p))) {
+      motivos.push("Não perguntou se é outra compra, diferente do item da fatura");
+    }
+  }
   if (caso.id === "CV-08") {
     const perguntas = execucao.textoFinal.match(/[^.!?]+\?/g) ?? [];
     const perguntouOrdem = perguntas.some((pergunta) =>
@@ -743,18 +745,6 @@ function criarProvedorRoteirizadoParaCaso(caso: CasoAvaliacao): Provedor {
         if (f.nome === "projetar_rendimento" && !("destino" in args) && !("cdi_pct" in args)) {
           args = { destino: "INV9", ...args };
         }
-        if (caso.id === "CV-14") {
-          args = {
-            alteracao: {
-              operacao: "adicionar_evento",
-              tipo: "saida",
-              descricao: "Supermercado",
-              data: "2026-10-30",
-              valor: "480",
-              meio: "cartao_credito",
-            },
-          };
-        }
         return {
           tipo: "chamadas",
           chamadas: [
@@ -771,6 +761,7 @@ function criarProvedorRoteirizadoParaCaso(caso: CasoAvaliacao): Provedor {
         "CV-04": "Qual compromisso e qual nova data?",
         "CV-08": "Em 08/11 faltam R$ 830,00. A entrada do cliente chega antes da saída do aluguel?",
         "CV-11": "Qual será o meio de pagamento?",
+        "CV-14": "Já existe Supermercado de R$ 480,00 na fatura de 05/11. É outra compra, diferente desse item?",
         "CV-25": "Qual será a data e o meio de pagamento?",
       };
       const fragmentos = esclarecimentos[caso.id] ?? (

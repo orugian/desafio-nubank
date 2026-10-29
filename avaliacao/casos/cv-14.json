@@ -7,10 +7,10 @@
   "esperado": {
     "ferramentas": [
       {
-        "nome": "registrar_declaracao"
+        "nome": "consultar_cartao"
       }
     ],
-    "oraculo": "CR-15a",
+    "oraculo": "CR-15a-triagem",
     "texto_contem": [
       "05/11",
       "480"

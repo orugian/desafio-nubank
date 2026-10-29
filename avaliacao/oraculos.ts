@@ -60,6 +60,7 @@ function cartaoDe<T extends CartaoResposta["tipo"]>(
 function oraculoInvestimentos(
   resposta: Extract<RespostaTurno, { status: "ok" }>,
   estado: EstadoSessao,
+  exigirDataPadrao = false,
 ): string[] {
   const rPersona = carregarPersona(estado.persona_id);
   if (!rPersona.ok) return ["Persona do oráculo indisponível"];
@@ -72,9 +73,18 @@ function oraculoInvestimentos(
   if (!cartao) return ["Cartão de investimentos ausente"];
   const { ok: _, ...resultadoDireto } = esperado;
   void _;
-  return isDeepStrictEqual(cartao.resultado, resultadoDireto)
+  const motivos = isDeepStrictEqual(cartao.resultado, resultadoDireto)
     ? []
     : ["Cartão de investimentos divergente da saída direta do motor"];
+  if (exigirDataPadrao) {
+    // Efeito, não forma: omitir ate_data ou informar a mesma data que o motor usaria é equivalente.
+    const padrao = consultarInvestimentos(rPersona.persona, estado, contexto, {});
+    if (!padrao.ok) return [...motivos, `Oráculo de investimentos falhou: ${padrao.erro.codigo}`];
+    if (cartao.resultado.ate_data !== padrao.ate_data) {
+      motivos.push(`Consulta classificou até ${cartao.resultado.ate_data}, mas a data padrão do motor é ${padrao.ate_data}`);
+    }
+  }
+  return motivos;
 }
 
 export function verificarTransicaoB6(id: string, entrada: EstadoSessao, resposta: RespostaTurno): string[] {
@@ -140,6 +150,8 @@ export function verificarOraculoB6(
       return motivos;
     }
     case "CR-06":
+      // CR-06: "Investimentos até 15/11 (default de I-10 em sessão nova)".
+      return oraculoInvestimentos(resposta, estado, true);
     case "CR-16":
     case "CR-34":
       return oraculoInvestimentos(resposta, estado);
@@ -204,6 +216,32 @@ export function verificarOraculoB6(
       const { conversa: _c, versao: _v, ...negocio } = estado;
       const { conversa: _ci, versao: _vi, ...inicial } = estadoInicial(estado.persona_id, estado.mercado);
       if (JSON.stringify(negocio) !== JSON.stringify(inicial)) motivos.push("Estado de negócio mudou apesar da duplicidade");
+      return motivos;
+    }
+    case "CR-15a-triagem": {
+      // PEDIDO 4, opção A: a mensagem não traz data/meio da nova compra, e o contrato exige ambos
+      // para registrar. O aceite é a triagem somente leitura pela fatura, sem inventar dados.
+      const motivos: string[] = [];
+      const consulta = resposta.rastro.find((r) => r.ferramenta === "consultar_cartao" &&
+        (r.resultado as { ok?: boolean }).ok === true);
+      if (!consulta) {
+        motivos.push("Triagem da fatura (consultar_cartao) ausente");
+      } else {
+        const cartao = (consulta.resultado as { cartao?: { fatura_fechada?: { vencimento?: string; itens?: Array<{ descricao?: string; valor_centavos?: number }> } | null } }).cartao;
+        const item = cartao?.fatura_fechada?.itens?.find((i) => /supermercado/i.test(i.descricao ?? "") && i.valor_centavos === 48000);
+        if (!item || cartao?.fatura_fechada?.vencimento !== "2026-11-05") {
+          motivos.push("Fatura consultada não contém Supermercado R$ 480,00 com vencimento em 05/11");
+        }
+      }
+      for (const r of resposta.rastro.filter((x) => x.ferramenta === "registrar_declaracao")) {
+        const alt = (r.argumentos as { alteracao?: { operacao?: string } }).alteracao;
+        if (alt?.operacao === "adicionar_evento") {
+          motivos.push("Registro de nova compra sem data e meio informados pela pessoa");
+        }
+      }
+      const { conversa: _c, versao: _v, ...negocio } = estado;
+      const { conversa: _ci, versao: _vi, ...inicial } = estadoInicial(estado.persona_id, estado.mercado);
+      if (JSON.stringify(negocio) !== JSON.stringify(inicial)) motivos.push("Estado de negócio mudou na triagem");
       return motivos;
     }
     case "CR-32": {

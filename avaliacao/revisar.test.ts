@@ -13,7 +13,11 @@ test("revisa critérios mais estritos sem nova chamada e preserva a evidência o
   const resultado = original.resultados[0]!;
   const turno = resultado.turnos[0]!;
   if (turno.resposta.status !== "ok") throw new Error("turno falhou");
+  // Adultera a evidência gravada como se o modelo tivesse classificado até 29/11.
   turno.resposta.rastro[0]!.argumentos = { ate_data: "2026-11-29" };
+  const cartao = turno.resposta.cartoes.find((c) => c.tipo === "investimentos");
+  if (cartao?.tipo !== "investimentos") throw new Error("cartão ausente");
+  cartao.resultado.ate_data = "2026-11-29";
   const antes = JSON.stringify(original);
   const rede = vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("rede proibida"));
   try {
@@ -22,7 +26,9 @@ test("revisa critérios mais estritos sem nova chamada e preserva a evidência o
       motivo: "Valor atual foi apresentado como principal aplicado",
     }]);
     expect(revisado.aprovados).toBe(0);
-    expect(revisado.resultados[0]!.motivos).toContain("Consulta inicial deve usar a data padrão de 15/11, sem filtro ate_data");
+    expect(revisado.resultados[0]!.motivos).toContain(
+      "Consulta classificou até 2026-11-29, mas a data padrão do motor é 2026-11-15",
+    );
     expect(revisado.resultados[0]!.motivos).toContain("Revisão manual, turno 1: Valor atual foi apresentado como principal aplicado");
     expect(revisado.total_chamadas_modelo).toBe(original.total_chamadas_modelo);
     expect(revisado.revisao.sem_novas_chamadas).toBe(true);

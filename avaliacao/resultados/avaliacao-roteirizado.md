@@ -19,7 +19,7 @@
 | CV-11 | 1 | OK | 0 | 1 | — | — |
 | CV-12 | 1 | OK | 0 | 3 | criar_hipotese | — |
 | CV-13 | 1 | OK | 0 | 3 | criar_hipotese | — |
-| CV-14 | 1 | OK | 0 | 2 | registrar_declaracao | — |
+| CV-14 | 1 | OK | 0 | 2 | consultar_cartao | — |
 | CV-15 | 1 | OK | 0 | 1 | — | — |
 | CV-16 | 1 | OK | 0 | 2 | consultar_investimentos | — |
 | CV-17 | 1 | OK | 0 | 1 | — | — |
