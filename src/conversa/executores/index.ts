@@ -175,6 +175,7 @@ export function criarExecutores(): Executores {
           resultado: {
             declaracao_id: r.declaracao_id,
             indicadores: atual.indicadores,
+            cenarios,
           },
           cartoes: [{ tipo: "comparacao", cenarios }],
           avisos: [],

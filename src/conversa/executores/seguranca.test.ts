@@ -25,6 +25,15 @@ function depsRoteirizadas(respostas: RespostaProvedor[]): DepsConversa {
 }
 
 describe("B7 · regressões adversariais", () => {
+  test("R-22/IN-11: nova declaração devolve sinal calculado de ordem relevante ao modelo", async () => {
+    const r = await criarExecutores().ferramentas.registrar_declaracao({ alteracao: {
+      operacao: "adicionar_evento", tipo: "saida", descricao: "Conserto antes do salário",
+      valor: "1000", data: "2026-11-19", meio: "pix",
+    } }, { estado: estadoInicial("p1", snapshotGravado()), mensagem_id: "ordem-salario" });
+    if (!r.ok) throw new Error(r.erro.mensagem);
+    const resultado = r.resultado as { cenarios?: Array<{ cenario_id: string; datas_ordem_relevante: string[] }> };
+    expect(resultado.cenarios?.find((c) => c.cenario_id === "atual")?.datas_ordem_relevante).toEqual(["2026-11-19"]);
+  });
   test("CR-14b/IN-10: modelo recebe as faturas calculadas da hipótese, não apenas indicadores de caixa", async () => {
     const r = await criarExecutores().ferramentas.criar_hipotese({
       nome: "Conserto em 4x", a_partir_de: "atual", alteracoes: [{
