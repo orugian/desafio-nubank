@@ -1,0 +1,87 @@
+{
+  "provedor": "openrouter",
+  "modelo": "deepseek/deepseek-v4.1-flash-1017",
+  "casos": [
+    {
+      "caso": "CV-01",
+      "texto": "Simulei (H1) e o resultado é apertado:\n\n- Hoje: saldo R$ 1.800,00; separar R$ 500,00 deixa R$ 1.300,00.\n- 05/11 fatura do cartão R$ 700,00 → R$ 600,00.\n- 10/11 aluguel R$ 600,00 → saldo zerado.\n- 15/11 contas da casa R$ 200,00 → falta R$ 200,00 nesse dia.\n- 19/11 salário R$ 300,00 (previsto) → R$ 2.800,00 no fim.\n\nOu seja: separar os R$ 500,00 hoje cria falta de R$ 200,00 em 15/11, antes do salário previsto. Na situação atual não há falta.\n\nQuer testar um valor menor, ou manter a simulação como está?",
+      "ferramentas": [
+        "criar_hipotese"
+      ],
+      "indicadores": {
+        "saldo_inicial_centavos": 180000,
+        "saldo_minimo_centavos": -20000,
+        "data_saldo_minimo": "2026-11-15",
+        "primeira_falta": {
+          "data": "2026-11-15",
+          "valor_descoberto_centavos": 20000,
+          "saidas_do_dia": [
+            "C"
+          ]
+        },
+        "insuficiencia_centavos": 20000,
+        "margem_hoje_centavos": 0,
+        "saldo_final_centavos": 280000,
+        "sem_recebimentos": {
+          "insuficiencia_centavos": 20000,
+          "primeira_falta": {
+            "data": "2026-11-15",
+            "valor_descoberto_centavos": 20000,
+            "saidas_do_dia": [
+              "C"
+            ]
+          },
+          "saldo_final_centavos": -20000
+        }
+      },
+      "versao": 1
+    },
+    {
+      "caso": "CV-07",
+      "texto": "Proposta criada: R$ 500,00 para a Caixinha Viagem (OP1). Ainda não movimentei nada.\n\nAtenção ao impacto: com essa separação, faltariam R$ 200,00 em 15/11, quando vencem as Contas da casa (C). O salário de 19/11 é previsto, então não cobre essa data.\n\nRendimento bruto estimado até 19/11: R$ 3,31 (CDI constante, 100% do CDI).\n\nQuer confirmar mesmo assim, ajustar o valor ou cancelar?",
+      "ferramentas": [
+        "propor_movimentacao"
+      ],
+      "pendente": {
+        "id": "OP1",
+        "valor_centavos": 50000,
+        "destino": "INV9",
+        "criada_na_versao": 0
+      },
+      "operacoes": [],
+      "saldo": 180000
+    },
+    {
+      "caso": "CV-28-confirmacao",
+      "texto": "Confirmado (simulado): R$ 500,00 para a Caixinha Viagem. Nenhum dinheiro real foi movimentado.\n\nLembrete: a falta de R$ 200,00 em 15/11 continua, porque o salário de 19/11 é só previsto.",
+      "ferramentas": [
+        "confirmar_movimentacao"
+      ],
+      "operacoes": [
+        {
+          "id": "OP1",
+          "valor_centavos": 50000,
+          "destino": "INV9",
+          "data": "2026-10-30"
+        }
+      ],
+      "saldo": 130000,
+      "versao": 2
+    },
+    {
+      "caso": "CV-28-repeticao",
+      "texto": "A movimentação OP1 já foi confirmada. Não há outra pendente.\n\nQuer que eu simule algo para cobrir a falta de R$ 200,00 em 15/11?",
+      "rastro": [],
+      "operacoes": [
+        {
+          "id": "OP1",
+          "valor_centavos": 50000,
+          "destino": "INV9",
+          "data": "2026-10-30"
+        }
+      ],
+      "saldo": 130000,
+      "versao": 3
+    }
+  ]
+}

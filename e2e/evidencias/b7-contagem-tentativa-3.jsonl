@@ -1,0 +1,14 @@
+{"evento":"inicio","id":"19380-1","provedor":"nvidia"}
+{"evento":"fim","id":"19380-1","status":200}
+{"evento":"inicio","id":"19380-2","provedor":"nvidia"}
+{"evento":"fim","id":"19380-2","status":200}
+{"evento":"inicio","id":"19380-3","provedor":"nvidia"}
+{"evento":"fim","id":"19380-3","status":200}
+{"evento":"inicio","id":"19380-4","provedor":"nvidia"}
+{"evento":"fim","id":"19380-4","status":200}
+{"evento":"inicio","id":"19380-5","provedor":"nvidia"}
+{"evento":"fim","id":"19380-5","status":200}
+{"evento":"inicio","id":"19380-6","provedor":"nvidia"}
+{"evento":"fim","id":"19380-6","status":200}
+{"evento":"inicio","id":"19380-7","provedor":"nvidia"}
+{"evento":"fim","id":"19380-7","status":429}

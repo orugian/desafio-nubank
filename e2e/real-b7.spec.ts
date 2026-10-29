@@ -18,13 +18,15 @@ async function mensagem(page: Page, texto: string, idCaso: string): Promise<Extr
   return resposta;
 }
 
-test("B7 · 6: CV-01, CV-07 e CV-28 no app local com NVIDIA real", async ({ page }) => {
+test("B7 · 6: CV-01, CV-07 e CV-28 no app local com provedor real", async ({ page }) => {
   test.setTimeout(180000);
+  const provedorEsperado = process.env.B7_PROVEDOR_REAL === "openrouter" ? "openrouter" : "nvidia";
+  let modeloEfetivo = "";
   const evidencias: Array<Record<string, unknown>> = [];
   const salvar = () => {
     mkdirSync(join(process.cwd(), "test-results"), { recursive: true });
     writeFileSync(join(process.cwd(), "test-results", "b7-real.json"), JSON.stringify({
-      modelo: "minimaxai/minimax-m3.1-flash", casos: evidencias,
+      provedor: provedorEsperado, modelo: modeloEfetivo, casos: evidencias,
     }, null, 2) + "\n", "utf8");
   };
   try {
@@ -32,8 +34,10 @@ test("B7 · 6: CV-01, CV-07 e CV-28 no app local com NVIDIA real", async ({ page
     const sessaoInicialHttp = page.waitForResponse((r) => r.url().endsWith("/api/sessao") && r.request().method() === "POST");
     await page.getByRole("button", { name: /Bia \(fictícia\)/i }).click();
     const sessaoInicial = await (await sessaoInicialHttp).json();
-    expect(sessaoInicial.config.provedor).toBe("nvidia");
-    expect(sessaoInicial.config.modelo).toBe("minimaxai/minimax-m3.1-flash");
+    expect(sessaoInicial.config.provedor).toBe(provedorEsperado);
+    modeloEfetivo = sessaoInicial.config.modelo;
+    expect(modeloEfetivo.length).toBeGreaterThan(0);
+    if (provedorEsperado === "nvidia") expect(modeloEfetivo).toBe("minimaxai/minimax-m3.1-flash");
     await expect(page.getByText("R$ 1.800,00", { exact: true })).toBeVisible();
     await page.getByRole("button", { name: /NewAI/i }).click();
 
@@ -46,6 +50,8 @@ test("B7 · 6: CV-01, CV-07 e CV-28 no app local com NVIDIA real", async ({ page
     expect(h1?.indicadores?.saldo_final_centavos).toBe(280000);
     expect(cv01.texto).toContain("15/11");
     expect(cv01.texto).toContain("200");
+    // Regressão do texto real da tentativa 4: salário não pode perder um zero.
+    expect(cv01.texto).not.toMatch(/sal[áa]rio\s+(?:de\s+)?R\$\s*300(?:,00)?(?=\s|[)(.,]|$)/i);
 
     // CV-07/CV-28 partem de sessão nova conforme CR-48.
     await page.getByRole("button", { name: "Fechar chat" }).click();
