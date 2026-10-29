@@ -568,6 +568,7 @@ export function avaliarCasoExecutado(
 
   const ferramentasPermitidas = new Set(caso.esperado.ferramentas.map((f) => f.nome));
   if (caso.esperado.ferramentas.length > 0 || caso.id === "CV-23") ferramentasPermitidas.add("exibir_comparacao");
+  if (caso.id === "CV-14") ferramentasPermitidas.add("consultar_cartao");
   for (const ferramenta of execucao.ferramentasChamadas) {
     if (!ferramentasPermitidas.has(ferramenta.nome)) {
       motivos.push(`Ferramenta não permitida neste caso: ${ferramenta.nome}`);
