@@ -14,11 +14,13 @@ if (process.env.B7_REAL === "1") {
     const entrada = args[0];
     const endereco = typeof entrada === "string" ? entrada : entrada instanceof URL ? entrada.href : entrada.url;
     const url = new URL(endereco);
-    if (url.hostname !== "integrate.api.nvidia.com" || url.pathname !== "/v1/chat/completions") {
+    const provedor = url.hostname === "integrate.api.nvidia.com" ? "nvidia" : url.hostname === "openrouter.ai" ? "openrouter" : null;
+    if (!provedor || !url.pathname.endsWith("/chat/completions")) {
       return original.apply(this, args);
     }
+    if (sequencia >= 12) throw new Error("B7_LIMITE_DE_12_CHAMADAS_ATINGIDO");
     const id = `${process.pid}-${++sequencia}`;
-    gravar({ evento: "inicio", id });
+    gravar({ evento: "inicio", id, provedor });
     try {
       const resposta = await original.apply(this, args);
       gravar({ evento: "fim", id, status: resposta.status });

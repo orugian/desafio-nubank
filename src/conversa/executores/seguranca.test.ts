@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { estadoInicial, type DepsConversa, type RespostaProvedor } from "@/contratos";
-import { processarAcao, processarTurno } from "@/conversa";
+import { montarContextoDeterministico, processarAcao, processarTurno } from "@/conversa";
 import { carregarPersona } from "@/dados";
 import { confirmarMovimentacao } from "@/dominio/operacoes";
 import { criarExecutores } from "@/conversa/executores";
@@ -25,6 +25,38 @@ function depsRoteirizadas(respostas: RespostaProvedor[]): DepsConversa {
 }
 
 describe("B7 · regressões adversariais", () => {
+  test("IN-04: ferramenta fornece valores em reais formatados pelo código sem alterar os centavos", async () => {
+    const r = await criarExecutores().ferramentas.criar_hipotese({
+      nome: "Separar hoje", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500" }],
+    }, { estado: estadoInicial("p1", snapshotGravado()), mensagem_id: "formatar" });
+    if (!r.ok) throw new Error(r.erro.mensagem);
+    const resultado = r.resultado as { valores_formatados?: Record<string, string>; cenarios: Array<{
+      linhas: Array<{ evento_id: string; valor_centavos: number }>;
+    }> };
+    const indiceSalario = resultado.cenarios[0].linhas.findIndex((l) => l.evento_id === "R1");
+    expect(resultado.cenarios[0].linhas[indiceSalario].valor_centavos).toBe(300000);
+    expect(resultado.valores_formatados?.[`cenarios[0].linhas[${indiceSalario}].valor_centavos`]).toBe("R$ 3.000,00");
+    expect(resultado.valores_formatados?.["indicadores.insuficiencia_centavos"]).toBe("R$ 200,00");
+  });
+  test("PEDIDO 2: saldo do contexto acompanha a visão após saída declarada hoje e operação confirmada", async () => {
+    const ex = criarExecutores();
+    const d = await ex.ferramentas.registrar_declaracao({ alteracao: {
+      operacao: "adicionar_evento", tipo: "saida", descricao: "Saída hoje",
+      valor: "1500", data: "2026-10-30", meio: "pix",
+    } }, { estado: estadoInicial("p1", snapshotGravado()), mensagem_id: "declarar" });
+    if (!d.ok) throw new Error(d.erro.mensagem);
+    const visaoDeclarada = await ex.montarVisao(d.estado);
+    expect(visaoDeclarada.conta.saldo_disponivel_hoje_centavos).toBe(30000);
+    expect(montarContextoDeterministico(d.estado).conta).toMatchObject({ saldo_disponivel_hoje_centavos: 30000 });
+    const proposta = await ex.ferramentas.propor_movimentacao({ valor: "100", destino: "INV9" },
+      { estado: d.estado, mensagem_id: "propor" });
+    if (!proposta.ok) throw new Error(proposta.erro.mensagem);
+    const confirma = await ex.ferramentas.confirmar_movimentacao({ operacao_id: "OP1" },
+      { estado: proposta.estado, mensagem_id: null });
+    if (!confirma.ok) throw new Error(confirma.erro.mensagem);
+    expect((await ex.montarVisao(confirma.estado)).conta.saldo_disponivel_hoje_centavos).toBe(20000);
+    expect(montarContextoDeterministico(confirma.estado).conta).toMatchObject({ saldo_disponivel_hoje_centavos: 20000 });
+  });
   test("R-22/IN-11: nova declaração devolve sinal calculado de ordem relevante ao modelo", async () => {
     const r = await criarExecutores().ferramentas.registrar_declaracao({ alteracao: {
       operacao: "adicionar_evento", tipo: "saida", descricao: "Conserto antes do salário",

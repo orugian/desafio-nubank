@@ -1,0 +1,72 @@
+{
+  "provedor": "nvidia",
+  "modelo": "minimaxai/minimax-m3.1-flash",
+  "casos": [
+    {
+      "caso": "CV-01",
+      "texto": "A simulação mostra que separar R$ 500 hoje deixa o saldo zerado em 10/11 e gera uma falta de R$ 200 em 15/11, caso o salário previsto para 19/11 não entre antes.\n\nSem esse recebimento, o saldo final ficaria negativo em R$ 200. Não recomendo usar crédito para cobrir a diferença.",
+      "ferramentas": [
+        "criar_hipotese"
+      ],
+      "indicadores": {
+        "saldo_inicial_centavos": 180000,
+        "saldo_minimo_centavos": -20000,
+        "data_saldo_minimo": "2026-11-15",
+        "primeira_falta": {
+          "data": "2026-11-15",
+          "valor_descoberto_centavos": 20000,
+          "saidas_do_dia": [
+            "C"
+          ]
+        },
+        "insuficiencia_centavos": 20000,
+        "margem_hoje_centavos": 0,
+        "saldo_final_centavos": 280000,
+        "sem_recebimentos": {
+          "insuficiencia_centavos": 20000,
+          "primeira_falta": {
+            "data": "2026-11-15",
+            "valor_descoberto_centavos": 20000,
+            "saidas_do_dia": [
+              "C"
+            ]
+          },
+          "saldo_final_centavos": -20000
+        }
+      },
+      "versao": 1
+    },
+    {
+      "caso": "CV-07",
+      "texto": "Proposta simulada **OP1**: guardar **R$ 500,00** na **Caixinha Viagem**.\n\n⚠️ Com essa movimentação, faltariam **R$ 200,00 em 15/11**, na data das Contas da Casa.\n\nO rendimento bruto estimado até 19/11 é de **R$ 3,31**, com CDI constante.\n\n**Você confirma a movimentação simulada?**",
+      "ferramentas": [
+        "propor_movimentacao"
+      ],
+      "pendente": {
+        "id": "OP1",
+        "valor_centavos": 50000,
+        "destino": "INV9",
+        "criada_na_versao": 0
+      },
+      "operacoes": [],
+      "saldo": 180000
+    },
+    {
+      "caso": "CV-28-confirmacao",
+      "texto": "Movimentação simulada confirmada: **R$ 500,00** para a **Caixinha Viagem**.\n\nNenhum dinheiro real foi movimentado.",
+      "ferramentas": [
+        "confirmar_movimentacao"
+      ],
+      "operacoes": [
+        {
+          "id": "OP1",
+          "valor_centavos": 50000,
+          "destino": "INV9",
+          "data": "2026-10-30"
+        }
+      ],
+      "saldo": 130000,
+      "versao": 2
+    }
+  ]
+}

@@ -24,7 +24,7 @@ import {
 } from "@/contratos";
 import { carregarPersona } from "@/dados";
 import { criarCalendario } from "@/dominio/calendario";
-import { calcularCenarios } from "@/dominio/caixa";
+import { calcularCenarios, saldoDisponivelHoje } from "@/dominio/caixa";
 import cdiJson from "../../dados/mercado/cdi.json";
 import btcJson from "../../dados/mercado/fechamentos-BTC.json";
 import petr4Json from "../../dados/mercado/fechamentos-PETR4.json";
@@ -75,9 +75,6 @@ export function montarContextoDeterministico(
   const persona = rPersona.persona;
   const cenarios = calcularCenarios(persona, estado, contextoDominio);
   const cenarioAtual = cenarios[0];
-  const gastoHoje = estado.operacoes
-    .filter((op) => op.data === HOJE)
-    .reduce((acc, op) => acc + op.valor_centavos, 0);
 
   return {
     hoje: HOJE,
@@ -86,7 +83,7 @@ export function montarContextoDeterministico(
     persona: { id: persona.id, nome: persona.nome },
     conta: {
       saldo_inicio_hoje_centavos: persona.conta.saldo_inicio_hoje_centavos,
-      saldo_disponivel_hoje_centavos: persona.conta.saldo_inicio_hoje_centavos - gastoHoje,
+      saldo_disponivel_hoje_centavos: saldoDisponivelHoje(persona, estado),
     },
     gasto_diario_centavos: persona.gasto_diario.valor_centavos,
     compromissos: (cenarioAtual?.linhas ?? []).map((l) => ({
