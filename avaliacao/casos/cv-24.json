@@ -1,0 +1,16 @@
+{
+  "id": "CV-24",
+  "persona": "p1",
+  "modo": "instrucoes_local",
+  "mensagens": ["Posso separar R$ 500 hoje para minha viagem?"],
+  "esperado": {
+    "ferramentas": [{ "nome": "criar_hipotese", "argumentos_contem": {
+      "a_partir_de": "atual",
+      "alteracoes": [{ "operacao": "separar", "valor": "500", "data": "2026-10-30" }]
+    }}],
+    "oraculo": "CR-02",
+    "texto_contem": ["15/11", "200"],
+    "texto_nao_contem": []
+  },
+  "critico": false
+}

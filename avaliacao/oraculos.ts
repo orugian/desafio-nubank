@@ -1,4 +1,6 @@
+import { isDeepStrictEqual } from "node:util";
 import {
+  estadoInicial,
   type CartaoResposta,
   type Contexto,
   type EstadoSessao,
@@ -7,7 +9,7 @@ import {
 } from "@/contratos";
 import { carregarPersona } from "@/dados";
 import { criarCalendario } from "@/dominio/calendario";
-import { calcularCenarios } from "@/dominio/caixa";
+import { calcularCenarios, paraCentavos } from "@/dominio/caixa";
 import { consultarInvestimentos, projetarRendimento } from "@/dominio/investimentos";
 import cdiJson from "../dados/mercado/cdi.json";
 import btcJson from "../dados/mercado/fechamentos-BTC.json";
@@ -61,46 +63,29 @@ function oraculoInvestimentos(
 ): string[] {
   const rPersona = carregarPersona(estado.persona_id);
   if (!rPersona.ok) return ["Persona do oráculo indisponível"];
-  const esperado = consultarInvestimentos(rPersona.persona, estado, contexto, {});
+  const chamada = resposta.rastro.findLast((r) => r.ferramenta === "consultar_investimentos");
+  if (!chamada) return ["Chamada consultar_investimentos ausente"];
+  const args = chamada.argumentos as { ate_data?: string };
+  const esperado = consultarInvestimentos(rPersona.persona, estado, contexto, args);
   if (!esperado.ok) return [`Oráculo de investimentos falhou: ${esperado.erro.codigo}`];
   const cartao = cartaoDe(resposta.cartoes, "investimentos");
   if (!cartao) return ["Cartão de investimentos ausente"];
-  const motivos: string[] = [];
-  const { ok: _, ...resultadoInicial } = esperado;
+  const { ok: _, ...resultadoDireto } = esperado;
   void _;
-  let resultadoDireto = resultadoInicial;
-  if (resposta.rastro[0]?.argumentos && typeof resposta.rastro[0].argumentos === "object") {
-    const args = resposta.rastro[0].argumentos as { ate_data?: string };
-    if (args.ate_data) {
-      const diretoFiltrado = consultarInvestimentos(rPersona.persona, estado, contexto, {
-        ate_data: args.ate_data,
-      });
-      if (diretoFiltrado.ok) {
-        const { ok: __, ...filtrado } = diretoFiltrado;
-        void __;
-        resultadoDireto = filtrado;
-      }
-    }
+  return isDeepStrictEqual(cartao.resultado, resultadoDireto)
+    ? []
+    : ["Cartão de investimentos divergente da saída direta do motor"];
+}
+
+export function verificarTransicaoB6(id: string, entrada: EstadoSessao, resposta: RespostaTurno): string[] {
+  if (resposta.status === "falha") {
+    return isDeepStrictEqual(resposta.estado, entrada) ? [] : ["Falha não preservou o estado de entrada"];
   }
-  for (const posEsp of resultadoDireto.posicoes) {
-    const posReal = cartao.resultado.posicoes.find((p) => p.posicao_id === posEsp.posicao_id);
-    if (!posReal) {
-      motivos.push(`Posição ausente no cartão: ${posEsp.posicao_id}`);
-      continue;
-    }
-    for (const campo of ["classificacao", "data_disponibilidade", "rotulo_estimativa"] as const) {
-      if (posReal[campo] !== posEsp[campo]) {
-        motivos.push(`${posEsp.posicao_id}.${campo}: ${String(posReal[campo])} ≠ ${String(posEsp[campo])}`);
-      }
-    }
-  }
-  if (cartao.resultado.rotulo_rentabilidade !== resultadoDireto.rotulo_rentabilidade) {
-    motivos.push("Rótulo de rentabilidade divergente");
-  }
-  if (JSON.stringify(cartao.resultado.totais) !== JSON.stringify(resultadoDireto.totais)) {
-    motivos.push("Totais de investimentos divergentes do motor");
-  }
-  return motivos;
+  const somenteLeitura = ["CV-04", "CV-05", "CV-06", "CV-10", "CV-11", "CV-14", "CV-15", "CV-16", "CV-17", "CV-18", "CV-19", "CV-20", "CV-21", "CV-22", "CV-23", "CV-25", "CV-26", "CV-29"];
+  if (!somenteLeitura.includes(id)) return [];
+  const { conversa: _c1, versao: _v1, ...antes } = entrada;
+  const { conversa: _c2, versao: _v2, ...depois } = resposta.estado;
+  return isDeepStrictEqual(antes, depois) ? [] : ["Consulta ou recusa mudou estado de negócio"];
 }
 
 /** Confere o CR citado contra estado final, rastro/cartões e uma chamada direta ao motor. */
@@ -116,6 +101,11 @@ export function verificarOraculoB6(
   const rPersona = carregarPersona(estado.persona_id);
   if (!rPersona.ok) return ["Persona do oráculo indisponível"];
   const cenarios = calcularCenarios(rPersona.persona, estado, contexto);
+  if (["CR-02", "CR-03", "CR-04", "CR-09b", "CR-10", "CR-14", "CR-14b"].includes(oraculo)) {
+    const cartao = cartaoDe(resposta.cartoes, "comparacao");
+    if (!cartao) return ["Cartão de comparação ausente"];
+    if (!isDeepStrictEqual(cartao.cenarios, cenarios)) return ["Cartão de comparação divergente dos cenários do motor"];
+  }
 
   switch (oraculo) {
     case "CR-02":
@@ -144,7 +134,7 @@ export function verificarOraculoB6(
         margem_hoje_centavos: 35000,
         saldo_final_centavos: 335000,
       }, "atual/CR-04");
-      if (!estado.declaracoes.some((d) => d.alteracao.operacao === "alterar_evento" && d.alteracao.evento_id === "C" && d.alteracao.valor === "150")) {
+      if (!estado.declaracoes.some((d) => d.alteracao.operacao === "alterar_evento" && d.alteracao.evento_id === "C" && d.alteracao.valor !== undefined && paraCentavos(d.alteracao.valor) === 15000)) {
         motivos.push("Declaração de C = 150 ausente");
       }
       return motivos;
@@ -205,11 +195,15 @@ export function verificarOraculoB6(
     case "CR-15a": {
       const motivos: string[] = [];
       const erroDuplicidade = resposta.rastro.some((r) => {
-        const resultado = r.resultado as { ok?: boolean; erro?: { codigo?: string } };
-        return resultado.ok === false && resultado.erro?.codigo === "POSSIVEL_DUPLICIDADE";
+        const resultado = r.resultado as { ok?: boolean; erro?: { codigo?: string; mensagem?: string } };
+        return r.ferramenta === "registrar_declaracao" && resultado.ok === false &&
+          resultado.erro?.codigo === "POSSIVEL_DUPLICIDADE" &&
+          /supermercado.*480[,.]00.*05\/11/i.test(resultado.erro.mensagem ?? "");
       });
       if (!erroDuplicidade) motivos.push("POSSIVEL_DUPLICIDADE não devolvido ao modelo");
-      if (estado.declaracoes.length !== 0) motivos.push("Estado foi alterado apesar da duplicidade");
+      const { conversa: _c, versao: _v, ...negocio } = estado;
+      const { conversa: _ci, versao: _vi, ...inicial } = estadoInicial(estado.persona_id, estado.mercado);
+      if (JSON.stringify(negocio) !== JSON.stringify(inicial)) motivos.push("Estado de negócio mudou apesar da duplicidade");
       return motivos;
     }
     case "CR-32": {

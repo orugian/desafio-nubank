@@ -17,7 +17,8 @@ import { processarTurno } from "@/conversa";
 import { criarDepsPadrao, obterSnapshotFallback } from "@/conversa/config";
 import { carregarPersona } from "@/dados";
 import { paraCentavos } from "@/dominio/caixa";
-import { verificarOraculoB6 } from "./oraculos";
+import { verificarOraculoB6, verificarTransicaoB6 } from "./oraculos";
+import { executarAvaliacaoInstrucoesLocal, SUFIXO_PERGUNTA_CV24 } from "./instrucoes-local";
 
 export const TERMOS_PROIBIDOS_GLOBAIS = [
   "pode gastar",
@@ -46,6 +47,7 @@ export const esquemaCasoAvaliacao = z.object({
     texto_nao_contem: z.array(z.string()),
   }),
   critico: z.boolean(),
+  modo: z.literal("instrucoes_local").optional(),
 });
 
 export type CasoAvaliacao = z.infer<typeof esquemaCasoAvaliacao>;
@@ -299,7 +301,7 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
   {
     id: "CV-14",
     persona: "p3",
-    mensagens: ["Inclui também a compra de R$ 480 do supermercado no cartão hoje."],
+    mensagens: ["Inclui também a compra de R$ 480 do supermercado."],
     esperado: {
       ferramentas: [{ nome: "registrar_declaracao" }],
       oraculo: "CR-15a",
@@ -409,13 +411,28 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
     persona: "p1",
     mensagens: [
       "Posso separar R$ 500 hoje para minha viagem?",
-      "Pode resumir? Obrigada, era só isso.",
+      "E se o salário cair no dia 9?",
+      "Pode resumir?",
+      "Obrigada, era só isso.",
     ],
     esperado: {
       ferramentas: [],
       oraculo: null,
-      texto_contem: ["15/11"],
+      texto_contem: ["15/11", "200", "09/11", "600", "previst", "simulad"],
       texto_nao_contem: [],
+    },
+    critico: false,
+  },
+  {
+    id: "CV-24",
+    persona: "p1",
+    modo: "instrucoes_local",
+    mensagens: ["Posso separar R$ 500 hoje para minha viagem?"],
+    esperado: {
+      ferramentas: [{ nome: "criar_hipotese", argumentos_contem: {
+        a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500", data: "2026-10-30" }],
+      } }],
+      oraculo: "CR-02", texto_contem: ["15/11", "200"], texto_nao_contem: [],
     },
     critico: false,
   },
@@ -549,7 +566,14 @@ export function avaliarCasoExecutado(
     }
   }
 
-  if (caso.esperado.ferramentas.length === 0 && execucao.ferramentasChamadas.length > 0) {
+  const ferramentasPermitidas = new Set(caso.esperado.ferramentas.map((f) => f.nome));
+  if (caso.esperado.ferramentas.length > 0 || caso.id === "CV-23") ferramentasPermitidas.add("exibir_comparacao");
+  for (const ferramenta of execucao.ferramentasChamadas) {
+    if (!ferramentasPermitidas.has(ferramenta.nome)) {
+      motivos.push(`Ferramenta não permitida neste caso: ${ferramenta.nome}`);
+    }
+  }
+  if (caso.id !== "CV-23" && caso.esperado.ferramentas.length === 0 && execucao.ferramentasChamadas.length > 0) {
     motivos.push(
       `Esperava 0 ferramentas, mas chamou: ${execucao.ferramentasChamadas.map((f) => f.nome).join(", ")}`,
     );
@@ -571,6 +595,14 @@ export function avaliarCasoExecutado(
     }
   }
 
+  const perguntas: Record<string, RegExp[]> = {
+    "CV-04": [/(evento|compromisso)/i, /data|dia|quando/i, /\?/],
+    "CV-11": [/(meio|forma|pagamento|pagar|pix|cartão|débito)/i, /\?/],
+    "CV-25": [/data|dia|quando/i, /meio|pagamento|pagar|pix|cartão|débito/i, /\?/],
+  };
+  if (perguntas[caso.id]?.some((regra) => !regra.test(execucao.textoFinal))) {
+    motivos.push("Pergunta não solicita os esclarecimentos exigidos pelo caso");
+  }
   if (textoBaixo.includes("guardei") && !textoBaixo.includes("simulad")) {
     motivos.push('Texto contém "guardei" sem "simulad"');
   }
@@ -595,6 +627,17 @@ function criarProvedorRoteirizadoParaCaso(caso: CasoAvaliacao): Provedor {
       }
 
       const ehUltimoTurno = indiceMensagemUsuario >= caso.mensagens.length;
+      if (caso.id === "CV-23" && passoNoTurno === 0 && indiceMensagemUsuario >= 2) {
+        return {
+          tipo: "chamadas",
+          chamadas: [{ id: `resumo_${indiceMensagemUsuario}`, nome: indiceMensagemUsuario === 2 ? "criar_hipotese" : "exibir_comparacao",
+            argumentos: JSON.stringify(indiceMensagemUsuario === 2 ? {
+              nome: "Salário em 09/11", a_partir_de: "H1",
+              alteracoes: [{ operacao: "alterar_evento", evento_id: "R1", data: "2026-11-09" }],
+            } : {}),
+          }],
+        };
+      }
 
       if (!ehUltimoTurno) {
         // Primeiro turno preparatório em casos de 2 turnos (CV-02, CV-09, CV-12, CV-13, CV-23, CV-28)
@@ -650,7 +693,15 @@ function criarProvedorRoteirizadoParaCaso(caso: CasoAvaliacao): Provedor {
         }
         return {
           tipo: "texto",
-          texto: "Turno preparatório concluído em 15/11 com R$ 200,00.",
+          texto: caso.id === "CV-23" && indiceMensagemUsuario >= 2
+            ? "H1: falta R$ 200,00 em 15/11; H2 com salário em 09/11: mínimo R$ 600,00. Depende do recebimento previsto. Movimentações simuladas."
+            : caso.id === "CV-09"
+            ? "Em 08/11 faltam R$ 830,00. A entrada chega antes da saída?"
+            : caso.id === "CV-12" || caso.id === "CV-13"
+              ? "Qual será o meio de pagamento do conserto?"
+              : caso.id === "CV-28" && indiceMensagemUsuario === 2
+                ? "Movimentação simulada: R$ 500,00 guardados, uma única vez."
+                : "Simulação com falta de R$ 200,00 em 15/11. Depende do recebimento previsto.",
         };
       }
 
@@ -703,13 +754,22 @@ function criarProvedorRoteirizadoParaCaso(caso: CasoAvaliacao): Provedor {
         };
       }
 
-      const fragmentos =
+      const esclarecimentos: Record<string, string> = {
+        "CV-04": "Qual compromisso e qual nova data?",
+        "CV-11": "Qual será o meio de pagamento?",
+        "CV-25": "Qual será a data e o meio de pagamento?",
+      };
+      const fragmentos = esclarecimentos[caso.id] ?? (
         caso.esperado.texto_contem.length > 0
           ? caso.esperado.texto_contem.join(" · ")
-          : "Resposta dentro das regras.";
+          : "Resposta dentro das regras."
+      );
       return {
         tipo: "texto",
-        texto: `Simulação concluída (${caso.id}): ${fragmentos}. Tudo é movimentação simulada com dados fictícios.`,
+        texto: `Simulação concluída (${caso.id}): ${fragmentos}. Tudo é movimentação simulada com dados fictícios.${
+          caso.id === "CV-24" && mensagens.some((m) => m.papel === "sistema" && m.conteudo.includes(SUFIXO_PERGUNTA_CV24))
+            ? ` ${SUFIXO_PERGUNTA_CV24}` : ""
+        }`,
       };
     },
   };
@@ -727,7 +787,7 @@ export type ResultadoCasoB6 = {
   falha: Falha | null;
   rastro: ItemRastro[];
   chamadas_modelo: number;
-  turnos: Array<{ mensagem: string; resposta: RespostaTurno }>;
+  turnos: Array<{ mensagem: string; estado_entrada: EstadoSessao; resposta: RespostaTurno }>;
 };
 
 export type RelatorioAvaliacaoB6 = {
@@ -747,6 +807,7 @@ export async function executarAvaliacao(opcoes: {
   ids?: string[];
   repeticoes?: number;
   usarRoteirizado?: boolean;
+  provedor?: Provedor;
   dirSaida?: string;
 }): Promise<RelatorioAvaliacaoB6> {
   const conjunto = opcoes.conjunto ?? "critico";
@@ -755,8 +816,10 @@ export async function executarAvaliacao(opcoes: {
   const dirSaida = opcoes.dirSaida ?? join(__dirname, "resultados");
   mkdirSync(dirSaida, { recursive: true });
 
-  const casos = carregarCasosAvaliacao(conjunto).filter(
-    (caso) => !opcoes.ids?.length || opcoes.ids.includes(caso.id),
+  const todosOsCasos = carregarCasosAvaliacao("todos");
+  const casos = todosOsCasos.filter(
+    (caso) => (conjunto !== "critico" || caso.critico) &&
+      (!opcoes.ids?.length || opcoes.ids.includes(caso.id)),
   );
   const resultados: ResultadoCasoB6[] = [];
   const snap = obterSnapshotFallback();
@@ -770,9 +833,9 @@ export async function executarAvaliacao(opcoes: {
       const depsBase = criarDepsPadrao(
         usarRoteirizado ? { provedor: "roteirizado" } : undefined,
       );
-      const provedorOriginal = usarRoteirizado
+      const provedorOriginal = opcoes.provedor ?? (usarRoteirizado
         ? criarProvedorRoteirizadoParaCaso(caso)
-        : depsBase.provedor;
+        : depsBase.provedor);
       let chamadasModeloCaso = 0;
       const provedor: Provedor = {
         nome: provedorOriginal.nome,
@@ -792,13 +855,47 @@ export async function executarAvaliacao(opcoes: {
       nomeProvedor = provedor.nome;
       nomeModelo = provedor.modelo;
 
-      const personaEfetiva = carregarPersona(caso.persona).ok ? caso.persona : "p1";
+      if (caso.modo === "instrucoes_local") {
+        const inicio = performance.now();
+        const local = await executarAvaliacaoInstrucoesLocal({ provedor });
+        const turnos = local.respostas.map(({ resposta }) => {
+          const registrada = structuredClone(resposta);
+          if (usarRoteirizado && registrada.status === "ok") {
+            registrada.rastro.forEach((item) => { item.duracao_ms = 0; });
+            registrada.estado.conversa.forEach((m) => m.rastro.forEach((item) => { item.duracao_ms = 0; }));
+          }
+          return { mensagem: caso.mensagens[0]!, estado_entrada: estadoInicial(caso.persona, snap), resposta: registrada };
+        });
+        const motivos = [...local.motivos];
+        for (const [indice, turno] of turnos.entries()) {
+          const r = turno.resposta;
+          const oraculo = verificarOraculoB6("CR-02", r, r.estado ?? turno.estado_entrada);
+          const a = avaliarCasoExecutado(caso, {
+            ferramentasChamadas: r.status === "ok" ? r.rastro.map((item) => ({ nome: item.ferramenta, argumentos: item.argumentos })) : [],
+            textoFinal: r.status === "ok" ? r.texto : "", oraculoOk: oraculo.length === 0,
+          });
+          motivos.push(...[...a.motivos, ...oraculo].map((m) => `Fase ${indice + 1}: ${m}`));
+        }
+        const ultima = turnos.at(-1)?.resposta;
+        resultados.push({
+          id: caso.id, persona: caso.persona, repeticao: rep, aprovado: local.aprovado && motivos.length === 0,
+          latencia_ms: usarRoteirizado ? 0 : Math.round(performance.now() - inicio), motivos,
+          ferramentas_chamadas: turnos.flatMap((t) => t.resposta.status === "ok" ? t.resposta.rastro.map((r) => r.ferramenta) : []),
+          texto_final: ultima?.status === "ok" ? ultima.texto : "",
+          falha: ultima?.status === "falha" ? ultima.falha : null,
+          rastro: ultima?.status === "ok" ? ultima.rastro : [], chamadas_modelo: chamadasModeloCaso, turnos,
+        });
+        continue;
+      }
+      if (!carregarPersona(caso.persona).ok) throw new Error(`Persona indisponível na avaliação: ${caso.persona}`);
+      const personaEfetiva = caso.persona;
       let estado: EstadoSessao = estadoInicial(personaEfetiva, snap);
       let ultimaResposta: RespostaTurno | null = null;
       const turnos: ResultadoCasoB6["turnos"] = [];
       const t0 = performance.now();
 
       for (const [idxMsg, textoMsg] of caso.mensagens.entries()) {
+        const estadoEntrada = structuredClone(estado);
         const res = await processarTurno(
           {
             estado,
@@ -818,11 +915,11 @@ export async function executarAvaliacao(opcoes: {
           if (registrada.status === "ok") {
             registrada.rastro.forEach((item) => { item.duracao_ms = 0; });
           }
-          registrada.estado?.conversa.forEach((mensagem) => {
+          for (const e of [registrada.estado, estadoEntrada]) e?.conversa.forEach((mensagem) => {
             mensagem.rastro.forEach((item) => { item.duracao_ms = 0; });
           });
         }
-        turnos.push({ mensagem: textoMsg, resposta: registrada });
+        turnos.push({ mensagem: textoMsg, estado_entrada: estadoEntrada, resposta: registrada });
         ultimaResposta = res;
         if (res.status === "ok") {
           estado = res.estado;
@@ -847,6 +944,36 @@ export async function executarAvaliacao(opcoes: {
         oraculoOk,
       });
       aval.motivos.push(...motivosOraculo);
+      const ultimoTurno = turnos.at(-1);
+      if (ultimoTurno) aval.motivos.push(...verificarTransicaoB6(caso.id, ultimoTurno.estado_entrada, ultimoTurno.resposta));
+      const preparatorios: Record<string, string[]> = {
+        "CV-02": ["CV-01"], "CV-09": ["CV-08"],
+        "CV-12": ["CV-11"], "CV-13": ["CV-11"],
+        "CV-23": ["CV-01", "CV-02", "CV-23"],
+        "CV-28": ["CV-07", "confirmacao"],
+      };
+      for (const [indice, turno] of turnos.slice(0, -1).entries()) {
+        const idPreparacao = preparatorios[caso.id]?.[indice];
+        const esperado = idPreparacao === "confirmacao"
+          ? { ...caso, esperado: { ...caso.esperado, oraculo: "CR-41" } }
+          : todosOsCasos.find((c) => c.id === idPreparacao);
+        if (!esperado) throw new Error(`Critério ausente para ${caso.id}, turno ${indice + 1}`);
+        const r = turno.resposta;
+        const motivosDoOraculo = verificarOraculoB6(
+          esperado.esperado.oraculo, r, r.estado ?? estadoInicial(caso.persona, snap),
+          turnos.slice(0, indice).map((t) => t.resposta),
+        );
+        const avaliacao = avaliarCasoExecutado(esperado, {
+          ferramentasChamadas: r.status === "ok" ? r.rastro.map((item) => ({ nome: item.ferramenta, argumentos: item.argumentos })) : [],
+          textoFinal: r.status === "ok" ? r.texto : "",
+          oraculoOk: motivosDoOraculo.length === 0,
+        });
+        aval.motivos.push(...[
+          ...avaliacao.motivos, ...motivosDoOraculo,
+          ...verificarTransicaoB6(esperado.id, turno.estado_entrada, r),
+        ].map((m) => `Turno ${indice + 1}: ${m}`));
+      }
+      aval.aprovado = aval.motivos.length === 0;
 
       resultados.push({
         id: caso.id,

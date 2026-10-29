@@ -2,7 +2,7 @@
   "id": "CV-14",
   "persona": "p3",
   "mensagens": [
-    "Inclui também a compra de R$ 480 do supermercado no cartão hoje."
+    "Inclui também a compra de R$ 480 do supermercado."
   ],
   "esperado": {
     "ferramentas": [

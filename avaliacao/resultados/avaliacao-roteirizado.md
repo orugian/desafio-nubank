@@ -1,8 +1,8 @@
 # Avaliação B6 (todos)
 
 - Provedor: `roteirizado` · Modelo: `roteirizado-b6:CV-29`
-- Resultado: **27/27** aprovados
-- Chamadas ao modelo: **53** (limite de 40 requisições/minuto no modo real)
+- Resultado: **28/28** aprovados
+- Chamadas ao modelo: **66** (limite de 40 requisições/minuto no modo real)
 
 | Caso | Rep | Status | Latência (ms) | Chamadas | Ferramentas | Observações |
 |---|---|---|---|---|---|---|
@@ -28,8 +28,9 @@
 | CV-20 | 1 | OK | 0 | 1 | — | — |
 | CV-21 | 1 | OK | 0 | 1 | — | — |
 | CV-22 | 1 | OK | 0 | 1 | — | — |
-| CV-23 | 1 | OK | 0 | 3 | — | — |
+| CV-23 | 1 | OK | 0 | 8 | exibir_comparacao | — |
+| CV-24 | 1 | OK | 0 | 6 | criar_hipotese, criar_hipotese, criar_hipotese | — |
 | CV-25 | 1 | OK | 0 | 1 | — | — |
 | CV-26 | 1 | OK | 0 | 2 | projetar_rendimento | — |
-| CV-28 | 1 | OK | 0 | 4 | confirmar_movimentacao | — |
+| CV-28 | 1 | OK | 0 | 6 | confirmar_movimentacao | — |
 | CV-29 | 1 | OK | 0 | 2 | consultar_investimentos | — |
