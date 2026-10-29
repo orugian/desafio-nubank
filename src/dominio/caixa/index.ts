@@ -459,6 +459,13 @@ export function validarEstado(persona: Persona, estado: EstadoSessao, contexto: 
     cena = aplicar(persona, estado, cena, d.alteracao, d.id, "declaracao", k);
   }
 
+  // O-04/CR-19: nem o JSON da pendente nem o de operações executadas pode
+  // fabricar recursos. Declarações posteriores podem gerar falta legítima;
+  // por isso o teto histórico das OP usa o saldo inicial, não o saldo atual.
+  const totalOperacoes = e.operacoes.reduce((s, op) => s + op.valor_centavos, 0);
+  if (totalOperacoes > Math.max(0, persona.conta.saldo_inicio_hoje_centavos)) return invalido("operações excedem o saldo inicial disponível");
+  if (e.operacao_pendente && e.operacao_pendente.valor_centavos > saldoDisponivelHoje(persona, e)) return invalido("pendente excede saldo disponível hoje");
+
   // Hipóteses: estrutura e regras que não dependem da existência do alvo (R-14 permite inconsistência).
   for (const h of e.hipoteses) {
     if (h.alteracoes.length > LIMITES.alteracoes_por_hipotese) return invalido(`${h.id}: alterações demais`);

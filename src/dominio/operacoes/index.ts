@@ -57,6 +57,8 @@ export function confirmarMovimentacao(
   if (!pendente || pendente.id !== operacao_id) return erro("OPERACAO_EXPIRADA", textos.erros.OPERACAO_EXPIRADA, ["operacao_id"]);
   const posicao = persona.posicoes.find((p) => p.id === pendente.destino);
   if (!posicao) return erro("POSICAO_INEXISTENTE", textos.erros.POSICAO_INEXISTENTE, ["destino"]);
+  const disponivel = saldoDisponivelHoje(persona, estado);
+  if (pendente.valor_centavos > disponivel) return erro("SALDO_INSUFICIENTE_HOJE", textos.erros.SALDO_INSUFICIENTE_HOJE, ["valor"], { saldo_disponivel_hoje_centavos: disponivel });
   const operacao = { id: pendente.id, valor_centavos: pendente.valor_centavos, destino: pendente.destino, data: HOJE };
   const novo = { ...estado, operacoes: [...estado.operacoes, operacao], hipoteses: [], operacao_pendente: null };
   return { ok: true, estado: novo, operacao, destino: destinoDaPosicao(posicao), hipoteses_descartadas: estado.hipoteses.map((h) => h.id), saldo_disponivel_hoje_centavos: saldoDisponivelHoje(persona, novo) };

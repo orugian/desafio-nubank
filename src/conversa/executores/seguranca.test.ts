@@ -1,6 +1,8 @@
 import { describe, expect, test } from "vitest";
 import { estadoInicial, type DepsConversa, type RespostaProvedor } from "@/contratos";
-import { processarTurno } from "@/conversa";
+import { processarAcao, processarTurno } from "@/conversa";
+import { carregarPersona } from "@/dados";
+import { confirmarMovimentacao } from "@/dominio/operacoes";
 import { criarExecutores } from "@/conversa/executores";
 import { snapshotGravado } from "@/mercado";
 
@@ -23,6 +25,30 @@ function depsRoteirizadas(respostas: RespostaProvedor[]): DepsConversa {
 }
 
 describe("B7 · regressões adversariais", () => {
+  test("CR-19/O-04: pendente adulterada acima do saldo não passa validação nem executa por ação ou domínio", async () => {
+    const executores = criarExecutores();
+    const inicial = estadoInicial("p1", snapshotGravado());
+    const proposta = await executores.ferramentas.propor_movimentacao({ valor: "500", destino: "SEP" },
+      { estado: inicial, mensagem_id: "propor" });
+    if (!proposta.ok || !proposta.estado.operacao_pendente) throw new Error("proposta inválida");
+    const adulterado = structuredClone(proposta.estado);
+    adulterado.operacao_pendente!.valor_centavos = 500000;
+    expect(await executores.validarEstado(adulterado)).toMatchObject({ ok: false, erro: { codigo: "ESTADO_INVALIDO" } });
+    const acao = await processarAcao({ estado: adulterado, acao: { tipo: "confirmar", operacao_id: "OP1" } },
+      depsRoteirizadas([]));
+    expect(acao).toMatchObject({ status: "falha", falha: { tipo: "F-06", codigo: "ESTADO_INVALIDO" }, estado: adulterado });
+    const persona = carregarPersona("p1");
+    if (!persona.ok) throw new Error(persona.erro.mensagem);
+    expect(confirmarMovimentacao(persona.persona, adulterado, "OP1")).toMatchObject({
+      ok: false, erro: { codigo: "SALDO_INSUFICIENTE_HOJE" },
+    });
+    expect(adulterado.operacoes).toEqual([]);
+
+    // Operação impossível inserida no JSON também não é aceita como já executada.
+    const operacaoForjada = { ...inicial, contadores: { D: 0, H: 0, OP: 1 },
+      operacoes: [{ id: "OP1", valor_centavos: 500000, destino: "SEP", data: "2026-10-30" }] };
+    expect(await executores.validarEstado(operacaoForjada)).toMatchObject({ ok: false, erro: { codigo: "ESTADO_INVALIDO" } });
+  });
   test("O-06: desfazer declaração expira proposta cujo saldo e impacto ficaram obsoletos", async () => {
     const f = criarExecutores().ferramentas;
     const inicial = estadoInicial("p1", snapshotGravado());
