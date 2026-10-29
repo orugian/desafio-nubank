@@ -721,6 +721,7 @@ export type ResultadoCasoB6 = {
   falha: Falha | null;
   rastro: ItemRastro[];
   chamadas_modelo: number;
+  turnos: Array<{ mensagem: string; resposta: RespostaTurno }>;
 };
 
 export type RelatorioAvaliacaoB6 = {
@@ -788,6 +789,7 @@ export async function executarAvaliacao(opcoes: {
       const personaEfetiva = carregarPersona(caso.persona).ok ? caso.persona : "p1";
       let estado: EstadoSessao = estadoInicial(personaEfetiva, snap);
       let ultimaResposta: RespostaTurno | null = null;
+      const turnos: ResultadoCasoB6["turnos"] = [];
       const t0 = performance.now();
 
       for (const [idxMsg, textoMsg] of caso.mensagens.entries()) {
@@ -805,6 +807,16 @@ export async function executarAvaliacao(opcoes: {
             },
           },
         );
+        const registrada = structuredClone(res);
+        if (usarRoteirizado) {
+          if (registrada.status === "ok") {
+            registrada.rastro.forEach((item) => { item.duracao_ms = 0; });
+          }
+          registrada.estado?.conversa.forEach((mensagem) => {
+            mensagem.rastro.forEach((item) => { item.duracao_ms = 0; });
+          });
+        }
+        turnos.push({ mensagem: textoMsg, resposta: registrada });
         ultimaResposta = res;
         if (res.status === "ok") {
           estado = res.estado;
@@ -845,6 +857,7 @@ export async function executarAvaliacao(opcoes: {
               }))
             : [],
         chamadas_modelo: chamadasModeloCaso,
+        turnos,
       });
     }
   }

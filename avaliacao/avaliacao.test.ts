@@ -1,4 +1,5 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
@@ -123,5 +124,32 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     expect(
       relatorio.resultados.every((r) => r.rastro.every((item) => item.duracao_ms === 0)),
     ).toBe(true);
+  });
+
+  test("6. CV-09 preserva a resposta, estado e rastro de ambos os turnos no relatório", async () => {
+    const dirSaida = mkdtempSync(join(tmpdir(), "newai-b6-turnos-"));
+    const relatorio = await executarAvaliacao({
+      conjunto: "todos",
+      ids: ["CV-09"],
+      usarRoteirizado: true,
+      dirSaida,
+    });
+    const turnos = relatorio.resultados[0]!.turnos;
+    expect(turnos.map((t) => t.mensagem)).toEqual([
+      "Posso separar R$ 300 hoje?",
+      "O cliente paga antes do aluguel.",
+    ]);
+    const primeira = turnos[0]!.resposta;
+    const segunda = turnos[1]!.resposta;
+    expect(primeira.status).toBe("ok");
+    expect(segunda.status).toBe("ok");
+    if (primeira.status !== "ok" || segunda.status !== "ok") throw new Error("turno falhou");
+    expect(primeira.rastro[0]?.ferramenta).toBe("criar_hipotese");
+    expect(segunda.rastro[0]?.ferramenta).toBe("registrar_declaracao");
+    expect(primeira.estado.hipoteses.map((h) => h.id)).toEqual(["H1"]);
+    expect(segunda.estado.hipoteses.map((h) => h.id)).toEqual(["H1"]);
+    expect(primeira.cartoes.length).toBeGreaterThan(0);
+    const gravado = JSON.parse(readFileSync(join(dirSaida, "avaliacao-roteirizado.json"), "utf8"));
+    expect(gravado.resultados[0].turnos).toEqual(turnos);
   });
 });
