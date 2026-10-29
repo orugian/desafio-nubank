@@ -509,6 +509,10 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
             visao={visao}
             mostrarSaldos={mostrarSaldos}
             aoNaoDisponivel={acionarNaoDisponivel}
+            aoPerguntar={(texto) => {
+              setChatAberto(true);
+              enviarMensagemNova(texto);
+            }}
           />
         )}
 

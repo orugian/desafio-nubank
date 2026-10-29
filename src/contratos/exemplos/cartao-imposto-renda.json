@@ -1,7 +1,7 @@
 {
   "exemplo": true,
   "esquema": "CartaoResposta",
-  "descricao": "Estimativa de imposto de renda de 2026: investimentos e IRPF anual",
+  "descricao": "IR estimado de investimentos e IRPF da P1 (gerado pelo motor)",
   "dados": {
     "tipo": "imposto_renda",
     "resultado": {
@@ -10,21 +10,77 @@
       "investimentos": {
         "itens": [
           {
+            "posicao_id": "SEP",
+            "nome": "Saldo separado",
+            "categoria": "saldo_separado",
+            "regime": "sem_rendimento",
+            "base_centavos": 0,
+            "aliquota_pct": "0.00",
+            "ir_estimado_centavos": 0,
+            "isento": false,
+            "motivo": "não rende",
+            "data_referencia": "2026-10-30",
+            "data_pagamento": null,
+            "forma": "não se aplica"
+          },
+          {
             "posicao_id": "INV1",
             "nome": "Caixinha Reserva",
             "categoria": "caixinha",
             "regime": "renda_fixa_resgate",
-            "base_centavos": 15000,
-            "aliquota_pct": "22.50",
-            "ir_estimado_centavos": 3375,
+            "base_centavos": 12215,
+            "aliquota_pct": "18.26",
+            "ir_estimado_centavos": 2230,
             "isento": false,
             "motivo": null,
             "data_referencia": "2026-10-30",
             "data_pagamento": null,
             "forma": "retido na fonte pelo banco no resgate"
+          },
+          {
+            "posicao_id": "INV9",
+            "nome": "Caixinha Viagem",
+            "categoria": "caixinha",
+            "regime": "renda_fixa_resgate",
+            "base_centavos": 0,
+            "aliquota_pct": "0.00",
+            "ir_estimado_centavos": 0,
+            "isento": false,
+            "motivo": null,
+            "data_referencia": "2026-10-30",
+            "data_pagamento": null,
+            "forma": "retido na fonte pelo banco no resgate"
+          },
+          {
+            "posicao_id": "INV2",
+            "nome": "CDB Banco Fictício",
+            "categoria": "cdb_vencimento",
+            "regime": "renda_fixa_vencimento",
+            "base_centavos": 8424,
+            "aliquota_pct": "17.50",
+            "ir_estimado_centavos": 1474,
+            "isento": false,
+            "motivo": null,
+            "data_referencia": "2027-03-15",
+            "data_pagamento": "2027-03-15",
+            "forma": "retido na fonte no vencimento"
+          },
+          {
+            "posicao_id": "INV3",
+            "nome": "PETR4",
+            "categoria": "acao",
+            "regime": "acao",
+            "base_centavos": 10700,
+            "aliquota_pct": "0.00",
+            "ir_estimado_centavos": 0,
+            "isento": true,
+            "motivo": "vendas no mês até R$ 20.000,00 são isentas",
+            "data_referencia": "2026-10-30",
+            "data_pagamento": null,
+            "forma": "sem DARF a pagar nesta estimativa"
           }
         ],
-        "total_ir_estimado_centavos": 3375
+        "total_ir_estimado_centavos": 3704
       },
       "irpf": {
         "origem": "historico",
@@ -49,9 +105,11 @@
         "forma_mensal": "retido na fonte pelo empregador",
         "prazo_declaracao": "2027-05-31",
         "premissas": [
-          "Renda inferida pela média mensal do histórico",
-          "Desconto simplificado de 20%",
-          "Tabela progressiva da Receita Federal para o ano-calendário 2026"
+          "renda mensal constante no ano",
+          "desconto simplificado",
+          "sem dependentes, deduções ou outros rendimentos",
+          "tabelas de 2026 da Receita Federal e redução da Lei 15.270/2025",
+          "renda estimada pela média do histórico de 3 meses"
         ]
       },
       "fontes": [

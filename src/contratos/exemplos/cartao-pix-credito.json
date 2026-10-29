@@ -1,54 +1,54 @@
 {
   "exemplo": true,
   "esquema": "CartaoResposta",
-  "descricao": "Simulação de Pix no crédito de R$ 300 em 3 parcelas",
+  "descricao": "Pix de R$ 2.500 no crédito em 3x, P1, juros de premissa (gerado pelo motor)",
   "dados": {
     "tipo": "pix_credito",
     "resultado": {
-      "valor_centavos": 30000,
+      "valor_centavos": 250000,
       "parcelas": 3,
       "juros_am_pct": "4.99",
       "juros_origem": "premissa",
       "saldo_disponivel_hoje_centavos": 180000,
-      "saldo_suficiente": true,
-      "falta_saldo_centavos": 0,
-      "iof_centavos": 354,
-      "total_financiado_centavos": 30354,
-      "parcela_centavos": 11149,
+      "saldo_suficiente": false,
+      "falta_saldo_centavos": 70000,
+      "iof_centavos": 2324,
+      "total_financiado_centavos": 252324,
+      "parcela_centavos": 92638,
       "cronograma": [
         {
           "numero": 1,
-          "fatura_id": "A",
-          "vencimento": "2026-11-05",
-          "valor_centavos": 11149,
-          "juros_centavos": 1515,
-          "amortizacao_centavos": 9634
+          "fatura_id": "F2612",
+          "vencimento": "2026-12-05",
+          "valor_centavos": 92638,
+          "juros_centavos": 12591,
+          "amortizacao_centavos": 80047
         },
         {
           "numero": 2,
-          "fatura_id": "F2612",
-          "vencimento": "2026-12-05",
-          "valor_centavos": 11149,
-          "juros_centavos": 1034,
-          "amortizacao_centavos": 10115
+          "fatura_id": "F2701",
+          "vencimento": "2027-01-05",
+          "valor_centavos": 92638,
+          "juros_centavos": 8597,
+          "amortizacao_centavos": 84041
         },
         {
           "numero": 3,
-          "fatura_id": "F2701",
-          "vencimento": "2027-01-05",
-          "valor_centavos": 11149,
-          "juros_centavos": 544,
-          "amortizacao_centavos": 10605
+          "fatura_id": "F2702",
+          "vencimento": "2027-02-05",
+          "valor_centavos": 92639,
+          "juros_centavos": 4403,
+          "amortizacao_centavos": 88236
         }
       ],
-      "total_pago_centavos": 33447,
-      "juros_total_centavos": 3093,
-      "custo_total_centavos": 3447,
-      "cet_am_pct": "5.38",
-      "cet_aa_pct": "87.65",
-      "limite_disponivel_centavos": 310590,
-      "excede_limite": false,
-      "rotulo": "simulação; juros de 4.99% a.m. (premissa do protótipo), IOF 0,38% + 0,0082% ao dia; nenhum Pix foi feito"
+      "total_pago_centavos": 277915,
+      "juros_total_centavos": 25591,
+      "custo_total_centavos": 27915,
+      "cet_am_pct": "5.49",
+      "cet_aa_pct": "89.81",
+      "limite_disponivel_centavos": 255000,
+      "excede_limite": true,
+      "rotulo": "simulação; juros de 4,99% a.m. (premissa do protótipo), IOF 0,38% + 0,0082% ao dia; nenhum Pix foi feito"
     }
   }
 }

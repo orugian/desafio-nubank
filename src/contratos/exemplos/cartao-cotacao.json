@@ -1,26 +1,26 @@
 {
   "exemplo": true,
   "esquema": "CartaoResposta",
-  "descricao": "Cotação de PETR4 com 10 ações na carteira da persona",
+  "descricao": "Cotação PETR4 gravada da P1 (gerado pelo motor)",
   "dados": {
     "tipo": "cotacao",
     "resultado": {
       "ticker": "PETR4",
-      "nome": "Petrobras PN",
+      "nome": null,
       "tipo": "acao",
-      "preco_centavos": 3650,
-      "variacao_dia_pct": "1.25",
-      "data_hora": "2026-10-30T17:00:00-03:00",
+      "preco_centavos": 5279,
+      "variacao_dia_pct": "-2.02",
+      "data_hora": "2026-10-27T18:00:00-03:00",
       "fonte": "brapi",
-      "ao_vivo": true,
-      "valorizacao_periodo_pct": "15.30",
+      "ao_vivo": false,
+      "valorizacao_periodo_pct": "23.23",
       "periodo_desde": "2026-07-30",
       "na_carteira": {
         "posicao_id": "INV3",
         "quantidade": "10",
-        "valor_centavos": 36500
+        "valor_centavos": 52790
       },
-      "rotulo": "cotação ao vivo de 30/10 17:00 (brapi); não é previsão de preço"
+      "rotulo": "cotação gravada de 27/10 18:00 (brapi); não é previsão de preço"
     }
   }
 }

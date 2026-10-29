@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import {
+  formatarData,
   formatarDiaMes,
+  formatarPercentual,
   formatarReais,
   textos,
   type CartaoResposta,
@@ -413,10 +415,458 @@ export function CartaoChat({
     );
   }
 
-  return (
-    <div className="mt-2 rounded-2xl border border-[#F65758] bg-red-50 p-3 text-xs text-red-900">
-      <span className="font-semibold">{cartao.codigo}: </span>
-      {cartao.mensagem}
-    </div>
-  );
+  if (cartao.tipo === "cotacao") {
+    const { resultado } = cartao;
+    const variacaoNum =
+      resultado.variacao_dia_pct !== null ? Number(resultado.variacao_dia_pct) : null;
+    return (
+      <div className="mt-2 rounded-2xl border border-[#EEEEEE] bg-white p-3.5 text-xs flex flex-col gap-2">
+        <div className="font-semibold text-sm text-[#111111]">
+          {resultado.ticker}
+          {resultado.nome ? ` · ${resultado.nome}` : ""}
+        </div>
+
+        <div className="flex items-baseline gap-2 flex-wrap">
+          <span className="text-2xl font-bold text-[#111111] tabular-nums">
+            {formatarReais(resultado.preco_centavos)}
+          </span>
+          <span
+            className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
+              resultado.ao_vivo ? "bg-emerald-50 text-[#259E56]" : "bg-gray-100 text-[#646464]"
+            }`}
+          >
+            {resultado.ao_vivo ? "ao vivo" : "gravado"}
+          </span>
+          {resultado.variacao_dia_pct !== null && variacaoNum !== null && (
+            <span
+              className={`text-xs font-semibold tabular-nums ${
+                variacaoNum >= 0 ? "text-[#259E56]" : "text-[#F65758]"
+              }`}
+            >
+              {variacaoNum > 0 ? "+" : ""}
+              {formatarPercentual(resultado.variacao_dia_pct)}
+            </span>
+          )}
+        </div>
+
+        {resultado.valorizacao_periodo_pct !== null && resultado.periodo_desde !== null && (
+          <div className="text-[11px] text-[#646464]">
+            Valorização desde {formatarDiaMes(resultado.periodo_desde)}:{" "}
+            <span className="font-medium text-[#111111]">
+              {formatarPercentual(resultado.valorizacao_periodo_pct)}
+            </span>
+          </div>
+        )}
+
+        {resultado.na_carteira && (
+          <div className="text-[11px] text-[#646464]">
+            Você tem {resultado.na_carteira.quantidade} ·{" "}
+            {formatarReais(resultado.na_carteira.valor_centavos)}
+          </div>
+        )}
+
+        <div className="text-[11px] text-[#646464] border-t border-[#EEEEEE] pt-1 mt-0.5">
+          {resultado.rotulo}
+        </div>
+      </div>
+    );
+  }
+
+  if (cartao.tipo === "comparativo_investimento") {
+    const { resultado } = cartao;
+    type LinhaComparativo = {
+      id: "real" | "cdi" | "prefixado";
+      nome: string;
+      valor_centavos: number;
+      resultado_centavos: number;
+      rentabilidade_pct: string;
+      diferenca_centavos?: number;
+      isMelhor: boolean;
+    };
+
+    const linhas: LinhaComparativo[] = [
+      {
+        id: "real",
+        nome: "Seu investimento",
+        valor_centavos: resultado.real.valor_centavos,
+        resultado_centavos: resultado.real.resultado_centavos,
+        rentabilidade_pct: resultado.real.rentabilidade_pct,
+        isMelhor: resultado.melhor === "real",
+      },
+      ...resultado.alternativas.map((alt) => ({
+        id: alt.id,
+        nome: alt.nome,
+        valor_centavos: alt.valor_centavos,
+        resultado_centavos: alt.resultado_centavos,
+        rentabilidade_pct: alt.rentabilidade_pct,
+        diferenca_centavos: alt.diferenca_centavos,
+        isMelhor: resultado.melhor === alt.id,
+      })),
+    ];
+
+    return (
+      <div className="mt-2 rounded-2xl border border-[#EEEEEE] bg-white p-3.5 text-xs flex flex-col gap-2">
+        <div className="font-semibold text-sm text-[#111111]">
+          Comparativo · {resultado.posicao.nome}
+        </div>
+        <div className="text-[11px] text-[#646464]">
+          Aplicado {formatarReais(resultado.aplicado_centavos)} desde{" "}
+          {formatarDiaMes(resultado.inicio)} ({resultado.dias_corridos} dias)
+        </div>
+
+        <TabelaCompartilhada
+          caption={`Comparativo de rendimento para ${resultado.posicao.nome}`}
+          itens={linhas}
+          obterChave={(l) => l.id}
+          colunas={[
+            {
+              chave: "nome",
+              titulo: "Investimento",
+              renderizar: (l) => (
+                <div className={l.isMelhor ? "font-bold text-[#111111]" : "text-[#111111]"}>
+                  <span>{l.nome}</span>
+                  {l.isMelhor && (
+                    <span className="ml-1 text-[10px] text-[#259E56] font-semibold">(melhor)</span>
+                  )}
+                </div>
+              ),
+            },
+            {
+              chave: "valor",
+              titulo: "Valor hoje",
+              alinharDireita: true,
+              renderizar: (l) => (
+                <span className={l.isMelhor ? "font-bold tabular-nums" : "tabular-nums"}>
+                  {formatarReais(l.valor_centavos)}
+                </span>
+              ),
+            },
+            {
+              chave: "resultado",
+              titulo: "Resultado",
+              alinharDireita: true,
+              renderizar: (l) => (
+                <span className={l.isMelhor ? "font-bold tabular-nums" : "tabular-nums"}>
+                  {formatarReais(l.resultado_centavos)} ({formatarPercentual(l.rentabilidade_pct)})
+                </span>
+              ),
+            },
+            {
+              chave: "diferenca",
+              titulo: "Diferença",
+              alinharDireita: true,
+              renderizar: (l) => {
+                if (l.diferenca_centavos === undefined) {
+                  return <span className="text-[#646464]">—</span>;
+                }
+                const sinal = l.diferenca_centavos > 0 ? "+" : "";
+                return (
+                  <span className={l.isMelhor ? "font-bold tabular-nums" : "tabular-nums"}>
+                    {sinal}
+                    {formatarReais(l.diferenca_centavos)}
+                  </span>
+                );
+              },
+            },
+          ]}
+        />
+
+        <div className="text-[11px] text-[#646464] border-t border-[#EEEEEE] pt-1 mt-0.5 flex flex-col gap-0.5">
+          <div>{resultado.rotulo}</div>
+          {resultado.real.rotulo_estimativa && <div>{resultado.real.rotulo_estimativa}</div>}
+        </div>
+      </div>
+    );
+  }
+
+  if (cartao.tipo === "simulacao_investimento") {
+    const { resultado } = cartao;
+    const taxaPrefTexto = resultado.taxa_aa_pct ? resultado.taxa_aa_pct.replace(".", ",") : "";
+    const indexadorTitulo =
+      resultado.indexador === "cdi"
+        ? `${resultado.cdi_pct}% do CDI`
+        : `prefixado ${taxaPrefTexto}% a.a.`;
+
+    return (
+      <div className="mt-2 rounded-2xl border border-[#EEEEEE] bg-white p-3.5 text-xs flex flex-col gap-2">
+        <div className="font-semibold text-sm text-[#111111]">Simulação · {indexadorTitulo}</div>
+        <div className="text-[11px] text-[#646464]">
+          {formatarReais(resultado.valor_centavos)} de {formatarDiaMes(resultado.inicio)} a{" "}
+          {formatarData(resultado.fim)} ({resultado.dias_corridos} dias)
+        </div>
+
+        <div className="flex flex-col gap-1.5 text-xs text-[#111111]">
+          <div className="flex justify-between">
+            <span className="text-[#646464]">Rendimento bruto</span>
+            <span className="font-semibold tabular-nums">
+              {formatarReais(resultado.rendimento_bruto_centavos)}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-[#646464]">
+              IOF ({formatarPercentual(resultado.aliquota_iof_pct)})
+            </span>
+            <span className="tabular-nums">{formatarReais(resultado.iof_centavos)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-[#646464]">
+              IR ({formatarPercentual(resultado.aliquota_ir_pct)})
+            </span>
+            <span className="tabular-nums">{formatarReais(resultado.ir_centavos)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-[#646464]">Rendimento líquido</span>
+            <span className="font-semibold tabular-nums text-[#259E56]">
+              {formatarReais(resultado.rendimento_liquido_centavos)}
+            </span>
+          </div>
+          <div className="flex justify-between border-t border-[#EEEEEE] pt-1.5 mt-0.5 text-sm font-bold text-[#111111]">
+            <span>Valor final líquido</span>
+            <span className="tabular-nums">
+              {formatarReais(resultado.valor_final_liquido_centavos)}
+            </span>
+          </div>
+          <div className="flex justify-between text-[11px] text-[#646464]">
+            <span>Rentabilidade líquida</span>
+            <span className="font-semibold tabular-nums text-[#259E56]">
+              {formatarPercentual(resultado.rentabilidade_liquida_pct)}
+            </span>
+          </div>
+        </div>
+
+        <div className="text-[11px] text-[#646464] border-t border-[#EEEEEE] pt-1 mt-0.5">
+          {resultado.rotulo}
+        </div>
+      </div>
+    );
+  }
+
+  if (cartao.tipo === "pix_credito") {
+    const { resultado } = cartao;
+    const jurosTexto = resultado.juros_am_pct.replace(".", ",");
+    const jurosOrigemTexto =
+      resultado.juros_origem === "premissa" ? "premissa do protótipo" : "informado";
+
+    return (
+      <div className="mt-2 rounded-2xl border border-[#EEEEEE] bg-white p-3.5 text-xs flex flex-col gap-2">
+        <div className="font-semibold text-sm text-[#111111]">
+          Pix no crédito · {formatarReais(resultado.valor_centavos)} em {resultado.parcelas}x
+        </div>
+
+        {resultado.saldo_suficiente === false ? (
+          <div className="p-2 rounded-lg bg-amber-50 text-[#DB791C] font-medium text-[11px]">
+            Saldo em conta insuficiente: faltam {formatarReais(resultado.falta_saldo_centavos)}
+          </div>
+        ) : (
+          <div className="text-[11px] text-[#646464]">
+            Há saldo em conta para este Pix; no crédito há juros.
+          </div>
+        )}
+
+        <div className="flex flex-col gap-1.5 text-xs text-[#111111]">
+          <div className="flex justify-between">
+            <span className="text-[#646464]">
+              Juros {jurosTexto}% a.m. ({jurosOrigemTexto})
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-[#646464]">IOF</span>
+            <span className="tabular-nums">{formatarReais(resultado.iof_centavos)}</span>
+          </div>
+          <div className="flex justify-between border-t border-[#EEEEEE] pt-1.5 mt-0.5 text-sm font-bold text-[#111111]">
+            <span>Total pago</span>
+            <span className="tabular-nums">{formatarReais(resultado.total_pago_centavos)}</span>
+          </div>
+          <div className="flex justify-between font-semibold text-[#F65758]">
+            <span>Custo do crédito</span>
+            <span className="tabular-nums">{formatarReais(resultado.custo_total_centavos)}</span>
+          </div>
+          <div className="flex justify-between text-[11px] text-[#646464]">
+            <span>CET</span>
+            <span className="tabular-nums">
+              {formatarPercentual(resultado.cet_am_pct)} a.m. /{" "}
+              {formatarPercentual(resultado.cet_aa_pct)} a.a.
+            </span>
+          </div>
+        </div>
+
+        <TabelaCompartilhada
+          caption="Cronograma de parcelas do Pix no crédito"
+          itens={resultado.cronograma}
+          obterChave={(p) => String(p.numero)}
+          colunas={[
+            {
+              chave: "parcela",
+              titulo: "Parcela",
+              renderizar: (p) => `${p.numero}/${resultado.parcelas}`,
+            },
+            {
+              chave: "vencimento",
+              titulo: "Vencimento",
+              renderizar: (p) => formatarDiaMes(p.vencimento),
+            },
+            {
+              chave: "valor",
+              titulo: "Valor",
+              alinharDireita: true,
+              renderizar: (p) => formatarReais(p.valor_centavos),
+            },
+          ]}
+        />
+
+        {resultado.excede_limite && (
+          <div className="p-2 rounded-lg bg-red-50 text-[#F65758] font-medium text-[11px]">
+            O total passa do limite disponível do cartão (
+            {formatarReais(resultado.limite_disponivel_centavos)})
+          </div>
+        )}
+
+        <div className="text-[11px] text-[#646464] border-t border-[#EEEEEE] pt-1 mt-0.5">
+          {resultado.rotulo}
+        </div>
+      </div>
+    );
+  }
+
+  if (cartao.tipo === "imposto_renda") {
+    const { resultado } = cartao;
+
+    return (
+      <div className="mt-2 rounded-2xl border border-[#EEEEEE] bg-white p-3.5 text-xs flex flex-col gap-2.5">
+        <div className="font-semibold text-sm text-[#111111]">
+          Imposto de renda · ano-calendário {resultado.ano_calendario}
+        </div>
+
+        {resultado.investimentos && (
+          <div className="flex flex-col gap-2 border-t border-[#EEEEEE] pt-2">
+            <div className="font-semibold text-xs text-[#111111]">Investimentos</div>
+            <TabelaCompartilhada
+              caption="IR sobre investimentos"
+              itens={resultado.investimentos.itens}
+              obterChave={(it) => it.posicao_id}
+              colunas={[
+                {
+                  chave: "nome",
+                  titulo: "Posição",
+                  renderizar: (it) => <span className="font-medium">{it.nome}</span>,
+                },
+                {
+                  chave: "ir",
+                  titulo: "IR estimado",
+                  alinharDireita: true,
+                  renderizar: (it) => (
+                    <div className="flex flex-col">
+                      <span className="font-semibold tabular-nums">
+                        {formatarReais(it.ir_estimado_centavos)}
+                      </span>
+                      <span className="text-[10px] text-[#646464]">
+                        {it.isento ? "isento" : formatarPercentual(it.aliquota_pct)} ·{" "}
+                        {it.data_pagamento
+                          ? `pagamento ${formatarDiaMes(it.data_pagamento)}`
+                          : it.forma}
+                      </span>
+                    </div>
+                  ),
+                },
+              ]}
+            />
+            <div className="text-xs font-semibold text-right tabular-nums text-[#111111]">
+              Total estimado: {formatarReais(resultado.investimentos.total_ir_estimado_centavos)}
+            </div>
+          </div>
+        )}
+
+        {resultado.irpf && (
+          <div className="flex flex-col gap-2 border-t border-[#EEEEEE] pt-2">
+            <div className="font-semibold text-xs text-[#111111]">
+              IRPF (declaração {resultado.exercicio})
+            </div>
+            <div className="flex flex-col gap-1.5 text-xs text-[#111111]">
+              <div className="flex justify-between">
+                <span className="text-[#646464]">
+                  Renda mensal considerada (
+                  {resultado.irpf.origem === "historico" ? "pela média do histórico" : "informada"})
+                </span>
+                <span className="font-medium tabular-nums">
+                  {formatarReais(resultado.irpf.rendimento_mensal_centavos)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#646464]">
+                  Imposto mensal ({resultado.irpf.forma_mensal})
+                </span>
+                <span className="tabular-nums">
+                  {formatarReais(resultado.irpf.mensal.imposto_centavos)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#646464]">Imposto anual devido</span>
+                <span className="font-medium tabular-nums">
+                  {formatarReais(resultado.irpf.imposto_devido_centavos)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#646464]">Já retido/recolhido no ano</span>
+                <span className="tabular-nums">
+                  {formatarReais(resultado.irpf.retido_ou_recolhido_anual_centavos)}
+                </span>
+              </div>
+
+              {resultado.irpf.a_pagar_centavos > 0 ? (
+                <div className="flex justify-between font-bold text-sm text-[#F65758] border-t border-[#EEEEEE] pt-1.5 mt-0.5">
+                  <span>A pagar</span>
+                  <span className="tabular-nums">
+                    {formatarReais(resultado.irpf.a_pagar_centavos)}
+                  </span>
+                </div>
+              ) : resultado.irpf.a_restituir_centavos > 0 ? (
+                <div className="flex justify-between font-bold text-sm text-[#259E56] border-t border-[#EEEEEE] pt-1.5 mt-0.5">
+                  <span>A restituir</span>
+                  <span className="tabular-nums">
+                    {formatarReais(resultado.irpf.a_restituir_centavos)}
+                  </span>
+                </div>
+              ) : (
+                <div className="flex justify-between font-bold text-sm text-[#111111] border-t border-[#EEEEEE] pt-1.5 mt-0.5">
+                  <span>Sem imposto a pagar</span>
+                  <span className="tabular-nums">{formatarReais(0)}</span>
+                </div>
+              )}
+
+              <div className="text-[11px] text-[#646464] mt-0.5">
+                Prazo para declaração: {formatarData(resultado.irpf.prazo_declaracao)}
+              </div>
+
+              {resultado.irpf.premissas.length > 0 && (
+                <div className="border-t border-[#EEEEEE] pt-1 mt-0.5 text-[10px] text-[#646464]">
+                  <div className="font-semibold mb-0.5">Premissas:</div>
+                  <ul className="list-disc pl-3.5 space-y-0.5">
+                    {resultado.irpf.premissas.map((p, idx) => (
+                      <li key={idx}>{p}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div className="text-[11px] text-[#646464] border-t border-[#EEEEEE] pt-1 mt-0.5 flex flex-col gap-0.5">
+          <div>{resultado.rotulo}</div>
+          <div>{resultado.fontes.join(" · ")}</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (cartao.tipo === "erro") {
+    return (
+      <div className="mt-2 rounded-2xl border border-[#F65758] bg-red-50 p-3 text-xs text-red-900">
+        <span className="font-semibold">{cartao.codigo}: </span>
+        {cartao.mensagem}
+      </div>
+    );
+  }
+
+  return null;
 }

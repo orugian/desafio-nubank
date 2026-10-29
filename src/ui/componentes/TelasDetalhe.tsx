@@ -26,10 +26,12 @@ export function TelaInvestimentos({
   visao,
   mostrarSaldos,
   aoNaoDisponivel,
+  aoPerguntar,
 }: {
   visao: VisaoApp;
   mostrarSaldos: boolean;
   aoNaoDisponivel: () => void;
+  aoPerguntar?: (texto: string) => void;
 }) {
   const posicoesInvest = visao.posicoes.filter((p) => p.categoria !== "saldo_separado");
   const totalInvestido = posicoesInvest.reduce((s, p) => s + p.valor_atual_centavos, 0);
@@ -38,6 +40,33 @@ export function TelaInvestimentos({
     (p) => p.categoria !== "caixinha" && p.categoria !== "cripto",
   );
   const outros = posicoesInvest.filter((p) => p.categoria === "cripto");
+
+  const posComTicker = visao.posicoes.find(
+    (p) => (p.categoria === "acao" || p.categoria === "cripto") && p.ticker,
+  );
+  const perguntaCotacao = posComTicker?.ticker
+    ? `Qual a cotação de ${posComTicker.ticker} agora?`
+    : "Qual a cotação de PETR4 agora?";
+
+  const posicoesComAplicacao = visao.posicoes.filter(
+    (p) => p.categoria !== "saldo_separado" && p.aplicado_centavos > 0,
+  );
+  const posPreferida =
+    posicoesComAplicacao.find((p) => p.categoria === "acao" || p.categoria === "cripto") ??
+    posicoesComAplicacao[0];
+  const perguntaComparar = posPreferida
+    ? `Quanto eu teria ganho se tivesse colocado no CDI o que investi em ${posPreferida.nome}?`
+    : "Quanto renderiam R$ 1.000 em 12 meses a 100% do CDI?";
+
+  const perguntaSimular = "Quanto renderiam R$ 1.000 em 12 meses a 100% do CDI?";
+  const perguntaImposto = "Quanto vou pagar de imposto de renda?";
+
+  const atalhos = [
+    { rotulo: "Cotação", Icone: TrendingUp, pergunta: perguntaCotacao },
+    { rotulo: "Comparar", Icone: ArrowUpDown, pergunta: perguntaComparar },
+    { rotulo: "Simular", Icone: PiggyBank, pergunta: perguntaSimular },
+    { rotulo: "Imposto", Icone: FileText, pergunta: perguntaImposto },
+  ];
 
   return (
     <div className="flex flex-col flex-1">
@@ -67,15 +96,12 @@ export function TelaInvestimentos({
 
       {/* Atalhos circulares */}
       <div className="px-6 pb-5 flex gap-4 overflow-x-auto">
-        {[
-          { rotulo: "Análises", Icone: TrendingUp },
-          { rotulo: "Histórico", Icone: ArrowUpDown },
-          { rotulo: "Relatórios", Icone: FileText },
-        ].map(({ rotulo, Icone }) => (
+        {atalhos.map(({ rotulo, Icone, pergunta }) => (
           <button
             key={rotulo}
             type="button"
-            onClick={aoNaoDisponivel}
+            aria-label={rotulo}
+            onClick={() => (aoPerguntar ? aoPerguntar(pergunta) : aoNaoDisponivel())}
             className="flex flex-col items-center gap-1.5 shrink-0 w-20"
           >
             <span className="w-14 h-14 rounded-full bg-[#F0F0F0] flex items-center justify-center text-[#111111]">
