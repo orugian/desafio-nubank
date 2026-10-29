@@ -118,5 +118,8 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
 
     expect(relatorio.aprovados).toBe(27);
     expect(relatorio.total_execucoes).toBe(27);
+    expect(
+      relatorio.resultados.every((r) => r.rastro.every((item) => item.duracao_ms === 0)),
+    ).toBe(true);
   });
 });

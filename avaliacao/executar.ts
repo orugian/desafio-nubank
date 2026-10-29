@@ -818,7 +818,13 @@ export async function executarAvaliacao(opcoes: {
         ferramentas_chamadas: ferramentasChamadas.map((f) => f.nome),
         texto_final: textoFinal,
         falha: ultimaResposta?.status === "falha" ? ultimaResposta.falha : null,
-        rastro: ultimaResposta?.status === "ok" ? ultimaResposta.rastro : [],
+        rastro:
+          ultimaResposta?.status === "ok"
+            ? ultimaResposta.rastro.map((item) => ({
+                ...item,
+                duracao_ms: usarRoteirizado ? 0 : item.duracao_ms,
+              }))
+            : [],
       });
     }
   }

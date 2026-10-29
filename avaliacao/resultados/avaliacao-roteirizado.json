@@ -298,7 +298,7 @@
               "cenarios[1].indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 200,00"
             }
           },
-          "duracao_ms": 2
+          "duracao_ms": 0
         }
       ]
     },
@@ -711,7 +711,7 @@
               "cenarios[2].indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 200,00"
             }
           },
-          "duracao_ms": 2
+          "duracao_ms": 0
         }
       ]
     },
@@ -866,7 +866,7 @@
               "cenarios[0].indicadores.sem_recebimentos.saldo_final_centavos": "R$ 350,00"
             }
           },
-          "duracao_ms": 1
+          "duracao_ms": 0
         }
       ]
     },
@@ -1091,7 +1091,7 @@
               "mercado.precos.BTC.preco_centavos": "R$ 430.086,18"
             }
           },
-          "duracao_ms": 5
+          "duracao_ms": 0
         }
       ]
     },
@@ -1304,7 +1304,7 @@
               "mercado.precos.BTC.preco_centavos": "R$ 430.086,18"
             }
           },
-          "duracao_ms": 4
+          "duracao_ms": 0
         }
       ]
     },
@@ -1394,7 +1394,7 @@
               "rendimento_estimado.rendimento_bruto_centavos": "R$ 3,31"
             }
           },
-          "duracao_ms": 2
+          "duracao_ms": 0
         }
       ]
     },
@@ -2008,7 +2008,7 @@
               "cenarios[1].indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 1.665,00"
             }
           },
-          "duracao_ms": 1
+          "duracao_ms": 0
         }
       ]
     },
@@ -2600,7 +2600,7 @@
               "cenarios[1].indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 1.665,00"
             }
           },
-          "duracao_ms": 2
+          "duracao_ms": 0
         }
       ]
     },
@@ -2681,7 +2681,7 @@
               "itens[3].valor_centavos": "R$ 72,00"
             }
           },
-          "duracao_ms": 2
+          "duracao_ms": 0
         }
       ]
     },
@@ -3258,7 +3258,7 @@
               "cenarios[1].indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 2.710,00"
             }
           },
-          "duracao_ms": 2
+          "duracao_ms": 0
         }
       ]
     },
@@ -3822,7 +3822,7 @@
               "cenarios[1].faturas_afetadas[3].total_depois_centavos": "R$ 450,00"
             }
           },
-          "duracao_ms": 3
+          "duracao_ms": 0
         }
       ]
     },
@@ -3876,7 +3876,7 @@
               }
             }
           },
-          "duracao_ms": 1
+          "duracao_ms": 0
         }
       ]
     },
@@ -4043,7 +4043,7 @@
               "mercado.precos.BTC.preco_centavos": "R$ 430.086,18"
             }
           },
-          "duracao_ms": 3
+          "duracao_ms": 0
         }
       ]
     },
@@ -4183,7 +4183,7 @@
               "rendimento_bruto_centavos": "R$ 3,31"
             }
           },
-          "duracao_ms": 3
+          "duracao_ms": 0
         }
       ]
     },
@@ -4213,7 +4213,7 @@
             "hipoteses_descartadas": [],
             "valores_formatados": {}
           },
-          "duracao_ms": 1
+          "duracao_ms": 0
         }
       ]
     },
@@ -4399,7 +4399,7 @@
               "mercado.precos.BTC.preco_centavos": "R$ 430.086,18"
             }
           },
-          "duracao_ms": 2
+          "duracao_ms": 0
         }
       ]
     }
