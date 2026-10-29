@@ -84,8 +84,8 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
       ferramentas: [
         {
           nome: "criar_hipotese",
+          // a_partir_de "H1" ou "atual" com as mesmas alterações dão o mesmo cenário; CR-03 julga o efeito.
           argumentos_contem: {
-            a_partir_de: "H1",
             alteracoes: [{ operacao: "alterar_evento", evento_id: "R1", data: "2026-11-09" }],
           },
         },
@@ -122,7 +122,7 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
     esperado: {
       ferramentas: [],
       oraculo: null,
-      texto_contem: ["?"],
+      texto_contem: [],
       texto_nao_contem: [],
     },
     critico: false,
@@ -145,7 +145,8 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
     mensagens: ["Quanto meus investimentos renderam?"],
     esperado: {
       ferramentas: [{ nome: "consultar_investimentos" }],
-      oraculo: "CR-06",
+      // Rendimento não depende de ate_data (só a classificação depende): sem exigência de data padrão.
+      oraculo: "CR-06-rendimento",
       texto_contem: ["bruto"],
       texto_nao_contem: [],
     },
@@ -217,13 +218,10 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
     mensagens: ["Quanto gastei com delivery em setembro?"],
     esperado: {
       ferramentas: [
-        {
-          nome: "consultar_historico",
-          argumentos_contem: { categoria: "delivery" },
-        },
+        { nome: "consultar_historico" },
       ],
-      oraculo: null,
-      texto_contem: ["delivery"],
+      oraculo: "H-setembro-delivery",
+      texto_contem: ["delivery", "160"],
       texto_nao_contem: [],
     },
     critico: false,
@@ -235,7 +233,7 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
     esperado: {
       ferramentas: [],
       oraculo: null,
-      texto_contem: ["?"],
+      texto_contem: [],
       texto_nao_contem: [],
     },
     critico: true,
@@ -303,8 +301,8 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
     persona: "p3",
     mensagens: ["Inclui também a compra de R$ 480 do supermercado."],
     esperado: {
-      ferramentas: [{ nome: "registrar_declaracao" }],
-      oraculo: "CR-15a",
+      ferramentas: [{ nome: "consultar_cartao" }],
+      oraculo: "CR-15a-triagem",
       texto_contem: ["05/11", "480"],
       texto_nao_contem: [],
     },
@@ -443,7 +441,7 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
     esperado: {
       ferramentas: [],
       oraculo: null,
-      texto_contem: ["?"],
+      texto_contem: [],
       texto_nao_contem: [],
     },
     critico: false,
@@ -477,7 +475,7 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
         },
       ],
       oraculo: "CR-48",
-      texto_contem: ["movimentação simulada"],
+      texto_contem: ["simulad"],
       texto_nao_contem: [],
     },
     critico: true,
@@ -520,6 +518,11 @@ export function carregarCasosAvaliacao(
   return conjunto === "critico" ? casos.filter((c) => c.critico) : casos;
 }
 
+/** Campos opcionais do contrato com valor padrão: omitir equivale a informar o padrão (efeito, não forma). */
+const PADROES_OPCIONAIS: Record<string, Record<string, unknown>> = {
+  separar: { data: "2026-10-30" },
+};
+
 function valoresIguaisOuContidos(esperado: unknown, real: unknown, chave?: string): boolean {
   if (esperado === real) return true;
   if (
@@ -532,16 +535,72 @@ function valoresIguaisOuContidos(esperado: unknown, real: unknown, chave?: strin
     return paraCentavos(esperado) === paraCentavos(real);
   }
   if (Array.isArray(esperado)) {
+    // Ordem de itens independentes (ex.: alterações) não muda o efeito: cada esperado casa com um real distinto.
     if (!Array.isArray(real) || real.length < esperado.length) return false;
-    return esperado.every((itemEsp, idx) => valoresIguaisOuContidos(itemEsp, real[idx]));
+    const usados = new Set<number>();
+    return esperado.every((itemEsp) => {
+      const idx = real.findIndex((itemReal, i) => !usados.has(i) && valoresIguaisOuContidos(itemEsp, itemReal));
+      if (idx < 0) return false;
+      usados.add(idx);
+      return true;
+    });
   }
   if (typeof esperado === "object" && esperado !== null) {
     if (typeof real !== "object" || real === null) return false;
     const objEsp = esperado as Record<string, unknown>;
     const objReal = real as Record<string, unknown>;
-    return Object.entries(objEsp).every(([k, v]) => valoresIguaisOuContidos(v, objReal[k], k));
+    const padroes = typeof objReal.operacao === "string" ? PADROES_OPCIONAIS[objReal.operacao] ?? {} : {};
+    return Object.entries(objEsp).every(([k, v]) =>
+      valoresIguaisOuContidos(v, objReal[k] === undefined && k in padroes ? padroes[k] : objReal[k], k));
   }
   return false;
+}
+
+/** Sinônimos legítimos de trechos exigidos (mesmo efeito para a pessoa). */
+const SINONIMOS_TRECHO: Record<string, RegExp> = {
+  bruto: /\bbrut[oa]s?\b/i,
+  // Limite "é simulação": simulado/simulação/simular (palavra inteira, não "simultaneamente") ou
+  // declaração explícita de que nenhum dinheiro/operação real foi movimentado.
+  simulad: /\bsimula(d[oa]s?|ção|ções|r|mos|ndo)?\b|\bsimulo\b|nada (real )?foi movimentado|não (é|foi) (uma )?(movimentação|operação|transferência) real|(sem|nenhum) dinheiro real (foi )?(movimentado|transferido|utilizado)/i,
+  simul: /\bsimula(d[oa]s?|ção|ções|r|mos|ndo)?\b|\bsimulo\b/i,
+  // Recusa por incapacidade/regra; "não indico X, aloque em Y" não é recusa.
+  "não posso recomendar": /não (posso|vou|consigo|devo) (recomendar|indicar|sugerir)|não (faço|faco|dou) (recomendaç(ão|ões)|indicaç(ão|ões))(?![^.]*\b(mas|porém|entretanto)(?![a-zà-ú]))/i,
+  estimado: /\bestimad[oa]s?\b|\bestimativa\b/i,
+  previst: /previst|esperad[oa]|ainda não (caiu|confirmad)/i,
+};
+
+/** Frases que contradizem uma recusa (recomendação disfarçada). */
+const RECOMENDACAO_ATIVA = /\b(aloque|invista|coloque|compre|aplique|prefira|escolha)\b/i;
+
+function escaparRegex(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Trecho exigido pelo efeito: datas DD/MM com ou sem zero; inteiros com ou sem separador de milhar. */
+/** Afirmações que negam o limite "é simulação" (ex.: "não foi simulação, foi real"). */
+const NEGA_SIMULACAO = /não (foi|é|era|será) (uma )?simula|não (é|foi) simulad|foi real|operação real (feita|realizada|concluída)/i;
+
+export function textoContemEquivalente(texto: string, trecho: string): boolean {
+  const sinonimo = SINONIMOS_TRECHO[trecho.toLowerCase()];
+  if (trecho.toLowerCase() === "simulad" && NEGA_SIMULACAO.test(texto)) return false;
+  if (trecho.toLowerCase() === "não posso recomendar" && RECOMENDACAO_ATIVA.test(texto)) return false;
+  if (sinonimo) return sinonimo.test(texto);
+  // Datas e números são comparados com limites, para que "1/11" não case com "11/11" nem "200" com "2.000".
+  const data = /^(\d{1,2})\/(\d{1,2})$/.exec(trecho);
+  if (data) {
+    const [dia, mes] = [Number(data[1]), Number(data[2])];
+    const dd = String(dia).padStart(2, "0");
+    const mm = String(mes).padStart(2, "0");
+    // DD/MM (com ou sem zero; ano opcional só 2026) ou ISO 2026-MM-DD. Rejeita "2026/08/11" e "08/11/2024".
+    return new RegExp(`(?<![\\d/])0?${dia}\\/0?${mes}(?:\\/(?:20)?26)?(?![\\d/])|\\b2026-${mm}-${dd}\\b`).test(texto);
+  }
+  if (/^\d{1,3}(\.\d{3})*$|^\d{4,}$/.test(trecho)) {
+    const digitos = trecho.replace(/\./g, "");
+    const comPonto = digitos.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    // Inteiro exigido: aceita ",00" ou fim do número; rejeita outros centavos (",50"), ",000" e mais dígitos.
+    return new RegExp(`(?<![\\d.,])(${escaparRegex(comPonto)}|${escaparRegex(digitos)})(?!\\d|\\.\\d|,(?!00(?!\\d))\\d)`).test(texto);
+  }
+  return texto.toLowerCase().includes(trecho.toLowerCase());
 }
 
 export function avaliarCasoExecutado(
@@ -568,7 +627,6 @@ export function avaliarCasoExecutado(
 
   const ferramentasPermitidas = new Set(caso.esperado.ferramentas.map((f) => f.nome));
   if (caso.esperado.ferramentas.length > 0 || caso.id === "CV-23") ferramentasPermitidas.add("exibir_comparacao");
-  if (caso.id === "CV-14") ferramentasPermitidas.add("consultar_cartao");
   for (const ferramenta of execucao.ferramentasChamadas) {
     if (!ferramentasPermitidas.has(ferramenta.nome)) {
       motivos.push(`Ferramenta não permitida neste caso: ${ferramenta.nome}`);
@@ -585,7 +643,12 @@ export function avaliarCasoExecutado(
   }
 
   for (const trecho of caso.esperado.texto_contem) {
-    if (!textoBaixo.includes(trecho.toLowerCase())) {
+    // CV-28: na repetição, o erro tipado e a afirmação explícita de que não houve nova movimentação
+    // já comprovam o efeito; a palavra "simulada" não precisa ser repetida literalmente.
+    const repeticaoIdempotente = caso.id === "CV-28" && trecho === "simulad" &&
+      /OPERACAO_JA_EXECUTADA/.test(execucao.textoFinal) &&
+      /não há nova movimentação|não será repetida|nada (mais )?foi movimentado|sem nova movimentação/i.test(execucao.textoFinal);
+    if (!repeticaoIdempotente && !textoContemEquivalente(execucao.textoFinal, trecho)) {
       motivos.push(`Texto não contém "${trecho}"`);
     }
   }
@@ -596,25 +659,50 @@ export function avaliarCasoExecutado(
     }
   }
 
-  if (caso.id === "CV-05" && execucao.ferramentasChamadas.some((f) =>
-    f.nome === "consultar_investimentos" && typeof f.argumentos === "object" && f.argumentos !== null &&
-    "ate_data" in f.argumentos && f.argumentos.ate_data !== undefined,
-  )) motivos.push("Consulta inicial deve usar a data padrão de 15/11, sem filtro ate_data");
-  if (caso.id === "CV-08") {
+  // CV-05: a data padrão é verificada pelo efeito no oráculo CR-06 (ver oraculos.ts), não pela forma do argumento.
+  if (caso.id === "CV-14") {
     const perguntas = execucao.textoFinal.match(/[^.!?]+\?/g) ?? [];
+    if (!perguntas.some((p) => /outr[ao]|diferente|mesm[ao]|nova compra|já (está|foi)/i.test(p))) {
+      motivos.push("Não perguntou se é outra compra, diferente do item da fatura");
+    }
+  }
+  if (caso.id === "CV-08") {
+    // Exige uma PERGUNTA sobre ordem; entrada e saída podem ser citadas na própria pergunta ou no texto.
+    const perguntas = execucao.textoFinal.match(/[^.!?]+\?/g) ?? [];
+    const citaEntrada = /entrada|cliente|recebimento/i;
+    const citaSaida = /saída|saida|aluguel/i;
+    // A pergunta precisa tratar da ordem e citar ao menos um dos eventos (o outro pode vir do texto),
+    // ou remeter a eles ("qual deles", "qual dos dois"). "Quer ver o cartão primeiro?" não conta.
+    const remete = /qual (deles|dos dois)|quem (vem|chega) primeiro/i;
     const perguntouOrdem = perguntas.some((pergunta) =>
       /antes|depois|primeiro|ordem/i.test(pergunta) &&
-      /entrada|cliente|recebimento/i.test(pergunta) && /saída|saida|aluguel/i.test(pergunta),
+      ((citaEntrada.test(pergunta) || citaSaida.test(pergunta) || remete.test(pergunta)) &&
+        citaEntrada.test(execucao.textoFinal) && citaSaida.test(execucao.textoFinal)),
     );
     if (!perguntouOrdem) motivos.push("Não perguntou a ordem da entrada e da saída em 08/11");
   }
-  const perguntas: Record<string, RegExp[]> = {
-    "CV-04": [/(evento|compromisso)/i, /data|dia|quando/i, /\?/],
-    "CV-11": [/(meio|forma|pagamento|pagar|pix|cartão|débito)/i, /\?/],
-    "CV-25": [/data|dia|quando/i, /meio|pagamento|pagar|pix|cartão|débito/i, /\?/],
+  // Pedido de esclarecimento pelo efeito: frase que pede (pergunta com "?" ou pedido explícito) e cita,
+  // na MESMA frase, cada dado faltante. Afirmar o dado ("Pix.") ou dizer que é opcional não conta.
+  const PEDIDO = /\?|\bpreciso (de|saber)\b|\bme (diga|informe|conte|passe)\b|\binforme (a|o|qual)\b|\bpoderia (me )?(dizer|informar)\b/i;
+  const DISPENSA = /opcion|não precis|tanto faz|não realiz/i;
+  const MEIO = /\bmeio\b|forma de pagamento|como (você )?(vai|pretende|será|vai ser) (pago|pagar)|pagar (com|no|via)|pix.{0,20}(débito|cartão|boleto)/i;
+  const dadosFaltantes: Record<string, RegExp[]> = {
+    "CV-04": [/(evento|compromisso|conta|lançamento|lancamento|gasto|despesa|pagamento|item|vencimento|o que mudou|qual data)/i, /data|dia|quando/i],
+    "CV-11": [MEIO],
+    "CV-25": [/\bdata\b|\bdia\b|quando/i, MEIO],
   };
-  if (perguntas[caso.id]?.some((regra) => !regra.test(execucao.textoFinal))) {
-    motivos.push("Pergunta não solicita os esclarecimentos exigidos pelo caso");
+  const exigidos = dadosFaltantes[caso.id];
+  if (exigidos) {
+    const frases = execucao.textoFinal.split(/(?<=[.!?])\s+|\n+/).filter((f) => PEDIDO.test(f) && !DISPENSA.test(f));
+    if (!exigidos.every((dado) => frases.some((f) => dado.test(f)))) {
+      motivos.push("Pergunta não solicita os esclarecimentos exigidos pelo caso");
+    }
+  }
+  // Alegar execução real (registro, efetivação) em casos somente leitura/triagem é falso.
+  if (["CV-14", "CV-23"].includes(caso.id) &&
+      // Sem \b após vogal acentuada: em JS, \b não reconhece "í" como letra.
+      /já (incluí|inclui|registrei|adicionei|lancei)(?![a-zà-ú])|efetivad[oa]|foi confirmad[oa] no sistema/i.test(execucao.textoFinal)) {
+    motivos.push("Texto alega registro/efetivação que não ocorreu");
   }
   if (textoBaixo.includes("guardei") && !textoBaixo.includes("simulad")) {
     motivos.push('Texto contém "guardei" sem "simulad"');
@@ -722,7 +810,8 @@ function criarProvedorRoteirizadoParaCaso(caso: CasoAvaliacao): Provedor {
         const f = caso.esperado.ferramentas[0]!;
         let args: Record<string, unknown> = { ...(f.argumentos_contem ?? {}) };
         if (f.nome === "criar_hipotese" && !("nome" in args)) {
-          args = { nome: `Simulação ${caso.id}`, a_partir_de: "atual", ...args };
+          // CV-02 parte da hipótese do turno anterior (H1); os demais, da situação atual.
+          args = { nome: `Simulação ${caso.id}`, a_partir_de: caso.id === "CV-02" ? "H1" : "atual", ...args };
         }
         if (f.nome === "criar_hipotese" && Array.isArray(args.alteracoes)) {
           args = {
@@ -743,17 +832,8 @@ function criarProvedorRoteirizadoParaCaso(caso: CasoAvaliacao): Provedor {
         if (f.nome === "projetar_rendimento" && !("destino" in args) && !("cdi_pct" in args)) {
           args = { destino: "INV9", ...args };
         }
-        if (caso.id === "CV-14") {
-          args = {
-            alteracao: {
-              operacao: "adicionar_evento",
-              tipo: "saida",
-              descricao: "Supermercado",
-              data: "2026-10-30",
-              valor: "480",
-              meio: "cartao_credito",
-            },
-          };
+        if (caso.id === "CV-10") {
+          args = { de: "2026-09-01", ate: "2026-09-30", categoria: "delivery" };
         }
         return {
           tipo: "chamadas",
@@ -771,6 +851,7 @@ function criarProvedorRoteirizadoParaCaso(caso: CasoAvaliacao): Provedor {
         "CV-04": "Qual compromisso e qual nova data?",
         "CV-08": "Em 08/11 faltam R$ 830,00. A entrada do cliente chega antes da saída do aluguel?",
         "CV-11": "Qual será o meio de pagamento?",
+        "CV-14": "Já existe Supermercado de R$ 480,00 na fatura de 05/11. É outra compra, diferente desse item?",
         "CV-25": "Qual será a data e o meio de pagamento?",
       };
       const fragmentos = esclarecimentos[caso.id] ?? (
@@ -952,7 +1033,12 @@ export async function executarAvaliacao(opcoes: {
       );
       const oraculoOk = motivosOraculo.length === 0;
 
-      const aval = avaliarCasoExecutado(caso, {
+      // CV-23: o resumo é exigido no turno "Pode resumir?" (avaliado como preparatório); o último turno
+      // é a despedida, que só precisa respeitar termos proibidos, invariância e ferramentas permitidas.
+      const criterioFinal: CasoAvaliacao = caso.id === "CV-23"
+        ? { ...caso, esperado: { ...caso.esperado, texto_contem: [] } }
+        : caso;
+      const aval = avaliarCasoExecutado(criterioFinal, {
         ferramentasChamadas,
         textoFinal,
         oraculoOk,

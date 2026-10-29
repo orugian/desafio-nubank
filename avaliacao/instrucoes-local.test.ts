@@ -6,7 +6,7 @@ import {
   SUFIXO_PERGUNTA_CV24,
 } from "./instrucoes-local";
 
-function provedorConformeInstrucoes(observadas: boolean[]): Provedor {
+function provedorConformeInstrucoes(observadas: boolean[], comData = true): Provedor {
   return {
     nome: "roteirizado",
     modelo: "cv24-fronteira",
@@ -24,7 +24,7 @@ function provedorConformeInstrucoes(observadas: boolean[]): Provedor {
             argumentos: JSON.stringify({
               nome: "Separar R$ 500 hoje",
               a_partir_de: "atual",
-              alteracoes: [{ operacao: "separar", valor: "500", data: "2026-10-30" }],
+              alteracoes: [comData ? { operacao: "separar", valor: "500", data: "2026-10-30" } : { operacao: "separar", valor: "500" }],
             }),
           }],
         };
@@ -67,6 +67,15 @@ describe("CV-24 · instruções locais isoladas", () => {
       expect(comparacao.cenarios.find((c) => c.cenario_id === "H1")?.indicadores?.saldo_minimo_centavos).toBe(-20000);
     }
     expect(rede).not.toHaveBeenCalled();
+  });
+
+  test("aceita separar sem data (campo opcional com padrão hoje): mesmo efeito", async () => {
+    const resultado = await executarAvaliacaoInstrucoesLocal({
+      provedor: provedorConformeInstrucoes([], false),
+      instrucoesOriginais: "IN-01: Responda em português e use o motor para valores.",
+    });
+    expect(resultado.motivos).toEqual([]);
+    expect(resultado.aprovado).toBe(true);
   });
 
   test("não aprova igualdade vazia quando o provedor só afirma números sem executar CV01", async () => {

@@ -97,7 +97,8 @@ export async function executarAvaliacaoInstrucoesLocal(opcoes: {
         const alteracao = hipotese?.alteracoes[0]?.alteracao;
         if (resposta.estado.hipoteses.length !== 1 || hipotese?.id !== "H1" ||
             hipotese.alteracoes.length !== 1 || alteracao?.operacao !== "separar" ||
-            paraCentavos(alteracao.valor) !== 50000 || alteracao.data !== "2026-10-30" ||
+            // data é opcional em separar (padrão: hoje); omitir equivale a 2026-10-30.
+            paraCentavos(alteracao.valor) !== 50000 || (alteracao.data ?? "2026-10-30") !== "2026-10-30" ||
             !resposta.rastro.some((item) =>
               item.ferramenta === "criar_hipotese" &&
               typeof item.resultado === "object" && item.resultado !== null &&

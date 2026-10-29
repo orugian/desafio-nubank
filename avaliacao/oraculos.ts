@@ -10,6 +10,7 @@ import {
 import { carregarPersona } from "@/dados";
 import { criarCalendario } from "@/dominio/calendario";
 import { calcularCenarios, paraCentavos } from "@/dominio/caixa";
+import { consultarHistorico } from "@/dominio/historico";
 import { consultarInvestimentos, projetarRendimento } from "@/dominio/investimentos";
 import cdiJson from "../dados/mercado/cdi.json";
 import btcJson from "../dados/mercado/fechamentos-BTC.json";
@@ -60,6 +61,7 @@ function cartaoDe<T extends CartaoResposta["tipo"]>(
 function oraculoInvestimentos(
   resposta: Extract<RespostaTurno, { status: "ok" }>,
   estado: EstadoSessao,
+  exigirDataPadrao = false,
 ): string[] {
   const rPersona = carregarPersona(estado.persona_id);
   if (!rPersona.ok) return ["Persona do oráculo indisponível"];
@@ -72,9 +74,18 @@ function oraculoInvestimentos(
   if (!cartao) return ["Cartão de investimentos ausente"];
   const { ok: _, ...resultadoDireto } = esperado;
   void _;
-  return isDeepStrictEqual(cartao.resultado, resultadoDireto)
+  const motivos = isDeepStrictEqual(cartao.resultado, resultadoDireto)
     ? []
     : ["Cartão de investimentos divergente da saída direta do motor"];
+  if (exigirDataPadrao) {
+    // Efeito, não forma: omitir ate_data ou informar a mesma data que o motor usaria é equivalente.
+    const padrao = consultarInvestimentos(rPersona.persona, estado, contexto, {});
+    if (!padrao.ok) return [...motivos, `Oráculo de investimentos falhou: ${padrao.erro.codigo}`];
+    if (cartao.resultado.ate_data !== padrao.ate_data) {
+      motivos.push(`Consulta classificou até ${cartao.resultado.ate_data}, mas a data padrão do motor é ${padrao.ate_data}`);
+    }
+  }
+  return motivos;
 }
 
 export function verificarTransicaoB6(id: string, entrada: EstadoSessao, resposta: RespostaTurno): string[] {
@@ -137,9 +148,17 @@ export function verificarOraculoB6(
       if (!estado.declaracoes.some((d) => d.alteracao.operacao === "alterar_evento" && d.alteracao.evento_id === "C" && d.alteracao.valor !== undefined && paraCentavos(d.alteracao.valor) === 15000)) {
         motivos.push("Declaração de C = 150 ausente");
       }
+      const semRecebimentos = cenario(cenarios, "atual")?.indicadores?.sem_recebimentos;
+      if (semRecebimentos && semRecebimentos.saldo_final_centavos >= 0 &&
+          /saldo final[^\n.]*positivo[^\n.]*depende/i.test(resposta.texto)) {
+        motivos.push("Premissa incorreta: o saldo final sem recebimentos também é positivo");
+      }
       return motivos;
     }
     case "CR-06":
+      // CR-06: "Investimentos até 15/11 (default de I-10 em sessão nova)".
+      return oraculoInvestimentos(resposta, estado, true);
+    case "CR-06-rendimento":
     case "CR-16":
     case "CR-34":
       return oraculoInvestimentos(resposta, estado);
@@ -204,6 +223,50 @@ export function verificarOraculoB6(
       const { conversa: _c, versao: _v, ...negocio } = estado;
       const { conversa: _ci, versao: _vi, ...inicial } = estadoInicial(estado.persona_id, estado.mercado);
       if (JSON.stringify(negocio) !== JSON.stringify(inicial)) motivos.push("Estado de negócio mudou apesar da duplicidade");
+      return motivos;
+    }
+    case "H-setembro-delivery": {
+      // Efeito, não forma: categoria "delivery" ou busca equivalente valem se o período e o total
+      // forem os de setembro calculados pelo motor.
+      const esperado = consultarHistorico(rPersona.persona, { de: "2026-09-01", ate: "2026-09-30", categoria: "delivery" });
+      if (!esperado.ok) return [`Oráculo de histórico falhou: ${esperado.erro.codigo}`];
+      const cartao = cartaoDe(resposta.cartoes, "historico");
+      if (!cartao) return ["Cartão de histórico ausente"];
+      const r = cartao.resultado;
+      const motivos: string[] = [];
+      if (r.de !== "2026-09-01" || r.ate !== "2026-09-30") {
+        motivos.push(`Consulta não limitada a setembro (período ${r.de} a ${r.ate})`);
+      }
+      const ids = (itens: Array<{ id: string }>) => itens.map((i) => i.id).sort();
+      if (r.total_saidas_centavos !== esperado.total_saidas_centavos || !isDeepStrictEqual(ids(r.itens), ids(esperado.itens))) {
+        motivos.push("Lançamentos/total de delivery em setembro divergem do motor");
+      }
+      return motivos;
+    }
+    case "CR-15a-triagem": {
+      // PEDIDO 4, opção A: a mensagem não traz data/meio da nova compra, e o contrato exige ambos
+      // para registrar. O aceite é a triagem somente leitura pela fatura, sem inventar dados.
+      const motivos: string[] = [];
+      const consulta = resposta.rastro.find((r) => r.ferramenta === "consultar_cartao" &&
+        (r.resultado as { ok?: boolean }).ok === true);
+      if (!consulta) {
+        motivos.push("Triagem da fatura (consultar_cartao) ausente");
+      } else {
+        const cartao = (consulta.resultado as { cartao?: { fatura_fechada?: { vencimento?: string; itens?: Array<{ descricao?: string; valor_centavos?: number }> } | null } }).cartao;
+        const item = cartao?.fatura_fechada?.itens?.find((i) => /supermercado/i.test(i.descricao ?? "") && i.valor_centavos === 48000);
+        if (!item || cartao?.fatura_fechada?.vencimento !== "2026-11-05") {
+          motivos.push("Fatura consultada não contém Supermercado R$ 480,00 com vencimento em 05/11");
+        }
+      }
+      for (const r of resposta.rastro.filter((x) => x.ferramenta === "registrar_declaracao")) {
+        const alt = (r.argumentos as { alteracao?: { operacao?: string } }).alteracao;
+        if (alt?.operacao === "adicionar_evento") {
+          motivos.push("Registro de nova compra sem data e meio informados pela pessoa");
+        }
+      }
+      const { conversa: _c, versao: _v, ...negocio } = estado;
+      const { conversa: _ci, versao: _vi, ...inicial } = estadoInicial(estado.persona_id, estado.mercado);
+      if (JSON.stringify(negocio) !== JSON.stringify(inicial)) motivos.push("Estado de negócio mudou na triagem");
       return motivos;
     }
     case "CR-32": {
