@@ -288,6 +288,13 @@ export function criarExecutores(): Executores {
         const rPersona = carregarPersona(ctx.estado.persona_id);
         if (!rPersona.ok) return rPersona;
 
+        const pendente = ctx.estado.operacao_pendente;
+        // O-03: a proposta recém-criada deve voltar à pessoa antes de executar.
+        // A versão só avança ao fim do turno; a ação explícita da UI não é modelo.
+        if (ctx.mensagem_id !== null && pendente?.id === v.argumentos.operacao_id &&
+            pendente.criada_na_versao === ctx.estado.versao) {
+          return erro("OPERACAO_NAO_PERMITIDA", "Aguarde uma confirmação humana em um novo turno ou pelo botão Confirmar.", ["operacao_id"]);
+        }
         const r = confirmarMovimentacao(rPersona.persona, ctx.estado, v.argumentos.operacao_id);
         if (!r.ok) return r;
 
