@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /** Versão dos contratos congelada no M0. Mudança só por PEDIDO aprovado. */
-export const VERSAO_CONTRATOS = "1.0";
+export const VERSAO_CONTRATOS = "1.1";
 
 /** Calendário fixo (spec D-02). O relógio do sistema nunca entra no cálculo. */
 export const HOJE = "2026-10-30";
@@ -32,6 +32,17 @@ export const LIMITES = {
   timeout_turno_ms: 30_000,
   timeout_mercado_ms: 3_000,
 } as const;
+
+/** Premissas de crédito para simulações (spec §1.5). */
+export const PREMISSAS_CREDITO = {
+  juros_pix_credito_am_pct: "4.99",
+  iof_adicional_pct: "0.38",
+  iof_diario_pct: "0.0082",
+  iof_dias_max: 365,
+} as const;
+
+/** Limite máximo de data para simulações de investimento (5 anos, spec §1.5). */
+export const LIMITE_SIMULACAO_INVESTIMENTO = "2031-10-30";
 
 // ---------------------------------------------------------------------------
 // Primitivos
@@ -84,6 +95,9 @@ export const esquemaQuantidade = z.string().regex(/^\d+(\.\d+)?$/);
 
 /** Taxa em texto decimal (ex.: `"0.055131"`). */
 export const esquemaTaxaTexto = z.string().regex(/^\d+(\.\d+)?$/);
+
+/** Taxa percentual em texto (ex.: `"4.99"`, `"12.5"`). */
+export const esquemaTaxaPctTexto = z.string().regex(/^\d{1,3}(\.\d{1,4})?$/);
 
 /** Percentual em texto com 2 casas (ex.: `"1.01"`, `"-3.20"`). */
 export const esquemaPercentualTexto = z.string().regex(/^-?\d+\.\d{2}$/);

@@ -26,6 +26,16 @@ export const descricoesFerramentas: Record<NomeFerramenta, string> = {
   exibir_comparacao: "Anexa à resposta a comparação dos cenários ativos.",
   preparar_resumo_atendimento:
     "Prepara um rascunho de resumo para o atendimento humano. O rascunho não é enviado.",
+  consultar_cotacao:
+    "Consulta a cotação atual de uma ação da B3 (ex.: PETR4) ou de cripto (BTC, ETH, SOL), ao vivo quando disponível, com a fonte, a data e, se a pessoa tiver o ativo, quantidade e valor na carteira. Somente leitura. Não é previsão de preço.",
+  comparar_investimento:
+    "Compara o resultado real de um investimento da pessoa (posicao_id) com o que o mesmo valor, aplicado nas mesmas datas, teria rendido no CDI (cdi_pct, padrão 100) e, se informado, num prefixado (prefixado_aa_pct ao ano). Use para \"quanto eu teria ganho se tivesse colocado no CDI/renda fixa?\". Valores brutos. Somente leitura.",
+  simular_investimento:
+    "Estima o retorno de um valor novo em renda fixa atrelada ao CDI (cdi_pct) ou prefixada (taxa_aa_pct ao ano), por prazo_meses (1 a 60) ou até ate_data, com IR regressivo e IOF. CDI constante na última taxa. Somente leitura; não recomenda produto.",
+  simular_pix_credito:
+    "Simula pagar um Pix usando o cartão de crédito (Pix no crédito) quando falta saldo em conta: juros ao mês (juros_am_pct; sem ele usa a premissa do protótipo de 4,99%), IOF, parcelas nas faturas, total pago e custo efetivo. Use só quando a pessoa perguntar por Pix sem saldo ou Pix no crédito. Nada é executado.",
+  estimar_imposto_renda:
+    "Estima o imposto de renda do ano-calendário 2026: sobre os investimentos (IR retido no resgate, come-cotas, ações e cripto com isenções e DARF) e o IRPF anual (declaração 2027) pela renda média do histórico ou por rendimento_mensal informado. escopo: tudo (padrão), investimentos ou irpf. Estimativa; não substitui a declaração.",
 };
 
 /** Descrições de campos reutilizados nos esquemas das ferramentas. */

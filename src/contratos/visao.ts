@@ -26,6 +26,13 @@ import {
   esquemaResultadoProjecao,
 } from "./consultas";
 import { esquemaSnapshotMercado } from "./mercado";
+import {
+  esquemaResultadoCotacao,
+  esquemaResultadoComparativo,
+  esquemaResultadoSimulacaoInvestimento,
+  esquemaResultadoPixCredito,
+  esquemaResultadoImpostoRenda,
+} from "./extras";
 
 // ---------------------------------------------------------------------------
 // Cartões de resposta (spec §6.4)
@@ -73,6 +80,11 @@ export const esquemaCartaoResposta = z.discriminatedUnion("tipo", [
     enviado: z.literal(false),
   }),
   z.object({ tipo: z.literal("erro"), codigo: z.string().regex(/^[A-Z0-9_-]+$/), mensagem: z.string().min(1) }),
+  z.object({ tipo: z.literal("cotacao"), resultado: esquemaResultadoCotacao }),
+  z.object({ tipo: z.literal("comparativo_investimento"), resultado: esquemaResultadoComparativo }),
+  z.object({ tipo: z.literal("simulacao_investimento"), resultado: esquemaResultadoSimulacaoInvestimento }),
+  z.object({ tipo: z.literal("pix_credito"), resultado: esquemaResultadoPixCredito }),
+  z.object({ tipo: z.literal("imposto_renda"), resultado: esquemaResultadoImpostoRenda }),
 ]);
 export type CartaoResposta = z.infer<typeof esquemaCartaoResposta>;
 export type TipoCartao = CartaoResposta["tipo"];

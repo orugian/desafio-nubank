@@ -21,6 +21,7 @@ export const CODIGOS_ERRO = [
   "DISPONIVEL_FORA_DA_JANELA",
   "ESTADO_INVALIDO",
   "MENSAGEM_JA_PROCESSADA",
+  "COTACAO_INDISPONIVEL",
 ] as const;
 export const esquemaCodigoErro = z.enum(CODIGOS_ERRO);
 export type CodigoErro = z.infer<typeof esquemaCodigoErro>;

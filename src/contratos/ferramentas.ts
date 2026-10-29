@@ -4,6 +4,7 @@ import {
   esquemaData,
   esquemaIdOperacao,
   esquemaIdPosicao,
+  esquemaTaxaPctTexto,
   esquemaValorTexto,
 } from "./comum";
 import { esquemaAlteracao } from "./estado";
@@ -27,6 +28,11 @@ export const NOMES_FERRAMENTAS = [
   "cancelar_movimentacao",
   "exibir_comparacao",
   "preparar_resumo_atendimento",
+  "consultar_cotacao",
+  "comparar_investimento",
+  "simular_investimento",
+  "simular_pix_credito",
+  "estimar_imposto_renda",
 ] as const;
 export type NomeFerramenta = (typeof NOMES_FERRAMENTAS)[number];
 
@@ -66,6 +72,48 @@ export const esquemasArgumentos = {
   exibir_comparacao: z.object({}),
   preparar_resumo_atendimento: z.object({
     motivo: z.string().min(1).max(200).describe("Motivo do contato com o atendimento, em uma frase."),
+  }),
+  consultar_cotacao: z.object({
+    ticker: z
+      .string()
+      .regex(/^[A-Za-z0-9]{2,12}$/)
+      .describe("Código do ativo na B3 (ex.: PETR4) ou cripto (BTC, ETH, SOL)."),
+  }),
+  comparar_investimento: z.object({
+    posicao_id: esquemaIdPosicao.describe("Id da posição a comparar (ex.: INV1)."),
+    cdi_pct: esquemaCdiPct.optional().describe("Percentual do CDI para comparar (padrão 100)."),
+    prefixado_aa_pct: esquemaTaxaPctTexto
+      .optional()
+      .describe("Taxa prefixada anual em percentual para comparar (ex.: 12.5)."),
+  }),
+  simular_investimento: z
+    .object({
+      valor,
+      indexador: z.enum(["cdi", "prefixado"]).describe("Indexador do investimento: cdi ou prefixado."),
+      cdi_pct: esquemaCdiPct.optional().describe("Percentual do CDI (ex.: 100)."),
+      taxa_aa_pct: esquemaTaxaPctTexto.optional().describe("Taxa prefixada ao ano em percentual (ex.: 12.5)."),
+      prazo_meses: z.int().min(1).max(60).optional().describe("Prazo da aplicação em meses (1 a 60)."),
+      ate_data: esquemaData.optional().describe(descricoesCampos.ate_data),
+    })
+    .refine((v) => (v.prazo_meses === undefined) !== (v.ate_data === undefined), {
+      message: "informe prazo_meses ou ate_data (um dos dois)",
+      path: ["prazo_meses"],
+    })
+    .refine((v) => v.indexador !== "prefixado" || v.taxa_aa_pct !== undefined, {
+      message: "taxa_aa_pct é obrigatória para prefixado",
+      path: ["taxa_aa_pct"],
+    }),
+  simular_pix_credito: z.object({
+    valor,
+    parcelas: z.int().min(1).max(12).describe(descricoesCampos.parcelas),
+    juros_am_pct: esquemaTaxaPctTexto.optional().describe("Taxa de juros ao mês em percentual (ex.: 4.99)."),
+  }),
+  estimar_imposto_renda: z.object({
+    escopo: z
+      .enum(["tudo", "investimentos", "irpf"])
+      .optional()
+      .describe("Escopo da estimativa: tudo (padrão), investimentos ou irpf."),
+    rendimento_mensal: esquemaValorTexto.optional().describe("Rendimento mensal bruto em reais para simular o IRPF."),
   }),
 } satisfies Record<NomeFerramenta, z.ZodType>;
 

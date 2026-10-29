@@ -25,6 +25,13 @@ import { esquemaSerieCdi, esquemaSerieFechamentos, esquemaSnapshotMercado } from
 import { esquemaPersona } from "./persona";
 import { esquemaRoteiro } from "./conversa";
 import { esquemaCartaoResposta, esquemaVisaoApp } from "./visao";
+import {
+  esquemaResultadoCotacao,
+  esquemaResultadoComparativo,
+  esquemaResultadoSimulacaoInvestimento,
+  esquemaResultadoPixCredito,
+  esquemaResultadoImpostoRenda,
+} from "./extras";
 
 export * from "./comum";
 export * from "./erros";
@@ -33,6 +40,7 @@ export * from "./persona";
 export * from "./estado";
 export * from "./cenario";
 export * from "./consultas";
+export * from "./extras";
 export * from "./visao";
 export * from "./http";
 export * from "./ferramentas";
@@ -70,5 +78,10 @@ export const esquemas = {
   RequisicaoAcao: esquemaRequisicaoAcao,
   RespostaAcao: esquemaRespostaAcao,
   RespostaFalha: esquemaRespostaFalha,
+  ResultadoCotacao: esquemaResultadoCotacao,
+  ResultadoComparativo: esquemaResultadoComparativo,
+  ResultadoSimulacaoInvestimento: esquemaResultadoSimulacaoInvestimento,
+  ResultadoPixCredito: esquemaResultadoPixCredito,
+  ResultadoImpostoRenda: esquemaResultadoImpostoRenda,
 } as const;
 export type NomeEsquema = keyof typeof esquemas;

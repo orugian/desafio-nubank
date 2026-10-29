@@ -1,0 +1,29 @@
+{
+  "exemplo": true,
+  "esquema": "CartaoResposta",
+  "descricao": "R$ 1.000 a 100% do CDI por 12 meses (gerado pelo motor)",
+  "dados": {
+    "tipo": "simulacao_investimento",
+    "resultado": {
+      "valor_centavos": 100000,
+      "indexador": "cdi",
+      "cdi_pct": 100,
+      "taxa_aa_pct": null,
+      "taxa_diaria_cdi_pct": "0.050788",
+      "cdi_data_ref": "2026-10-27",
+      "inicio": "2026-10-30",
+      "fim": "2027-10-30",
+      "dias_corridos": 365,
+      "dias_uteis": 257,
+      "rendimento_bruto_centavos": 13939,
+      "aliquota_iof_pct": "0.00",
+      "iof_centavos": 0,
+      "aliquota_ir_pct": "17.50",
+      "ir_centavos": 2439,
+      "rendimento_liquido_centavos": 11500,
+      "valor_final_liquido_centavos": 111500,
+      "rentabilidade_liquida_pct": "11.50",
+      "rotulo": "estimativa; CDI constante na última taxa conhecida; IR regressivo e IOF se resgatar antes de 30 dias; não é recomendação"
+    }
+  }
+}

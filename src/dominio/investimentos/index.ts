@@ -142,7 +142,7 @@ function avaliarRendaVariavel(
   };
 }
 
-function indiceTaxasCdi(contexto: Contexto): {
+export function indiceTaxasCdi(contexto: Contexto): {
   taxaNoDia: (d: DataISO) => { taxa: string; dataRef: DataISO };
   ultimaDataSerie: DataISO;
 } {
@@ -163,7 +163,7 @@ function indiceTaxasCdi(contexto: Contexto): {
   return { taxaNoDia, ultimaDataSerie: ultima.data };
 }
 
-function avaliarRendaFixaCdi(
+export function avaliarRendaFixaCdi(
   aportes: ReadonlyArray<{ data: DataISO; valor_centavos: number }>,
   cdiPct: number,
   contexto: Contexto,

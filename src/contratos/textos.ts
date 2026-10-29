@@ -148,6 +148,7 @@ export const textos = {
     DISPONIVEL_FORA_DA_JANELA: "O valor só fica disponível depois de 29/11/2026.",
     ESTADO_INVALIDO: "A sessão ficou inconsistente.",
     MENSAGEM_JA_PROCESSADA: "Essa mensagem já foi processada.",
+    COTACAO_INDISPONIVEL: "Não consegui obter a cotação desse ativo agora.",
   } satisfies Record<CodigoErro, string>,
 
   /** Recusa de dados pessoais antes do modelo (D-20). */

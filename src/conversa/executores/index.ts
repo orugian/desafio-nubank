@@ -1,10 +1,12 @@
 import {
   HOJE,
+  LIMITES,
   NOMES_FERRAMENTAS,
   formatarReais,
   erro,
   textos,
   validarArgumentos,
+  type AvisoTurno,
   type CartaoResposta,
   type Contexto,
   type EstadoSessao,
@@ -29,6 +31,12 @@ import { consultarHistorico } from "@/dominio/historico";
 import { consultarInvestimentos, projetarRendimento } from "@/dominio/investimentos";
 import { cancelarMovimentacao, confirmarMovimentacao, proporMovimentacao } from "@/dominio/operacoes";
 import { montarVisao as montarVisaoDominio } from "@/visao";
+import { buscarCotacao } from "@/mercado";
+import { montarResultadoCotacao } from "@/dominio/investimentos/cotacao";
+import { compararInvestimento } from "@/dominio/investimentos/comparativo";
+import { simularInvestimento } from "@/dominio/investimentos/simulacao";
+import { simularPixCredito } from "@/dominio/credito";
+import { estimarImpostoRenda } from "@/dominio/impostos";
 import cdiJson from "../../../dados/mercado/cdi.json";
 import btcJson from "../../../dados/mercado/fechamentos-BTC.json";
 import petr4Json from "../../../dados/mercado/fechamentos-PETR4.json";
@@ -74,7 +82,8 @@ function valoresFormatados(valor: unknown, caminho = "", saida: Record<string, s
   return saida;
 }
 
-export function criarExecutores(): Executores {
+export function criarExecutores(opcoes: { buscarCotacao?: typeof buscarCotacao } = {}): Executores {
+  const buscarCotacaoInj = opcoes.buscarCotacao ?? buscarCotacao;
   const executores: Executores = {
     ferramentas: {
       async consultar_historico(args, ctx) {
@@ -408,6 +417,140 @@ export function criarExecutores(): Executores {
           ok: true,
           estado: ctx.estado,
           resultado: { motivo: cartao.motivo, texto: cartao.texto, enviado: false },
+          cartoes: [cartao],
+          avisos: [],
+        };
+      },
+
+      async consultar_cotacao(args, ctx) {
+        const v = validarArgumentos("consultar_cotacao", args);
+        if (!v.ok) return v;
+        const rPersona = carregarPersona(ctx.estado.persona_id);
+        if (!rPersona.ok) return rPersona;
+
+        const r = await buscarCotacaoInj(
+          v.argumentos.ticker,
+          { timeout_ms: LIMITES.timeout_mercado_ms },
+          ctx.estado.mercado,
+        );
+        if (!r.ok) return r;
+
+        const resultado = montarResultadoCotacao(
+          rPersona.persona,
+          ctx.estado,
+          contextoPadrao,
+          r.cotacao,
+        );
+        // F-07 é emitido uma única vez por processarTurno; o cartão já rotula "gravada".
+        const avisos: AvisoTurno[] = [];
+        const cartao: CartaoResposta = { tipo: "cotacao", resultado };
+        return {
+          ok: true,
+          estado: ctx.estado,
+          resultado: resultado as unknown as Record<string, unknown>,
+          cartoes: [cartao],
+          avisos,
+        };
+      },
+
+      async comparar_investimento(args, ctx) {
+        const v = validarArgumentos("comparar_investimento", args);
+        if (!v.ok) return v;
+        const rPersona = carregarPersona(ctx.estado.persona_id);
+        if (!rPersona.ok) return rPersona;
+
+        const r = compararInvestimento(rPersona.persona, ctx.estado, contextoPadrao, v.argumentos);
+        if (!r.ok) return r;
+
+        const { ok: _, ...resultado } = r;
+        void _;
+        const cartao: CartaoResposta = { tipo: "comparativo_investimento", resultado };
+        return {
+          ok: true,
+          estado: ctx.estado,
+          resultado: resultado as unknown as Record<string, unknown>,
+          cartoes: [cartao],
+          avisos: [],
+        };
+      },
+
+      async simular_investimento(args, ctx) {
+        const v = validarArgumentos("simular_investimento", args);
+        if (!v.ok) return v;
+        const rPersona = carregarPersona(ctx.estado.persona_id);
+        if (!rPersona.ok) return rPersona;
+
+        const valor_centavos = paraCentavos(v.argumentos.valor);
+        const { valor: _valor, ...restoArgs } = v.argumentos;
+        void _valor;
+        const r = simularInvestimento(ctx.estado.mercado, contextoPadrao, {
+          ...restoArgs,
+          valor_centavos,
+        });
+        if (!r.ok) return r;
+
+        const { ok: _, ...resultado } = r;
+        void _;
+        const cartao: CartaoResposta = { tipo: "simulacao_investimento", resultado };
+        return {
+          ok: true,
+          estado: ctx.estado,
+          resultado: resultado as unknown as Record<string, unknown>,
+          cartoes: [cartao],
+          avisos: [],
+        };
+      },
+
+      async simular_pix_credito(args, ctx) {
+        const v = validarArgumentos("simular_pix_credito", args);
+        if (!v.ok) return v;
+        const rPersona = carregarPersona(ctx.estado.persona_id);
+        if (!rPersona.ok) return rPersona;
+
+        const valor_centavos = paraCentavos(v.argumentos.valor);
+        const r = simularPixCredito(rPersona.persona, ctx.estado, {
+          valor_centavos,
+          parcelas: v.argumentos.parcelas,
+          juros_am_pct: v.argumentos.juros_am_pct,
+        });
+        if (!r.ok) return r;
+
+        const { ok: _, ...resultado } = r;
+        void _;
+        const cartao: CartaoResposta = { tipo: "pix_credito", resultado };
+        return {
+          ok: true,
+          estado: ctx.estado,
+          resultado: resultado as unknown as Record<string, unknown>,
+          cartoes: [cartao],
+          avisos: [],
+        };
+      },
+
+      async estimar_imposto_renda(args, ctx) {
+        const v = validarArgumentos("estimar_imposto_renda", args);
+        if (!v.ok) return v;
+        const rPersona = carregarPersona(ctx.estado.persona_id);
+        if (!rPersona.ok) return rPersona;
+
+        const rendimento_mensal_centavos =
+          v.argumentos.rendimento_mensal !== undefined
+            ? paraCentavos(v.argumentos.rendimento_mensal)
+            : undefined;
+
+        const r = estimarImpostoRenda(rPersona.persona, ctx.estado, contextoPadrao, {
+          escopo: v.argumentos.escopo,
+          rendimento_mensal_centavos,
+        });
+        if (!r.ok) return r;
+
+        const { ok: _, ...resultado } = r;
+        void _;
+        const cartao: CartaoResposta = { tipo: "imposto_renda", resultado };
+        return {
+          ok: true,
+          estado: ctx.estado,
+          resultado: resultado as unknown as Record<string, unknown>,
           cartoes: [cartao],
           avisos: [],
         };

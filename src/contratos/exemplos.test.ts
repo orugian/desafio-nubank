@@ -58,6 +58,11 @@ describe("exemplos do contrato", () => {
         "aviso_valor",
         "rascunho_atendimento",
         "erro",
+        "cotacao",
+        "comparativo_investimento",
+        "simulacao_investimento",
+        "pix_credito",
+        "imposto_renda",
       ]),
     );
   });

@@ -1,0 +1,114 @@
+{
+  "descricao": "Tweaks de investimentos: cotação, comparativo, simulação, Pix no crédito e IR (P1)",
+  "turnos": [
+    {
+      "mensagem": "Quanto está a PETR4 agora?",
+      "respostas": [
+        {
+          "tipo": "chamadas",
+          "chamadas": [
+            {
+              "id": "call_inv_1",
+              "nome": "consultar_cotacao",
+              "argumentos": {
+                "ticker": "PETR4"
+              }
+            }
+          ]
+        },
+        {
+          "tipo": "texto",
+          "texto": "Veja o cartão com os valores calculados pelo motor."
+        }
+      ]
+    },
+    {
+      "mensagem": "Quanto eu teria ganho se tivesse colocado no CDI o que investi em PETR4?",
+      "respostas": [
+        {
+          "tipo": "chamadas",
+          "chamadas": [
+            {
+              "id": "call_inv_2",
+              "nome": "comparar_investimento",
+              "argumentos": {
+                "posicao_id": "INV3"
+              }
+            }
+          ]
+        },
+        {
+          "tipo": "texto",
+          "texto": "Veja o cartão com os valores calculados pelo motor."
+        }
+      ]
+    },
+    {
+      "mensagem": "Quanto renderiam R$ 1.000 em 12 meses a 100% do CDI?",
+      "respostas": [
+        {
+          "tipo": "chamadas",
+          "chamadas": [
+            {
+              "id": "call_inv_3",
+              "nome": "simular_investimento",
+              "argumentos": {
+                "valor": "1000",
+                "indexador": "cdi",
+                "cdi_pct": 100,
+                "prazo_meses": 12
+              }
+            }
+          ]
+        },
+        {
+          "tipo": "texto",
+          "texto": "Veja o cartão com os valores calculados pelo motor."
+        }
+      ]
+    },
+    {
+      "mensagem": "E se eu fizer um Pix de R$ 2.500 hoje sem ter saldo, parcelado em 3x?",
+      "respostas": [
+        {
+          "tipo": "chamadas",
+          "chamadas": [
+            {
+              "id": "call_inv_4",
+              "nome": "simular_pix_credito",
+              "argumentos": {
+                "valor": "2500",
+                "parcelas": 3
+              }
+            }
+          ]
+        },
+        {
+          "tipo": "texto",
+          "texto": "Veja o cartão com os valores calculados pelo motor."
+        }
+      ]
+    },
+    {
+      "mensagem": "Quanto vou pagar de imposto de renda?",
+      "respostas": [
+        {
+          "tipo": "chamadas",
+          "chamadas": [
+            {
+              "id": "call_inv_5",
+              "nome": "estimar_imposto_renda",
+              "argumentos": {
+                "escopo": "tudo"
+              }
+            }
+          ]
+        },
+        {
+          "tipo": "texto",
+          "texto": "Veja o cartão com os valores calculados pelo motor."
+        }
+      ]
+    }
+  ]
+}

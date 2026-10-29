@@ -108,6 +108,12 @@ export function montarConfig(
         uso: "bitcoin em reais",
         obtido_em: mercado.obtido_em,
       },
+      {
+        nome: "Receita Federal — Tributação de 2026",
+        url: "https://www.gov.br/receitafederal/pt-br/assuntos/meu-imposto-de-renda/tabelas/2026",
+        uso: "tabelas de IR (estimativa)",
+        obtido_em: mercado.obtido_em,
+      },
     ],
     modo: process.env.MODO === "publico" ? "publico" : "local",
   };
