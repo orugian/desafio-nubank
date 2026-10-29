@@ -409,7 +409,7 @@ export function desfazer(
       }
       cena = aplicar(persona, estado, cena, d.alteracao, d.id, "declaracao", k);
     }
-    return { ok: true, removido: alvo_id, estado: { ...estado, declaracoes: restantes } };
+    return { ok: true, removido: alvo_id, estado: { ...estado, declaracoes: restantes, operacao_pendente: null } };
   }
   return { ok: false, erro: falha("ARGUMENTOS_INVALIDOS", ["alvo_id"]) };
 }
