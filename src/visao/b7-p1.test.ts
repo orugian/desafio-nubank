@@ -12,6 +12,7 @@ import {
 import { POST as postSessao } from "@/app/api/sessao/route";
 import { POST as postTurno } from "@/app/api/turno/route";
 import { POST as postAcao } from "@/app/api/acao/route";
+import { GET as getPersonas } from "@/app/api/personas/route";
 import { criarDepsPadrao } from "@/conversa/config";
 import { processarTurno } from "@/conversa";
 import { carregarPersona } from "@/dados";
@@ -317,6 +318,100 @@ describe("B7 parte 1 · executores reais e montarVisao", () => {
         simulado: true,
         valor_centavos: 50000,
       });
+    }
+  });
+
+  test("5. Ponta a ponta com provedor roteirizado pelo HTTP: /api/personas → /api/sessao → /api/turno (separar 500 → cartão CR-02) → /api/turno (guardar 500 → proposta OP1) → /api/acao (confirmar → Home 1.300 e H1 descartada)", async () => {
+    const provAnt = process.env.LLM_PROVEDOR;
+    const rotAnt = process.env.LLM_ROTEIRO;
+    process.env.LLM_PROVEDOR = "roteirizado";
+    process.env.LLM_ROTEIRO = "e2e/roteiro-b7-e2e.json";
+
+    try {
+      const lista = await (await getPersonas()).json();
+      expect(lista.map((p: { id: string }) => p.id)).toEqual(["p1", "p2", "p3"]);
+
+      const sessao = esquemaRespostaSessao.parse(
+        await (
+          await postSessao(
+            new Request("http://localhost:3101/api/sessao", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ persona_id: "p1" }),
+            }),
+          )
+        ).json(),
+      );
+      expect(sessao.visao.conta.saldo_disponivel_hoje_centavos).toBe(180000);
+
+      // Turno 1: separar 500 hoje -> cartão de comparação CR-02
+      const turno1 = esquemaRespostaTurno.parse(
+        await (
+          await postTurno(
+            new Request("http://localhost:3101/api/turno", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                estado: sessao.estado,
+                mensagem: { id: "m-e2e-1", texto: "Posso separar R$ 500 hoje para minha viagem?" },
+              }),
+            }),
+          )
+        ).json(),
+      );
+      expect(turno1.status).toBe("ok");
+      if (turno1.status !== "ok") return;
+      expect(turno1.estado.versao).toBe(1);
+      expect(turno1.cartoes.some((c) => c.tipo === "comparacao")).toBe(true);
+
+      // Turno 2: guardar 500 na caixinha da viagem -> proposta OP1
+      const turno2 = esquemaRespostaTurno.parse(
+        await (
+          await postTurno(
+            new Request("http://localhost:3101/api/turno", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                estado: turno1.estado,
+                mensagem: { id: "m-e2e-2", texto: "Guarda R$ 500 na caixinha da viagem." },
+              }),
+            }),
+          )
+        ).json(),
+      );
+      expect(turno2.status).toBe("ok");
+      if (turno2.status !== "ok") return;
+      expect(turno2.estado.versao).toBe(2);
+      expect(turno2.estado.operacao_pendente?.id).toBe("OP1");
+      const cartaoPend = turno2.cartoes.find((c) => c.tipo === "operacao_pendente");
+      expect(cartaoPend?.tipo === "operacao_pendente" ? cartaoPend.rendimento_estimado?.ate_data : "").toBe("2026-11-19");
+
+      // Ação: confirmar OP1 -> saldo disponível na VisaoApp (Home) = 1.300 (130000 centavos) e H1 descartada
+      const acao = esquemaRespostaAcao.parse(
+        await (
+          await postAcao(
+            new Request("http://localhost:3101/api/acao", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                estado: turno2.estado,
+                acao: { tipo: "confirmar", operacao_id: "OP1" },
+              }),
+            }),
+          )
+        ).json(),
+      );
+      expect(acao.status).toBe("ok");
+      if (acao.status !== "ok") return;
+      expect(acao.estado.versao).toBe(3);
+      expect(acao.estado.hipoteses).toEqual([]);
+      expect(acao.visao.conta.saldo_disponivel_hoje_centavos).toBe(130000);
+      expect(acao.visao.posicoes.find((p) => p.id === "INV9")?.aplicado_centavos).toBe(50000);
+    } finally {
+      if (provAnt === undefined) delete process.env.LLM_PROVEDOR;
+      else process.env.LLM_PROVEDOR = provAnt;
+      if (rotAnt === undefined) delete process.env.LLM_ROTEIRO;
+      else process.env.LLM_ROTEIRO = rotAnt;
     }
   });
 });
