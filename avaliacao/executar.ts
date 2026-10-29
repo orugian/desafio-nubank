@@ -595,6 +595,14 @@ export function avaliarCasoExecutado(
     }
   }
 
+  if (caso.id === "CV-05" && execucao.ferramentasChamadas.some((f) =>
+    f.nome === "consultar_investimentos" && typeof f.argumentos === "object" && f.argumentos !== null &&
+    "ate_data" in f.argumentos && f.argumentos.ate_data !== undefined,
+  )) motivos.push("Consulta inicial deve usar a data padrão de 15/11, sem filtro ate_data");
+  if (caso.id === "CV-08" && (!textoBaixo.includes("?") || !/antes|ordem/i.test(textoBaixo) ||
+      !/entrada|cliente|recebimento/i.test(textoBaixo) || !/saída|saida|aluguel/i.test(textoBaixo))) {
+    motivos.push("Não perguntou a ordem da entrada e da saída em 08/11");
+  }
   const perguntas: Record<string, RegExp[]> = {
     "CV-04": [/(evento|compromisso)/i, /data|dia|quando/i, /\?/],
     "CV-11": [/(meio|forma|pagamento|pagar|pix|cartão|débito)/i, /\?/],
@@ -756,6 +764,7 @@ function criarProvedorRoteirizadoParaCaso(caso: CasoAvaliacao): Provedor {
 
       const esclarecimentos: Record<string, string> = {
         "CV-04": "Qual compromisso e qual nova data?",
+        "CV-08": "Em 08/11 faltam R$ 830,00. A entrada do cliente chega antes da saída do aluguel?",
         "CV-11": "Qual será o meio de pagamento?",
         "CV-25": "Qual será a data e o meio de pagamento?",
       };

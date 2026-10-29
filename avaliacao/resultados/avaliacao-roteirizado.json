@@ -12521,7 +12521,7 @@
       "ferramentas_chamadas": [
         "criar_hipotese"
       ],
-      "texto_final": "Simulação concluída (CV-08): 08/11. Tudo é movimentação simulada com dados fictícios.",
+      "texto_final": "Simulação concluída (CV-08): Em 08/11 faltam R$ 830,00. A entrada do cliente chega antes da saída do aluguel?. Tudo é movimentação simulada com dados fictícios.",
       "falha": null,
       "rastro": [
         {
@@ -13203,7 +13203,7 @@
                 {
                   "mensagem_id": "CV-08-r1-m1-r",
                   "papel": "assistente",
-                  "texto": "Simulação concluída (CV-08): 08/11. Tudo é movimentação simulada com dados fictícios.",
+                  "texto": "Simulação concluída (CV-08): Em 08/11 faltam R$ 830,00. A entrada do cliente chega antes da saída do aluguel?. Tudo é movimentação simulada com dados fictícios.",
                   "versao": 1,
                   "cartoes": [
                     {
@@ -14307,7 +14307,7 @@
                 "OP": 0
               }
             },
-            "texto": "Simulação concluída (CV-08): 08/11. Tudo é movimentação simulada com dados fictícios.",
+            "texto": "Simulação concluída (CV-08): Em 08/11 faltam R$ 830,00. A entrada do cliente chega antes da saída do aluguel?. Tudo é movimentação simulada com dados fictícios.",
             "cartoes": [
               {
                 "tipo": "comparacao",

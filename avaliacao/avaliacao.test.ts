@@ -345,4 +345,23 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
       expect(avaliarCasoExecutado(caso, { ferramentasChamadas: [], textoFinal: resposta!, oraculoOk: true }).aprovado).toBe(true);
     }
   });
+
+  test("18. CV-05 deve usar a data padrão e CV-08 deve perguntar a ordem em 08/11", () => {
+    const casos = carregarCasosAvaliacao("todos");
+    const cv05 = casos.find((c) => c.id === "CV-05")!;
+    expect(avaliarCasoExecutado(cv05, {
+      ferramentasChamadas: [{ nome: "consultar_investimentos", argumentos: { ate_data: "2026-11-29" } }],
+      textoFinal: "Reserva protegida; resultado bruto até 29/11.", oraculoOk: true,
+    }).aprovado).toBe(false);
+    const cv08 = casos.find((c) => c.id === "CV-08")!;
+    const ferramentasChamadas = [{ nome: "criar_hipotese", argumentos: {
+      a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "300" }],
+    } }];
+    expect(avaliarCasoExecutado(cv08, { ferramentasChamadas,
+      textoFinal: "Em 08/11 falta cobertura. Quer propor a separação?", oraculoOk: true,
+    }).aprovado).toBe(false);
+    expect(avaliarCasoExecutado(cv08, { ferramentasChamadas,
+      textoFinal: "Em 08/11 falta cobertura. A entrada chega antes da saída do aluguel?", oraculoOk: true,
+    }).aprovado).toBe(true);
+  });
 });
