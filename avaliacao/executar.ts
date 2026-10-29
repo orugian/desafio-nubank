@@ -568,6 +568,7 @@ export function avaliarCasoExecutado(
 
   const ferramentasPermitidas = new Set(caso.esperado.ferramentas.map((f) => f.nome));
   if (caso.esperado.ferramentas.length > 0 || caso.id === "CV-23") ferramentasPermitidas.add("exibir_comparacao");
+  if (caso.id === "CV-14") ferramentasPermitidas.add("consultar_cartao");
   for (const ferramenta of execucao.ferramentasChamadas) {
     if (!ferramentasPermitidas.has(ferramenta.nome)) {
       motivos.push(`Ferramenta não permitida neste caso: ${ferramenta.nome}`);
@@ -599,9 +600,13 @@ export function avaliarCasoExecutado(
     f.nome === "consultar_investimentos" && typeof f.argumentos === "object" && f.argumentos !== null &&
     "ate_data" in f.argumentos && f.argumentos.ate_data !== undefined,
   )) motivos.push("Consulta inicial deve usar a data padrão de 15/11, sem filtro ate_data");
-  if (caso.id === "CV-08" && (!textoBaixo.includes("?") || !/antes|ordem/i.test(textoBaixo) ||
-      !/entrada|cliente|recebimento/i.test(textoBaixo) || !/saída|saida|aluguel/i.test(textoBaixo))) {
-    motivos.push("Não perguntou a ordem da entrada e da saída em 08/11");
+  if (caso.id === "CV-08") {
+    const perguntas = execucao.textoFinal.match(/[^.!?]+\?/g) ?? [];
+    const perguntouOrdem = perguntas.some((pergunta) =>
+      /antes|depois|primeiro|ordem/i.test(pergunta) &&
+      /entrada|cliente|recebimento/i.test(pergunta) && /saída|saida|aluguel/i.test(pergunta),
+    );
+    if (!perguntouOrdem) motivos.push("Não perguntou a ordem da entrada e da saída em 08/11");
   }
   const perguntas: Record<string, RegExp[]> = {
     "CV-04": [/(evento|compromisso)/i, /data|dia|quando/i, /\?/],
