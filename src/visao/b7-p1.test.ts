@@ -228,4 +228,95 @@ describe("B7 parte 1 · executores reais e montarVisao", () => {
       expect(rSep.cartoes[0].rendimento_estimado).toBeNull();
     }
   });
+
+  test("4. montarVisao das 3 personas é aceita pelo esquema e bate com o motor (saldoDisponivelHoje, consultarCartao, consultarInvestimentos, extrato e proximos_pagamentos)", async () => {
+    const contextoReal = {
+      series: {
+        cdi: cdiJson,
+        fechamentos: {
+          PETR4: petr4Json,
+          BTC: btcJson,
+        },
+      },
+      calendario: criarCalendario({ datas_cdi: cdiJson.serie.map((x) => x.data) }),
+    };
+    const snap = snapshotGravado();
+
+    for (const id of ["p1", "p2", "p3"] as const) {
+      const rp = carregarPersona(id);
+      if (!rp.ok) throw new Error(rp.erro.mensagem);
+      const persona = rp.persona;
+      const estado = estadoInicial(id, snap);
+
+      const visao = montarVisao(persona, estado, contextoReal);
+      esquemaVisaoApp.parse(visao);
+
+      expect(visao.persona).toEqual({ id: persona.id, nome: persona.nome });
+      expect(visao.conta.saldo_inicio_hoje_centavos).toBe(persona.conta.saldo_inicio_hoje_centavos);
+      expect(visao.conta.saldo_disponivel_hoje_centavos).toBe(saldoDisponivelHoje(persona, estado));
+      expect(visao.cartao).toEqual(consultarCartao(persona, estado));
+
+      const inv = consultarInvestimentos(persona, estado, contextoReal, {});
+      if (!inv.ok) throw new Error(inv.erro.mensagem);
+      expect(visao.posicoes).toEqual(
+        inv.posicoes.map((pos) => ({
+          id: pos.posicao_id,
+          nome: pos.nome,
+          categoria: pos.categoria,
+          cdi_pct: pos.cdi_pct,
+          ticker: pos.ticker,
+          quantidade: pos.quantidade,
+          valor_atual_centavos: pos.valor_atual_centavos,
+          aplicado_centavos: pos.aplicado_centavos,
+          resultado_centavos: pos.resultado_centavos,
+          rentabilidade_pct: pos.rentabilidade_pct,
+          valorizacao_periodo_pct: pos.valorizacao_periodo_pct,
+          data_disponibilidade: pos.data_disponibilidade,
+          protecao: pos.protecao,
+          restricao: pos.restricao,
+          estimado: pos.estimado,
+          fonte: pos.fonte,
+        })),
+      );
+
+      const [cenarioAtual] = calcularCenarios(persona, estado, contextoReal);
+      expect(visao.proximos_pagamentos.map((p) => [p.evento_id, p.data, p.valor_centavos])).toEqual(
+        cenarioAtual!.linhas
+          .filter((l) => l.origem === "dados_base" || l.origem === "declaracao")
+          .map((l) => [l.evento_id, l.data, l.valor_centavos]),
+      );
+    }
+
+    // Após confirmar OP1 (500 em INV9), a VisaoApp devolvida por /api/acao traz saldo_disponivel_hoje_centavos = 130000 e INV9 aplicado 50000
+    const estadoProp = {
+      ...estadoInicial("p1", snap),
+      versao: 1,
+      operacao_pendente: { id: "OP1", valor_centavos: 50000, destino: "INV9", criada_na_versao: 1 },
+      contadores: { D: 0, H: 0, OP: 1 },
+    };
+    const acao = esquemaRespostaAcao.parse(
+      await (
+        await postAcao(
+          new Request("http://localhost:3101/api/acao", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              estado: estadoProp,
+              acao: { tipo: "confirmar", operacao_id: "OP1" },
+            }),
+          }),
+        )
+      ).json(),
+    );
+    expect(acao.status).toBe("ok");
+    if (acao.status === "ok") {
+      expect(acao.visao.conta.saldo_disponivel_hoje_centavos).toBe(130000);
+      expect(acao.visao.posicoes.find((p) => p.id === "INV9")?.aplicado_centavos).toBe(50000);
+      expect(acao.visao.extrato[0]).toMatchObject({
+        id: "OP1",
+        simulado: true,
+        valor_centavos: 50000,
+      });
+    }
+  });
 });

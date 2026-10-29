@@ -26,14 +26,12 @@ import { consultarCartao } from "@/dominio/cartao";
 import { consultarHistorico } from "@/dominio/historico";
 import { consultarInvestimentos, projetarRendimento } from "@/dominio/investimentos";
 import { cancelarMovimentacao, confirmarMovimentacao, proporMovimentacao } from "@/dominio/operacoes";
+import { montarVisao as montarVisaoDominio } from "@/visao";
 import cdiJson from "../../../dados/mercado/cdi.json";
 import btcJson from "../../../dados/mercado/fechamentos-BTC.json";
 import petr4Json from "../../../dados/mercado/fechamentos-PETR4.json";
 import exComparacaoCr02 from "@/contratos/exemplos/cartao-comparacao-cr02.json";
 import exRascunhoAtendimento from "@/contratos/exemplos/cartao-rascunho-atendimento.json";
-import exVisaoP1 from "@/contratos/exemplos/visao-p1.json";
-import exVisaoP2 from "@/contratos/exemplos/visao-p2.json";
-import exVisaoP3 from "@/contratos/exemplos/visao-p3.json";
 
 const contextoPadrao: Contexto = {
   series: {
@@ -45,41 +43,6 @@ const contextoPadrao: Contexto = {
   },
   calendario: criarCalendario({ datas_cdi: cdiJson.serie.map((x) => x.data) }),
 };
-
-function obterVisaoExemplo(estado: EstadoSessao): VisaoApp {
-  const base =
-    estado.persona_id === "p2"
-      ? (exVisaoP2.dados as VisaoApp)
-      : estado.persona_id === "p3"
-        ? (exVisaoP3.dados as VisaoApp)
-        : (exVisaoP1.dados as VisaoApp);
-
-  const gastoHoje = estado.operacoes
-    .filter((op) => op.data === HOJE)
-    .reduce((acc, op) => acc + op.valor_centavos, 0);
-
-  return {
-    ...base,
-    conta: {
-      ...base.conta,
-      saldo_disponivel_hoje_centavos: base.conta.saldo_inicio_hoje_centavos - gastoHoje,
-      operacoes_hoje: estado.operacoes
-        .filter((op) => op.data === HOJE)
-        .map((op) => {
-          const pos = base.posicoes.find((p) => p.id === op.destino);
-          const destino_nome = pos?.nome ?? op.destino;
-          return {
-            id: op.id,
-            valor_centavos: op.valor_centavos,
-            destino: op.destino,
-            destino_nome,
-            descricao: textos.descricao_movimentacao(destino_nome),
-          };
-        }),
-    },
-    mercado: estado.mercado,
-  };
-}
 
 function calcularCenariosEstado(estado: EstadoSessao): ResultadoCenario[] {
   const rPersona = carregarPersona(estado.persona_id);
@@ -429,8 +392,14 @@ export function criarExecutores(): Executores {
       return validarEstadoDominio(rPersona.persona, estado, contextoPadrao);
     },
 
-    async montarVisao(estado: EstadoSessao) {
-      return obterVisaoExemplo(estado);
+    async montarVisao(estado: EstadoSessao): Promise<VisaoApp> {
+      const rPersona = carregarPersona(estado.persona_id);
+      if (!rPersona.ok) {
+        const p1 = carregarPersona("p1");
+        if (!p1.ok) throw new Error(p1.erro.mensagem);
+        return montarVisaoDominio(p1.persona, estado, contextoPadrao);
+      }
+      return montarVisaoDominio(rPersona.persona, estado, contextoPadrao);
     },
 
     async compararCenarios(antes: EstadoSessao, depois: EstadoSessao): Promise<OQueMudou> {
