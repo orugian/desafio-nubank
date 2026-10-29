@@ -271,6 +271,28 @@ export function criarExecutores(): Executores {
         const r = proporMovimentacao(rPersona.persona, ctx.estado, v.argumentos, contextoPadrao);
         if (!r.ok) return r;
 
+        let rendimento_estimado: Extract<CartaoResposta, { tipo: "operacao_pendente" }>["rendimento_estimado"] = null;
+        if (r.destino.rende && r.destino.cdi_pct !== null) {
+          const proxRecebimento = r.impacto.linhas.find(
+            (l) => l.tipo === "entrada" && l.previsto && l.data >= HOJE,
+          );
+          if (proxRecebimento) {
+            const rProj = projetarRendimento(ctx.estado.mercado, contextoPadrao, {
+              valor_centavos: r.operacao_pendente.valor_centavos,
+              cdi_pct: r.destino.cdi_pct,
+              ate_data: proxRecebimento.data,
+            });
+            if (rProj.ok) {
+              const { ok: _, ...semOk } = rProj;
+              void _;
+              rendimento_estimado = {
+                ...semOk,
+                destino: { posicao_id: r.destino.posicao_id, nome: r.destino.nome },
+              };
+            }
+          }
+        }
+
         const cartao: CartaoResposta = {
           tipo: "operacao_pendente",
           operacao_id: r.operacao_pendente.id,
@@ -278,7 +300,7 @@ export function criarExecutores(): Executores {
           destino: r.destino,
           alerta: r.alerta,
           impacto: r.impacto,
-          rendimento_estimado: null,
+          rendimento_estimado,
         };
 
         return {
@@ -290,6 +312,7 @@ export function criarExecutores(): Executores {
             destino: r.destino,
             alerta: r.alerta,
             indicadores: r.impacto.indicadores,
+            rendimento_estimado,
           },
           cartoes: [cartao],
           avisos: [],

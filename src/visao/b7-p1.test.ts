@@ -186,4 +186,46 @@ describe("B7 parte 1 · executores reais e montarVisao", () => {
       ["INV3", "resgatavel_ate_data", "2026-11-04"],
     ]);
   });
+
+  test("3. Cartão de proposta (operacao_pendente) traz rendimento estimado até o próximo recebimento previsto quando o destino rende (O-03, I-08)", async () => {
+    const deps = criarDepsPadrao({ provedor: "roteirizado" });
+    const snap = {
+      ...snapshotGravado(),
+      cdi: { taxa_diaria_pct: "0.05", data_ref: "2026-10-29", fonte: "CDI de teste" },
+    };
+    const estado0 = estadoInicial("p1", snap);
+
+    // 3a. Destino que rende (INV9, 100% CDI) com recebimento previsto R1 em 19/11 → rendimento_estimado de CR-32 (326 centavos, 13 dias úteis)
+    const rProp = await deps.executores.ferramentas.propor_movimentacao(
+      { valor: "500", destino: "INV9" },
+      { estado: estado0, mensagem_id: "m-prop-1" },
+    );
+    expect(rProp.ok).toBe(true);
+    if (!rProp.ok) return;
+    const cartao = rProp.cartoes[0];
+    expect(cartao?.tipo).toBe("operacao_pendente");
+    if (cartao?.tipo !== "operacao_pendente") return;
+
+    expect(cartao.rendimento_estimado).toEqual({
+      valor_centavos: 50000,
+      cdi_pct: 100,
+      ate_data: "2026-11-19",
+      dias_uteis: 13,
+      taxa_diaria_pct: "0.05",
+      cdi_data_ref: "2026-10-29",
+      rendimento_bruto_centavos: 326,
+      rotulo: "bruto, CDI constante",
+      destino: { posicao_id: "INV9", nome: "Caixinha Viagem" },
+    });
+
+    // 3b. Destino que não rende (SEP) → rendimento_estimado = null
+    const rSep = await deps.executores.ferramentas.propor_movimentacao(
+      { valor: "300", destino: "SEP" },
+      { estado: estado0, mensagem_id: "m-prop-2" },
+    );
+    expect(rSep.ok).toBe(true);
+    if (rSep.ok && rSep.cartoes[0]?.tipo === "operacao_pendente") {
+      expect(rSep.cartoes[0].rendimento_estimado).toBeNull();
+    }
+  });
 });
