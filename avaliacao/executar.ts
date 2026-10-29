@@ -517,6 +517,11 @@ export function carregarCasosAvaliacao(
   return conjunto === "critico" ? casos.filter((c) => c.critico) : casos;
 }
 
+/** Campos opcionais do contrato com valor padrão: omitir equivale a informar o padrão (efeito, não forma). */
+const PADROES_OPCIONAIS: Record<string, Record<string, unknown>> = {
+  separar: { data: "2026-10-30" },
+};
+
 function valoresIguaisOuContidos(esperado: unknown, real: unknown, chave?: string): boolean {
   if (esperado === real) return true;
   if (
@@ -529,14 +534,23 @@ function valoresIguaisOuContidos(esperado: unknown, real: unknown, chave?: strin
     return paraCentavos(esperado) === paraCentavos(real);
   }
   if (Array.isArray(esperado)) {
+    // Ordem de itens independentes (ex.: alterações) não muda o efeito: cada esperado casa com um real distinto.
     if (!Array.isArray(real) || real.length < esperado.length) return false;
-    return esperado.every((itemEsp, idx) => valoresIguaisOuContidos(itemEsp, real[idx]));
+    const usados = new Set<number>();
+    return esperado.every((itemEsp) => {
+      const idx = real.findIndex((itemReal, i) => !usados.has(i) && valoresIguaisOuContidos(itemEsp, itemReal));
+      if (idx < 0) return false;
+      usados.add(idx);
+      return true;
+    });
   }
   if (typeof esperado === "object" && esperado !== null) {
     if (typeof real !== "object" || real === null) return false;
     const objEsp = esperado as Record<string, unknown>;
     const objReal = real as Record<string, unknown>;
-    return Object.entries(objEsp).every(([k, v]) => valoresIguaisOuContidos(v, objReal[k], k));
+    const padroes = typeof objReal.operacao === "string" ? PADROES_OPCIONAIS[objReal.operacao] ?? {} : {};
+    return Object.entries(objEsp).every(([k, v]) =>
+      valoresIguaisOuContidos(v, objReal[k] === undefined && k in padroes ? padroes[k] : objReal[k], k));
   }
   return false;
 }

@@ -415,6 +415,35 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     expect(semPeriodo.resultados[0]!.motivos.join(" ")).toContain("setembro");
   });
 
+  test("22. Argumentos equivalentes passam: data opcional omitida, ordem de alterações e centavos", () => {
+    const casos = carregarCasosAvaliacao("todos");
+    const cv24 = casos.find((c) => c.id === "CV-24")!;
+    const semData = avaliarCasoExecutado(cv24, {
+      ferramentasChamadas: [{ nome: "criar_hipotese", argumentos: {
+        nome: "Separar", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500.00" }],
+      } }],
+      textoFinal: "Em 15/11 faltam R$ 200,00.", oraculoOk: true,
+    });
+    expect(semData.motivos).toEqual([]);
+    const outraData = avaliarCasoExecutado(cv24, {
+      ferramentasChamadas: [{ nome: "criar_hipotese", argumentos: {
+        nome: "Separar", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500", data: "2026-11-02" }],
+      } }],
+      textoFinal: "Em 15/11 faltam R$ 200,00.", oraculoOk: true,
+    });
+    expect(outraData.aprovado).toBe(false);
+
+    const cv01 = casos.find((c) => c.id === "CV-01")!;
+    const ordemInvertida = avaliarCasoExecutado(cv01, {
+      ferramentasChamadas: [{ nome: "criar_hipotese", argumentos: {
+        nome: "Separar", a_partir_de: "atual",
+        alteracoes: [{ operacao: "alterar_gasto_diario", valor_por_dia: "10" }, { operacao: "separar", valor: "500" }],
+      } }],
+      textoFinal: "Em 15/11 faltam R$ 200,00.", oraculoOk: true,
+    });
+    expect(ordemInvertida.motivos).toEqual([]);
+  });
+
   test("19. Explicar a ordem e perguntar sobre outra ação não equivale a perguntar a ordem", () => {
     const caso = carregarCasosAvaliacao("todos").find((c) => c.id === "CV-08")!;
     const resultado = avaliarCasoExecutado(caso, {
