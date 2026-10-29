@@ -1,0 +1,54 @@
+{
+  "modelo": "minimaxai/minimax-m3.1-flash",
+  "casos": [
+    {
+      "caso": "CV-01",
+      "texto": "A simulação mostra que separar R$ 500 hoje deixa a margem de hoje em R$ 0 e gera falta de R$ 200 em 15/11, nas contas da casa.\n\nIsso ocorre porque o salário de R$ 3.000 em 19/11 é previsto. Sem esse recebimento, o saldo final ficaria negativo em R$ 200.\n\nA separação ainda não foi feita. Posso preparar a movimentação simulada para sua confirmação.",
+      "ferramentas": [
+        "criar_hipotese"
+      ],
+      "indicadores": {
+        "saldo_inicial_centavos": 180000,
+        "saldo_minimo_centavos": -20000,
+        "data_saldo_minimo": "2026-11-15",
+        "primeira_falta": {
+          "data": "2026-11-15",
+          "valor_descoberto_centavos": 20000,
+          "saidas_do_dia": [
+            "C"
+          ]
+        },
+        "insuficiencia_centavos": 20000,
+        "margem_hoje_centavos": 0,
+        "saldo_final_centavos": 280000,
+        "sem_recebimentos": {
+          "insuficiencia_centavos": 20000,
+          "primeira_falta": {
+            "data": "2026-11-15",
+            "valor_descoberto_centavos": 20000,
+            "saidas_do_dia": [
+              "C"
+            ]
+          },
+          "saldo_final_centavos": -20000
+        }
+      },
+      "versao": 1
+    },
+    {
+      "caso": "CV-07",
+      "texto": "Proposta simulada **OP1** criada:\n\n- **R$ 500** para a **Caixinha Viagem**\n- Rendimento bruto estimado até 19/11: **R$ 3,31**, com CDI constante\n- Impacto: falta de **R$ 200 em 15/11**, caso o salário previsto não entre\n- A caixinha não tem proteção de capital\n\nNenhuma movimentação real foi feita. **Você confirma OP1?**",
+      "ferramentas": [
+        "propor_movimentacao"
+      ],
+      "pendente": {
+        "id": "OP1",
+        "valor_centavos": 50000,
+        "destino": "INV9",
+        "criada_na_versao": 1
+      },
+      "operacoes": [],
+      "saldo": 180000
+    }
+  ]
+}
