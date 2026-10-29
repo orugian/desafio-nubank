@@ -171,6 +171,36 @@ O estado é da aba/origem em `sessionStorage`; trocar telas mantém o chat, abri
 - Responsável: revisão de fidelidade visual, até 5 slides, roteiro de apresentação e gravação de backup. S2: relatório final da avaliação e ensaio 2. Este documento não declara essas entregas concluídas.
 - Deploy/QR/CV-27 continuam fora desta execução local; dependem de decisão P1 e DEPLOY APROVADO. Não publicar só porque há congelamento.
 
+### Isolar o E2E real antes de qualquer execução autorizada
+
+**Não rode `npm run e2e` sem filtro com um provedor real.** A suíte descobre os dois arquivos e usa um único servidor: o fluxo escrito para o dublê também chamaria o modelo real, consumindo cota extra e podendo falhar por esperar texto fixo. Isso não é execução paralela dos testes (há um worker), mas compartilhamento da mesma configuração de servidor.
+
+É seguro conferir a seleção **sem executar testes, iniciar servidor ou chamar modelo**:
+
+```powershell
+npm run e2e -- e2e/real-b7.spec.ts --list
+if ($LASTEXITCODE -ne 0) { throw 'Falha na descoberta do teste real.' }
+```
+
+O resultado esperado é **1 teste em 1 arquivo**. Para efetivamente executá-lo, só após a autorização específica, configuração real da §4, credenciais copiadas pelo fluxo autorizado e porta 3101 livre:
+
+```powershell
+# ATENÇÃO: este bloco pode gerar chamadas pagas. Não é checagem de rotina.
+if ($env:LLM_PROVEDOR -notin @('nvidia', 'openrouter')) {
+    throw 'Selecione explicitamente o provedor real autorizado antes de prosseguir.'
+}
+$env:B7_PROVEDOR_REAL = $env:LLM_PROVEDOR
+$env:B7_REAL = '1'
+try {
+    npm run e2e -- e2e/real-b7.spec.ts
+    if ($LASTEXITCODE -ne 0) { throw 'E2E real falhou; registre sem repetir automaticamente.' }
+} finally {
+    $env:B7_REAL = '0'
+}
+```
+
+O filtro explícito seleciona somente o teste real; o `finally` desativa seu opt-in ao final, inclusive em falha. Para retornar à suíte padrão da §3, reconfigure também `LLM_PROVEDOR=roteirizado` e o roteiro; mudar apenas `B7_REAL=0` não impede o fluxo determinístico de chamar um provedor real que ficou selecionado no processo. **Os blocos reais não foram executados nesta revisão documental; somente a descoberta `--list` foi conferida.**
+
 ## 7. Onde consultar e como encerrar
 
 - Regras e números: [spec](<../../docs/NEWAI-SPECS.md>), [plano TDD](<../../docs/NEWAI-PLANO-TDD.md>) e [contrato S1](<../../docs/prompts/PROMPT-SESSAO-1.md>).
