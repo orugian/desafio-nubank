@@ -364,4 +364,17 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
       textoFinal: "Em 08/11 falta cobertura. A entrada chega antes da saída do aluguel?", oraculoOk: true,
     }).aprovado).toBe(true);
   });
+
+  test("19. Explicar a ordem e perguntar sobre outra ação não equivale a perguntar a ordem", () => {
+    const caso = carregarCasosAvaliacao("todos").find((c) => c.id === "CV-08")!;
+    const resultado = avaliarCasoExecutado(caso, {
+      ferramentasChamadas: [{ nome: "criar_hipotese", argumentos: {
+        a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "300" }],
+      } }],
+      textoFinal: "Em 08/11 a ordem importa: se a entrada não chegar antes do aluguel, a falta aparece. Quer manter a simulação ou ajustar o valor?",
+      oraculoOk: true,
+    });
+    expect(resultado.aprovado).toBe(false);
+    expect(resultado.motivos).toContain("Não perguntou a ordem da entrada e da saída em 08/11");
+  });
 });
