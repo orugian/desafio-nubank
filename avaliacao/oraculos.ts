@@ -148,6 +148,11 @@ export function verificarOraculoB6(
       if (!estado.declaracoes.some((d) => d.alteracao.operacao === "alterar_evento" && d.alteracao.evento_id === "C" && d.alteracao.valor !== undefined && paraCentavos(d.alteracao.valor) === 15000)) {
         motivos.push("Declaração de C = 150 ausente");
       }
+      const semRecebimentos = cenario(cenarios, "atual")?.indicadores?.sem_recebimentos;
+      if (semRecebimentos && semRecebimentos.saldo_final_centavos >= 0 &&
+          /saldo final[^\n.]*positivo[^\n.]*depende/i.test(resposta.texto)) {
+        motivos.push("Premissa incorreta: o saldo final sem recebimentos também é positivo");
+      }
       return motivos;
     }
     case "CR-06":

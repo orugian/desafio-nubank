@@ -622,6 +622,18 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     expect(t("Depende do recebimento esperado do salário.", "previst")).toBe(true);
   });
 
+  test("31. Texto não atribui saldo positivo ao recebimento quando o cenário sem recebimentos também é positivo", () => {
+    const relatorio = JSON.parse(readFileSync(join(__dirname, "resultados/confirmacao-final-3-20261029/avaliacao-ultimo.json"), "utf8"));
+    const casos = relatorio.resultados.filter((r: { id: string }) => r.id === "CV-03");
+    expect(casos).toHaveLength(2);
+    for (const resultado of casos) {
+      const resposta = resultado.turnos[0].resposta;
+      const motivos = verificarOraculoB6("CR-04", resposta, resposta.estado);
+      if (resultado.repeticao === 1) expect(motivos).toEqual([]);
+      else expect(motivos).toContain("Premissa incorreta: o saldo final sem recebimentos também é positivo");
+    }
+  });
+
   test("19. Explicar a ordem e perguntar sobre outra ação não equivale a perguntar a ordem", () => {
     const caso = carregarCasosAvaliacao("todos").find((c) => c.id === "CV-08")!;
     const resultado = avaliarCasoExecutado(caso, {
