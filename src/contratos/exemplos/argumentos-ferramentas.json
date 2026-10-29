@@ -1,7 +1,7 @@
 {
   "exemplo": true,
   "esquema": "ArgumentosFerramentas",
-  "descricao": "Argumentos de exemplo de cada uma das 12 ferramentas",
+  "descricao": "Argumentos de exemplo de cada uma das 17 ferramentas",
   "dados": {
     "consultar_historico": {
       "de": "2026-09-01",
@@ -52,6 +52,25 @@
     "exibir_comparacao": {},
     "preparar_resumo_atendimento": {
       "motivo": "Compras não reconhecidas no cartão"
+    },
+    "consultar_cotacao": {
+      "ticker": "PETR4"
+    },
+    "comparar_investimento": {
+      "posicao_id": "INV3"
+    },
+    "simular_investimento": {
+      "valor": "1000",
+      "indexador": "cdi",
+      "cdi_pct": 100,
+      "prazo_meses": 12
+    },
+    "simular_pix_credito": {
+      "valor": "300",
+      "parcelas": 3
+    },
+    "estimar_imposto_renda": {
+      "escopo": "tudo"
     }
   }
 }

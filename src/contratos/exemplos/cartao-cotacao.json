@@ -1,0 +1,26 @@
+{
+  "exemplo": true,
+  "esquema": "CartaoResposta",
+  "descricao": "Cotação de PETR4 com 10 ações na carteira da persona",
+  "dados": {
+    "tipo": "cotacao",
+    "resultado": {
+      "ticker": "PETR4",
+      "nome": "Petrobras PN",
+      "tipo": "acao",
+      "preco_centavos": 3650,
+      "variacao_dia_pct": "1.25",
+      "data_hora": "2026-10-30T17:00:00-03:00",
+      "fonte": "brapi",
+      "ao_vivo": true,
+      "valorizacao_periodo_pct": "15.30",
+      "periodo_desde": "2026-07-30",
+      "na_carteira": {
+        "posicao_id": "INV3",
+        "quantidade": "10",
+        "valor_centavos": 36500
+      },
+      "rotulo": "cotação ao vivo de 30/10 17:00 (brapi); não é previsão de preço"
+    }
+  }
+}

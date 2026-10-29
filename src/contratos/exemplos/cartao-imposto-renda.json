@@ -1,0 +1,64 @@
+{
+  "exemplo": true,
+  "esquema": "CartaoResposta",
+  "descricao": "Estimativa de imposto de renda de 2026: investimentos e IRPF anual",
+  "dados": {
+    "tipo": "imposto_renda",
+    "resultado": {
+      "ano_calendario": 2026,
+      "exercicio": 2027,
+      "investimentos": {
+        "itens": [
+          {
+            "posicao_id": "INV1",
+            "nome": "Caixinha Reserva",
+            "categoria": "caixinha",
+            "regime": "renda_fixa_resgate",
+            "base_centavos": 15000,
+            "aliquota_pct": "22.50",
+            "ir_estimado_centavos": 3375,
+            "isento": false,
+            "motivo": null,
+            "data_referencia": "2026-10-30",
+            "data_pagamento": null,
+            "forma": "retido na fonte pelo banco no resgate"
+          }
+        ],
+        "total_ir_estimado_centavos": 3375
+      },
+      "irpf": {
+        "origem": "historico",
+        "tipo_renda": "salario",
+        "rendimento_mensal_centavos": 300000,
+        "meses_base": 3,
+        "rendimento_anual_centavos": 3600000,
+        "desconto_simplificado_centavos": 720000,
+        "base_calculo_centavos": 2880000,
+        "imposto_tabela_centavos": 0,
+        "reducao_centavos": 0,
+        "imposto_devido_centavos": 0,
+        "mensal": {
+          "base_centavos": 239280,
+          "imposto_tabela_centavos": 0,
+          "reducao_centavos": 0,
+          "imposto_centavos": 0
+        },
+        "retido_ou_recolhido_anual_centavos": 0,
+        "a_pagar_centavos": 0,
+        "a_restituir_centavos": 0,
+        "forma_mensal": "retido na fonte pelo empregador",
+        "prazo_declaracao": "2027-05-31",
+        "premissas": [
+          "Renda inferida pela média mensal do histórico",
+          "Desconto simplificado de 20%",
+          "Tabela progressiva da Receita Federal para o ano-calendário 2026"
+        ]
+      },
+      "fontes": [
+        "Receita Federal — Tributação de 2026",
+        "Lei 15.270/2025 (redução do IR)"
+      ],
+      "rotulo": "estimativa; não substitui a declaração nem orientação profissional"
+    }
+  }
+}

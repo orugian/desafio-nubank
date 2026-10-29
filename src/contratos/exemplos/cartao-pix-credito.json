@@ -1,0 +1,54 @@
+{
+  "exemplo": true,
+  "esquema": "CartaoResposta",
+  "descricao": "Simulação de Pix no crédito de R$ 300 em 3 parcelas",
+  "dados": {
+    "tipo": "pix_credito",
+    "resultado": {
+      "valor_centavos": 30000,
+      "parcelas": 3,
+      "juros_am_pct": "4.99",
+      "juros_origem": "premissa",
+      "saldo_disponivel_hoje_centavos": 180000,
+      "saldo_suficiente": true,
+      "falta_saldo_centavos": 0,
+      "iof_centavos": 354,
+      "total_financiado_centavos": 30354,
+      "parcela_centavos": 11149,
+      "cronograma": [
+        {
+          "numero": 1,
+          "fatura_id": "A",
+          "vencimento": "2026-11-05",
+          "valor_centavos": 11149,
+          "juros_centavos": 1515,
+          "amortizacao_centavos": 9634
+        },
+        {
+          "numero": 2,
+          "fatura_id": "F2612",
+          "vencimento": "2026-12-05",
+          "valor_centavos": 11149,
+          "juros_centavos": 1034,
+          "amortizacao_centavos": 10115
+        },
+        {
+          "numero": 3,
+          "fatura_id": "F2701",
+          "vencimento": "2027-01-05",
+          "valor_centavos": 11149,
+          "juros_centavos": 544,
+          "amortizacao_centavos": 10605
+        }
+      ],
+      "total_pago_centavos": 33447,
+      "juros_total_centavos": 3093,
+      "custo_total_centavos": 3447,
+      "cet_am_pct": "5.38",
+      "cet_aa_pct": "87.65",
+      "limite_disponivel_centavos": 310590,
+      "excede_limite": false,
+      "rotulo": "simulação; juros de 4.99% a.m. (premissa do protótipo), IOF 0,38% + 0,0082% ao dia; nenhum Pix foi feito"
+    }
+  }
+}

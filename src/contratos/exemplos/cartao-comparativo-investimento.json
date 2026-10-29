@@ -1,0 +1,46 @@
+{
+  "exemplo": true,
+  "esquema": "CartaoResposta",
+  "descricao": "Comparativo do investimento INV3 com CDI e prefixado",
+  "dados": {
+    "tipo": "comparativo_investimento",
+    "resultado": {
+      "posicao": {
+        "posicao_id": "INV3",
+        "nome": "ITUB4",
+        "categoria": "acao",
+        "ticker": "ITUB4"
+      },
+      "aportes": [
+        {
+          "data": "2026-08-05",
+          "valor_centavos": 30000
+        }
+      ],
+      "aplicado_centavos": 30000,
+      "inicio": "2026-08-05",
+      "dias_corridos": 86,
+      "dias_uteis": 60,
+      "real": {
+        "valor_centavos": 33000,
+        "resultado_centavos": 3000,
+        "rentabilidade_pct": "10.00",
+        "estimado": true,
+        "rotulo_estimativa": "estimado com cotação de 27/10 18:00 (brapi)"
+      },
+      "alternativas": [
+        {
+          "id": "cdi",
+          "nome": "100% do CDI",
+          "valor_centavos": 30900,
+          "resultado_centavos": 900,
+          "rentabilidade_pct": "3.00",
+          "diferenca_centavos": -2100
+        }
+      ],
+      "melhor": "real",
+      "cdi_data_ref": "2026-10-29",
+      "rotulo": "bruto, antes de IR, IOF e custos; mesmas datas e valores aplicados; resultado passado não garante resultado futuro"
+    }
+  }
+}
