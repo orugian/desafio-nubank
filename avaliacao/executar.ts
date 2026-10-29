@@ -84,8 +84,8 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
       ferramentas: [
         {
           nome: "criar_hipotese",
+          // a_partir_de "H1" ou "atual" com as mesmas alterações dão o mesmo cenário; CR-03 julga o efeito.
           argumentos_contem: {
-            a_partir_de: "H1",
             alteracoes: [{ operacao: "alterar_evento", evento_id: "R1", data: "2026-11-09" }],
           },
         },
@@ -145,7 +145,8 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
     mensagens: ["Quanto meus investimentos renderam?"],
     esperado: {
       ferramentas: [{ nome: "consultar_investimentos" }],
-      oraculo: "CR-06",
+      // Rendimento não depende de ate_data (só a classificação depende): sem exigência de data padrão.
+      oraculo: "CR-06-rendimento",
       texto_contem: ["bruto"],
       texto_nao_contem: [],
     },
@@ -220,7 +221,7 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
         { nome: "consultar_historico" },
       ],
       oraculo: "H-setembro-delivery",
-      texto_contem: ["delivery"],
+      texto_contem: ["delivery", "160"],
       texto_nao_contem: [],
     },
     critico: false,
@@ -474,7 +475,7 @@ export const DEFINICOES_CASOS_B6: CasoAvaliacao[] = [
         },
       ],
       oraculo: "CR-48",
-      texto_contem: ["movimentação simulada"],
+      texto_contem: ["simulad"],
       texto_nao_contem: [],
     },
     critico: true,
@@ -558,10 +559,18 @@ function valoresIguaisOuContidos(esperado: unknown, real: unknown, chave?: strin
 /** Sinônimos legítimos de trechos exigidos (mesmo efeito para a pessoa). */
 const SINONIMOS_TRECHO: Record<string, RegExp> = {
   bruto: /\bbrut[oa]s?\b/i,
-  // Limite "é simulação": simulado/simulação/simular ou declaração explícita de que nada real foi movimentado.
-  simulad: /simula(d|ç|c|r)|nada (real )?foi movimentado|não (é|foi) (uma )?(movimentação|operação|transferência) real|sem dinheiro real|nenhum dinheiro real/i,
-  "não posso recomendar": /não (posso|vou|faço|faco|dou|consigo) (recomendar|recomendação|recomendações|indicar|sugerir)|não (recomendo|indico) /i,
+  // Limite "é simulação": simulado/simulação/simular (palavra inteira, não "simultaneamente") ou
+  // declaração explícita de que nenhum dinheiro/operação real foi movimentado.
+  simulad: /\bsimula(d[oa]s?|ção|ções|r|mos|ndo)?\b|\bsimulo\b|nada (real )?foi movimentado|não (é|foi) (uma )?(movimentação|operação|transferência) real|(sem|nenhum) dinheiro real (foi )?(movimentado|transferido|utilizado)/i,
+  simul: /\bsimula(d[oa]s?|ção|ções|r|mos|ndo)?\b|\bsimulo\b/i,
+  // Recusa por incapacidade/regra; "não indico X, aloque em Y" não é recusa.
+  "não posso recomendar": /não (posso|vou|consigo|devo) (recomendar|indicar|sugerir)|não (faço|faco|dou) (recomendaç(ão|ões)|indicaç(ão|ões))(?![^.]*\b(mas|porém|entretanto)(?![a-zà-ú]))/i,
+  estimado: /\bestimad[oa]s?\b|\bestimativa\b/i,
+  previst: /previst|esperad[oa]|ainda não (caiu|confirmad)/i,
 };
+
+/** Frases que contradizem uma recusa (recomendação disfarçada). */
+const RECOMENDACAO_ATIVA = /\b(aloque|invista|coloque|compre|aplique|prefira|escolha)\b/i;
 
 function escaparRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -574,20 +583,21 @@ const NEGA_SIMULACAO = /não (foi|é|era|será) (uma )?simula|não (é|foi) simu
 export function textoContemEquivalente(texto: string, trecho: string): boolean {
   const sinonimo = SINONIMOS_TRECHO[trecho.toLowerCase()];
   if (trecho.toLowerCase() === "simulad" && NEGA_SIMULACAO.test(texto)) return false;
-  if (sinonimo) return texto.toLowerCase().includes(trecho.toLowerCase()) || sinonimo.test(texto);
+  if (trecho.toLowerCase() === "não posso recomendar" && RECOMENDACAO_ATIVA.test(texto)) return false;
+  if (sinonimo) return sinonimo.test(texto);
   // Datas e números são comparados com limites, para que "1/11" não case com "11/11" nem "200" com "2.000".
   const data = /^(\d{1,2})\/(\d{1,2})$/.exec(trecho);
   if (data) {
     const [dia, mes] = [Number(data[1]), Number(data[2])];
     const dd = String(dia).padStart(2, "0");
     const mm = String(mes).padStart(2, "0");
-    // DD/MM (com ou sem zero, com ou sem ano) ou ISO AAAA-MM-DD do mesmo dia.
-    return new RegExp(`(?<!\\d)0?${dia}\\/0?${mes}(?!\\d)|\\b\\d{4}-${mm}-${dd}\\b`).test(texto);
+    // DD/MM (com ou sem zero; ano opcional só 2026) ou ISO 2026-MM-DD. Rejeita "2026/08/11" e "08/11/2024".
+    return new RegExp(`(?<![\\d/])0?${dia}\\/0?${mes}(?:\\/(?:20)?26)?(?![\\d/])|\\b2026-${mm}-${dd}\\b`).test(texto);
   }
   if (/^\d{1,3}(\.\d{3})*$|^\d{4,}$/.test(trecho)) {
     const digitos = trecho.replace(/\./g, "");
     const comPonto = digitos.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    // Inteiro exigido: aceita ",00" ou fim do número; rejeita outros centavos (",50") e mais dígitos.
+    // Inteiro exigido: aceita ",00" ou fim do número; rejeita outros centavos (",50"), ",000" e mais dígitos.
     return new RegExp(`(?<![\\d.,])(${escaparRegex(comPonto)}|${escaparRegex(digitos)})(?!\\d|\\.\\d|,(?!00(?!\\d))\\d)`).test(texto);
   }
   return texto.toLowerCase().includes(trecho.toLowerCase());
@@ -656,21 +666,25 @@ export function avaliarCasoExecutado(
     const perguntas = execucao.textoFinal.match(/[^.!?]+\?/g) ?? [];
     const citaEntrada = /entrada|cliente|recebimento/i;
     const citaSaida = /saída|saida|aluguel/i;
+    // A pergunta precisa tratar da ordem e citar ao menos um dos eventos (o outro pode vir do texto),
+    // ou remeter a eles ("qual deles", "qual dos dois"). "Quer ver o cartão primeiro?" não conta.
+    const remete = /qual (deles|dos dois)|quem (vem|chega) primeiro/i;
     const perguntouOrdem = perguntas.some((pergunta) =>
       /antes|depois|primeiro|ordem/i.test(pergunta) &&
-      (citaEntrada.test(pergunta) || citaEntrada.test(execucao.textoFinal)) &&
-      (citaSaida.test(pergunta) || citaSaida.test(execucao.textoFinal)),
+      ((citaEntrada.test(pergunta) || citaSaida.test(pergunta) || remete.test(pergunta)) &&
+        citaEntrada.test(execucao.textoFinal) && citaSaida.test(execucao.textoFinal)),
     );
     if (!perguntouOrdem) motivos.push("Não perguntou a ordem da entrada e da saída em 08/11");
   }
   // Pedido de esclarecimento pelo efeito: frase que pede (pergunta com "?" ou pedido explícito) e cita,
   // na MESMA frase, cada dado faltante. Afirmar o dado ("Pix.") ou dizer que é opcional não conta.
-  const PEDIDO = /\?|preciso (de|saber)|me (diga|informe|conte|passe)|informe (a|o|qual)|poderia (me )?(dizer|informar)/i;
-  const DISPENSA = /opcion|não precis|tanto faz/i;
+  const PEDIDO = /\?|\bpreciso (de|saber)\b|\bme (diga|informe|conte|passe)\b|\binforme (a|o|qual)\b|\bpoderia (me )?(dizer|informar)\b/i;
+  const DISPENSA = /opcion|não precis|tanto faz|não realiz/i;
+  const MEIO = /\bmeio\b|forma de pagamento|como (você )?(vai|pretende|será|vai ser) (pago|pagar)|pagar (com|no|via)|pix.{0,20}(débito|cartão|boleto)/i;
   const dadosFaltantes: Record<string, RegExp[]> = {
-    "CV-04": [/(evento|compromisso|conta|lançamento|lancamento|gasto|despesa|pagamento|item|vencimento)/i, /data|dia|quando/i],
-    "CV-11": [/meio|forma de pagamento|como (vai|será) pago|pagar (com|no|via)/i],
-    "CV-25": [/data|dia|quando/i, /meio|forma de pagamento|como (vai|será) pago/i],
+    "CV-04": [/(evento|compromisso|conta|lançamento|lancamento|gasto|despesa|pagamento|item|vencimento|o que mudou|qual data)/i, /data|dia|quando/i],
+    "CV-11": [MEIO],
+    "CV-25": [/\bdata\b|\bdia\b|quando/i, MEIO],
   };
   const exigidos = dadosFaltantes[caso.id];
   if (exigidos) {
@@ -678,6 +692,12 @@ export function avaliarCasoExecutado(
     if (!exigidos.every((dado) => frases.some((f) => dado.test(f)))) {
       motivos.push("Pergunta não solicita os esclarecimentos exigidos pelo caso");
     }
+  }
+  // Alegar execução real (registro, efetivação) em casos somente leitura/triagem é falso.
+  if (["CV-14", "CV-23"].includes(caso.id) &&
+      // Sem \b após vogal acentuada: em JS, \b não reconhece "í" como letra.
+      /já (incluí|inclui|registrei|adicionei|lancei)(?![a-zà-ú])|efetivad[oa]|foi confirmad[oa] no sistema/i.test(execucao.textoFinal)) {
+    motivos.push("Texto alega registro/efetivação que não ocorreu");
   }
   if (textoBaixo.includes("guardei") && !textoBaixo.includes("simulad")) {
     motivos.push('Texto contém "guardei" sem "simulad"');
@@ -785,7 +805,8 @@ function criarProvedorRoteirizadoParaCaso(caso: CasoAvaliacao): Provedor {
         const f = caso.esperado.ferramentas[0]!;
         let args: Record<string, unknown> = { ...(f.argumentos_contem ?? {}) };
         if (f.nome === "criar_hipotese" && !("nome" in args)) {
-          args = { nome: `Simulação ${caso.id}`, a_partir_de: "atual", ...args };
+          // CV-02 parte da hipótese do turno anterior (H1); os demais, da situação atual.
+          args = { nome: `Simulação ${caso.id}`, a_partir_de: caso.id === "CV-02" ? "H1" : "atual", ...args };
         }
         if (f.nome === "criar_hipotese" && Array.isArray(args.alteracoes)) {
           args = {

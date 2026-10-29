@@ -10,7 +10,6 @@
       {
         "nome": "criar_hipotese",
         "argumentos_contem": {
-          "a_partir_de": "H1",
           "alteracoes": [
             {
               "operacao": "alterar_evento",

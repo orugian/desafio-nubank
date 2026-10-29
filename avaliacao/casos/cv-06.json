@@ -10,7 +10,7 @@
         "nome": "consultar_investimentos"
       }
     ],
-    "oraculo": "CR-06",
+    "oraculo": "CR-06-rendimento",
     "texto_contem": [
       "bruto"
     ],

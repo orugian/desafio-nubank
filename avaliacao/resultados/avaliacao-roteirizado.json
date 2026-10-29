@@ -24138,7 +24138,7 @@
       "ferramentas_chamadas": [
         "consultar_historico"
       ],
-      "texto_final": "Simulação concluída (CV-10): delivery. Tudo é movimentação simulada com dados fictícios.",
+      "texto_final": "Simulação concluída (CV-10): delivery · 160. Tudo é movimentação simulada com dados fictícios.",
       "falha": null,
       "rastro": [
         {
@@ -24271,7 +24271,7 @@
                 {
                   "mensagem_id": "CV-10-r1-m1-r",
                   "papel": "assistente",
-                  "texto": "Simulação concluída (CV-10): delivery. Tudo é movimentação simulada com dados fictícios.",
+                  "texto": "Simulação concluída (CV-10): delivery · 160. Tudo é movimentação simulada com dados fictícios.",
                   "versao": 1,
                   "cartoes": [
                     {
@@ -24375,7 +24375,7 @@
                 "OP": 0
               }
             },
-            "texto": "Simulação concluída (CV-10): delivery. Tudo é movimentação simulada com dados fictícios.",
+            "texto": "Simulação concluída (CV-10): delivery · 160. Tudo é movimentação simulada com dados fictícios.",
             "cartoes": [
               {
                 "tipo": "historico",
@@ -59234,7 +59234,7 @@
       "ferramentas_chamadas": [
         "confirmar_movimentacao"
       ],
-      "texto_final": "Simulação concluída (CV-28): movimentação simulada. Tudo é movimentação simulada com dados fictícios.",
+      "texto_final": "Simulação concluída (CV-28): simulad. Tudo é movimentação simulada com dados fictícios.",
       "falha": null,
       "rastro": [
         {
@@ -62395,7 +62395,7 @@
                 {
                   "mensagem_id": "CV-28-r1-m3-r",
                   "papel": "assistente",
-                  "texto": "Simulação concluída (CV-28): movimentação simulada. Tudo é movimentação simulada com dados fictícios.",
+                  "texto": "Simulação concluída (CV-28): simulad. Tudo é movimentação simulada com dados fictícios.",
                   "versao": 3,
                   "cartoes": [],
                   "rastro": [
@@ -62437,7 +62437,7 @@
                 "OP": 1
               }
             },
-            "texto": "Simulação concluída (CV-28): movimentação simulada. Tudo é movimentação simulada com dados fictícios.",
+            "texto": "Simulação concluída (CV-28): simulad. Tudo é movimentação simulada com dados fictícios.",
             "cartoes": [],
             "avisos": [],
             "rastro": [

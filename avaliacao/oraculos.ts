@@ -153,6 +153,7 @@ export function verificarOraculoB6(
     case "CR-06":
       // CR-06: "Investimentos até 15/11 (default de I-10 em sessão nova)".
       return oraculoInvestimentos(resposta, estado, true);
+    case "CR-06-rendimento":
     case "CR-16":
     case "CR-34":
       return oraculoInvestimentos(resposta, estado);

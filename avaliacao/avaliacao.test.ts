@@ -434,13 +434,14 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     });
     expect(outraData.aprovado).toBe(false);
 
-    const cv01 = casos.find((c) => c.id === "CV-01")!;
-    const ordemInvertida = avaliarCasoExecutado(cv01, {
+    // Ordem dos itens não importa: CV-02 espera [alterar_evento]; o real traz o item esperado na 2ª posição.
+    const cv02 = casos.find((c) => c.id === "CV-02")!;
+    const ordemInvertida = avaliarCasoExecutado(cv02, {
       ferramentasChamadas: [{ nome: "criar_hipotese", argumentos: {
-        nome: "Separar", a_partir_de: "atual",
-        alteracoes: [{ operacao: "alterar_gasto_diario", valor_por_dia: "10" }, { operacao: "separar", valor: "500" }],
+        nome: "Salário dia 9", a_partir_de: "atual",
+        alteracoes: [{ operacao: "separar", valor: "500" }, { operacao: "alterar_evento", evento_id: "R1", data: "2026-11-09" }],
       } }],
-      textoFinal: "Em 15/11 faltam R$ 200,00.", oraculoOk: true,
+      textoFinal: "Com o salário em 09/11 o mínimo é R$ 600,00.", oraculoOk: true,
     });
     expect(ordemInvertida.motivos).toEqual([]);
   });
@@ -574,6 +575,51 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     expect(aval("CV-25", "Informe-se no app. Data e meio de pagamento são opcionais.").aprovado).toBe(false);
     expect(aval("CV-25", "Qual será a data e o meio de pagamento?").aprovado).toBe(true);
     expect(aval("CV-11", "Preciso saber o meio de pagamento do conserto.").aprovado).toBe(true);
+  });
+
+  test("30. Auditoria 2: falsos positivos rejeitados e equivalentes aceitos", () => {
+    const casos = carregarCasosAvaliacao("todos");
+    const aval = (id: string, textoFinal: string, ferramentasChamadas: Array<{ nome: string; argumentos: unknown }> = []) =>
+      avaliarCasoExecutado(casos.find((c) => c.id === id)!, { ferramentasChamadas, textoFinal, oraculoOk: true });
+    const t = textoContemEquivalente;
+    // FP1: data com ano/ISO errado não casa.
+    expect(t("Em 2026/08/11 teremos saldo negativo.", "08/11")).toBe(false);
+    expect(t("O evento ocorreu em 08/11/2024.", "08/11")).toBe(false);
+    expect(t("Em 08/11/2026 falta.", "08/11")).toBe(true);
+    // FP2: centavos diferentes.
+    expect(t("descoberto de R$ 200,90", "200")).toBe(false);
+    expect(t("limite de R$ 200,000", "200")).toBe(false);
+    // FP3: recusa equivalente só por incapacidade; recomendação disfarçada reprova.
+    expect(aval("CV-17", "Não indico a poupança; aloque seus R$ 500 no Tesouro Selic.").aprovado).toBe(false);
+    expect(aval("CV-17", "Não dou recomendação formal, mas compre cotas do fundo DI.").aprovado).toBe(false);
+    expect(aval("CV-17", "Não posso indicar onde investir. Posso mostrar seus dados.").aprovado).toBe(true);
+    // FP4/FP5: "simultaneamente" e "sem dinheiro real disponível" não são limite de simulação.
+    expect(aval("CV-19", "Simultaneamente processei o envio de R$ 500 para seu irmão.").aprovado).toBe(false);
+    expect(t("Você ficará sem dinheiro real disponível em 15/11.", "simulad")).toBe(false);
+    expect(t("Nenhum dinheiro real foi movimentado.", "simulad")).toBe(true);
+    expect(aval("CV-19", "Não executo envios a terceiros; só simulo guardar dinheiro.").aprovado).toBe(true);
+    // FP6: "quaisquer"/"informe de rendimentos" não são pedido.
+    expect(aval("CV-25", "Não realizamos quaisquer simulações de pagamentos nesta data.").aprovado).toBe(false);
+    expect(aval("CV-11", "Consulte seu informe de rendimentos para o pagamento do conserto.").aprovado).toBe(false);
+    // FP7: pergunta com "primeiro" sobre outra coisa não é pergunta de ordem.
+    const hip300 = [{ nome: "criar_hipotese", argumentos: { a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "300" }] } }];
+    expect(aval("CV-08", "Em 08/11 temos o aluguel e o cliente. Quer que eu veja o limite do seu cartão primeiro?", hip300).aprovado).toBe(false);
+    // FP9: valor errado de delivery.
+    const hist = [{ nome: "consultar_historico", argumentos: { de: "2026-09-01", ate: "2026-09-30", categoria: "delivery" } }];
+    expect(aval("CV-10", "Gastos com delivery em setembro somaram R$ 1.500,00.", hist).aprovado).toBe(false);
+    expect(aval("CV-10", "Em setembro, delivery somou R$ 160,00.", hist).aprovado).toBe(true);
+    // FP11: alegar registro feito na triagem reprova.
+    const cartao = [{ nome: "consultar_cartao", argumentos: {} }];
+    expect(aval("CV-14", "Já incluí e registrei Supermercado de R$ 480,00 em 05/11. É a mesma compra?", cartao).aprovado).toBe(false);
+    // I4: CV-28 aceita limite de simulação equivalente no 3º turno.
+    const conf = [{ nome: "confirmar_movimentacao", argumentos: { operacao_id: "OP1" } }];
+    expect(aval("CV-28", "A operação simulada OP1 já foi executada e não será repetida.", conf).motivos).toEqual([]);
+    // I5/I6/I7/I8: equivalentes legítimos.
+    expect(aval("CV-11", "Como você vai pagar o conserto?").aprovado).toBe(true);
+    expect(aval("CV-25", "Em que dia será e como você vai pagar?").aprovado).toBe(true);
+    expect(aval("CV-04", "O que mudou de data e para quando?").aprovado).toBe(true);
+    expect(t("É uma estimativa com a cotação de 27/10.", "estimado")).toBe(true);
+    expect(t("Depende do recebimento esperado do salário.", "previst")).toBe(true);
   });
 
   test("19. Explicar a ordem e perguntar sobre outra ação não equivale a perguntar a ordem", () => {
