@@ -441,13 +441,8 @@ export function criarExecutores(opcoes: { buscarCotacao?: typeof buscarCotacao }
           contextoPadrao,
           r.cotacao,
         );
+        // F-07 é emitido uma única vez por processarTurno; o cartão já rotula "gravada".
         const avisos: AvisoTurno[] = [];
-        if (!r.cotacao.ao_vivo && ctx.estado.mercado.tentou_ao_vivo) {
-          avisos.push({
-            codigo: "F-07",
-            mensagem: textos.aviso_f07(r.cotacao.data_hora),
-          });
-        }
         const cartao: CartaoResposta = { tipo: "cotacao", resultado };
         return {
           ok: true,

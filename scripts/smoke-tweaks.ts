@@ -1,4 +1,4 @@
-// Smoke test real dos tweaks de investimentos (autorizado pelo responsável em 29/10/2026).
+﻿// Smoke test real dos tweaks de investimentos (autorizado pelo responsável em 29/10/2026).
 // Uso: npx tsx --env-file=.env.local scripts/smoke-tweaks.ts [--modelo]
 // - Sempre: mercado ao vivo (BCB, brapi, CoinGecko) com contagem de chamadas.
 // - Com --modelo: 5 turnos reais pelo provedor configurado (LLM_PROVEDOR), uma mensagem por ferramenta nova.
@@ -36,6 +36,8 @@ globalThis.fetch = (async (entrada: Parameters<typeof fetch>[0], init?: Paramete
 
 async function main() {
   process.env.MERCADO_AO_VIVO = "1";
+  const soModelo = process.argv.includes("--modelo");
+  if (!soModelo) {
   console.log("== Mercado ao vivo (snapshot)");
   const snap = await buscarAoVivo({ timeout_ms: 5000 });
   console.log(JSON.stringify({ ao_vivo: snap.ao_vivo, cdi: snap.cdi, precos: snap.precos }, null, 1));
@@ -45,9 +47,10 @@ async function main() {
     const r = await buscarCotacao(t, { timeout_ms: 5000 }, snap);
     console.log(t, JSON.stringify(r.ok ? r.cotacao : r.erro));
   }
+  }
 
   if (process.argv.includes("--modelo")) {
-    const deps = criarDepsPadrao();
+    const deps = criarDepsPadrao({ provedor: "openrouter" });
     console.log(`== Modelo: ${deps.provedor.nome} / ${deps.provedor.modelo}`);
     const mensagens: Array<[string, string]> = [
       ["p1", "Quanto está a PETR4 agora?"],
@@ -80,3 +83,4 @@ main().catch((e) => {
   console.error("erro:", (e as Error).message);
   process.exit(1);
 });
+

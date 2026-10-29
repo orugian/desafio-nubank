@@ -536,7 +536,7 @@ export function CartaoChat({
               titulo: "Valor hoje",
               alinharDireita: true,
               renderizar: (l) => (
-                <span className={l.isMelhor ? "font-bold tabular-nums" : "tabular-nums"}>
+                <span className={l.isMelhor ? "font-bold tabular-nums whitespace-nowrap" : "tabular-nums whitespace-nowrap"}>
                   {formatarReais(l.valor_centavos)}
                 </span>
               ),
@@ -546,27 +546,23 @@ export function CartaoChat({
               titulo: "Resultado",
               alinharDireita: true,
               renderizar: (l) => (
-                <span className={l.isMelhor ? "font-bold tabular-nums" : "tabular-nums"}>
-                  {formatarReais(l.resultado_centavos)} ({formatarPercentual(l.rentabilidade_pct)})
-                </span>
+                <div className={l.isMelhor ? "font-bold tabular-nums" : "tabular-nums"}>
+                  <div className="whitespace-nowrap">{formatarReais(l.resultado_centavos)}</div>
+                  <div className="whitespace-nowrap text-[10px] font-normal text-[#646464]">
+                    {formatarPercentual(l.rentabilidade_pct)}
+                  </div>
+                  {l.diferenca_centavos !== undefined && (
+                    <div
+                      className={`whitespace-nowrap text-[10px] font-normal ${
+                        l.diferenca_centavos >= 0 ? "text-[#259E56]" : "text-[#F65758]"
+                      }`}
+                    >
+                      dif. {l.diferenca_centavos > 0 ? "+" : ""}
+                      {formatarReais(l.diferenca_centavos)}
+                    </div>
+                  )}
+                </div>
               ),
-            },
-            {
-              chave: "diferenca",
-              titulo: "Diferença",
-              alinharDireita: true,
-              renderizar: (l) => {
-                if (l.diferenca_centavos === undefined) {
-                  return <span className="text-[#646464]">—</span>;
-                }
-                const sinal = l.diferenca_centavos > 0 ? "+" : "";
-                return (
-                  <span className={l.isMelhor ? "font-bold tabular-nums" : "tabular-nums"}>
-                    {sinal}
-                    {formatarReais(l.diferenca_centavos)}
-                  </span>
-                );
-              },
             },
           ]}
         />

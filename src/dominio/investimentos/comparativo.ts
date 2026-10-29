@@ -159,6 +159,7 @@ export function compararInvestimento(
     if (altPrefixado.valor_centavos > real.valor_centavos && altPrefixado.valor_centavos > valorCdi) {
       melhor = "prefixado";
     } else if (valorCdi > real.valor_centavos) {
+      // Empate CDI = prefixado acima do real favorece "cdi" (contrato T5); empate com o real favorece "real".
       melhor = "cdi";
     } else {
       melhor = "real";
