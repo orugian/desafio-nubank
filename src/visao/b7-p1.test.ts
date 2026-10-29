@@ -138,4 +138,52 @@ describe("B7 parte 1 · executores reais e montarVisao", () => {
       else process.env.LLM_ROTEIRO = rotAnt;
     }
   });
+
+  test("2. Default de ate_data (I-10): CV-05 roteirizado sem ate_data chega à classificação de CR-06 (ate_data 15/11, saldo_minimo)", async () => {
+    const deps = criarDepsPadrao({ provedor: "roteirizado" });
+    const estado0 = estadoInicial("p1", snapshotGravado());
+
+    const res = await processarTurno(
+      {
+        estado: estado0,
+        mensagem: { id: "m-b7-cv05", texto: "Tenho dinheiro aplicado. Posso contar com ele?" },
+      },
+      {
+        ...deps,
+        provedor: provedorSequencial([
+          {
+            tipo: "chamadas",
+            chamadas: [
+              {
+                id: "c-cv05-1",
+                nome: "consultar_investimentos",
+                argumentos: JSON.stringify({}),
+              },
+            ],
+          },
+          {
+            tipo: "texto",
+            texto:
+              "Até 15/11, a Caixinha Reserva (INV1) é reserva de emergência protegida, o CDB (INV2) vence só em 15/03/2027 e não é resgatável até a data, e PETR4 (INV3) é resgatável em 04/11.",
+          },
+        ]),
+      },
+    );
+
+    expect(res.status).toBe("ok");
+    if (res.status !== "ok") return;
+    const cartaoInv = res.cartoes.find((c) => c.tipo === "investimentos");
+    expect(cartaoInv).toBeDefined();
+    if (cartaoInv?.tipo !== "investimentos") return;
+
+    expect(cartaoInv.resultado.ate_data).toBe("2026-11-15");
+    expect(cartaoInv.resultado.ate_data_origem).toBe("saldo_minimo");
+    expect(cartaoInv.resultado.posicoes.map((p) => [p.posicao_id, p.classificacao, p.data_disponibilidade])).toEqual([
+      ["SEP", "resgatavel_ate_data", "2026-10-30"],
+      ["INV1", "protegida", "2026-10-30"],
+      ["INV9", "resgatavel_ate_data", "2026-10-30"],
+      ["INV2", "nao_resgatavel_ate_data", "2027-03-15"],
+      ["INV3", "resgatavel_ate_data", "2026-11-04"],
+    ]);
+  });
 });
