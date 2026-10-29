@@ -92,4 +92,31 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     expect(md).toContain("CV-01");
     expect(md).toContain("12/12");
   });
+
+  test("4. Diagnóstico por ids registra falha técnica e rastro sem confundi-los com resposta vazia do modelo", async () => {
+    const relatorio = await executarAvaliacao({
+      conjunto: "todos",
+      ids: ["CV-01", "CV-17"],
+      repeticoes: 1,
+      usarRoteirizado: true,
+      dirSaida: join(__dirname, "resultados"),
+    });
+
+    expect(relatorio.total_execucoes).toBe(2);
+    expect(relatorio.resultados.map((r) => r.id)).toEqual(["CV-01", "CV-17"]);
+    expect(relatorio.resultados[0]?.falha).toBeNull();
+    expect(relatorio.resultados[0]?.rastro[0]?.ferramenta).toBe("criar_hipotese");
+  });
+
+  test("5. Todos os 27 casos passam pelos oráculos reais com o provedor roteirizado", async () => {
+    const relatorio = await executarAvaliacao({
+      conjunto: "todos",
+      repeticoes: 1,
+      usarRoteirizado: true,
+      dirSaida: join(__dirname, "resultados"),
+    });
+
+    expect(relatorio.aprovados).toBe(27);
+    expect(relatorio.total_execucoes).toBe(27);
+  });
 });

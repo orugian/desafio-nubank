@@ -6,6 +6,8 @@ import {
   REGEX_VALOR,
   estadoInicial,
   type EstadoSessao,
+  type Falha,
+  type ItemRastro,
   type MensagemProvedor,
   type Provedor,
   type RespostaProvedor,
@@ -15,6 +17,7 @@ import { processarTurno } from "@/conversa";
 import { criarDepsPadrao, obterSnapshotFallback } from "@/conversa/config";
 import { carregarPersona } from "@/dados";
 import { paraCentavos } from "@/dominio/caixa";
+import { verificarOraculoB6 } from "./oraculos";
 
 export const TERMOS_PROIBIDOS_GLOBAIS = [
   "pode gastar",
@@ -611,6 +614,22 @@ function criarProvedorRoteirizadoParaCaso(caso: CasoAvaliacao): Provedor {
             ],
           };
         }
+        if (caso.id === "CV-09" && passoNoTurno === 0) {
+          return {
+            tipo: "chamadas",
+            chamadas: [
+              {
+                id: "prep_1",
+                nome: "criar_hipotese",
+                argumentos: JSON.stringify({
+                  nome: "Separar R$ 300 hoje",
+                  a_partir_de: "atual",
+                  alteracoes: [{ operacao: "separar", valor: "300", data: "2026-10-30" }],
+                }),
+              },
+            ],
+          };
+        }
         if (caso.id === "CV-28" && passoNoTurno === 0) {
           return {
             tipo: "chamadas",
@@ -634,6 +653,25 @@ function criarProvedorRoteirizadoParaCaso(caso: CasoAvaliacao): Provedor {
         let args: Record<string, unknown> = { ...(f.argumentos_contem ?? {}) };
         if (f.nome === "criar_hipotese" && !("nome" in args)) {
           args = { nome: `Simulação ${caso.id}`, a_partir_de: "atual", ...args };
+        }
+        if (f.nome === "criar_hipotese" && Array.isArray(args.alteracoes)) {
+          args = {
+            ...args,
+            alteracoes: args.alteracoes.map((a) =>
+              typeof a === "object" && a !== null && (a as { operacao?: string }).operacao === "adicionar_evento"
+                ? {
+                    tipo: "saida",
+                    descricao: "Conserto do carro",
+                    data: "2026-11-06",
+                    valor: "800",
+                    ...a,
+                  }
+                : a,
+            ),
+          };
+        }
+        if (f.nome === "projetar_rendimento" && !("destino" in args) && !("cdi_pct" in args)) {
+          args = { destino: "INV9", ...args };
         }
         if (caso.id === "CV-14") {
           args = {
@@ -680,6 +718,8 @@ export type ResultadoCasoB6 = {
   motivos: string[];
   ferramentas_chamadas: string[];
   texto_final: string;
+  falha: Falha | null;
+  rastro: ItemRastro[];
 };
 
 export type RelatorioAvaliacaoB6 = {
@@ -695,6 +735,7 @@ export type RelatorioAvaliacaoB6 = {
 
 export async function executarAvaliacao(opcoes: {
   conjunto?: "todos" | "critico";
+  ids?: string[];
   repeticoes?: number;
   usarRoteirizado?: boolean;
   dirSaida?: string;
@@ -705,7 +746,9 @@ export async function executarAvaliacao(opcoes: {
   const dirSaida = opcoes.dirSaida ?? join(__dirname, "resultados");
   mkdirSync(dirSaida, { recursive: true });
 
-  const casos = carregarCasosAvaliacao(conjunto);
+  const casos = carregarCasosAvaliacao(conjunto).filter(
+    (caso) => !opcoes.ids?.length || opcoes.ids.includes(caso.id),
+  );
   const resultados: ResultadoCasoB6[] = [];
   const snap = obterSnapshotFallback();
 
@@ -755,13 +798,15 @@ export async function executarAvaliacao(opcoes: {
           ? ultimaResposta.rastro.map((r) => ({ nome: r.ferramenta, argumentos: r.argumentos }))
           : [];
       const textoFinal = ultimaResposta?.status === "ok" ? ultimaResposta.texto : "";
-      const oraculoOk = ultimaResposta?.status === "ok";
+      const motivosOraculo = verificarOraculoB6(caso.esperado.oraculo, ultimaResposta, estado);
+      const oraculoOk = motivosOraculo.length === 0;
 
       const aval = avaliarCasoExecutado(caso, {
         ferramentasChamadas,
         textoFinal,
         oraculoOk,
       });
+      aval.motivos.push(...motivosOraculo);
 
       resultados.push({
         id: caso.id,
@@ -772,6 +817,8 @@ export async function executarAvaliacao(opcoes: {
         motivos: aval.motivos,
         ferramentas_chamadas: ferramentasChamadas.map((f) => f.nome),
         texto_final: textoFinal,
+        falha: ultimaResposta?.status === "falha" ? ultimaResposta.falha : null,
+        rastro: ultimaResposta?.status === "ok" ? ultimaResposta.rastro : [],
       });
     }
   }
@@ -787,7 +834,11 @@ export async function executarAvaliacao(opcoes: {
     resultados,
   };
 
-  const sufixo = usarRoteirizado ? "roteirizado" : "ultimo";
+  const sufixo = usarRoteirizado
+    ? "roteirizado"
+    : opcoes.ids?.length
+      ? `diagnostico-${opcoes.ids.join("-").toLowerCase()}`
+      : "ultimo";
   writeFileSync(
     join(dirSaida, `avaliacao-${sufixo}.json`),
     JSON.stringify(relatorio, null, 2) + "\n",
@@ -806,7 +857,9 @@ export async function executarAvaliacao(opcoes: {
       (r) =>
         `| ${r.id} | ${r.repeticao} | ${r.aprovado ? "OK" : "FALHA"} | ${r.latencia_ms} | ${
           r.ferramentas_chamadas.join(", ") || "—"
-        } | ${r.motivos.join("; ") || "—"} |`,
+        } | ${[...r.motivos, r.falha ? `${r.falha.tipo}/${r.falha.codigo}` : null]
+          .filter(Boolean)
+          .join("; ") || "—"} |`,
     ),
     "",
   ];
@@ -827,8 +880,10 @@ if (executadoDiretamente) {
   const idxRep = process.argv.indexOf("--repeticoes");
   const repeticoes = idxRep >= 0 ? Number(process.argv[idxRep + 1] ?? "1") : 1;
   const usarRoteirizado = process.argv.includes("--roteirizado");
+  const idxCasos = process.argv.indexOf("--casos");
+  const ids = idxCasos >= 0 ? process.argv[idxCasos + 1]?.split(",").filter(Boolean) : undefined;
 
-  void executarAvaliacao({ conjunto, repeticoes, usarRoteirizado }).then((rel) => {
+  void executarAvaliacao({ conjunto, repeticoes, usarRoteirizado, ids }).then((rel) => {
     console.log(
       `Avaliação (${rel.conjunto}): ${rel.aprovados}/${rel.total_execucoes} aprovados`,
     );
