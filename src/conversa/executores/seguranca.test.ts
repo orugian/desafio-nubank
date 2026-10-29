@@ -25,6 +25,19 @@ function depsRoteirizadas(respostas: RespostaProvedor[]): DepsConversa {
 }
 
 describe("B7 · regressões adversariais", () => {
+  test("IN-04: ferramenta fornece valores em reais formatados pelo código sem alterar os centavos", async () => {
+    const r = await criarExecutores().ferramentas.criar_hipotese({
+      nome: "Separar hoje", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500" }],
+    }, { estado: estadoInicial("p1", snapshotGravado()), mensagem_id: "formatar" });
+    if (!r.ok) throw new Error(r.erro.mensagem);
+    const resultado = r.resultado as { valores_formatados?: Record<string, string>; cenarios: Array<{
+      linhas: Array<{ evento_id: string; valor_centavos: number }>;
+    }> };
+    const indiceSalario = resultado.cenarios[0].linhas.findIndex((l) => l.evento_id === "R1");
+    expect(resultado.cenarios[0].linhas[indiceSalario].valor_centavos).toBe(300000);
+    expect(resultado.valores_formatados?.[`cenarios[0].linhas[${indiceSalario}].valor_centavos`]).toBe("R$ 3.000,00");
+    expect(resultado.valores_formatados?.["indicadores.insuficiencia_centavos"]).toBe("R$ 200,00");
+  });
   test("PEDIDO 2: saldo do contexto acompanha a visão após saída declarada hoje e operação confirmada", async () => {
     const ex = criarExecutores();
     const d = await ex.ferramentas.registrar_declaracao({ alteracao: {

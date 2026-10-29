@@ -1,5 +1,7 @@
 import {
   HOJE,
+  NOMES_FERRAMENTAS,
+  formatarReais,
   erro,
   textos,
   validarArgumentos,
@@ -53,8 +55,27 @@ function calcularCenariosEstado(estado: EstadoSessao): ResultadoCenario[] {
   return ex.cenarios;
 }
 
+/** IN-04: strings monetárias geradas pelo código, por caminho do resultado.
+ * Não altera números/cenários/cartões nem filtra a resposta do modelo (não é G-01).
+ */
+function valoresFormatados(valor: unknown, caminho = "", saida: Record<string, string> = {}): Record<string, string> {
+  if (Array.isArray(valor)) {
+    valor.forEach((item, i) => valoresFormatados(item, `${caminho}[${i}]`, saida));
+  } else if (valor !== null && typeof valor === "object") {
+    for (const [chave, item] of Object.entries(valor)) {
+      const proximo = caminho ? `${caminho}.${chave}` : chave;
+      if (chave.endsWith("_centavos") && typeof item === "number" && Number.isSafeInteger(item)) {
+        saida[proximo] = formatarReais(item);
+      } else {
+        valoresFormatados(item, proximo, saida);
+      }
+    }
+  }
+  return saida;
+}
+
 export function criarExecutores(): Executores {
-  return {
+  const executores: Executores = {
     ferramentas: {
       async consultar_historico(args, ctx) {
         const v = validarArgumentos("consultar_historico", args);
@@ -420,4 +441,13 @@ export function criarExecutores(): Executores {
       );
     },
   };
+  for (const nome of NOMES_FERRAMENTAS) {
+    const executar = executores.ferramentas[nome];
+    executores.ferramentas[nome] = async (argumentos, contexto) => {
+      const r = await executar(argumentos, contexto);
+      if (!r.ok) return r;
+      return { ...r, resultado: { ...r.resultado, valores_formatados: valoresFormatados(r.resultado) } };
+    };
+  }
+  return executores;
 }
