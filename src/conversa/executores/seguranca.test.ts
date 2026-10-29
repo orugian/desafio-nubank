@@ -25,6 +25,22 @@ function depsRoteirizadas(respostas: RespostaProvedor[]): DepsConversa {
 }
 
 describe("B7 · regressões adversariais", () => {
+  test("CR-14b/IN-10: modelo recebe as faturas calculadas da hipótese, não apenas indicadores de caixa", async () => {
+    const r = await criarExecutores().ferramentas.criar_hipotese({
+      nome: "Conserto em 4x", a_partir_de: "atual", alteracoes: [{
+        operacao: "adicionar_evento", tipo: "saida", descricao: "Conserto",
+        valor: "800", data: "2026-11-06", meio: "cartao_credito", parcelas: 4,
+      }],
+    }, { estado: estadoInicial("p3", snapshotGravado()), mensagem_id: "conserto-cartao" });
+    if (!r.ok) throw new Error(r.erro.mensagem);
+    const payload = r.resultado as { cenarios?: Array<{ cenario_id: string; faturas_afetadas: Array<{
+      vencimento: string; total_antes_centavos: number; total_depois_centavos: number;
+    }> }> };
+    const hipotese = payload.cenarios?.find((c) => c.cenario_id === "H1");
+    expect(hipotese?.faturas_afetadas.map((f) => [f.vencimento, f.total_depois_centavos - f.total_antes_centavos])).toEqual([
+      ["2026-12-05", 20000], ["2027-01-05", 20000], ["2027-02-05", 20000], ["2027-03-05", 20000],
+    ]);
+  });
   test("CR-19/O-04: pendente adulterada acima do saldo não passa validação nem executa por ação ou domínio", async () => {
     const executores = criarExecutores();
     const inicial = estadoInicial("p1", snapshotGravado());

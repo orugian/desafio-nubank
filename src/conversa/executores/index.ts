@@ -200,6 +200,7 @@ export function criarExecutores(): Executores {
           resultado: {
             hipotese_id: r.hipotese_id,
             indicadores: criado.indicadores,
+            cenarios, // O modelo precisa de linhas, faturas afetadas, avisos e ordem relevante.
           },
           cartoes: [{ tipo: "comparacao", cenarios }],
           avisos: [],
