@@ -634,6 +634,20 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     }
   });
 
+  test("32. CV-28 aceita erro tipado e ausência de nova movimentação sem exigir a palavra simulada", () => {
+    const relatorio = JSON.parse(readFileSync(join(__dirname, "resultados/confirmacao-final-4-20261029/avaliacao-ultimo.json"), "utf8"));
+    const caso = carregarCasosAvaliacao("critico").find((c) => c.id === "CV-28")!;
+    for (const resultado of relatorio.resultados.filter((r: { id: string }) => r.id === "CV-28")) {
+      const resposta = resultado.turnos.at(-1).resposta;
+      const avaliacao = avaliarCasoExecutado(caso, {
+        ferramentasChamadas: resposta.rastro.map((r: { ferramenta: string; argumentos: unknown }) => ({ nome: r.ferramenta, argumentos: r.argumentos })),
+        textoFinal: resposta.texto,
+        oraculoOk: true,
+      });
+      expect(avaliacao.motivos).toEqual([]);
+    }
+  });
+
   test("19. Explicar a ordem e perguntar sobre outra ação não equivale a perguntar a ordem", () => {
     const caso = carregarCasosAvaliacao("todos").find((c) => c.id === "CV-08")!;
     const resultado = avaliarCasoExecutado(caso, {

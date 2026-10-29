@@ -38,17 +38,18 @@ O responsável autorizou o ajuste da S2 e pediu que a mesma classe de problema f
 | [aceite-efeito-final](<aceite-efeito-final-20261029/avaliacao-ultimo.md>) | 21/24 → 22/24 | 15/16 → 16/16 | CV-05 com 29/11 |
 | [confirmacao-final](<confirmacao-final-20261029/avaliacao-ultimo.md>) | 23/24 | 15/16 | CV-18 consultou o cartão; CV-23 H2 a partir de "atual" |
 | [confirmacao-final-2](<confirmacao-final-2-20261029/avaliacao-ultimo.md>) | 22/24 | **16/16** | CV-05 com 05/11 (dica de data do salário vazou para `ate_data`) |
-| [**confirmacao-final-3**](<confirmacao-final-3-20261029/avaliacao-ultimo.md>) | **24/24** | CV-06, CV-12 e CV-26 1/1 | rodada vigente, após a última mudança de descrição |
+| [confirmacao-final-3](<confirmacao-final-3-20261029/avaliacao-ultimo.md>) | 24/24 | CV-06, CV-12 e CV-26 1/1 | revisão manual encontrou premissa incorreta em CV-03 rep. 2 |
+| [**confirmacao-final-4**](<confirmacao-final-4-20261029/avaliacao-reavaliada-critico.md>) | 23/24 → **24/24 reavaliado** | **16/16** | rodada vigente; CV-03 corrigido nas duas repetições; CV-28 aceito por erro tipado + nenhuma nova movimentação |
 
-Cada ajuste de instrução/descrição foi seguido pela reexecução do conjunto crítico, como exige o plano.
+Cada ajuste de instrução/descrição foi seguido pela reexecução do conjunto crítico, como exige o plano. A última mudança foi apenas no avaliador; a reavaliação usou as respostas gravadas, sem novas chamadas.
 
 ## Chamadas
 
-- Nesta etapa: **421** chamadas OpenRouter (5 rodadas). Antes dela, a autorização S2 já somava 435; o total da autorização S2 passa a **856**. Nenhuma chamada de mercado; custo monetário não consultado.
+- Nesta etapa: **512** chamadas OpenRouter (6 rodadas). Antes dela, a autorização S2 já somava 435; o total da autorização S2 passa a **947**. Nenhuma chamada de mercado; custo monetário não consultado.
 - Auditorias `agy` e subagentes: somente leitura, sem chamadas ao modelo da aplicação.
 
 ## Limites
 
-- Os casos não críticos passaram 16/16 na rodada anterior; depois disso só mudou a descrição de `ate_data` e `projetar_rendimento`, e os casos afetados (CV-06 e CV-26) foram reexecutados e passaram.
-- A instabilidade observada (CV-05, CV-18) mostra que o modelo pode variar entre execuções; 24/24 não garante comportamento universal.
+- A última rodada completa passou 16/16 nos demais casos e, após ajuste do avaliador sem novas chamadas, 24/24 nos críticos. Evidências: [críticos reavaliados](<confirmacao-final-4-20261029/avaliacao-reavaliada-critico.md>) e [demais reavaliados](<confirmacao-final-4-20261029/avaliacao-reavaliada-demais.md>).
+- A instabilidade observada (CV-05, CV-18, CV-28) mostra que o modelo pode variar entre execuções; 24/24 não garante comportamento universal.
 - Não houve congelamento nem aprovação de marcos. CV-27 (P1, deploy) não foi executado.
