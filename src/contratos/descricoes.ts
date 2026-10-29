@@ -8,13 +8,13 @@ export const descricoesFerramentas: Record<NomeFerramenta, string> = {
   consultar_historico:
     "Consulta lançamentos dos últimos 3 meses (30/07 a 29/10/2026), com filtros e agrupamento. Somente leitura.",
   consultar_cartao:
-    "Mostra o cartão de crédito: fatura fechada, fatura aberta e próximas faturas com parcelas. Somente leitura.",
+    "Mostra o cartão de crédito: fatura fechada, fatura aberta e próximas faturas com parcelas. Somente leitura. Antes de incluir uma compra declarada com descrição e valor, consulte para triar item já existente. Se encontrar correspondência, cite o item e a fatura e pergunte se é outra compra. A consulta não registra compra nem devolve por si só erro tipado de duplicidade.",
   consultar_investimentos:
     "Mostra cada investimento: valor atual, aplicado, rentabilidade bruta, disponibilidade e proteção, classificado até uma data. Sem ate_data, usa a data da falta mais próxima. Somente leitura; não recomenda nada. Não chame esta ferramenta se a pessoa apenas pedir recomendação de onde investir.",
   projetar_rendimento:
     "Calcula o rendimento bruto estimado de um valor em produto atrelado ao CDI até uma data (no máximo 2026-11-29), com CDI constante. Informe destino (id da posição) ou cdi_pct.",
   registrar_declaracao:
-    "Registra um fato afirmado pela pessoa que muda a situação atual (ex.: valor ou data de um compromisso). Use alterar_evento com o id do evento para correções. Se houver possível duplicidade, chame a ferramenta assim mesmo: o motor devolve POSSIVEL_DUPLICIDADE; não pergunte antes.",
+    "Registra um fato afirmado pela pessoa que muda a situação atual (ex.: valor ou data de um compromisso). Use alterar_evento com o id do evento para correções. Para adicionar compra, só chame com dados completos da nova compra. Primeiro consulte a fatura para triar possível duplicidade; se houver item correspondente, pergunte se é outra compra. Nunca invente data/meio nem reutilize os do item antigo para provocar um erro. Com dados completos, o motor pode devolver POSSIVEL_DUPLICIDADE; confirmar_nao_duplicado só após confirmação explícita de que é outro gasto.",
   criar_hipotese:
     "Cria um cenário \"e se\" sobre a situação atual ou sobre outra hipótese (a_partir_de). Use para \"posso separar…?\", \"e se…?\" e \"simular\". Não altera a situação atual.",
   desfazer: "Remove uma declaração (D<n>) ou uma hipótese (H<n>). O id não é reutilizado.",
