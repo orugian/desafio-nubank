@@ -1,0 +1,54 @@
+{
+  "conjunto": "todos",
+  "repeticoes": 1,
+  "provedor": "nvidia",
+  "modelo": "minimaxai/minimax-m3.1-flash",
+  "executado_em": "2026-10-29T03:47:23.133Z",
+  "total_execucoes": 2,
+  "aprovados": 0,
+  "resultados": [
+    {
+      "id": "CV-03",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": false,
+      "latencia_ms": 588,
+      "motivos": [
+        "Ferramenta esperada ausente ou com argumentos divergentes: registrar_declaracao",
+        "Oráculo CR-04 não atendido",
+        "Texto não contém \"150\""
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-05",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": false,
+      "latencia_ms": 2242,
+      "motivos": [
+        "Ferramenta esperada ausente ou com argumentos divergentes: consultar_investimentos",
+        "Oráculo CR-06 não atendido",
+        "Texto não contém \"reserva\"",
+        "Texto não contém \"bruto\""
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    }
+  ]
+}

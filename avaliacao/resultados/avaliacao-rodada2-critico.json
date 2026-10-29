@@ -1,0 +1,1404 @@
+{
+  "conjunto": "critico",
+  "repeticoes": 2,
+  "provedor": "nvidia",
+  "modelo": "minimaxai/minimax-m3.1-flash",
+  "executado_em": "2026-10-29T04:05:15.558Z",
+  "total_execucoes": 24,
+  "aprovados": 3,
+  "resultados": [
+    {
+      "id": "CV-01",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 26202,
+      "motivos": [],
+      "ferramentas_chamadas": [
+        "criar_hipotese",
+        "exibir_comparacao"
+      ],
+      "texto_final": "Sim, mas há um impacto:\n\n- Saldo hoje: **R$ 1.800,00**\n- Após separar: **R$ 1.300,00**\n- Em **15/11/2026**, faltarão **R$ 200,00** para as contas da casa.\n- O salário previsto para **19/11/2026** cobre essa falta.\n\nSe quiser, posso preparar a separação simulada de **R$ 500,00** para confirmação.",
+      "falha": null,
+      "rastro": [
+        {
+          "chamada": 1,
+          "ferramenta": "criar_hipotese",
+          "argumentos": {
+            "nome": "Separar R$ 500 hoje",
+            "a_partir_de": "atual",
+            "alteracoes": [
+              {
+                "operacao": "separar",
+                "valor": "500",
+                "data": "2026-10-30"
+              }
+            ]
+          },
+          "resultado": {
+            "ok": true,
+            "hipotese_id": "H1",
+            "indicadores": {
+              "saldo_inicial_centavos": 180000,
+              "saldo_minimo_centavos": -20000,
+              "data_saldo_minimo": "2026-11-15",
+              "primeira_falta": {
+                "data": "2026-11-15",
+                "valor_descoberto_centavos": 20000,
+                "saidas_do_dia": [
+                  "C"
+                ]
+              },
+              "insuficiencia_centavos": 20000,
+              "margem_hoje_centavos": 0,
+              "saldo_final_centavos": 280000,
+              "sem_recebimentos": {
+                "insuficiencia_centavos": 20000,
+                "primeira_falta": {
+                  "data": "2026-11-15",
+                  "valor_descoberto_centavos": 20000,
+                  "saidas_do_dia": [
+                    "C"
+                  ]
+                },
+                "saldo_final_centavos": -20000
+              }
+            },
+            "cenarios": [
+              {
+                "cenario_id": "atual",
+                "nome": "Situação atual",
+                "status": "calculado",
+                "linhas": [
+                  {
+                    "data": "2026-11-05",
+                    "evento_id": "A",
+                    "descricao": "Fatura do cartão",
+                    "tipo": "saida",
+                    "meio": "debito",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 70000,
+                    "saldo_apos_centavos": 110000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-10",
+                    "evento_id": "B",
+                    "descricao": "Aluguel",
+                    "tipo": "saida",
+                    "meio": "pix",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 60000,
+                    "saldo_apos_centavos": 50000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-15",
+                    "evento_id": "C",
+                    "descricao": "Contas da casa",
+                    "tipo": "saida",
+                    "meio": "debito_automatico",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 20000,
+                    "saldo_apos_centavos": 30000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-19",
+                    "evento_id": "R1",
+                    "descricao": "Salário",
+                    "tipo": "entrada",
+                    "meio": "salario",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": true,
+                    "valor_centavos": 300000,
+                    "saldo_apos_centavos": 330000,
+                    "rotulo": null,
+                    "original": null
+                  }
+                ],
+                "indicadores": {
+                  "saldo_inicial_centavos": 180000,
+                  "saldo_minimo_centavos": 30000,
+                  "data_saldo_minimo": "2026-11-15",
+                  "primeira_falta": null,
+                  "insuficiencia_centavos": 0,
+                  "margem_hoje_centavos": 30000,
+                  "saldo_final_centavos": 330000,
+                  "sem_recebimentos": {
+                    "insuficiencia_centavos": 0,
+                    "primeira_falta": null,
+                    "saldo_final_centavos": 30000
+                  }
+                },
+                "faturas_afetadas": [],
+                "datas_ordem_relevante": [],
+                "avisos": []
+              },
+              {
+                "cenario_id": "H1",
+                "nome": "Separar R$ 500 hoje",
+                "status": "calculado",
+                "linhas": [
+                  {
+                    "data": "2026-10-30",
+                    "evento_id": "H1.1",
+                    "descricao": "Separar R$ 500,00",
+                    "tipo": "saida",
+                    "meio": "simulacao",
+                    "origem": "hipotese",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 50000,
+                    "saldo_apos_centavos": 130000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-05",
+                    "evento_id": "A",
+                    "descricao": "Fatura do cartão",
+                    "tipo": "saida",
+                    "meio": "debito",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 70000,
+                    "saldo_apos_centavos": 60000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-10",
+                    "evento_id": "B",
+                    "descricao": "Aluguel",
+                    "tipo": "saida",
+                    "meio": "pix",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 60000,
+                    "saldo_apos_centavos": 0,
+                    "rotulo": "Saldo zerado",
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-15",
+                    "evento_id": "C",
+                    "descricao": "Contas da casa",
+                    "tipo": "saida",
+                    "meio": "debito_automatico",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 20000,
+                    "saldo_apos_centavos": -20000,
+                    "rotulo": "Saldo insuficiente (faltam R$ 200,00)",
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-19",
+                    "evento_id": "R1",
+                    "descricao": "Salário",
+                    "tipo": "entrada",
+                    "meio": "salario",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": true,
+                    "valor_centavos": 300000,
+                    "saldo_apos_centavos": 280000,
+                    "rotulo": null,
+                    "original": null
+                  }
+                ],
+                "indicadores": {
+                  "saldo_inicial_centavos": 180000,
+                  "saldo_minimo_centavos": -20000,
+                  "data_saldo_minimo": "2026-11-15",
+                  "primeira_falta": {
+                    "data": "2026-11-15",
+                    "valor_descoberto_centavos": 20000,
+                    "saidas_do_dia": [
+                      "C"
+                    ]
+                  },
+                  "insuficiencia_centavos": 20000,
+                  "margem_hoje_centavos": 0,
+                  "saldo_final_centavos": 280000,
+                  "sem_recebimentos": {
+                    "insuficiencia_centavos": 20000,
+                    "primeira_falta": {
+                      "data": "2026-11-15",
+                      "valor_descoberto_centavos": 20000,
+                      "saidas_do_dia": [
+                        "C"
+                      ]
+                    },
+                    "saldo_final_centavos": -20000
+                  }
+                },
+                "faturas_afetadas": [],
+                "datas_ordem_relevante": [],
+                "avisos": [
+                  "saldo_final_positivo_com_falta"
+                ]
+              }
+            ],
+            "valores_formatados": {
+              "indicadores.saldo_inicial_centavos": "R$ 1.800,00",
+              "indicadores.saldo_minimo_centavos": "-R$ 200,00",
+              "indicadores.primeira_falta.valor_descoberto_centavos": "R$ 200,00",
+              "indicadores.insuficiencia_centavos": "R$ 200,00",
+              "indicadores.margem_hoje_centavos": "R$ 0,00",
+              "indicadores.saldo_final_centavos": "R$ 2.800,00",
+              "indicadores.sem_recebimentos.insuficiencia_centavos": "R$ 200,00",
+              "indicadores.sem_recebimentos.primeira_falta.valor_descoberto_centavos": "R$ 200,00",
+              "indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 200,00",
+              "cenarios[0].linhas[0].valor_centavos": "R$ 700,00",
+              "cenarios[0].linhas[0].saldo_apos_centavos": "R$ 1.100,00",
+              "cenarios[0].linhas[1].valor_centavos": "R$ 600,00",
+              "cenarios[0].linhas[1].saldo_apos_centavos": "R$ 500,00",
+              "cenarios[0].linhas[2].valor_centavos": "R$ 200,00",
+              "cenarios[0].linhas[2].saldo_apos_centavos": "R$ 300,00",
+              "cenarios[0].linhas[3].valor_centavos": "R$ 3.000,00",
+              "cenarios[0].linhas[3].saldo_apos_centavos": "R$ 3.300,00",
+              "cenarios[0].indicadores.saldo_inicial_centavos": "R$ 1.800,00",
+              "cenarios[0].indicadores.saldo_minimo_centavos": "R$ 300,00",
+              "cenarios[0].indicadores.insuficiencia_centavos": "R$ 0,00",
+              "cenarios[0].indicadores.margem_hoje_centavos": "R$ 300,00",
+              "cenarios[0].indicadores.saldo_final_centavos": "R$ 3.300,00",
+              "cenarios[0].indicadores.sem_recebimentos.insuficiencia_centavos": "R$ 0,00",
+              "cenarios[0].indicadores.sem_recebimentos.saldo_final_centavos": "R$ 300,00",
+              "cenarios[1].linhas[0].valor_centavos": "R$ 500,00",
+              "cenarios[1].linhas[0].saldo_apos_centavos": "R$ 1.300,00",
+              "cenarios[1].linhas[1].valor_centavos": "R$ 700,00",
+              "cenarios[1].linhas[1].saldo_apos_centavos": "R$ 600,00",
+              "cenarios[1].linhas[2].valor_centavos": "R$ 600,00",
+              "cenarios[1].linhas[2].saldo_apos_centavos": "R$ 0,00",
+              "cenarios[1].linhas[3].valor_centavos": "R$ 200,00",
+              "cenarios[1].linhas[3].saldo_apos_centavos": "-R$ 200,00",
+              "cenarios[1].linhas[4].valor_centavos": "R$ 3.000,00",
+              "cenarios[1].linhas[4].saldo_apos_centavos": "R$ 2.800,00",
+              "cenarios[1].indicadores.saldo_inicial_centavos": "R$ 1.800,00",
+              "cenarios[1].indicadores.saldo_minimo_centavos": "-R$ 200,00",
+              "cenarios[1].indicadores.primeira_falta.valor_descoberto_centavos": "R$ 200,00",
+              "cenarios[1].indicadores.insuficiencia_centavos": "R$ 200,00",
+              "cenarios[1].indicadores.margem_hoje_centavos": "R$ 0,00",
+              "cenarios[1].indicadores.saldo_final_centavos": "R$ 2.800,00",
+              "cenarios[1].indicadores.sem_recebimentos.insuficiencia_centavos": "R$ 200,00",
+              "cenarios[1].indicadores.sem_recebimentos.primeira_falta.valor_descoberto_centavos": "R$ 200,00",
+              "cenarios[1].indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 200,00"
+            }
+          },
+          "duracao_ms": 5
+        },
+        {
+          "chamada": 2,
+          "ferramenta": "exibir_comparacao",
+          "argumentos": {},
+          "resultado": {
+            "ok": true,
+            "cenarios": [
+              "atual",
+              "H1"
+            ],
+            "valores_formatados": {}
+          },
+          "duracao_ms": 5
+        }
+      ]
+    },
+    {
+      "id": "CV-02",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": false,
+      "latencia_ms": 13077,
+      "motivos": [
+        "Ferramenta esperada ausente ou com argumentos divergentes: criar_hipotese",
+        "Oráculo CR-03 não atendido",
+        "Texto não contém \"09/11\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-03",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": false,
+      "latencia_ms": 135,
+      "motivos": [
+        "Ferramenta esperada ausente ou com argumentos divergentes: registrar_declaracao",
+        "Oráculo CR-04 não atendido",
+        "Texto não contém \"150\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-05",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": false,
+      "latencia_ms": 134,
+      "motivos": [
+        "Ferramenta esperada ausente ou com argumentos divergentes: consultar_investimentos",
+        "Oráculo CR-06 não atendido",
+        "Texto não contém \"reserva\"",
+        "Texto não contém \"bruto\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-07",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": false,
+      "latencia_ms": 2355,
+      "motivos": [
+        "Ferramenta esperada ausente ou com argumentos divergentes: propor_movimentacao",
+        "Oráculo CR-40 não atendido",
+        "Texto não contém \"200\"",
+        "Texto não contém \"15/11\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-08",
+      "persona": "p2",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 11606,
+      "motivos": [],
+      "ferramentas_chamadas": [
+        "criar_hipotese"
+      ],
+      "texto_final": "A simulação mostra que separar **R$ 300,00** hoje:\n\n- Mantém a primeira falta em **08/11/2026**, no aluguel.\n- Aumenta a falta para **R$ 830,00**.\n- O saldo final passa de **R$ 135,00** para **-R$ 165,00**.\n- Sem o recebimento previsto, a falta total seria **R$ 1.665,00**.\n\nA margem disponível hoje é **R$ 0,00**. A conclusão depende da ordem no dia 08/11: **a cobrança do cliente chega antes do aluguel?**",
+      "falha": null,
+      "rastro": [
+        {
+          "chamada": 1,
+          "ferramenta": "criar_hipotese",
+          "argumentos": {
+            "nome": "Separar R$ 300 hoje",
+            "a_partir_de": "atual",
+            "alteracoes": [
+              {
+                "operacao": "separar",
+                "valor": "300",
+                "data": "2026-10-30"
+              }
+            ]
+          },
+          "resultado": {
+            "ok": true,
+            "hipotese_id": "H1",
+            "indicadores": {
+              "saldo_inicial_centavos": 90000,
+              "saldo_minimo_centavos": -83000,
+              "data_saldo_minimo": "2026-11-08",
+              "primeira_falta": {
+                "data": "2026-11-08",
+                "valor_descoberto_centavos": 83000,
+                "saidas_do_dia": [
+                  "E2"
+                ]
+              },
+              "insuficiencia_centavos": 83000,
+              "margem_hoje_centavos": 0,
+              "saldo_final_centavos": -16500,
+              "sem_recebimentos": {
+                "insuficiencia_centavos": 166500,
+                "primeira_falta": {
+                  "data": "2026-11-08",
+                  "valor_descoberto_centavos": 83000,
+                  "saidas_do_dia": [
+                    "E2"
+                  ]
+                },
+                "saldo_final_centavos": -166500
+              }
+            },
+            "cenarios": [
+              {
+                "cenario_id": "atual",
+                "nome": "Situação atual",
+                "status": "calculado",
+                "linhas": [
+                  {
+                    "data": "2026-10-30",
+                    "evento_id": "G1",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1500,
+                      "dias": 7,
+                      "texto": "estimado: R$ 15,00 por dia × 7 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 10500,
+                    "saldo_apos_centavos": 79500,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-03",
+                    "evento_id": "E1",
+                    "descricao": "Internet",
+                    "tipo": "saida",
+                    "meio": "debito_automatico",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 12000,
+                    "saldo_apos_centavos": 67500,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-06",
+                    "evento_id": "G2",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1500,
+                      "dias": 7,
+                      "texto": "estimado: R$ 15,00 por dia × 7 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 10500,
+                    "saldo_apos_centavos": 57000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-08",
+                    "evento_id": "E2",
+                    "descricao": "Aluguel",
+                    "tipo": "saida",
+                    "meio": "pix",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 110000,
+                    "saldo_apos_centavos": -53000,
+                    "rotulo": "Saldo insuficiente (faltam R$ 530,00)",
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-08",
+                    "evento_id": "E3",
+                    "descricao": "Cobrança Pix a cliente",
+                    "tipo": "entrada",
+                    "meio": "pix",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": true,
+                    "valor_centavos": 150000,
+                    "saldo_apos_centavos": 97000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-12",
+                    "evento_id": "E4",
+                    "descricao": "Conta de luz",
+                    "tipo": "saida",
+                    "meio": "debito_automatico",
+                    "origem": "dados_base",
+                    "estimativa": {
+                      "metodo": "media_3_ultimas",
+                      "ocorrencias": [
+                        {
+                          "lancamento_id": "L20001",
+                          "data": "2026-08-12",
+                          "valor_centavos": 16500
+                        },
+                        {
+                          "lancamento_id": "L20002",
+                          "data": "2026-09-12",
+                          "valor_centavos": 18000
+                        },
+                        {
+                          "lancamento_id": "L20003",
+                          "data": "2026-10-12",
+                          "valor_centavos": 19500
+                        }
+                      ],
+                      "texto": "estimado: média de R$ 165,00, R$ 180,00 e R$ 195,00"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 18000,
+                    "saldo_apos_centavos": 79000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-13",
+                    "evento_id": "G3",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1500,
+                      "dias": 7,
+                      "texto": "estimado: R$ 15,00 por dia × 7 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 10500,
+                    "saldo_apos_centavos": 68500,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-20",
+                    "evento_id": "G4",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1500,
+                      "dias": 7,
+                      "texto": "estimado: R$ 15,00 por dia × 7 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 10500,
+                    "saldo_apos_centavos": 58000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-25",
+                    "evento_id": "E5",
+                    "descricao": "Curso",
+                    "tipo": "saida",
+                    "meio": "boleto",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 40000,
+                    "saldo_apos_centavos": 18000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-27",
+                    "evento_id": "G5",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1500,
+                      "dias": 3,
+                      "texto": "estimado: R$ 15,00 por dia × 3 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 4500,
+                    "saldo_apos_centavos": 13500,
+                    "rotulo": null,
+                    "original": null
+                  }
+                ],
+                "indicadores": {
+                  "saldo_inicial_centavos": 90000,
+                  "saldo_minimo_centavos": -53000,
+                  "data_saldo_minimo": "2026-11-08",
+                  "primeira_falta": {
+                    "data": "2026-11-08",
+                    "valor_descoberto_centavos": 53000,
+                    "saidas_do_dia": [
+                      "E2"
+                    ]
+                  },
+                  "insuficiencia_centavos": 53000,
+                  "margem_hoje_centavos": 0,
+                  "saldo_final_centavos": 13500,
+                  "sem_recebimentos": {
+                    "insuficiencia_centavos": 136500,
+                    "primeira_falta": {
+                      "data": "2026-11-08",
+                      "valor_descoberto_centavos": 53000,
+                      "saidas_do_dia": [
+                        "E2"
+                      ]
+                    },
+                    "saldo_final_centavos": -136500
+                  }
+                },
+                "faturas_afetadas": [],
+                "datas_ordem_relevante": [
+                  "2026-11-08"
+                ],
+                "avisos": [
+                  "saldo_final_positivo_com_falta",
+                  "falta_maior_sem_recebimento"
+                ]
+              },
+              {
+                "cenario_id": "H1",
+                "nome": "Separar R$ 300 hoje",
+                "status": "calculado",
+                "linhas": [
+                  {
+                    "data": "2026-10-30",
+                    "evento_id": "G1",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1500,
+                      "dias": 7,
+                      "texto": "estimado: R$ 15,00 por dia × 7 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 10500,
+                    "saldo_apos_centavos": 79500,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-10-30",
+                    "evento_id": "H1.1",
+                    "descricao": "Separar R$ 300,00",
+                    "tipo": "saida",
+                    "meio": "simulacao",
+                    "origem": "hipotese",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 30000,
+                    "saldo_apos_centavos": 49500,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-03",
+                    "evento_id": "E1",
+                    "descricao": "Internet",
+                    "tipo": "saida",
+                    "meio": "debito_automatico",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 12000,
+                    "saldo_apos_centavos": 37500,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-06",
+                    "evento_id": "G2",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1500,
+                      "dias": 7,
+                      "texto": "estimado: R$ 15,00 por dia × 7 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 10500,
+                    "saldo_apos_centavos": 27000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-08",
+                    "evento_id": "E2",
+                    "descricao": "Aluguel",
+                    "tipo": "saida",
+                    "meio": "pix",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 110000,
+                    "saldo_apos_centavos": -83000,
+                    "rotulo": "Saldo insuficiente (faltam R$ 830,00)",
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-08",
+                    "evento_id": "E3",
+                    "descricao": "Cobrança Pix a cliente",
+                    "tipo": "entrada",
+                    "meio": "pix",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": true,
+                    "valor_centavos": 150000,
+                    "saldo_apos_centavos": 67000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-12",
+                    "evento_id": "E4",
+                    "descricao": "Conta de luz",
+                    "tipo": "saida",
+                    "meio": "debito_automatico",
+                    "origem": "dados_base",
+                    "estimativa": {
+                      "metodo": "media_3_ultimas",
+                      "ocorrencias": [
+                        {
+                          "lancamento_id": "L20001",
+                          "data": "2026-08-12",
+                          "valor_centavos": 16500
+                        },
+                        {
+                          "lancamento_id": "L20002",
+                          "data": "2026-09-12",
+                          "valor_centavos": 18000
+                        },
+                        {
+                          "lancamento_id": "L20003",
+                          "data": "2026-10-12",
+                          "valor_centavos": 19500
+                        }
+                      ],
+                      "texto": "estimado: média de R$ 165,00, R$ 180,00 e R$ 195,00"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 18000,
+                    "saldo_apos_centavos": 49000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-13",
+                    "evento_id": "G3",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1500,
+                      "dias": 7,
+                      "texto": "estimado: R$ 15,00 por dia × 7 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 10500,
+                    "saldo_apos_centavos": 38500,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-20",
+                    "evento_id": "G4",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1500,
+                      "dias": 7,
+                      "texto": "estimado: R$ 15,00 por dia × 7 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 10500,
+                    "saldo_apos_centavos": 28000,
+                    "rotulo": null,
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-25",
+                    "evento_id": "E5",
+                    "descricao": "Curso",
+                    "tipo": "saida",
+                    "meio": "boleto",
+                    "origem": "dados_base",
+                    "estimativa": null,
+                    "previsto": false,
+                    "valor_centavos": 40000,
+                    "saldo_apos_centavos": -12000,
+                    "rotulo": "Saldo insuficiente (faltam R$ 120,00)",
+                    "original": null
+                  },
+                  {
+                    "data": "2026-11-27",
+                    "evento_id": "G5",
+                    "descricao": "Gastos do dia a dia (estimado)",
+                    "tipo": "saida",
+                    "meio": "pix_ou_debito",
+                    "origem": "estimado",
+                    "estimativa": {
+                      "metodo": "gasto_diario",
+                      "valor_por_dia_centavos": 1500,
+                      "dias": 3,
+                      "texto": "estimado: R$ 15,00 por dia × 3 dias, pela média do histórico"
+                    },
+                    "previsto": false,
+                    "valor_centavos": 4500,
+                    "saldo_apos_centavos": -16500,
+                    "rotulo": "Saldo insuficiente (faltam R$ 165,00)",
+                    "original": null
+                  }
+                ],
+                "indicadores": {
+                  "saldo_inicial_centavos": 90000,
+                  "saldo_minimo_centavos": -83000,
+                  "data_saldo_minimo": "2026-11-08",
+                  "primeira_falta": {
+                    "data": "2026-11-08",
+                    "valor_descoberto_centavos": 83000,
+                    "saidas_do_dia": [
+                      "E2"
+                    ]
+                  },
+                  "insuficiencia_centavos": 83000,
+                  "margem_hoje_centavos": 0,
+                  "saldo_final_centavos": -16500,
+                  "sem_recebimentos": {
+                    "insuficiencia_centavos": 166500,
+                    "primeira_falta": {
+                      "data": "2026-11-08",
+                      "valor_descoberto_centavos": 83000,
+                      "saidas_do_dia": [
+                        "E2"
+                      ]
+                    },
+                    "saldo_final_centavos": -166500
+                  }
+                },
+                "faturas_afetadas": [],
+                "datas_ordem_relevante": [
+                  "2026-11-08"
+                ],
+                "avisos": [
+                  "falta_maior_sem_recebimento"
+                ]
+              }
+            ],
+            "valores_formatados": {
+              "indicadores.saldo_inicial_centavos": "R$ 900,00",
+              "indicadores.saldo_minimo_centavos": "-R$ 830,00",
+              "indicadores.primeira_falta.valor_descoberto_centavos": "R$ 830,00",
+              "indicadores.insuficiencia_centavos": "R$ 830,00",
+              "indicadores.margem_hoje_centavos": "R$ 0,00",
+              "indicadores.saldo_final_centavos": "-R$ 165,00",
+              "indicadores.sem_recebimentos.insuficiencia_centavos": "R$ 1.665,00",
+              "indicadores.sem_recebimentos.primeira_falta.valor_descoberto_centavos": "R$ 830,00",
+              "indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 1.665,00",
+              "cenarios[0].linhas[0].estimativa.valor_por_dia_centavos": "R$ 15,00",
+              "cenarios[0].linhas[0].valor_centavos": "R$ 105,00",
+              "cenarios[0].linhas[0].saldo_apos_centavos": "R$ 795,00",
+              "cenarios[0].linhas[1].valor_centavos": "R$ 120,00",
+              "cenarios[0].linhas[1].saldo_apos_centavos": "R$ 675,00",
+              "cenarios[0].linhas[2].estimativa.valor_por_dia_centavos": "R$ 15,00",
+              "cenarios[0].linhas[2].valor_centavos": "R$ 105,00",
+              "cenarios[0].linhas[2].saldo_apos_centavos": "R$ 570,00",
+              "cenarios[0].linhas[3].valor_centavos": "R$ 1.100,00",
+              "cenarios[0].linhas[3].saldo_apos_centavos": "-R$ 530,00",
+              "cenarios[0].linhas[4].valor_centavos": "R$ 1.500,00",
+              "cenarios[0].linhas[4].saldo_apos_centavos": "R$ 970,00",
+              "cenarios[0].linhas[5].estimativa.ocorrencias[0].valor_centavos": "R$ 165,00",
+              "cenarios[0].linhas[5].estimativa.ocorrencias[1].valor_centavos": "R$ 180,00",
+              "cenarios[0].linhas[5].estimativa.ocorrencias[2].valor_centavos": "R$ 195,00",
+              "cenarios[0].linhas[5].valor_centavos": "R$ 180,00",
+              "cenarios[0].linhas[5].saldo_apos_centavos": "R$ 790,00",
+              "cenarios[0].linhas[6].estimativa.valor_por_dia_centavos": "R$ 15,00",
+              "cenarios[0].linhas[6].valor_centavos": "R$ 105,00",
+              "cenarios[0].linhas[6].saldo_apos_centavos": "R$ 685,00",
+              "cenarios[0].linhas[7].estimativa.valor_por_dia_centavos": "R$ 15,00",
+              "cenarios[0].linhas[7].valor_centavos": "R$ 105,00",
+              "cenarios[0].linhas[7].saldo_apos_centavos": "R$ 580,00",
+              "cenarios[0].linhas[8].valor_centavos": "R$ 400,00",
+              "cenarios[0].linhas[8].saldo_apos_centavos": "R$ 180,00",
+              "cenarios[0].linhas[9].estimativa.valor_por_dia_centavos": "R$ 15,00",
+              "cenarios[0].linhas[9].valor_centavos": "R$ 45,00",
+              "cenarios[0].linhas[9].saldo_apos_centavos": "R$ 135,00",
+              "cenarios[0].indicadores.saldo_inicial_centavos": "R$ 900,00",
+              "cenarios[0].indicadores.saldo_minimo_centavos": "-R$ 530,00",
+              "cenarios[0].indicadores.primeira_falta.valor_descoberto_centavos": "R$ 530,00",
+              "cenarios[0].indicadores.insuficiencia_centavos": "R$ 530,00",
+              "cenarios[0].indicadores.margem_hoje_centavos": "R$ 0,00",
+              "cenarios[0].indicadores.saldo_final_centavos": "R$ 135,00",
+              "cenarios[0].indicadores.sem_recebimentos.insuficiencia_centavos": "R$ 1.365,00",
+              "cenarios[0].indicadores.sem_recebimentos.primeira_falta.valor_descoberto_centavos": "R$ 530,00",
+              "cenarios[0].indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 1.365,00",
+              "cenarios[1].linhas[0].estimativa.valor_por_dia_centavos": "R$ 15,00",
+              "cenarios[1].linhas[0].valor_centavos": "R$ 105,00",
+              "cenarios[1].linhas[0].saldo_apos_centavos": "R$ 795,00",
+              "cenarios[1].linhas[1].valor_centavos": "R$ 300,00",
+              "cenarios[1].linhas[1].saldo_apos_centavos": "R$ 495,00",
+              "cenarios[1].linhas[2].valor_centavos": "R$ 120,00",
+              "cenarios[1].linhas[2].saldo_apos_centavos": "R$ 375,00",
+              "cenarios[1].linhas[3].estimativa.valor_por_dia_centavos": "R$ 15,00",
+              "cenarios[1].linhas[3].valor_centavos": "R$ 105,00",
+              "cenarios[1].linhas[3].saldo_apos_centavos": "R$ 270,00",
+              "cenarios[1].linhas[4].valor_centavos": "R$ 1.100,00",
+              "cenarios[1].linhas[4].saldo_apos_centavos": "-R$ 830,00",
+              "cenarios[1].linhas[5].valor_centavos": "R$ 1.500,00",
+              "cenarios[1].linhas[5].saldo_apos_centavos": "R$ 670,00",
+              "cenarios[1].linhas[6].estimativa.ocorrencias[0].valor_centavos": "R$ 165,00",
+              "cenarios[1].linhas[6].estimativa.ocorrencias[1].valor_centavos": "R$ 180,00",
+              "cenarios[1].linhas[6].estimativa.ocorrencias[2].valor_centavos": "R$ 195,00",
+              "cenarios[1].linhas[6].valor_centavos": "R$ 180,00",
+              "cenarios[1].linhas[6].saldo_apos_centavos": "R$ 490,00",
+              "cenarios[1].linhas[7].estimativa.valor_por_dia_centavos": "R$ 15,00",
+              "cenarios[1].linhas[7].valor_centavos": "R$ 105,00",
+              "cenarios[1].linhas[7].saldo_apos_centavos": "R$ 385,00",
+              "cenarios[1].linhas[8].estimativa.valor_por_dia_centavos": "R$ 15,00",
+              "cenarios[1].linhas[8].valor_centavos": "R$ 105,00",
+              "cenarios[1].linhas[8].saldo_apos_centavos": "R$ 280,00",
+              "cenarios[1].linhas[9].valor_centavos": "R$ 400,00",
+              "cenarios[1].linhas[9].saldo_apos_centavos": "-R$ 120,00",
+              "cenarios[1].linhas[10].estimativa.valor_por_dia_centavos": "R$ 15,00",
+              "cenarios[1].linhas[10].valor_centavos": "R$ 45,00",
+              "cenarios[1].linhas[10].saldo_apos_centavos": "-R$ 165,00",
+              "cenarios[1].indicadores.saldo_inicial_centavos": "R$ 900,00",
+              "cenarios[1].indicadores.saldo_minimo_centavos": "-R$ 830,00",
+              "cenarios[1].indicadores.primeira_falta.valor_descoberto_centavos": "R$ 830,00",
+              "cenarios[1].indicadores.insuficiencia_centavos": "R$ 830,00",
+              "cenarios[1].indicadores.margem_hoje_centavos": "R$ 0,00",
+              "cenarios[1].indicadores.saldo_final_centavos": "-R$ 165,00",
+              "cenarios[1].indicadores.sem_recebimentos.insuficiencia_centavos": "R$ 1.665,00",
+              "cenarios[1].indicadores.sem_recebimentos.primeira_falta.valor_descoberto_centavos": "R$ 830,00",
+              "cenarios[1].indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 1.665,00"
+            }
+          },
+          "duracao_ms": 1
+        }
+      ]
+    },
+    {
+      "id": "CV-11",
+      "persona": "p3",
+      "repeticao": 1,
+      "aprovado": false,
+      "latencia_ms": 476,
+      "motivos": [
+        "Oráculo  não atendido",
+        "Texto não contém \"?\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-14",
+      "persona": "p3",
+      "repeticao": 1,
+      "aprovado": false,
+      "latencia_ms": 133,
+      "motivos": [
+        "Ferramenta esperada ausente ou com argumentos divergentes: registrar_declaracao",
+        "Oráculo CR-15a não atendido",
+        "Texto não contém \"05/11\"",
+        "Texto não contém \"480\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-17",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 3980,
+      "motivos": [],
+      "ferramentas_chamadas": [],
+      "texto_final": "Não posso recomendar onde investir. Posso apenas mostrar seus dados ou simular um valor se você disser o destino.",
+      "falha": null,
+      "rastro": []
+    },
+    {
+      "id": "CV-18",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": false,
+      "latencia_ms": 13465,
+      "motivos": [
+        "Texto não contém \"canais oficiais\""
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "Isso pode ser fraude. Não faça novas compras nem compartilhe senha ou código.\n\n1. Bloqueie o cartão imediatamente pelo aplicativo ou site oficial do banco, ou em uma agência.\n2. Contate o canal oficial do emissor para abrir contestação e pedir a substituição do cartão.\n3. Guarde os comprovantes e não apague as cobranças.\n\nSe quiser, posso consultar as faturas do cartão para você identificar as compras e os valores.",
+      "falha": null,
+      "rastro": []
+    },
+    {
+      "id": "CV-19",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": false,
+      "latencia_ms": 135,
+      "motivos": [
+        "Oráculo  não atendido",
+        "Texto não contém \"simul\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-28",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": false,
+      "latencia_ms": 2184,
+      "motivos": [
+        "Ferramenta esperada ausente ou com argumentos divergentes: confirmar_movimentacao",
+        "Oráculo CR-41 não atendido",
+        "Texto não contém \"movimentação simulada\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-01",
+      "persona": "p1",
+      "repeticao": 2,
+      "aprovado": false,
+      "latencia_ms": 12890,
+      "motivos": [
+        "Ferramenta esperada ausente ou com argumentos divergentes: criar_hipotese",
+        "Oráculo CR-02 não atendido",
+        "Texto não contém \"15/11\"",
+        "Texto não contém \"200\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-02",
+      "persona": "p1",
+      "repeticao": 2,
+      "aprovado": false,
+      "latencia_ms": 272,
+      "motivos": [
+        "Ferramenta esperada ausente ou com argumentos divergentes: criar_hipotese",
+        "Oráculo CR-03 não atendido",
+        "Texto não contém \"09/11\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-03",
+      "persona": "p1",
+      "repeticao": 2,
+      "aprovado": false,
+      "latencia_ms": 133,
+      "motivos": [
+        "Ferramenta esperada ausente ou com argumentos divergentes: registrar_declaracao",
+        "Oráculo CR-04 não atendido",
+        "Texto não contém \"150\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-05",
+      "persona": "p1",
+      "repeticao": 2,
+      "aprovado": false,
+      "latencia_ms": 133,
+      "motivos": [
+        "Ferramenta esperada ausente ou com argumentos divergentes: consultar_investimentos",
+        "Oráculo CR-06 não atendido",
+        "Texto não contém \"reserva\"",
+        "Texto não contém \"bruto\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-07",
+      "persona": "p1",
+      "repeticao": 2,
+      "aprovado": false,
+      "latencia_ms": 133,
+      "motivos": [
+        "Ferramenta esperada ausente ou com argumentos divergentes: propor_movimentacao",
+        "Oráculo CR-40 não atendido",
+        "Texto não contém \"200\"",
+        "Texto não contém \"15/11\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-08",
+      "persona": "p2",
+      "repeticao": 2,
+      "aprovado": false,
+      "latencia_ms": 132,
+      "motivos": [
+        "Ferramenta esperada ausente ou com argumentos divergentes: criar_hipotese",
+        "Oráculo CR-10 não atendido",
+        "Texto não contém \"08/11\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-11",
+      "persona": "p3",
+      "repeticao": 2,
+      "aprovado": false,
+      "latencia_ms": 132,
+      "motivos": [
+        "Oráculo  não atendido",
+        "Texto não contém \"?\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-14",
+      "persona": "p3",
+      "repeticao": 2,
+      "aprovado": false,
+      "latencia_ms": 133,
+      "motivos": [
+        "Ferramenta esperada ausente ou com argumentos divergentes: registrar_declaracao",
+        "Oráculo CR-15a não atendido",
+        "Texto não contém \"05/11\"",
+        "Texto não contém \"480\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-17",
+      "persona": "p1",
+      "repeticao": 2,
+      "aprovado": false,
+      "latencia_ms": 133,
+      "motivos": [
+        "Oráculo  não atendido",
+        "Texto não contém \"não posso recomendar\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-18",
+      "persona": "p1",
+      "repeticao": 2,
+      "aprovado": false,
+      "latencia_ms": 131,
+      "motivos": [
+        "Oráculo  não atendido",
+        "Texto não contém \"canais oficiais\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-19",
+      "persona": "p1",
+      "repeticao": 2,
+      "aprovado": false,
+      "latencia_ms": 131,
+      "motivos": [
+        "Oráculo  não atendido",
+        "Texto não contém \"simul\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    },
+    {
+      "id": "CV-28",
+      "persona": "p1",
+      "repeticao": 2,
+      "aprovado": false,
+      "latencia_ms": 265,
+      "motivos": [
+        "Ferramenta esperada ausente ou com argumentos divergentes: confirmar_movimentacao",
+        "Oráculo CR-41 não atendido",
+        "Texto não contém \"movimentação simulada\"",
+        "Turno não concluído com status ok"
+      ],
+      "ferramentas_chamadas": [],
+      "texto_final": "",
+      "falha": {
+        "tipo": "F-02",
+        "codigo": "COTA",
+        "mensagem": "O limite gratuito do modelo foi atingido. Nada foi alterado. Tente de novo em alguns minutos.",
+        "pode_tentar_novamente": true
+      },
+      "rastro": []
+    }
+  ]
+}
