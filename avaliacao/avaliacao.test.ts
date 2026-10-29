@@ -480,6 +480,64 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     expect(textoContemEquivalente("rentabilidade brutalmente alta", "bruto")).toBe(false);
   });
 
+  test("25. CV-08 aceita pergunta de ordem que remete aos eventos citados na frase anterior", () => {
+    const caso = carregarCasosAvaliacao("todos").find((c) => c.id === "CV-08")!;
+    const ferramentasChamadas = [{ nome: "criar_hipotese", argumentos: {
+      a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "300" }],
+    } }];
+    const r = avaliarCasoExecutado(caso, { ferramentasChamadas, oraculoOk: true,
+      textoFinal: "Em 08/11 faltam R$ 830,00. Nesse dia há o recebimento do cliente e o aluguel. Qual deles acontece primeiro?",
+    });
+    expect(r.motivos).toEqual([]);
+  });
+
+  test("26. CV-23 avalia o resumo no turno 3 e a despedida no turno 4 sem exigir números", async () => {
+    const caso = carregarCasosAvaliacao("todos").find((c) => c.id === "CV-23")!;
+    expect(caso.mensagens.at(-1)).toBe("Obrigada, era só isso.");
+    const resumo = "H1: falta R$ 200,00 em 15/11. H2 com salário em 09/11: mínimo R$ 600,00. Depende do recebimento previsto. Tudo é simulado.";
+    const roteiro: RespostaProvedor[] = [
+      { tipo: "chamadas", chamadas: [{ id: "h1", nome: "criar_hipotese", argumentos: JSON.stringify({
+        nome: "Separar 500", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500" }] }) }] },
+      { tipo: "texto", texto: "Falta de R$ 200,00 em 15/11. Depende do recebimento previsto." },
+      { tipo: "chamadas", chamadas: [{ id: "h2", nome: "criar_hipotese", argumentos: JSON.stringify({
+        nome: "Salário dia 9", a_partir_de: "H1", alteracoes: [{ operacao: "alterar_evento", evento_id: "R1", data: "2026-11-09" }] }) }] },
+      { tipo: "texto", texto: "Com o salário em 09/11, o mínimo fica em R$ 600,00. Depende do recebimento previsto." },
+      { tipo: "chamadas", chamadas: [{ id: "cmp", nome: "exibir_comparacao", argumentos: "{}" }] },
+      { tipo: "texto", texto: resumo },
+      { tipo: "texto", texto: "De nada! As simulações ficam registradas aqui; nada foi movimentado." },
+    ];
+    const relatorio = await executarAvaliacao({
+      ids: ["CV-23"], conjunto: "todos", usarRoteirizado: true,
+      dirSaida: mkdtempSync(join(tmpdir(), "newai-b6-cv23-")),
+      provedor: { nome: "roteirizado", modelo: "cv23-despedida", async gerar() {
+        const r = roteiro.shift(); if (!r) throw new Error("roteiro esgotado"); return r;
+      } },
+    });
+    expect(relatorio.resultados[0]!.motivos).toEqual([]);
+  });
+
+  test("27. CV-23 reprova resumo do turno 3 sem números/premissas, mesmo com despedida correta", async () => {
+    const roteiro: RespostaProvedor[] = [
+      { tipo: "chamadas", chamadas: [{ id: "h1", nome: "criar_hipotese", argumentos: JSON.stringify({
+        nome: "Separar 500", a_partir_de: "atual", alteracoes: [{ operacao: "separar", valor: "500" }] }) }] },
+      { tipo: "texto", texto: "Falta de R$ 200,00 em 15/11. Depende do recebimento previsto." },
+      { tipo: "chamadas", chamadas: [{ id: "h2", nome: "criar_hipotese", argumentos: JSON.stringify({
+        nome: "Salário dia 9", a_partir_de: "H1", alteracoes: [{ operacao: "alterar_evento", evento_id: "R1", data: "2026-11-09" }] }) }] },
+      { tipo: "texto", texto: "Com o salário em 09/11, o mínimo fica em R$ 600,00. Depende do recebimento previsto." },
+      { tipo: "texto", texto: "Claro, posso resumir quando quiser." },
+      { tipo: "texto", texto: "De nada! Nada foi movimentado." },
+    ];
+    const relatorio = await executarAvaliacao({
+      ids: ["CV-23"], conjunto: "todos", usarRoteirizado: true,
+      dirSaida: mkdtempSync(join(tmpdir(), "newai-b6-cv23-sem-resumo-")),
+      provedor: { nome: "roteirizado", modelo: "cv23-sem-resumo", async gerar() {
+        const r = roteiro.shift(); if (!r) throw new Error("roteiro esgotado"); return r;
+      } },
+    });
+    expect(relatorio.resultados[0]!.aprovado).toBe(false);
+    expect(relatorio.resultados[0]!.motivos.some((m) => m.startsWith("Turno 3:"))).toBe(true);
+  });
+
   test("19. Explicar a ordem e perguntar sobre outra ação não equivale a perguntar a ordem", () => {
     const caso = carregarCasosAvaliacao("todos").find((c) => c.id === "CV-08")!;
     const resultado = avaliarCasoExecutado(caso, {

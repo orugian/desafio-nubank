@@ -31,7 +31,11 @@ export function revisarRelatorioGravado(original: RelatorioAvaliacaoB6, achados:
       const motivosOraculo = r.status === "ok"
         ? verificarOraculoB6(oraculo, r, r.estado, resultado.turnos.slice(0, indice).map((t) => t.resposta))
         : [];
-      const aval = avaliarCasoExecutado(esperado, {
+      // Mesmo critério do executor: despedida final de CV-23 sem exigência numérica.
+      const criterio = caso.id === "CV-23" && ultimo
+        ? { ...esperado, esperado: { ...esperado.esperado, texto_contem: [] } }
+        : esperado;
+      const aval = avaliarCasoExecutado(criterio, {
         ferramentasChamadas: r.status === "ok" ? r.rastro.map((item) => ({ nome: item.ferramenta, argumentos: item.argumentos })) : [],
         textoFinal: r.status === "ok" ? r.texto : "",
         oraculoOk: r.status === "ok" && motivosOraculo.length === 0,

@@ -642,10 +642,14 @@ export function avaliarCasoExecutado(
     }
   }
   if (caso.id === "CV-08") {
+    // Exige uma PERGUNTA sobre ordem; entrada e saída podem ser citadas na própria pergunta ou no texto.
     const perguntas = execucao.textoFinal.match(/[^.!?]+\?/g) ?? [];
+    const citaEntrada = /entrada|cliente|recebimento/i;
+    const citaSaida = /saída|saida|aluguel/i;
     const perguntouOrdem = perguntas.some((pergunta) =>
       /antes|depois|primeiro|ordem/i.test(pergunta) &&
-      /entrada|cliente|recebimento/i.test(pergunta) && /saída|saida|aluguel/i.test(pergunta),
+      (citaEntrada.test(pergunta) || citaEntrada.test(execucao.textoFinal)) &&
+      (citaSaida.test(pergunta) || citaSaida.test(execucao.textoFinal)),
     );
     if (!perguntouOrdem) motivos.push("Não perguntou a ordem da entrada e da saída em 08/11");
   }
@@ -985,7 +989,12 @@ export async function executarAvaliacao(opcoes: {
       );
       const oraculoOk = motivosOraculo.length === 0;
 
-      const aval = avaliarCasoExecutado(caso, {
+      // CV-23: o resumo é exigido no turno "Pode resumir?" (avaliado como preparatório); o último turno
+      // é a despedida, que só precisa respeitar termos proibidos, invariância e ferramentas permitidas.
+      const criterioFinal: CasoAvaliacao = caso.id === "CV-23"
+        ? { ...caso, esperado: { ...caso.esperado, texto_contem: [] } }
+        : caso;
+      const aval = avaliarCasoExecutado(criterioFinal, {
         ferramentasChamadas,
         textoFinal,
         oraculoOk,
