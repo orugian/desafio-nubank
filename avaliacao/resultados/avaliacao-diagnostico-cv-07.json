@@ -1,0 +1,101 @@
+{
+  "conjunto": "todos",
+  "repeticoes": 1,
+  "provedor": "nvidia",
+  "modelo": "minimaxai/minimax-m3.1-flash",
+  "executado_em": "2026-10-29T03:47:07.528Z",
+  "total_execucoes": 1,
+  "aprovados": 1,
+  "resultados": [
+    {
+      "id": "CV-07",
+      "persona": "p1",
+      "repeticao": 1,
+      "aprovado": true,
+      "latencia_ms": 7596,
+      "motivos": [],
+      "ferramentas_chamadas": [
+        "propor_movimentacao"
+      ],
+      "texto_final": "Proposta simulada **OP1**: guardar **R$ 500,00** na **Caixinha Viagem**.\n\n⚠️ Impacto: ficará uma **falta de R$ 200,00 em 15/11**, caso o salário previsto não entre antes.\n\nRendimento estimado até 19/11: **R$ 3,31**, bruto, com CDI constante.\n\nQuer confirmar a simulação?",
+      "falha": null,
+      "rastro": [
+        {
+          "chamada": 1,
+          "ferramenta": "propor_movimentacao",
+          "argumentos": {
+            "valor": "500",
+            "destino": "INV9"
+          },
+          "resultado": {
+            "ok": true,
+            "operacao_id": "OP1",
+            "valor_centavos": 50000,
+            "destino": {
+              "posicao_id": "INV9",
+              "nome": "Caixinha Viagem",
+              "rende": true,
+              "cdi_pct": 100
+            },
+            "alerta": "Com essa movimentação, faltariam R$ 200,00 em 15/11.",
+            "indicadores": {
+              "saldo_inicial_centavos": 180000,
+              "saldo_minimo_centavos": -20000,
+              "data_saldo_minimo": "2026-11-15",
+              "primeira_falta": {
+                "data": "2026-11-15",
+                "valor_descoberto_centavos": 20000,
+                "saidas_do_dia": [
+                  "C"
+                ]
+              },
+              "insuficiencia_centavos": 20000,
+              "margem_hoje_centavos": 0,
+              "saldo_final_centavos": 280000,
+              "sem_recebimentos": {
+                "insuficiencia_centavos": 20000,
+                "primeira_falta": {
+                  "data": "2026-11-15",
+                  "valor_descoberto_centavos": 20000,
+                  "saidas_do_dia": [
+                    "C"
+                  ]
+                },
+                "saldo_final_centavos": -20000
+              }
+            },
+            "rendimento_estimado": {
+              "valor_centavos": 50000,
+              "cdi_pct": 100,
+              "ate_data": "2026-11-19",
+              "dias_uteis": 13,
+              "taxa_diaria_pct": "0.050788",
+              "cdi_data_ref": "2026-10-27",
+              "rendimento_bruto_centavos": 331,
+              "rotulo": "bruto, CDI constante",
+              "destino": {
+                "posicao_id": "INV9",
+                "nome": "Caixinha Viagem"
+              }
+            },
+            "valores_formatados": {
+              "valor_centavos": "R$ 500,00",
+              "indicadores.saldo_inicial_centavos": "R$ 1.800,00",
+              "indicadores.saldo_minimo_centavos": "-R$ 200,00",
+              "indicadores.primeira_falta.valor_descoberto_centavos": "R$ 200,00",
+              "indicadores.insuficiencia_centavos": "R$ 200,00",
+              "indicadores.margem_hoje_centavos": "R$ 0,00",
+              "indicadores.saldo_final_centavos": "R$ 2.800,00",
+              "indicadores.sem_recebimentos.insuficiencia_centavos": "R$ 200,00",
+              "indicadores.sem_recebimentos.primeira_falta.valor_descoberto_centavos": "R$ 200,00",
+              "indicadores.sem_recebimentos.saldo_final_centavos": "-R$ 200,00",
+              "rendimento_estimado.valor_centavos": "R$ 500,00",
+              "rendimento_estimado.rendimento_bruto_centavos": "R$ 3,31"
+            }
+          },
+          "duracao_ms": 4
+        }
+      ]
+    }
+  ]
+}
