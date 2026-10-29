@@ -22,17 +22,15 @@ import {
   registrarDeclaracao,
   validarEstado as validarEstadoDominio,
 } from "@/dominio/caixa";
+import { consultarCartao } from "@/dominio/cartao";
+import { consultarHistorico } from "@/dominio/historico";
+import { consultarInvestimentos, projetarRendimento } from "@/dominio/investimentos";
+import { cancelarMovimentacao, confirmarMovimentacao, proporMovimentacao } from "@/dominio/operacoes";
 import cdiJson from "../../../dados/mercado/cdi.json";
 import btcJson from "../../../dados/mercado/fechamentos-BTC.json";
 import petr4Json from "../../../dados/mercado/fechamentos-PETR4.json";
-import exCartaoCreditoP3 from "@/contratos/exemplos/cartao-cartao-credito-p3.json";
 import exComparacaoCr02 from "@/contratos/exemplos/cartao-comparacao-cr02.json";
-import exHistorico from "@/contratos/exemplos/cartao-historico.json";
-import exInvestimentosCr06 from "@/contratos/exemplos/cartao-investimentos-cr06.json";
-import exOperacaoConcluidaCr41 from "@/contratos/exemplos/cartao-operacao-concluida-cr41.json";
-import exOperacaoPendenteCr40 from "@/contratos/exemplos/cartao-operacao-pendente-cr40.json";
 import exRascunhoAtendimento from "@/contratos/exemplos/cartao-rascunho-atendimento.json";
-import exRendimentoCr32 from "@/contratos/exemplos/cartao-rendimento-cr32.json";
 import exVisaoP1 from "@/contratos/exemplos/visao-p1.json";
 import exVisaoP2 from "@/contratos/exemplos/visao-p2.json";
 import exVisaoP3 from "@/contratos/exemplos/visao-p3.json";
@@ -98,14 +96,17 @@ export function criarExecutores(): Executores {
       async consultar_historico(args, ctx) {
         const v = validarArgumentos("consultar_historico", args);
         if (!v.ok) return v;
-        const cartao = structuredClone(exHistorico.dados) as Extract<
-          CartaoResposta,
-          { tipo: "historico" }
-        >;
+        const rPersona = carregarPersona(ctx.estado.persona_id);
+        if (!rPersona.ok) return rPersona;
+        const r = consultarHistorico(rPersona.persona, v.argumentos);
+        if (!r.ok) return r;
+        const { ok: _, ...resultado } = r;
+        void _;
+        const cartao: CartaoResposta = { tipo: "historico", resultado };
         return {
           ok: true,
           estado: ctx.estado,
-          resultado: cartao.resultado as unknown as Record<string, unknown>,
+          resultado: resultado as unknown as Record<string, unknown>,
           cartoes: [cartao],
           avisos: [],
         };
@@ -114,10 +115,12 @@ export function criarExecutores(): Executores {
       async consultar_cartao(args, ctx) {
         const v = validarArgumentos("consultar_cartao", args);
         if (!v.ok) return v;
-        const visao = obterVisaoExemplo(ctx.estado);
-        const cartaoVisao =
-          visao.cartao ??
-          (exCartaoCreditoP3.dados as Extract<CartaoResposta, { tipo: "cartao_credito" }>).cartao;
+        const rPersona = carregarPersona(ctx.estado.persona_id);
+        if (!rPersona.ok) return rPersona;
+        const cartaoVisao = consultarCartao(rPersona.persona, ctx.estado);
+        if (!cartaoVisao) {
+          return erro("OPERACAO_NAO_PERMITIDA", textos.erros.OPERACAO_NAO_PERMITIDA, ["cartao"]);
+        }
         const cartao: CartaoResposta = { tipo: "cartao_credito", cartao: cartaoVisao };
         return {
           ok: true,
@@ -131,19 +134,19 @@ export function criarExecutores(): Executores {
       async consultar_investimentos(args, ctx) {
         const v = validarArgumentos("consultar_investimentos", args);
         if (!v.ok) return v;
-        const cartao = structuredClone(exInvestimentosCr06.dados) as Extract<
-          CartaoResposta,
-          { tipo: "investimentos" }
-        >;
-        if (v.argumentos.ate_data) {
-          cartao.resultado.ate_data = v.argumentos.ate_data;
-          cartao.resultado.ate_data_origem = "informada";
-        }
-        cartao.resultado.mercado = ctx.estado.mercado;
+        const rPersona = carregarPersona(ctx.estado.persona_id);
+        if (!rPersona.ok) return rPersona;
+        const r = consultarInvestimentos(rPersona.persona, ctx.estado, contextoPadrao, {
+          ate_data: v.argumentos.ate_data,
+        });
+        if (!r.ok) return r;
+        const { ok: _, ...resultado } = r;
+        void _;
+        const cartao: CartaoResposta = { tipo: "investimentos", resultado };
         return {
           ok: true,
           estado: ctx.estado,
-          resultado: cartao.resultado as unknown as Record<string, unknown>,
+          resultado: resultado as unknown as Record<string, unknown>,
           cartoes: [cartao],
           avisos: [],
         };
@@ -152,22 +155,38 @@ export function criarExecutores(): Executores {
       async projetar_rendimento(args, ctx) {
         const v = validarArgumentos("projetar_rendimento", args);
         if (!v.ok) return v;
-        if (v.argumentos.ate_data < HOJE) {
-          return erro("DATA_ANTES_DE_HOJE", textos.erros.DATA_ANTES_DE_HOJE, ["ate_data"]);
+        const rPersona = carregarPersona(ctx.estado.persona_id);
+        if (!rPersona.ok) return rPersona;
+
+        let cdiPct = v.argumentos.cdi_pct;
+        let destinoInfo: { posicao_id: string; nome: string } | null = null;
+        if (v.argumentos.destino !== undefined) {
+          const pos = rPersona.persona.posicoes.find((p) => p.id === v.argumentos.destino);
+          if (!pos) return erro("POSICAO_INEXISTENTE", textos.erros.POSICAO_INEXISTENTE, ["destino"]);
+          if (!("cdi_pct" in pos)) {
+            return erro("OPERACAO_NAO_PERMITIDA", textos.erros.OPERACAO_NAO_PERMITIDA, ["destino"]);
+          }
+          cdiPct = pos.cdi_pct;
+          destinoInfo = { posicao_id: pos.id, nome: pos.nome };
         }
-        if (v.argumentos.ate_data > "2026-11-29") {
-          return erro("DATA_FORA_DA_JANELA", textos.erros.DATA_FORA_DA_JANELA, ["ate_data"]);
+        if (cdiPct === undefined) {
+          return erro("ARGUMENTOS_INVALIDOS", textos.erros.ARGUMENTOS_INVALIDOS, ["cdi_pct"]);
         }
-        const cartao = structuredClone(exRendimentoCr32.dados) as Extract<
-          CartaoResposta,
-          { tipo: "rendimento" }
-        >;
-        cartao.resultado.valor_centavos = paraCentavos(v.argumentos.valor);
-        cartao.resultado.ate_data = v.argumentos.ate_data;
+
+        const r = projetarRendimento(ctx.estado.mercado, contextoPadrao, {
+          valor_centavos: paraCentavos(v.argumentos.valor),
+          cdi_pct: cdiPct,
+          ate_data: v.argumentos.ate_data,
+        });
+        if (!r.ok) return r;
+        const { ok: _, ...semOk } = r;
+        void _;
+        const resultado = { ...semOk, destino: destinoInfo };
+        const cartao: CartaoResposta = { tipo: "rendimento", resultado };
         return {
           ok: true,
           estado: ctx.estado,
-          resultado: cartao.resultado as unknown as Record<string, unknown>,
+          resultado: resultado as unknown as Record<string, unknown>,
           cartoes: [cartao],
           avisos: [],
         };
@@ -246,54 +265,31 @@ export function criarExecutores(): Executores {
       async propor_movimentacao(args, ctx) {
         const v = validarArgumentos("propor_movimentacao", args);
         if (!v.ok) return v;
-        const valor_centavos = paraCentavos(v.argumentos.valor);
-        const visao = obterVisaoExemplo(ctx.estado);
-        if (valor_centavos > visao.conta.saldo_disponivel_hoje_centavos) {
-          return erro("SALDO_INSUFICIENTE_HOJE", textos.erros.SALDO_INSUFICIENTE_HOJE, ["valor"]);
-        }
-        const pos = visao.posicoes.find((p) => p.id === v.argumentos.destino);
-        if (!pos) {
-          return erro("POSICAO_INEXISTENTE", textos.erros.POSICAO_INEXISTENTE, ["destino"]);
-        }
+        const rPersona = carregarPersona(ctx.estado.persona_id);
+        if (!rPersona.ok) return rPersona;
 
-        const n = ctx.estado.contadores.OP + 1;
-        const operacao_id = `OP${n}`;
-        const novoEstado: EstadoSessao = {
-          ...ctx.estado,
-          operacao_pendente: {
-            id: operacao_id,
-            valor_centavos,
-            destino: v.argumentos.destino,
-            criada_na_versao: ctx.estado.versao + 1,
-          },
-          contadores: { ...ctx.estado.contadores, OP: n },
-        };
+        const r = proporMovimentacao(rPersona.persona, ctx.estado, v.argumentos, contextoPadrao);
+        if (!r.ok) return r;
 
-        const modeloCartao = structuredClone(exOperacaoPendenteCr40.dados) as Extract<
-          CartaoResposta,
-          { tipo: "operacao_pendente" }
-        >;
         const cartao: CartaoResposta = {
-          ...modeloCartao,
-          operacao_id,
-          valor_centavos,
-          destino: {
-            posicao_id: pos.id,
-            nome: pos.nome,
-            rende: pos.cdi_pct !== null,
-            cdi_pct: pos.cdi_pct,
-          },
+          tipo: "operacao_pendente",
+          operacao_id: r.operacao_pendente.id,
+          valor_centavos: r.operacao_pendente.valor_centavos,
+          destino: r.destino,
+          alerta: r.alerta,
+          impacto: r.impacto,
+          rendimento_estimado: null,
         };
 
         return {
           ok: true,
-          estado: novoEstado,
+          estado: r.estado,
           resultado: {
-            operacao_id,
-            valor_centavos,
-            destino: cartao.destino,
-            alerta: cartao.alerta,
-            indicadores: cartao.impacto.indicadores,
+            operacao_id: r.operacao_pendente.id,
+            valor_centavos: r.operacao_pendente.valor_centavos,
+            destino: r.destino,
+            alerta: r.alerta,
+            indicadores: r.impacto.indicadores,
           },
           cartoes: [cartao],
           avisos: [],
@@ -303,68 +299,41 @@ export function criarExecutores(): Executores {
       async confirmar_movimentacao(args, ctx) {
         const v = validarArgumentos("confirmar_movimentacao", args);
         if (!v.ok) return v;
-        const { operacao_id } = v.argumentos;
-        if (ctx.estado.operacoes.some((op) => op.id === operacao_id)) {
-          return erro("OPERACAO_JA_EXECUTADA", textos.erros.OPERACAO_JA_EXECUTADA, ["operacao_id"]);
-        }
-        const pend = ctx.estado.operacao_pendente;
-        if (!pend || pend.id !== operacao_id) {
-          return erro("OPERACAO_EXPIRADA", textos.erros.OPERACAO_EXPIRADA, ["operacao_id"]);
-        }
+        const rPersona = carregarPersona(ctx.estado.persona_id);
+        if (!rPersona.ok) return rPersona;
 
-        const visaoAntes = obterVisaoExemplo(ctx.estado);
-        const pos = visaoAntes.posicoes.find((p) => p.id === pend.destino);
-        const nomeDestino = pos?.nome ?? "Caixinha Viagem";
-        const hipoteses_descartadas = ctx.estado.hipoteses.map((h) => h.id);
+        const r = confirmarMovimentacao(rPersona.persona, ctx.estado, v.argumentos.operacao_id);
+        if (!r.ok) return r;
 
-        const novoEstado: EstadoSessao = {
-          ...ctx.estado,
-          operacao_pendente: null,
-          hipoteses: [],
-          operacoes: [
-            ...ctx.estado.operacoes,
-            { id: pend.id, valor_centavos: pend.valor_centavos, destino: pend.destino, data: HOJE },
-          ],
-        };
-
-        const visaoDepois = obterVisaoExemplo(novoEstado);
-        const modeloConcluida = structuredClone(exOperacaoConcluidaCr41.dados) as Extract<
-          CartaoResposta,
-          { tipo: "operacao_concluida" }
-        >;
+        const mensagem = textos.mensagem_operacao_simulada(r.operacao.valor_centavos, r.destino.nome);
         const cartaoConcluida: CartaoResposta = {
-          ...modeloConcluida,
-          operacao_id: pend.id,
-          valor_centavos: pend.valor_centavos,
-          destino: {
-            posicao_id: pend.destino,
-            nome: nomeDestino,
-            rende: (pos?.cdi_pct ?? 100) !== null,
-            cdi_pct: pos?.cdi_pct ?? 100,
-          },
-          mensagem: textos.mensagem_operacao_simulada(pend.valor_centavos, nomeDestino),
-          hipoteses_descartadas,
-          saldo_disponivel_hoje_centavos: visaoDepois.conta.saldo_disponivel_hoje_centavos,
+          tipo: "operacao_concluida",
+          operacao_id: r.operacao.id,
+          valor_centavos: r.operacao.valor_centavos,
+          destino: r.destino,
+          mensagem,
+          hipoteses_descartadas: r.hipoteses_descartadas,
+          saldo_disponivel_hoje_centavos: r.saldo_disponivel_hoje_centavos,
         };
 
-        const cenarios = calcularCenariosEstado(novoEstado);
+        const cenarios = calcularCenarios(rPersona.persona, r.estado, contextoPadrao);
         const avisos =
-          hipoteses_descartadas.length > 0
+          r.hipoteses_descartadas.length > 0
             ? [
                 {
                   codigo: "HIPOTESES_DESCARTADAS",
-                  mensagem: textos.aviso_hipoteses_descartadas(hipoteses_descartadas),
+                  mensagem: textos.aviso_hipoteses_descartadas(r.hipoteses_descartadas),
                 },
               ]
             : [];
 
         return {
           ok: true,
-          estado: novoEstado,
+          estado: r.estado,
           resultado: {
-            operacao_id: pend.id,
-            mensagem: cartaoConcluida.mensagem,
-            hipoteses_descartadas,
+            operacao_id: r.operacao.id,
+            mensagem,
+            hipoteses_descartadas: r.hipoteses_descartadas,
           },
           cartoes: [cartaoConcluida, { tipo: "comparacao", cenarios }],
           avisos,
@@ -379,17 +348,16 @@ export function criarExecutores(): Executores {
           return erro("OPERACAO_JA_EXECUTADA", textos.erros.OPERACAO_JA_EXECUTADA, ["operacao_id"]);
         }
         const pend = ctx.estado.operacao_pendente;
-        if (!pend || pend.id !== operacao_id) {
-          return erro("OPERACAO_EXPIRADA", textos.erros.OPERACAO_EXPIRADA, ["operacao_id"]);
-        }
-        const visao = obterVisaoExemplo(ctx.estado);
-        const pos = visao.posicoes.find((p) => p.id === pend.destino);
-        const nomeDestino = pos?.nome ?? pend.destino;
-        const mensagem = textos.mensagem_operacao_cancelada(pend.valor_centavos, nomeDestino);
-        const novoEstado: EstadoSessao = { ...ctx.estado, operacao_pendente: null };
+        const r = cancelarMovimentacao(ctx.estado, operacao_id);
+        if (!r.ok) return r;
+
+        const rPersona = carregarPersona(ctx.estado.persona_id);
+        const pos = rPersona.ok ? rPersona.persona.posicoes.find((p) => p.id === pend?.destino) : undefined;
+        const nomeDestino = pos?.nome ?? pend?.destino ?? "";
+        const mensagem = textos.mensagem_operacao_cancelada(pend?.valor_centavos ?? 0, nomeDestino);
         return {
           ok: true,
-          estado: novoEstado,
+          estado: r.estado,
           resultado: { operacao_id, cancelada: true, mensagem },
           cartoes: [],
           avisos: [],
