@@ -579,7 +579,10 @@ export function textoContemEquivalente(texto: string, trecho: string): boolean {
   const data = /^(\d{1,2})\/(\d{1,2})$/.exec(trecho);
   if (data) {
     const [dia, mes] = [Number(data[1]), Number(data[2])];
-    return new RegExp(`(?<!\\d)0?${dia}\\/0?${mes}(?!\\d)`).test(texto);
+    const dd = String(dia).padStart(2, "0");
+    const mm = String(mes).padStart(2, "0");
+    // DD/MM (com ou sem zero, com ou sem ano) ou ISO AAAA-MM-DD do mesmo dia.
+    return new RegExp(`(?<!\\d)0?${dia}\\/0?${mes}(?!\\d)|\\b\\d{4}-${mm}-${dd}\\b`).test(texto);
   }
   if (/^\d{1,3}(\.\d{3})*$|^\d{4,}$/.test(trecho)) {
     const digitos = trecho.replace(/\./g, "");

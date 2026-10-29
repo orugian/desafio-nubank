@@ -472,6 +472,9 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     expect(textoContemEquivalente("vence em 01/11", "1/11")).toBe(true);
     expect(textoContemEquivalente("vence em 15/11/2026", "15/11")).toBe(true);
     expect(textoContemEquivalente("vence em 15/12", "15/11")).toBe(false);
+    expect(textoContemEquivalente("vencimento em 2026-11-05", "05/11")).toBe(true);
+    expect(textoContemEquivalente("vencimento em 2026-11-15", "05/11")).toBe(false);
+    expect(textoContemEquivalente("vencimento em 2026-05-11", "05/11")).toBe(false);
     expect(textoContemEquivalente("faltam R$ 2.000,00", "200")).toBe(false);
     expect(textoContemEquivalente("faltam R$ 200,00", "200")).toBe(true);
     expect(textoContemEquivalente("saldo R$ 18.000,00", "1.800")).toBe(false);
