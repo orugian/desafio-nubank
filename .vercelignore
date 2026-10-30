@@ -1,0 +1,17 @@
+# Pacote de deploy enxuto: a app roda com src/, dados/, public/ e instrucoes.md.
+# Artefatos de avaliação, testes e capturas locais não são importados em runtime.
+avaliacao/
+e2e/
+testes/
+docs/
+scripts/
+.taste-skill/
+test-results/
+playwright-report/
+playwright.config.ts
+playwright.prod.config.ts
+playwright.visual.config.ts
+vitest.config.ts
+vitest.setup.ts
+.next/
+node_modules/
