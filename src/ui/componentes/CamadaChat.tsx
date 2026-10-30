@@ -104,7 +104,7 @@ export function CamadaChat({
           >
             <X className="w-6 h-6" />
           </button>
-          <h2 className="text-base font-semibold text-[#111111]">Chat</h2>
+          <h2 className="text-base font-semibold text-[#111111]">Nina</h2>
           <button
             type="button"
             aria-label="Nova conversa"
@@ -126,10 +126,11 @@ export function CamadaChat({
           {estado.conversa.length === 0 && !enviando && (
             <div className="flex flex-col gap-3 mt-2">
               <div className="bg-white rounded-2xl p-4 text-sm text-[#111111] max-w-[85%] self-start shadow-2xs">
-                <div className="font-semibold text-xs text-[#820AD1] mb-1">Assistente NewAI</div>
+                <div className="font-semibold text-xs text-[#820AD1] mb-1">Nina · assistente virtual</div>
                 <p>
-                  Olá! Posso simular decisões financeiras sobre seus compromissos e investimentos
-                  fictícios até 29/11/2026.
+                  Oi! Eu sou a Nina, assistente virtual do Nubank. Posso te ajudar a entender seus gastos,
+                  simular compras e parcelamentos, planejar quanto guardar e acompanhar seus investimentos —
+                  tudo com dados fictícios até 29/11/2026.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -181,7 +182,7 @@ export function CamadaChat({
                 className="self-start w-full max-w-[92%] flex flex-col gap-1"
               >
                 <div className="rounded-2xl rounded-bl-xs bg-white text-[#111111] px-4 py-3 text-sm shadow-2xs">
-                  <div className="font-semibold text-xs text-[#820AD1] mb-1">Assistente NewAI</div>
+                  <div className="font-semibold text-xs text-[#820AD1] mb-1">Nina · assistente virtual</div>
                   <TextoMarkdown texto={m.texto} />
                 </div>
                 {(m.cartoes as CartaoResposta[]).map((c, idx) => (

@@ -34,7 +34,7 @@ export const textos = {
     "CPF, cartão, e-mail e telefone são recusados antes do modelo.",
   ],
 
-  sugestoes_chat: ["Posso separar dinheiro?", "Simular um imprevisto", "Entender meus recursos disponíveis"],
+  sugestoes_chat: ["Quem é você?", "Simular uma compra parcelada", "Quanto gastei por mês?"],
 
   nao_disponivel: "não disponível no protótipo",
 
