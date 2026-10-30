@@ -42,6 +42,7 @@ describe("B2 · 4: consultarHistorico (H-01 a H-04, CR-17k)", () => {
     expect(r.quantidade).toBe(2);
     expect(r.total_saidas_centavos).toBe(16000);
     expect(r.total_entradas_centavos).toBe(0);
+    expect(r.saldo_centavos).toBe(-16000);
     expect(r.grupos).toEqual([]);
     expect(r.itens.map((i) => [i.data, i.descricao, i.valor_centavos])).toEqual([
       ["2026-09-18", "Delivery Japonês", 9600],
@@ -79,6 +80,7 @@ describe("B2 · 4: consultarHistorico (H-01 a H-04, CR-17k)", () => {
       quantidade: 6,
       total_saidas_centavos: 660000,
       total_entradas_centavos: 0,
+      saldo_centavos: -660000,
     });
 
     const porMes = consultarHistorico(p2, { agrupar_por: "mes" });
@@ -91,5 +93,31 @@ describe("B2 · 4: consultarHistorico (H-01 a H-04, CR-17k)", () => {
     if (!porSemana.ok) throw new Error(porSemana.erro.mensagem);
     esquemaResultadoHistorico.parse(porSemana);
     expect(porSemana.grupos.map((g) => g.chave)).toEqual(["2026-07-27", "2026-08-03"]);
+  });
+
+  test("H-02: para agrupar_por 'mes', todo grupo tem saldo_centavos === total_entradas_centavos - total_saidas_centavos e a soma dos saldos é igual ao saldo_centavos de topo", () => {
+    const p2 = obterP2();
+    const r2 = consultarHistorico(p2, { agrupar_por: "mes" });
+    if (!r2.ok) throw new Error(r2.erro.mensagem);
+    esquemaResultadoHistorico.parse(r2);
+    expect(r2.grupos.length).toBeGreaterThan(0);
+    for (const g of r2.grupos) {
+      expect(g.saldo_centavos).toBe(g.total_entradas_centavos - g.total_saidas_centavos);
+    }
+    const somaDosSaldos2 = r2.grupos.reduce((acc, g) => acc + g.saldo_centavos, 0);
+    expect(somaDosSaldos2).toBe(r2.saldo_centavos);
+    expect(r2.saldo_centavos).toBe(r2.total_entradas_centavos - r2.total_saidas_centavos);
+
+    const p3 = obterP3();
+    const r3 = consultarHistorico(p3, { agrupar_por: "mes" });
+    if (!r3.ok) throw new Error(r3.erro.mensagem);
+    esquemaResultadoHistorico.parse(r3);
+    expect(r3.grupos.length).toBeGreaterThan(0);
+    for (const g of r3.grupos) {
+      expect(g.saldo_centavos).toBe(g.total_entradas_centavos - g.total_saidas_centavos);
+    }
+    const somaDosSaldos3 = r3.grupos.reduce((acc, g) => acc + g.saldo_centavos, 0);
+    expect(somaDosSaldos3).toBe(r3.saldo_centavos);
+    expect(r3.saldo_centavos).toBe(r3.total_entradas_centavos - r3.total_saidas_centavos);
   });
 });

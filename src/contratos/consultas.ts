@@ -128,6 +128,7 @@ export const esquemaResultadoHistorico = z.object({
   quantidade: z.int().nonnegative(),
   total_saidas_centavos: esquemaCentavosNaoNegativos,
   total_entradas_centavos: esquemaCentavosNaoNegativos,
+  saldo_centavos: esquemaCentavos,
   /** Vazio quando `agrupar_por` ausente ou `nenhum`. Semana: chave = segunda-feira (H-04). */
   grupos: z.array(
     z.object({
@@ -136,6 +137,7 @@ export const esquemaResultadoHistorico = z.object({
       quantidade: z.int().nonnegative(),
       total_saidas_centavos: esquemaCentavosNaoNegativos,
       total_entradas_centavos: esquemaCentavosNaoNegativos,
+      saldo_centavos: esquemaCentavos,
     }),
   ),
   /** Até 20 itens mais recentes. */

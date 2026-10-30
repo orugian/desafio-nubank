@@ -111,7 +111,14 @@ export function consultarHistorico(persona: Persona, filtroBruto: FiltroHistoric
   const agrupar = filtro.agrupar_por ?? "nenhum";
   const gruposMapa = new Map<
     string,
-    { chave: string; rotulo: string; quantidade: number; total_saidas_centavos: number; total_entradas_centavos: number }
+    {
+      chave: string;
+      rotulo: string;
+      quantidade: number;
+      total_saidas_centavos: number;
+      total_entradas_centavos: number;
+      saldo_centavos: number;
+    }
   >();
 
   if (agrupar !== "nenhum") {
@@ -131,12 +138,20 @@ export function consultarHistorico(persona: Persona, filtroBruto: FiltroHistoric
       }
       let g = gruposMapa.get(chave);
       if (!g) {
-        g = { chave, rotulo, quantidade: 0, total_saidas_centavos: 0, total_entradas_centavos: 0 };
+        g = {
+          chave,
+          rotulo,
+          quantidade: 0,
+          total_saidas_centavos: 0,
+          total_entradas_centavos: 0,
+          saldo_centavos: 0,
+        };
         gruposMapa.set(chave, g);
       }
       g.quantidade += 1;
       if (l.tipo === "saida") g.total_saidas_centavos += l.valor_centavos;
       else g.total_entradas_centavos += l.valor_centavos;
+      g.saldo_centavos = g.total_entradas_centavos - g.total_saidas_centavos;
     }
   }
 
@@ -155,6 +170,7 @@ export function consultarHistorico(persona: Persona, filtroBruto: FiltroHistoric
     quantidade: filtrados.length,
     total_saidas_centavos: totalSaidas,
     total_entradas_centavos: totalEntradas,
+    saldo_centavos: totalEntradas - totalSaidas,
     grupos,
     itens,
   };

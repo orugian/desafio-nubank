@@ -25931,6 +25931,7 @@
             "quantidade": 2,
             "total_saidas_centavos": 16000,
             "total_entradas_centavos": 0,
+            "saldo_centavos": -16000,
             "grupos": [],
             "itens": [
               {
@@ -25955,6 +25956,7 @@
             "valores_formatados": {
               "total_saidas_centavos": "R$ 160,00",
               "total_entradas_centavos": "R$ 0,00",
+              "saldo_centavos": "-R$ 160,00",
               "itens[0].valor_centavos": "R$ 96,00",
               "itens[1].valor_centavos": "R$ 64,00"
             }
@@ -26057,6 +26059,7 @@
                         "quantidade": 2,
                         "total_saidas_centavos": 16000,
                         "total_entradas_centavos": 0,
+                        "saldo_centavos": -16000,
                         "grupos": [],
                         "itens": [
                           {
@@ -26102,6 +26105,7 @@
                         "quantidade": 2,
                         "total_saidas_centavos": 16000,
                         "total_entradas_centavos": 0,
+                        "saldo_centavos": -16000,
                         "grupos": [],
                         "itens": [
                           {
@@ -26126,6 +26130,7 @@
                         "valores_formatados": {
                           "total_saidas_centavos": "R$ 160,00",
                           "total_entradas_centavos": "R$ 0,00",
+                          "saldo_centavos": "-R$ 160,00",
                           "itens[0].valor_centavos": "R$ 96,00",
                           "itens[1].valor_centavos": "R$ 64,00"
                         }
@@ -26160,6 +26165,7 @@
                   "quantidade": 2,
                   "total_saidas_centavos": 16000,
                   "total_entradas_centavos": 0,
+                  "saldo_centavos": -16000,
                   "grupos": [],
                   "itens": [
                     {
@@ -26206,6 +26212,7 @@
                   "quantidade": 2,
                   "total_saidas_centavos": 16000,
                   "total_entradas_centavos": 0,
+                  "saldo_centavos": -16000,
                   "grupos": [],
                   "itens": [
                     {
@@ -26230,6 +26237,7 @@
                   "valores_formatados": {
                     "total_saidas_centavos": "R$ 160,00",
                     "total_entradas_centavos": "R$ 0,00",
+                    "saldo_centavos": "-R$ 160,00",
                     "itens[0].valor_centavos": "R$ 96,00",
                     "itens[1].valor_centavos": "R$ 64,00"
                   }

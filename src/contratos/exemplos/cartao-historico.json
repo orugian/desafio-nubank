@@ -16,6 +16,7 @@
       "quantidade": 4,
       "total_saidas_centavos": 24040,
       "total_entradas_centavos": 0,
+      "saldo_centavos": -24040,
       "grupos": [],
       "itens": [
         {
