@@ -138,6 +138,9 @@ export const esquemasArgumentos = {
       juros_am_pct: esquemaTaxaPctTexto
         .optional()
         .describe("Juros ao mês em percentual informados pela pessoa (ex.: \"1.99\"); \"0\" = sem juros. Sem ele usa a premissa do protótipo (2,99% a.m.)."),
+      juros_aa_pct: esquemaTaxaPctTexto
+        .optional()
+        .describe("Juros AO ANO em percentual quando a pessoa informar taxa anual (ex.: \"18\"); o motor converte para taxa mensal equivalente. Não envie junto com juros_am_pct."),
       desconto_a_vista_pct: esquemaTaxaPctTexto
         .optional()
         .describe("Desconto para pagamento à vista em percentual (0 a 50), se a pessoa informar. Ex.: \"5\"."),

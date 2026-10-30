@@ -571,6 +571,7 @@ export function criarExecutores(opcoes: { buscarCotacao?: typeof buscarCotacao }
           parcelas_max: v.argumentos.parcelas_max,
           opcoes_parcelas: v.argumentos.opcoes_parcelas,
           juros_am_pct: v.argumentos.juros_am_pct,
+          juros_aa_pct: v.argumentos.juros_aa_pct,
           desconto_a_vista_pct: v.argumentos.desconto_a_vista_pct,
         });
         if (!r.ok) return r;

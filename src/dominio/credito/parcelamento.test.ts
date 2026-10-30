@@ -153,6 +153,8 @@ describe("simularParcelamento", () => {
       [{ ...base, entrada_centavos: 150_000 }, "ARGUMENTOS_INVALIDOS", "entrada"],
       [{ ...base, juros_am_pct: "30.01" }, "ARGUMENTOS_INVALIDOS", "juros_am_pct"],
       [{ ...base, juros_am_pct: "abc" }, "ARGUMENTOS_INVALIDOS", "juros_am_pct"],
+      [{ ...base, juros_aa_pct: "2000.01" }, "ARGUMENTOS_INVALIDOS", "juros_aa_pct"],
+      [{ ...base, juros_aa_pct: "abc" }, "ARGUMENTOS_INVALIDOS", "juros_aa_pct"],
       [{ ...base, opcoes_parcelas: [] }, "ARGUMENTOS_INVALIDOS", "opcoes_parcelas"],
       [{ ...base, opcoes_parcelas: [12, 12] }, "ARGUMENTOS_INVALIDOS", "opcoes_parcelas"],
       [{ ...base, opcoes_parcelas: [0] }, "ARGUMENTOS_INVALIDOS", "opcoes_parcelas"],
@@ -170,8 +172,9 @@ describe("simularParcelamento", () => {
       expect(r.erro.codigo).toBe(codigo);
       expect(r.erro.campos).toContain(campo);
     }
-    // Juros de exatamente 30% é aceito.
+    // Juros de exatamente 30% é aceito; anual de 2000% é aceito.
     expect(simularParcelamento(P1, estado, { ...base, juros_am_pct: "30" }).ok).toBe(true);
+    expect(simularParcelamento(P1, estado, { ...base, juros_aa_pct: "2000" }).ok).toBe(true);
   });
 
   test("(e) persona sem renda → comprometimento null; persona sem cartão também simula", () => {
@@ -248,5 +251,35 @@ describe("simularParcelamento", () => {
     for (const p of r.premissas) {
       expect(p).not.toMatch(/\d{4}-\d{2}-\d{2}/);
     }
+  });
+
+  test("(k) taxa anual de 18% a.a. converte para 1,3888% a.m. reprodutível, confere PMT e passa no esquema", () => {
+    const pedido = { valor_centavos: 6_000_000, parcelas_max: 60, juros_aa_pct: "18" };
+    const r = simularParcelamento(P1, estado, pedido);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.juros_am_pct).toBe("1.3888");
+    expect(r.juros_aa_pct).toBe("18.00");
+    const o60 = r.opcoes.find((o) => o.parcelas === 60)!;
+    expect(o60.parcela_centavos).toBe(pmt(6_000_000, "1.3888", 60));
+    expect(r.premissas.some((p) => p.includes("18,00% a.a."))).toBe(true);
+
+    const { ok: _, ...resultado } = r;
+    void _;
+    expect(() => esquemaResultadoSimulacaoParcelamento.parse(resultado)).not.toThrow();
+  });
+
+  test("(l) juros_am_pct e juros_aa_pct juntos devolvem ARGUMENTOS_INVALIDOS com os dois campos", () => {
+    const r = simularParcelamento(P1, estado, {
+      valor_centavos: 6_000_000,
+      parcelas_max: 60,
+      juros_am_pct: "1.5",
+      juros_aa_pct: "18",
+    });
+    expect(r.ok).toBe(false);
+    if (r.ok) return;
+    expect(r.erro.codigo).toBe("ARGUMENTOS_INVALIDOS");
+    expect(r.erro.mensagem).toBe("Informe juros_am_pct ou juros_aa_pct, não os dois.");
+    expect(r.erro.campos).toEqual(["juros_am_pct", "juros_aa_pct"]);
   });
 });

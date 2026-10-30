@@ -170,6 +170,7 @@ export const esquemaResultadoSimulacaoParcelamento = z.object({
   desconto_a_vista_pct: esquemaTaxaPctTexto,
   a_vista_centavos: esquemaCentavosPositivos,
   juros_am_pct: esquemaTaxaPctTexto,
+  juros_aa_pct: esquemaTaxaPctTexto.optional(),
   juros_origem: z.enum(["premissa", "informado"]),
   cdi_mensal_pct: esquemaPercentualTexto,
   cdi_data_ref: esquemaData,
