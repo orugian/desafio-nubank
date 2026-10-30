@@ -57,6 +57,38 @@ describe("carregarPersona com a P1 mínima", () => {
       expect(r.ok ? "" : JSON.stringify(r.erro)).toBe("");
     }
   });
+
+  test("T8 · P1, P2 e P3 reais carregam e têm renda com os valores especificados", () => {
+    const r1 = carregarPersona("p1");
+    expect(r1.ok).toBe(true);
+    if (!r1.ok) throw new Error("p1");
+    expect(r1.persona.renda).toEqual({
+      tipo: "clt",
+      bruto_mensal_centavos: 340000,
+      liquido_mensal_centavos: 300000,
+      descricao: "Salário CLT; líquido de R$ 3.000,00 após INSS e IR retido",
+    });
+
+    const r2 = carregarPersona("p2");
+    expect(r2.ok).toBe(true);
+    if (!r2.ok) throw new Error("p2");
+    expect(r2.persona.renda).toEqual({
+      tipo: "autonomo",
+      bruto_mensal_centavos: 238333,
+      liquido_mensal_centavos: 238333,
+      descricao: "Serviços a clientes pessoa física por Pix; média dos últimos 3 meses",
+    });
+
+    const r3 = carregarPersona("p3");
+    expect(r3.ok).toBe(true);
+    if (!r3.ok) throw new Error("p3");
+    expect(r3.persona.renda).toEqual({
+      tipo: "clt",
+      bruto_mensal_centavos: 500000,
+      liquido_mensal_centavos: 420000,
+      descricao: "Salário CLT; líquido de R$ 4.200,00 após INSS e IR retido",
+    });
+  });
 });
 
 describe("invariantes aplicáveis à P1 mínima (spec §4.2)", () => {
@@ -174,6 +206,26 @@ describe("B2 · 2: invariantes 1 a 11 da spec §4.2 nas 3 personas geradas", () 
     const p2 = lerPersona("p2");
     p2.historico = p2.historico.filter((l: { posicao_id?: string }) => l.posicao_id !== "INV5");
     expect(numeros(p2)).toContain(8);
+  });
+
+  test("11: renda com campo extra é rejeitado", () => {
+    const p = lerPersona("p1");
+    p.renda.campo_extra = "invalido";
+    expect(numeros(p)).toContain(11);
+  });
+
+  test("12: invariante 12 dispara com líquido > bruto", () => {
+    const p = lerPersona("p1");
+    p.renda.bruto_mensal_centavos = 200000;
+    p.renda.liquido_mensal_centavos = 300000;
+    expect(numeros(p)).toContain(12);
+  });
+
+  test("12: invariante 12 dispara com líquido diferente da média do histórico", () => {
+    const p1 = lerPersona("p1");
+    // Média real é 300000; alteramos o líquido para 250000 (menor que o bruto 340000, mas diferente da média 300000)
+    p1.renda.liquido_mensal_centavos = 250000;
+    expect(numeros(p1)).toContain(12);
   });
 });
 

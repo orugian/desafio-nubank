@@ -1,7 +1,7 @@
 {
   "exemplo": true,
   "esquema": "CartaoResposta",
-  "descricao": "IR estimado de investimentos e IRPF da P1 (gerado pelo motor)",
+  "descricao": "IR estimado de investimentos e IRPF da P1 pela renda do cadastro (gerado pelo motor)",
   "dados": {
     "tipo": "imposto_renda",
     "resultado": {
@@ -83,20 +83,20 @@
         "total_ir_estimado_centavos": 3704
       },
       "irpf": {
-        "origem": "historico",
+        "origem": "cadastro",
         "tipo_renda": "salario",
-        "rendimento_mensal_centavos": 300000,
-        "meses_base": 3,
-        "rendimento_anual_centavos": 3600000,
-        "desconto_simplificado_centavos": 720000,
-        "base_calculo_centavos": 2880000,
-        "imposto_tabela_centavos": 0,
-        "reducao_centavos": 0,
+        "rendimento_mensal_centavos": 340000,
+        "meses_base": 0,
+        "rendimento_anual_centavos": 4080000,
+        "desconto_simplificado_centavos": 816000,
+        "base_calculo_centavos": 3264000,
+        "imposto_tabela_centavos": 26208,
+        "reducao_centavos": 26208,
         "imposto_devido_centavos": 0,
         "mensal": {
-          "base_centavos": 239280,
-          "imposto_tabela_centavos": 0,
-          "reducao_centavos": 0,
+          "base_centavos": 279280,
+          "imposto_tabela_centavos": 2730,
+          "reducao_centavos": 2730,
           "imposto_centavos": 0
         },
         "retido_ou_recolhido_anual_centavos": 0,
@@ -109,7 +109,7 @@
           "desconto simplificado",
           "sem dependentes, deduções ou outros rendimentos",
           "tabelas de 2026 da Receita Federal e redução da Lei 15.270/2025",
-          "renda estimada pela média do histórico de 3 meses"
+          "renda bruta do cadastro da persona"
         ]
       },
       "fontes": [

@@ -102,8 +102,9 @@ export function estimarImpostoRenda(
   );
   const temReceitaHistorico = entradasReceita.length > 0;
   const temRendaInformada = pedido.rendimento_mensal_centavos !== undefined;
+  const temRendaCadastro = persona.renda !== undefined;
 
-  if (escopo === "irpf" && !temReceitaHistorico && !temRendaInformada) {
+  if (escopo === "irpf" && !temReceitaHistorico && !temRendaInformada && !temRendaCadastro) {
     return erro("ARGUMENTOS_INVALIDOS", textos.erros.ARGUMENTOS_INVALIDOS, ["rendimento_mensal"]);
   }
 
@@ -393,8 +394,8 @@ export function estimarImpostoRenda(
   // -------------------------------------------------------------------------
   let irpfObj: Irpf | null = null;
 
-  if (escopo !== "investimentos" && (temReceitaHistorico || temRendaInformada)) {
-    let origem: "historico" | "informado";
+  if (escopo !== "investimentos" && (temReceitaHistorico || temRendaInformada || temRendaCadastro)) {
+    let origem: "historico" | "informado" | "cadastro";
     let rendimento_mensal_centavos: number;
     let meses_base: number;
     let tipo_renda: "salario" | "autonomo";
@@ -407,6 +408,11 @@ export function estimarImpostoRenda(
         (l) => l.tipo === "entrada" && l.meio === "salario",
       );
       tipo_renda = temSalarioHistorico ? "salario" : "autonomo";
+    } else if (persona.renda !== undefined) {
+      origem = "cadastro";
+      rendimento_mensal_centavos = persona.renda.bruto_mensal_centavos;
+      meses_base = 0;
+      tipo_renda = persona.renda.tipo === "clt" ? "salario" : "autonomo";
     } else {
       origem = "historico";
       const mesesDistintos = new Set(entradasReceita.map((l) => l.data.slice(0, 7)));
@@ -461,6 +467,8 @@ export function estimarImpostoRenda(
           ? "renda estimada pela média do histórico de 3 meses"
           : `renda estimada pela média do histórico de ${meses_base} meses`,
       );
+    } else if (origem === "cadastro") {
+      premissas.push("renda bruta do cadastro da persona");
     }
 
     irpfObj = {

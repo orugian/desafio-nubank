@@ -256,6 +256,31 @@ def conferir_persona(
                 }
             )
 
+    # 12. Invariante 12: Renda
+    if "renda" in persona and persona["renda"]:
+        renda = persona["renda"]
+        bruto = int(renda["bruto_mensal_centavos"])
+        liquido = int(renda["liquido_mensal_centavos"])
+        if liquido > bruto:
+            erros.append(f"{pid}: renda liquido {liquido} > bruto {bruto}")
+        entradas_rec = [
+            l
+            for l in persona["historico"]
+            if l.get("tipo") == "entrada" and l.get("categoria") == "receitas"
+        ]
+        if entradas_rec:
+            meses_distintos = {l["data"][:7] for l in entradas_rec}
+            soma_rec = sum(int(l["valor_centavos"]) for l in entradas_rec)
+            media_rec = int(
+                (Decimal(soma_rec) / Decimal(len(meses_distintos))).quantize(
+                    Decimal("1"), rounding=ROUND_HALF_UP
+                )
+            )
+            if media_rec != liquido:
+                erros.append(
+                    f"{pid}: renda liquido {liquido} != media receitas {media_rec}"
+                )
+
     resumo = {
         "saldo_inicio_hoje_centavos": saldo_recalculado,
         "gasto_diario_centavos": gasto_diario_recalc,

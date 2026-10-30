@@ -311,6 +311,30 @@ export function verificarInvariantes(bruta: unknown): ViolacaoInvariante[] {
     }
   }
 
+  // 12. Se renda existir: líquido <= bruto; e se houver entradas com categoria receitas no histórico,
+  // média mensal (soma ÷ meses distintos AAAA-MM, meio para cima) deve ser igual a liquido_mensal_centavos.
+  if (p.renda) {
+    if (p.renda.liquido_mensal_centavos > p.renda.bruto_mensal_centavos) {
+      v.push({
+        invariante: 12,
+        mensagem: `renda: líquido mensal ${p.renda.liquido_mensal_centavos} > bruto mensal ${p.renda.bruto_mensal_centavos}`,
+      });
+    }
+    const entradasReceita = p.historico.filter((l) => l.tipo === "entrada" && l.categoria === "receitas");
+    if (entradasReceita.length > 0) {
+      const mesesDistintos = new Set(entradasReceita.map((l) => l.data.slice(0, 7)));
+      const numMeses = mesesDistintos.size;
+      const somaReceitas = entradasReceita.reduce((s, l) => s + l.valor_centavos, 0);
+      const media = new Decimal(somaReceitas).div(numMeses).toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toNumber();
+      if (media !== p.renda.liquido_mensal_centavos) {
+        v.push({
+          invariante: 12,
+          mensagem: `renda: líquido mensal ${p.renda.liquido_mensal_centavos} ≠ média mensal das receitas no histórico ${media} (soma ${somaReceitas} em ${numMeses} meses)`,
+        });
+      }
+    }
+  }
+
   return v;
 }
 

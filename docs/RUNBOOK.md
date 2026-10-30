@@ -136,6 +136,7 @@ O [modelo público de variáveis](<../.env.example>) é a referência dos nomes,
 | `NEXT_PUBLIC_MARCA` | `neutra` por padrão aqui; não habilita publicação |
 | `CODIGO_ACESSO` | Restrito ao fluxo público P1; não imprimir nem publicar |
 | `BRAPI_TOKEN`, `COINGECKO_API_KEY` | Coleta/mercado; não necessários aos testes com gravados; não refazer coletas |
+| `MERCADO_AO_VIVO` | Padrão ligado: cotações ao vivo (BCB, brapi, CoinGecko) com timeout de 3 s e fallback gravado (aviso F-07). `0` desliga; o Vitest força `0` e nunca faz rede. `BRAPI_TOKEN` vai só no cabeçalho |
 | `B7_REAL` | `0` mantém o teste real pulado; `1` pode gerar custo e exige autorização específica |
 | `B7_PROVEDOR_REAL` | `openrouter` no teste real desse provedor; sem isso, o teste espera NVIDIA |
 | `PORTA_E2E` | `3101` S1; não ocupar `3102` da S2 |
