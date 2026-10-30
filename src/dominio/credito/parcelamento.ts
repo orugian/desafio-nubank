@@ -28,7 +28,7 @@ import {
 // - CET mensal         = c tal que financiado = Σ parcela_k ÷ (1 + c)^k (bisseção em [0, 1])
 
 const D = Decimal.clone({ precision: 50, rounding: Decimal.ROUND_HALF_UP });
-const REGEX_TAXA = /^\d{1,3}(\.\d{1,4})?$/;
+const REGEX_TAXA = /^\d{1,4}(\.\d{1,4})?$/;
 const DIAS_UTEIS_MES = 21;
 const OPCOES_PADRAO_MAX = [6, 12, 18, 24, 36, 48, 60, 72];
 const OPCOES_SEM_MAX = [3, 6, 10, 12];
@@ -40,6 +40,7 @@ export type PedidoParcelamento = {
   parcelas_max?: number;
   opcoes_parcelas?: number[];
   juros_am_pct?: string;
+  juros_aa_pct?: string;
   desconto_a_vista_pct?: string;
 };
 
@@ -166,13 +167,32 @@ export function simularParcelamento(
     }
   }
 
+  if (pedido.juros_am_pct !== undefined && pedido.juros_aa_pct !== undefined) {
+    return erro(
+      "ARGUMENTOS_INVALIDOS",
+      "Informe juros_am_pct ou juros_aa_pct, não os dois.",
+      ["juros_am_pct", "juros_aa_pct"],
+    );
+  }
+
   let jurosPublicado: string;
   let juros_origem: "premissa" | "informado";
+  let juros_aa_publicado: string | undefined;
   if (pedido.juros_am_pct !== undefined) {
     if (!REGEX_TAXA.test(pedido.juros_am_pct) || new D(pedido.juros_am_pct).gt(30)) {
       return erro("ARGUMENTOS_INVALIDOS", "juros_am_pct deve estar entre 0 e 30 (% ao mês).", ["juros_am_pct"]);
     }
     jurosPublicado = normalizarPct(pedido.juros_am_pct);
+    juros_origem = "informado";
+  } else if (pedido.juros_aa_pct !== undefined) {
+    if (!REGEX_TAXA.test(pedido.juros_aa_pct) || new D(pedido.juros_aa_pct).gt(2000)) {
+      return erro("ARGUMENTOS_INVALIDOS", "juros_aa_pct deve estar entre 0 e 2000 (% ao ano).", ["juros_aa_pct"]);
+    }
+    juros_aa_publicado = normalizarPct(pedido.juros_aa_pct);
+    const aa = new D(pedido.juros_aa_pct);
+    const i_m = new D(1).plus(aa.div(100)).pow(new D(1).div(12)).minus(1);
+    const i_m_pct = i_m.times(100);
+    jurosPublicado = i_m_pct.toDecimalPlaces(4, Decimal.ROUND_HALF_UP).toFixed(4);
     juros_origem = "informado";
   } else {
     jurosPublicado = PREMISSAS_CREDITO.juros_parcelamento_am_pct;
@@ -263,14 +283,17 @@ export function simularParcelamento(
 
   const cdi_mensal_pct = pct2(cdiMensal.times(100));
   const jurosTexto = jurosPublicado.replace(".", ",");
+  const jurosAaTexto = juros_aa_publicado?.replace(".", ",");
   const origemTexto = juros_origem === "premissa" ? "premissa do protótipo" : "informado";
   const cdiTexto = cdi_mensal_pct.replace(".", ",");
   const rotulo = `simulação; juros de ${jurosTexto}% a.m. (${origemTexto}), sem IOF e tarifas; custo de oportunidade pelo CDI de ${cdiTexto}% a.m. (bruto); nada foi contratado`;
 
   const premissas = [
-    juros_origem === "premissa"
-      ? `juros de ${jurosTexto}% a.m. é premissa do protótipo, não a taxa da loja`
-      : `juros de ${jurosTexto}% a.m. informado pela pessoa`,
+    juros_aa_publicado !== undefined
+      ? `juros de ${jurosAaTexto}% a.a. informado pela pessoa, convertido para ${jurosTexto}% a.m. equivalente (juros compostos)`
+      : juros_origem === "premissa"
+        ? `juros de ${jurosTexto}% a.m. é premissa do protótipo, não a taxa da loja`
+        : `juros de ${jurosTexto}% a.m. informado pela pessoa`,
     i.isZero()
       ? "sem juros: parcelas iguais; a última absorve a diferença de arredondamento"
       : "parcelas mensais fixas (tabela Price); a última fecha o saldo e pode variar alguns centavos",
@@ -287,6 +310,7 @@ export function simularParcelamento(
     desconto_a_vista_pct: descontoPublicado,
     a_vista_centavos,
     juros_am_pct: jurosPublicado,
+    ...(juros_aa_publicado !== undefined ? { juros_aa_pct: juros_aa_publicado } : {}),
     juros_origem,
     cdi_mensal_pct,
     cdi_data_ref: estado.mercado.cdi.data_ref,

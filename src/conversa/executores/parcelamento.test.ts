@@ -89,6 +89,16 @@ describe("executores simular_parcelamento e calcular_valores", () => {
     expect((r.resultado.valores_formatados as Record<string, string>).valor_centavos).toBe("R$ 1.899,90");
   });
 
+  test("simular_parcelamento com taxa anual (juros_aa_pct: \"18\") converte para taxa mensal 1.3888", async () => {
+    const r = await executores.ferramentas.simular_parcelamento(
+      { valor: "60000", parcelas_max: 60, juros_aa_pct: "18" },
+      { estado: estadoP1, mensagem_id: "m-anual" },
+    );
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.resultado.juros_am_pct).toBe("1.3888");
+  });
+
   test.each([
     [{ valor: "25000", parcelas_max: 100 }, "ARGUMENTOS_INVALIDOS", "parcelas_max"],
     [{ valor: "25000", opcoes_parcelas: [12, 12] }, "ARGUMENTOS_INVALIDOS", "opcoes_parcelas"],
