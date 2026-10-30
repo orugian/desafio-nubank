@@ -32,6 +32,7 @@ import {
   esquemaResultadoSimulacaoInvestimento,
   esquemaResultadoPixCredito,
   esquemaResultadoImpostoRenda,
+  esquemaResultadoSimulacaoParcelamento,
 } from "./extras";
 
 // ---------------------------------------------------------------------------
@@ -85,6 +86,7 @@ export const esquemaCartaoResposta = z.discriminatedUnion("tipo", [
   z.object({ tipo: z.literal("simulacao_investimento"), resultado: esquemaResultadoSimulacaoInvestimento }),
   z.object({ tipo: z.literal("pix_credito"), resultado: esquemaResultadoPixCredito }),
   z.object({ tipo: z.literal("imposto_renda"), resultado: esquemaResultadoImpostoRenda }),
+  z.object({ tipo: z.literal("simulacao_parcelamento"), resultado: esquemaResultadoSimulacaoParcelamento }),
 ]);
 export type CartaoResposta = z.infer<typeof esquemaCartaoResposta>;
 export type TipoCartao = CartaoResposta["tipo"];

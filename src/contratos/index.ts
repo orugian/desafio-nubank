@@ -31,6 +31,8 @@ import {
   esquemaResultadoSimulacaoInvestimento,
   esquemaResultadoPixCredito,
   esquemaResultadoImpostoRenda,
+  esquemaResultadoSimulacaoParcelamento,
+  esquemaResultadoCalculo,
 } from "./extras";
 
 export * from "./comum";
@@ -83,5 +85,7 @@ export const esquemas = {
   ResultadoSimulacaoInvestimento: esquemaResultadoSimulacaoInvestimento,
   ResultadoPixCredito: esquemaResultadoPixCredito,
   ResultadoImpostoRenda: esquemaResultadoImpostoRenda,
+  ResultadoSimulacaoParcelamento: esquemaResultadoSimulacaoParcelamento,
+  ResultadoCalculo: esquemaResultadoCalculo,
 } as const;
 export type NomeEsquema = keyof typeof esquemas;

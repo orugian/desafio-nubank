@@ -36,6 +36,8 @@ import { montarResultadoCotacao } from "@/dominio/investimentos/cotacao";
 import { compararInvestimento } from "@/dominio/investimentos/comparativo";
 import { simularInvestimento } from "@/dominio/investimentos/simulacao";
 import { simularPixCredito } from "@/dominio/credito";
+import { simularParcelamento } from "@/dominio/credito/parcelamento";
+import { calcularExpressao } from "@/dominio/calculo";
 import { estimarImpostoRenda } from "@/dominio/impostos";
 import cdiJson from "../../../dados/mercado/cdi.json";
 import btcJson from "../../../dados/mercado/fechamentos-BTC.json";
@@ -552,6 +554,50 @@ export function criarExecutores(opcoes: { buscarCotacao?: typeof buscarCotacao }
           estado: ctx.estado,
           resultado: resultado as unknown as Record<string, unknown>,
           cartoes: [cartao],
+          avisos: [],
+        };
+      },
+
+      async simular_parcelamento(args, ctx) {
+        const v = validarArgumentos("simular_parcelamento", args);
+        if (!v.ok) return v;
+        const rPersona = carregarPersona(ctx.estado.persona_id);
+        if (!rPersona.ok) return rPersona;
+
+        const r = simularParcelamento(rPersona.persona, ctx.estado, {
+          valor_centavos: paraCentavos(v.argumentos.valor),
+          entrada_centavos: v.argumentos.entrada !== undefined ? paraCentavos(v.argumentos.entrada) : undefined,
+          parcelas_max: v.argumentos.parcelas_max,
+          opcoes_parcelas: v.argumentos.opcoes_parcelas,
+          juros_am_pct: v.argumentos.juros_am_pct,
+          desconto_a_vista_pct: v.argumentos.desconto_a_vista_pct,
+        });
+        if (!r.ok) return r;
+
+        const { ok: _, ...resultado } = r;
+        void _;
+        const cartao: CartaoResposta = { tipo: "simulacao_parcelamento", resultado };
+        return {
+          ok: true,
+          estado: ctx.estado,
+          resultado: resultado as unknown as Record<string, unknown>,
+          cartoes: [cartao],
+          avisos: [],
+        };
+      },
+
+      async calcular_valores(args, ctx) {
+        const v = validarArgumentos("calcular_valores", args);
+        if (!v.ok) return v;
+        const r = calcularExpressao(v.argumentos.expressao);
+        if (!r.ok) return r;
+        const { ok: _, ...resultado } = r;
+        void _;
+        return {
+          ok: true,
+          estado: ctx.estado,
+          resultado: resultado as unknown as Record<string, unknown>,
+          cartoes: [],
           avisos: [],
         };
       },

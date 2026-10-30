@@ -33,6 +33,8 @@ export const NOMES_FERRAMENTAS = [
   "simular_investimento",
   "simular_pix_credito",
   "estimar_imposto_renda",
+  "simular_parcelamento",
+  "calcular_valores",
 ] as const;
 export type NomeFerramenta = (typeof NOMES_FERRAMENTAS)[number];
 
@@ -114,6 +116,43 @@ export const esquemasArgumentos = {
       .optional()
       .describe("Escopo da estimativa: tudo (padrão), investimentos ou irpf."),
     rendimento_mensal: esquemaValorTexto.optional().describe("Rendimento mensal bruto em reais para simular o IRPF."),
+  }),
+  simular_parcelamento: z
+    .object({
+      valor: esquemaValorTexto.describe(
+        "Valor total da compra em reais, texto com ponto decimal e sem separador de milhar. Ex.: \"25000\", \"1899.90\".",
+      ),
+      parcelas_max: z
+        .int()
+        .min(2)
+        .max(72)
+        .optional()
+        .describe("Máximo de parcelas oferecido (2 a 72), ex.: 48 para \"até 48x\". O motor escolhe até 6 opções até esse máximo."),
+      opcoes_parcelas: z
+        .array(z.int().min(1).max(72))
+        .min(1)
+        .max(6)
+        .refine((v) => new Set(v).size === v.length, "opcoes_parcelas sem repetição")
+        .optional()
+        .describe("Números de parcelas a comparar, quando a pessoa citar opções específicas (1 a 6 itens, 1 a 72). Ex.: [10, 12, 24]."),
+      juros_am_pct: esquemaTaxaPctTexto
+        .optional()
+        .describe("Juros ao mês em percentual informados pela pessoa (ex.: \"1.99\"); \"0\" = sem juros. Sem ele usa a premissa do protótipo (2,99% a.m.)."),
+      desconto_a_vista_pct: esquemaTaxaPctTexto
+        .optional()
+        .describe("Desconto para pagamento à vista em percentual (0 a 50), se a pessoa informar. Ex.: \"5\"."),
+      entrada: esquemaValorTexto
+        .optional()
+        .describe("Valor de entrada em reais, se houver (menor que o valor da compra). Ex.: \"5000\"."),
+    }),
+  calcular_valores: z.object({
+    expressao: z
+      .string()
+      .min(1)
+      .max(200)
+      .describe(
+        "Expressão com números (ponto decimal, sem separador de milhar), + - * / ( ) e % pós-fixo. Ex.: \"120+85.5+230\", \"25000*0.2\", \"2500*10%\".",
+      ),
   }),
 } satisfies Record<NomeFerramenta, z.ZodType>;
 

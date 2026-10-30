@@ -1,0 +1,104 @@
+{
+  "exemplo": true,
+  "esquema": "CartaoResposta",
+  "descricao": "Compra de R$ 25.000 (moto) parcelável até 48x, P1, juros de premissa, CDI gravado (gerado pelo executor real)",
+  "dados": {
+    "tipo": "simulacao_parcelamento",
+    "resultado": {
+      "valor_centavos": 2500000,
+      "entrada_centavos": 0,
+      "financiado_centavos": 2500000,
+      "desconto_a_vista_pct": "0.00",
+      "a_vista_centavos": 2500000,
+      "juros_am_pct": "2.99",
+      "juros_origem": "premissa",
+      "cdi_mensal_pct": "1.07",
+      "cdi_data_ref": "2026-10-27",
+      "renda_liquida_mensal_centavos": 300000,
+      "opcoes": [
+        {
+          "parcelas": 6,
+          "parcela_centavos": 461341,
+          "ultima_parcela_centavos": 461340,
+          "total_pago_centavos": 2768045,
+          "juros_total_centavos": 268045,
+          "custo_vs_a_vista_centavos": 268045,
+          "valor_presente_centavos": 2667088,
+          "vantagem_vs_a_vista_centavos": -167088,
+          "cet_am_pct": "2.99",
+          "comprometimento_renda_pct": "153.78"
+        },
+        {
+          "parcelas": 12,
+          "parcela_centavos": 251005,
+          "ultima_parcela_centavos": 251008,
+          "total_pago_centavos": 3012063,
+          "juros_total_centavos": 512063,
+          "custo_vs_a_vista_centavos": 512063,
+          "valor_presente_centavos": 2812277,
+          "vantagem_vs_a_vista_centavos": -312277,
+          "cet_am_pct": "2.99",
+          "comprometimento_renda_pct": "83.67"
+        },
+        {
+          "parcelas": 18,
+          "parcela_centavos": 181618,
+          "ultima_parcela_centavos": 181620,
+          "total_pago_centavos": 3269126,
+          "juros_total_centavos": 769126,
+          "custo_vs_a_vista_centavos": 769126,
+          "valor_presente_centavos": 2958718,
+          "vantagem_vs_a_vista_centavos": -458718,
+          "cet_am_pct": "2.99",
+          "comprometimento_renda_pct": "60.54"
+        },
+        {
+          "parcelas": 24,
+          "parcela_centavos": 147460,
+          "ultima_parcela_centavos": 147448,
+          "total_pago_centavos": 3539028,
+          "juros_total_centavos": 1039028,
+          "custo_vs_a_vista_centavos": 1039028,
+          "valor_presente_centavos": 3105859,
+          "vantagem_vs_a_vista_centavos": -605859,
+          "cet_am_pct": "2.99",
+          "comprometimento_renda_pct": "49.15"
+        },
+        {
+          "parcelas": 36,
+          "parcela_centavos": 114339,
+          "ultima_parcela_centavos": 114319,
+          "total_pago_centavos": 4116184,
+          "juros_total_centavos": 1616184,
+          "custo_vs_a_vista_centavos": 1616184,
+          "valor_presente_centavos": 3400061,
+          "vantagem_vs_a_vista_centavos": -900061,
+          "cet_am_pct": "2.99",
+          "comprometimento_renda_pct": "38.11"
+        },
+        {
+          "parcelas": 48,
+          "parcela_centavos": 98762,
+          "ultima_parcela_centavos": 98751,
+          "total_pago_centavos": 4740565,
+          "juros_total_centavos": 2240565,
+          "custo_vs_a_vista_centavos": 2240565,
+          "valor_presente_centavos": 3690659,
+          "vantagem_vs_a_vista_centavos": -1190659,
+          "cet_am_pct": "2.99",
+          "comprometimento_renda_pct": "32.92"
+        }
+      ],
+      "menor_custo": "a_vista",
+      "menor_parcela": 48,
+      "premissas": [
+        "juros de 2,99% a.m. é premissa do protótipo, não a taxa da loja",
+        "parcelas mensais fixas (tabela Price); a última fecha o saldo e pode variar alguns centavos",
+        "CDI mensal = (1 + CDI diário de 0,050788%)^21 − 1 (21 dias úteis por mês), CDI de 2026-10-27",
+        "valor presente: quanto as parcelas valem hoje se o dinheiro ficasse rendendo no CDI (bruto, sem IR)",
+        "sem IOF, tarifas ou seguros"
+      ],
+      "rotulo": "simulação; juros de 2,99% a.m. (premissa do protótipo), sem IOF e tarifas; custo de oportunidade pelo CDI de 1,07% a.m. (bruto); nada foi contratado"
+    }
+  }
+}

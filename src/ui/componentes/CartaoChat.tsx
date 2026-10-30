@@ -883,6 +883,117 @@ export function CartaoChat({
     );
   }
 
+  if (cartao.tipo === "simulacao_parcelamento") {
+    const { resultado } = cartao;
+    const jurosTexto = resultado.juros_am_pct.replace(".", ",");
+    const jurosOrigemTexto =
+      resultado.juros_origem === "premissa" ? "premissa do protótipo" : "informado";
+    const temDesconto = resultado.a_vista_centavos !== resultado.valor_centavos;
+    const temRenda = resultado.renda_liquida_mensal_centavos !== null;
+
+    return (
+      <div className="mt-2 min-w-0 rounded-[20px] border border-[#EEEEEE] bg-white p-4 text-xs leading-relaxed flex flex-col gap-3">
+        <div className="text-[11px] font-semibold uppercase tracking-wide text-[#5B168F]">Simulação de compra</div>
+        <div className="font-semibold text-base text-[#111111]">
+          À vista ou parcelado · {formatarReais(resultado.valor_centavos)}
+        </div>
+
+        <div className="flex flex-col gap-1.5 text-xs text-[#111111]">
+          <div className="flex flex-wrap items-baseline justify-between gap-2 rounded-xl bg-[#F3E9FB] p-3 text-sm font-semibold text-[#111111]">
+            <span>
+              À vista{temDesconto ? ` (desconto de ${formatarPercentual(resultado.desconto_a_vista_pct)})` : ""}
+              {resultado.menor_custo === "a_vista" && (
+                <span className="ml-2 text-[10px] font-medium text-[#5B168F]">menor custo na simulação</span>
+              )}
+            </span>
+            <span className="tabular-nums">{formatarReais(resultado.a_vista_centavos)}</span>
+          </div>
+          {resultado.entrada_centavos > 0 && (
+            <div className="flex justify-between">
+              <span className="text-[#646464]">Entrada (no parcelado)</span>
+              <span className="tabular-nums">{formatarReais(resultado.entrada_centavos)}</span>
+            </div>
+          )}
+          <div className="flex justify-between">
+            <span className="text-[#646464]">
+              Juros {jurosTexto}% a.m. ({jurosOrigemTexto})
+            </span>
+          </div>
+        </div>
+
+        <TabelaCompartilhada
+          caption="Opções de parcelamento simuladas"
+          itens={resultado.opcoes}
+          obterChave={(o) => String(o.parcelas)}
+          colunas={[
+            {
+              chave: "parcelas",
+              titulo: "Parcelas",
+              renderizar: (o) => (
+                <div className={resultado.menor_custo === o.parcelas ? "font-semibold" : undefined}>
+                  <div className="whitespace-nowrap">{o.parcelas}x</div>
+                  {resultado.menor_custo === o.parcelas && (
+                    <div className="text-[10px] font-medium text-[#5B168F]">menor custo na simulação</div>
+                  )}
+                </div>
+              ),
+            },
+            {
+              chave: "parcela",
+              titulo: "Parcela",
+              alinharDireita: true,
+              renderizar: (o) => <span className="whitespace-nowrap">{formatarReais(o.parcela_centavos)}</span>,
+            },
+            {
+              chave: "total",
+              titulo: "Total",
+              alinharDireita: true,
+              renderizar: (o) => (
+                <div>
+                  <div className="whitespace-nowrap">{formatarReais(o.total_pago_centavos)}</div>
+                  <div className="whitespace-nowrap text-[10px] text-[#646464]">
+                    juros {formatarReais(o.juros_total_centavos)}
+                  </div>
+                </div>
+              ),
+            },
+            {
+              chave: "valor_presente",
+              titulo: "Valor hoje (CDI)",
+              alinharDireita: true,
+              renderizar: (o) => (
+                <span className="whitespace-nowrap">{formatarReais(o.valor_presente_centavos)}</span>
+              ),
+            },
+            ...(temRenda
+              ? [
+                  {
+                    chave: "renda",
+                    titulo: "% da renda",
+                    alinharDireita: true,
+                    renderizar: (o: (typeof resultado.opcoes)[number]) =>
+                      o.comprometimento_renda_pct ? formatarPercentual(o.comprometimento_renda_pct) : "—",
+                  },
+                ]
+              : []),
+          ]}
+        />
+
+        <div className="text-[11px] text-[#646464]">
+          Valor hoje (CDI): quanto as parcelas valem hoje se o dinheiro ficasse rendendo a{" "}
+          {formatarPercentual(resultado.cdi_mensal_pct)} a.m. (CDI de {formatarData(resultado.cdi_data_ref)}, bruto).
+          {temRenda && (
+            <> % da renda: parcela sobre a renda líquida de {formatarReais(resultado.renda_liquida_mensal_centavos!)}.</>
+          )}
+        </div>
+
+        <div className="text-[11px] text-[#646464] border-t border-[#EEEEEE] pt-1 mt-0.5">
+          {resultado.rotulo}
+        </div>
+      </div>
+    );
+  }
+
   if (cartao.tipo === "erro") {
     return (
       <div className="mt-2 rounded-2xl border border-[#F65758] bg-red-50 p-3 text-xs text-red-900">

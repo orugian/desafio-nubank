@@ -63,6 +63,7 @@ describe("exemplos do contrato", () => {
         "simulacao_investimento",
         "pix_credito",
         "imposto_renda",
+        "simulacao_parcelamento",
       ]),
     );
   });

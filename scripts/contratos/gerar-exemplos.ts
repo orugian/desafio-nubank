@@ -744,7 +744,7 @@ gravar(PASTA, "falha-f05.json", "RespostaFalha", "F-05: terceira chamada ainda p
 gravar(PASTA, "falha-f06.json", "RespostaFalha", "F-06: estado adulterado com declaração em 29/10 (CR-19)", falha("F-06", "ESTADO_INVALIDO", textos.falhas["F-06"], false, v1Adulterado));
 gravar(PASTA, "falha-dominio-cr42.json", "RespostaFalha", "Domínio: confirmar OP1 já executada (CR-42); estado de entrada", falha("dominio", "OPERACAO_JA_EXECUTADA", textos.erros.OPERACAO_JA_EXECUTADA, false, v4P1));
 
-gravar(PASTA, "argumentos-ferramentas.json", "ArgumentosFerramentas", "Argumentos de exemplo de cada uma das 17 ferramentas", {
+gravar(PASTA, "argumentos-ferramentas.json", "ArgumentosFerramentas", "Argumentos de exemplo de cada uma das 19 ferramentas", {
   consultar_historico: { de: "2026-09-01", ate: "2026-09-30", tipo: "saida", categoria: "delivery" },
   consultar_cartao: {},
   consultar_investimentos: { ate_data: "2026-11-15" },
@@ -762,6 +762,8 @@ gravar(PASTA, "argumentos-ferramentas.json", "ArgumentosFerramentas", "Argumento
   simular_investimento: { valor: "1000", indexador: "cdi", cdi_pct: 100, prazo_meses: 12 },
   simular_pix_credito: { valor: "300", parcelas: 3 },
   estimar_imposto_renda: { escopo: "tudo" },
+  simular_parcelamento: { valor: "25000", parcelas_max: 48 },
+  calcular_valores: { expressao: "120+85.5+230" },
 });
 
 // Inválidos conhecidos (devem ser rejeitados).

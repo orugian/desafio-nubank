@@ -64,14 +64,14 @@ describe("argumentos das ferramentas", () => {
     expect(r.ok ? null : r.erro.codigo).toBe("ARGUMENTOS_INVALIDOS");
   });
 
-  test("as definições enviadas ao modelo têm as 16 ferramentas P0 com parâmetros de objeto", () => {
+  test("as definições enviadas ao modelo têm as 18 ferramentas P0 com parâmetros de objeto", () => {
     const defs = definicoesFerramentas();
     expect(defs.map((d) => d.function.name)).toEqual(NOMES_FERRAMENTAS.filter((n) => n !== "preparar_resumo_atendimento"));
     for (const d of defs) {
       expect(d.function.parameters.type).toBe("object");
       expect(d.function.description.length).toBeGreaterThan(10);
     }
-    expect(definicoesFerramentas({ incluir_p1: true })).toHaveLength(17);
+    expect(definicoesFerramentas({ incluir_p1: true })).toHaveLength(19);
   });
 
   test("simular_investimento sem prazo_meses e sem ate_data → ARGUMENTOS_INVALIDOS", () => {
