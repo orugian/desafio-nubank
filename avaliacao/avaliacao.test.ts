@@ -383,11 +383,12 @@ describe("B6 · Casos JSON e executor de avaliação com provedor roteirizado", 
     expect(semData.resultados[0]!.motivos).toEqual([]);
     const mesmaData = await executar({ ate_data: "2026-11-15" });
     expect(mesmaData.resultados[0]!.motivos).toEqual([]);
+    // Data inventada pelo modelo (a mensagem do CV-05 não cita data) é descartada antes da execução:
+    // a consulta usa o default do motor e o caso passa pelo efeito, não pelo argumento.
     const outraData = await executar({ ate_data: "2026-11-29" });
-    expect(outraData.resultados[0]!.aprovado).toBe(false);
-    expect(outraData.resultados[0]!.motivos).toContain(
-      "Consulta classificou até 2026-11-29, mas a data padrão do motor é 2026-11-15",
-    );
+    expect(outraData.resultados[0]!.motivos).toEqual([]);
+    const rastroOutra = outraData.resultados[0]!.rastro as Array<{ argumentos: Record<string, unknown> }>;
+    expect(rastroOutra[0]!.argumentos).not.toHaveProperty("ate_data");
   });
 
   test("21. CV-10 avalia o efeito da consulta: filtro equivalente passa, período errado falha", async () => {

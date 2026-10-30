@@ -32,6 +32,9 @@ import { resumirParcelamentos } from "@/dominio/cartao";
 import cdiJson from "../../dados/mercado/cdi.json";
 import btcJson from "../../dados/mercado/fechamentos-BTC.json";
 import petr4Json from "../../dados/mercado/fechamentos-PETR4.json";
+import { mencionaData } from "./datas-usuario";
+
+export { mencionaData } from "./datas-usuario";
 
 const contextoDominio: Contexto = {
   series: {
@@ -376,6 +379,19 @@ export async function processarTurno(
           argsParsed = tc.argumentos.trim() ? JSON.parse(tc.argumentos) : {};
         } catch {
           argsParsed = tc.argumentos;
+        }
+
+        if (
+          tc.nome === "consultar_investimentos" &&
+          argsParsed !== null &&
+          typeof argsParsed === "object" &&
+          !Array.isArray(argsParsed) &&
+          "ate_data" in argsParsed &&
+          !mencionaData(req.mensagem.texto)
+        ) {
+          const { ate_data: _, ...resto } = argsParsed as Record<string, unknown>;
+          void _;
+          argsParsed = resto;
         }
 
         const exec = deps.executores.ferramentas[tc.nome];
