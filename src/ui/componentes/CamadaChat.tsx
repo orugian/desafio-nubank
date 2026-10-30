@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Plus, Send, X } from "lucide-react";
+import { ArrowUpRight, Plus, Send, X } from "lucide-react";
 import {
   textos,
   LIMITES,
@@ -10,8 +10,8 @@ import {
   type EstadoSessao,
   type Falha,
 } from "@/contratos";
-import { CartaoChat } from "./CartaoChat";
-import { TextoMarkdown } from "./TextoMarkdown";
+import { RespostaAssistente } from "./RespostaAssistente";
+import styles from "./Conversa.styles";
 
 export function CamadaChat({
   estado,
@@ -40,6 +40,7 @@ export function CamadaChat({
   const dialogo = useRef<HTMLDivElement>(null);
   const fechar = useRef<HTMLButtonElement>(null);
   const fim = useRef<HTMLDivElement>(null);
+  const transcricao = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const focoAnterior = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -48,7 +49,16 @@ export function CamadaChat({
   }, []);
 
   useEffect(() => {
-    fim.current?.scrollIntoView?.({ block: "end" });
+    // Rola somente a lista de mensagens. scrollIntoView rolaria também os ancestrais
+    // (moldura do app), escondendo o cabeçalho com o botão Fechar.
+    const lista = transcricao.current;
+    if (!lista) return;
+    const ultima = lista.querySelector<HTMLElement>('[data-ultima-resposta="true"]');
+    if (!enviando && ultima) {
+      lista.scrollTop += ultima.getBoundingClientRect().top - lista.getBoundingClientRect().top - 16;
+    } else {
+      lista.scrollTop = lista.scrollHeight;
+    }
   }, [estado.conversa, enviando, textoPendente, avisosRecentes, falhaAtual]);
 
   function recomecar() {
@@ -62,8 +72,8 @@ export function CamadaChat({
   function manterFoco(e: React.KeyboardEvent<HTMLDivElement>) {
     if (e.key === "Escape") { aoFechar(); return; }
     if (e.key !== "Tab") return;
-    const itens = dialogo.current?.querySelectorAll<HTMLElement>('button:not(:disabled), textarea:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])');
-    if (!itens?.length) return;
+    const itens = Array.from(dialogo.current?.querySelectorAll<HTMLElement>('button:not(:disabled), textarea:not(:disabled), a[href], summary, [tabindex]:not([tabindex="-1"])') ?? []).filter(el => el.getClientRects().length > 0);
+    if (!itens.length) return;
     const primeiro = itens[0]!;
     const ultimo = itens[itens.length - 1]!;
     if (e.shiftKey && document.activeElement === primeiro) { e.preventDefault(); ultimo.focus(); }
@@ -87,14 +97,14 @@ export function CamadaChat({
       onKeyDown={manterFoco}
       className="absolute inset-0 z-40 flex justify-center bg-black/30"
     >
-      <div className="w-full max-w-[430px] h-full bg-[#F0F0F0] flex flex-col shadow-lg pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] min-[600px]:pt-0 min-[600px]:px-0">
+      <div className={styles.surface}>
         {/* Faixa de protótipo no topo do chat */}
         <div className="bg-[#111111] text-white text-[11px] py-1 px-4 text-center">
           {textos.faixa_prototipo}
         </div>
 
         {/* Cabeçalho branco do chat (IMG_2114) */}
-        <header className="bg-white px-4 py-3 border-b border-[#EEEEEE] flex items-center justify-between shadow-2xs">
+        <header className={styles.header}>
           <button
             ref={fechar}
             type="button"
@@ -104,7 +114,7 @@ export function CamadaChat({
           >
             <X className="w-6 h-6" />
           </button>
-          <h2 className="text-base font-semibold text-[#111111]">Nina</h2>
+          <div className={styles.identity}><h1>Nina</h1><p>Assistente virtual</p></div>
           <button
             type="button"
             aria-label="Nova conversa"
@@ -118,31 +128,24 @@ export function CamadaChat({
         </header>
 
         {/* Lista de mensagens */}
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
-          <div className="self-center bg-[#BDBDBD] text-white text-xs px-3 py-1 rounded-full font-medium">
+        <div ref={transcricao} className={`${styles.transcript} overflow-y-auto`}>
+          <div className={styles.date}>
             30/10/2026
           </div>
 
           {estado.conversa.length === 0 && !enviando && (
-            <div className="flex flex-col gap-3 mt-2">
-              <div className="bg-white rounded-2xl p-4 text-sm text-[#111111] max-w-[85%] self-start shadow-2xs">
-                <div className="font-semibold text-xs text-[#820AD1] mb-1">Nina · assistente virtual</div>
-                <p>
-                  Oi! Eu sou a Nina, assistente virtual do Nubank. Posso te ajudar a entender seus gastos,
-                  simular compras e parcelamentos, planejar quanto guardar e acompanhar seus investimentos —
-                  tudo com dados fictícios até 29/11/2026.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2">
+            <div className={styles.intro}>
+              <h2>O que você quer planejar?</h2>
+              <p>Simule decisões com seus dados fictícios até 29/11/2026.</p>
+              <div className={styles.suggestions}>
                 {textos.sugestoes_chat.map((sug) => (
                   <button
                     key={sug}
                     type="button"
                     disabled={enviando}
                     onClick={() => aoEnviarMensagem(sug)}
-                    className="px-3.5 py-2 rounded-full bg-white border border-[#E3DFFD] text-xs font-medium text-[#5B168F] hover:bg-[#F3E9FB]"
                   >
-                    {sug}
+                    {sug}<ArrowUpRight className="w-4 h-4 shrink-0" aria-hidden="true" />
                   </button>
                 ))}
               </div>
@@ -169,7 +172,7 @@ export function CamadaChat({
               return (
                 <div
                   key={m.mensagem_id}
-                  className="self-end max-w-[84%] rounded-2xl rounded-br-xs bg-[#A6A6A6] text-[#111111] px-4 py-3 text-sm"
+                  className={styles.user}
                 >
                   {m.texto}
                 </div>
@@ -179,21 +182,11 @@ export function CamadaChat({
             return (
               <div
                 key={m.mensagem_id}
-                className="self-start w-full max-w-[92%] flex flex-col gap-1"
+                data-ultima-resposta={m === estado.conversa.at(-1) ? "true" : undefined}
+                className="self-start w-full min-w-0"
               >
-                <div className="rounded-2xl rounded-bl-xs bg-white text-[#111111] px-4 py-3 text-sm shadow-2xs">
-                  <div className="font-semibold text-xs text-[#820AD1] mb-1">Nina · assistente virtual</div>
-                  <TextoMarkdown texto={m.texto} />
-                </div>
-                {(m.cartoes as CartaoResposta[]).map((c, idx) => (
-                  <CartaoChat
-                    key={`${m.mensagem_id}-c-${idx}`}
-                    cartao={c}
-                    estado={estado}
-                    ocupado={enviando}
-                    aoExecutarAcao={aoExecutarAcao}
-                  />
-                ))}
+                <RespostaAssistente texto={m.texto} cartoes={m.cartoes as CartaoResposta[]}
+                  estado={estado} ocupado={enviando} aoExecutarAcao={aoExecutarAcao} />
               </div>
             );
           })}
@@ -201,7 +194,7 @@ export function CamadaChat({
           {enviando && (
             <div className="flex flex-col gap-2">
               {textoPendente && (
-                <div className="self-end max-w-[84%] rounded-2xl rounded-br-xs bg-[#A6A6A6] text-[#111111] px-4 py-3 text-sm opacity-80">
+                <div className={styles.user}>
                   {textoPendente}
                 </div>
               )}

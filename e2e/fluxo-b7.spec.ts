@@ -22,7 +22,11 @@ test("B7 · 5: persona → chat → separar → cartão; guardar → confirmar �
   await input.fill("Posso separar R$ 500 hoje para minha viagem?");
   await dialogo.getByRole("button", { name: /Enviar mensagem/i }).click();
 
+  await expect(dialogo.getByRole("heading", { name: "Seu planejamento" })).toBeVisible();
+  await expect(dialogo.getByText(/^Primeira falta de R\$ 200,00 em 15\/11/)).toBeVisible();
+  await dialogo.getByText("Explicação da Nina", { exact: true }).click();
   await expect(dialogo.getByText(/Se você separar R\$ 500 hoje/i)).toBeVisible();
+  await dialogo.getByText("Entender os valores", { exact: true }).click();
   await expect(dialogo.getByText(textos.legenda_margem)).toBeVisible();
 
   // Guardar 500 na caixinha da viagem -> proposta com botão Confirmar

@@ -19,9 +19,11 @@ afterEach(cleanup);
 describe("Cartões financeiros", () => {
   test("cenários preservam alertas, premissas e eventos acessíveis", async () => {
     renderizar(cenarios.dados);
-    expect(screen.getByText(textos.legenda_margem)).toBeInTheDocument();
-    for (const premissa of textos.premissas) expect(screen.getByText(premissa)).toBeInTheDocument();
-    expect(screen.getByText(/Saldo insuficiente|Primeira falta/i)).toBeInTheDocument();
+    expect(screen.getByText(textos.legenda_margem)).not.toBeVisible();
+    await userEvent.click(screen.getByText("Entender os valores"));
+    expect(screen.getByText(textos.legenda_margem)).toBeVisible();
+    for (const premissa of textos.premissas) expect(screen.getByText(premissa)).toBeVisible();
+    expect(screen.getByText(/^Primeira falta de/)).toBeVisible();
     const botao = screen.getByRole("button", { name: "Ver eventos da projeção" });
     expect(botao).toHaveAttribute("aria-expanded", "false");
     await userEvent.click(botao);
@@ -30,9 +32,9 @@ describe("Cartões financeiros", () => {
     expect(within(screen.getByRole("table", { name: "Eventos de Situação atual" })).getByText(/Fatura do cartão \(A\)/)).toBeInTheDocument();
   });
 
-  test("comparativo fornece valores originais na tabela e ressalvas", () => {
+  test("comparativo fornece valores originais na lista e ressalvas", () => {
     renderizar(comparativo.dados);
-    const tabela = screen.getByRole("table", { name: /Comparativo de rendimento/ });
+    const tabela = screen.getByRole("list", { name: "Valores dos investimentos" });
     for (const item of [comparativo.dados.resultado.real, ...comparativo.dados.resultado.alternativas]) {
       expect(within(tabela).getByText(formatarReais(item.valor_centavos))).toBeInTheDocument();
     }
@@ -46,15 +48,18 @@ describe("Cartões financeiros", () => {
     dados.resultado.alternativas.forEach((item) => { item.valor_centavos = 0; });
     renderizar(dados);
     expect(screen.queryByText(/As barras comparam/)).not.toBeInTheDocument();
-    expect(screen.getByRole("table", { name: /Comparativo de rendimento/ })).toBeInTheDocument();
+    expect(screen.getByRole("list", { name: "Valores dos investimentos" })).toBeInTheDocument();
+    expect(screen.getAllByText("R$ 0,00")).toHaveLength(1 + dados.resultado.alternativas.length);
   });
 
-  test("Pix preserva custos, cronograma e alertas", () => {
+  test("Pix preserva custos, cronograma e alertas", async () => {
     renderizar(pix.dados);
     expect(screen.getByText(/Saldo em conta insuficiente/)).toBeInTheDocument();
     expect(screen.getByText(/O total passa do limite/)).toBeInTheDocument();
     expect(screen.getByText(/^Juros .*premissa do protótipo/)).toBeInTheDocument();
-    expect(screen.getByText(pix.dados.resultado.rotulo)).toBeInTheDocument();
+    expect(screen.getByText(pix.dados.resultado.rotulo)).not.toBeVisible();
+    await userEvent.click(screen.getByText("Ver parcelas e encargos"));
+    expect(screen.getByText(pix.dados.resultado.rotulo)).toBeVisible();
     expect(screen.getByRole("table", { name: /Cronograma de parcelas/ })).toBeInTheDocument();
   });
 

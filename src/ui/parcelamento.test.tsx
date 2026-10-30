@@ -1,83 +1,51 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, test, vi } from "vitest";
-import { formatarReais, type CartaoResposta, type EstadoSessao } from "@/contratos";
-import exParcelamento from "@/contratos/exemplos/cartao-simulacao-parcelamento.json";
-import { CartaoChat } from "./componentes/CartaoChat";
-
-type CartaoParcelamento = Extract<CartaoResposta, { tipo: "simulacao_parcelamento" }>;
-
-const estadoBase: EstadoSessao = {
-  versao: 0,
-  persona_id: "p1",
-  mercado: {
-    ao_vivo: false,
-    obtido_em: "2026-10-28T11:00:00-03:00",
-    tentou_ao_vivo: false,
-    cdi: { taxa_diaria_pct: "0.05", data_ref: "2026-10-29", fonte: "teste" },
-    precos: {},
-  },
-  conversa: [],
-  declaracoes: [],
-  operacoes: [],
-  operacao_pendente: null,
-  hipoteses: [],
-  contadores: { D: 0, H: 0, OP: 0 },
-};
-
-function renderizar(cartao: CartaoParcelamento) {
-  return render(<CartaoChat cartao={cartao} estado={estadoBase} ocupado={false} aoExecutarAcao={vi.fn()} />);
-}
-
-describe("cartão simulacao_parcelamento", () => {
-  afterEach(() => cleanup());
-
-  test("mostra compra, à vista, tabela por opção, menor custo e rótulo", () => {
-    const cartao = exParcelamento.dados as CartaoParcelamento;
-    const { resultado } = cartao;
+import { cleanup, render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, describe, expect, test, vi } from 'vitest';
+import { formatarPercentual, formatarReais, type CartaoResposta, type EstadoSessao } from '@/contratos';
+import exemplo from '@/contratos/exemplos/cartao-simulacao-parcelamento.json';
+import sessao from '@/contratos/exemplos/api-sessao-p1.json';
+import { CartaoChat } from './componentes/CartaoChat';
+type CartaoParcelamento = Extract<CartaoResposta,{tipo:'simulacao_parcelamento'}>;
+function renderizar(cartao:CartaoParcelamento) { return render(<CartaoChat cartao={cartao} estado={sessao.dados.estado as EstadoSessao} ocupado={false} aoExecutarAcao={vi.fn()} />); }
+afterEach(cleanup);
+describe('cartão simulacao_parcelamento',()=>{
+  test('todas as opções mostram parcela e total; custos e renda permanecem acessíveis na expansão',async()=>{
+    const cartao=exemplo.dados as CartaoParcelamento;
+    const r=cartao.resultado;
     renderizar(cartao);
-
-    expect(screen.getByText(`À vista ou parcelado · ${formatarReais(resultado.valor_centavos)}`)).toBeInTheDocument();
-    expect(screen.getByText(resultado.rotulo)).toBeInTheDocument();
-
-    const tabela = screen.getByRole("table", { name: "Opções de parcelamento simuladas" });
-    const linhas = within(tabela).getAllByRole("row");
-    expect(linhas).toHaveLength(resultado.opcoes.length + 1);
-    for (const titulo of ["Parcelas", "Parcela", "Total", "Valor hoje (CDI)", "% da renda"]) {
-      expect(within(tabela).getByRole("columnheader", { name: titulo })).toBeInTheDocument();
+    expect(screen.getByRole('heading',{name:`À vista ou parcelado · ${formatarReais(r.valor_centavos)}`})).toBeVisible();
+    const lista=screen.getByRole('list',{name:'Opções de parcelamento simuladas'});
+    const linhas=within(lista).getAllByRole('listitem');
+    expect(linhas).toHaveLength(r.opcoes.length);
+    r.opcoes.forEach((o,i)=>{
+      expect(within(linhas[i]!).getByText(`${o.parcelas} parcelas`)).toBeVisible();
+      expect(within(linhas[i]!).getByText(formatarReais(o.parcela_centavos))).toBeVisible();
+      expect(within(linhas[i]!).getByText(`Total ${formatarReais(o.total_pago_centavos)}`)).toBeVisible();
+    });
+    expect(screen.getAllByText('Menor valor hoje (CDI)')).toHaveLength(1);
+    expect(within(lista).queryByText('Menor valor hoje (CDI)')).toBeNull();
+    expect(screen.getByText(r.rotulo)).not.toBeVisible();
+    await userEvent.click(screen.getByText('Ver custos e premissas'));
+    expect(screen.getByText(r.rotulo)).toBeVisible();
+    for(const o of r.opcoes){
+      const detalhes=screen.getByRole('region',{name:`Detalhes de ${o.parcelas} parcelas`});
+      expect(within(detalhes).getByText(formatarReais(o.valor_presente_centavos))).toBeVisible();
+      expect(within(detalhes).getByText(formatarReais(o.ultima_parcela_centavos))).toBeVisible();
+      if(o.comprometimento_renda_pct !== null) expect(within(detalhes).getByText(formatarPercentual(o.comprometimento_renda_pct))).toBeVisible();
     }
-    const o48 = resultado.opcoes.find((o) => o.parcelas === 48)!;
-    const linha48 = linhas.find((l) => within(l).queryByText("48x"))!;
-    expect(within(linha48).getByText(formatarReais(o48.parcela_centavos))).toBeInTheDocument();
-    expect(within(linha48).getByText(formatarReais(o48.total_pago_centavos))).toBeInTheDocument();
-    expect(within(linha48).getByText(formatarReais(o48.valor_presente_centavos))).toBeInTheDocument();
-    expect(within(linha48).getByText("32,92%")).toBeInTheDocument();
-
-    // No exemplo da moto, o menor custo é à vista: o destaque aparece uma vez, fora da tabela.
-    expect(resultado.menor_custo).toBe("a_vista");
-    expect(screen.getAllByText("menor custo na simulação")).toHaveLength(1);
-    expect(within(tabela).queryByText("menor custo na simulação")).toBeNull();
     expect(screen.queryByText(/recomend/i)).toBeNull();
   });
-
-  test("destaca a opção parcelada de menor custo e oculta % da renda sem renda", () => {
-    const base = exParcelamento.dados as CartaoParcelamento;
-    const cartao: CartaoParcelamento = {
-      ...base,
-      resultado: {
-        ...base.resultado,
-        menor_custo: 12,
-        renda_liquida_mensal_centavos: null,
-        opcoes: base.resultado.opcoes.map((o) => ({ ...o, comprometimento_renda_pct: null })),
-      },
-    };
-    renderizar(cartao);
-    const tabela = screen.getByRole("table", { name: "Opções de parcelamento simuladas" });
-    const linha12 = within(tabela)
-      .getAllByRole("row")
-      .find((l) => within(l).queryByText("12x"))!;
-    expect(within(linha12).getByText("menor custo na simulação")).toBeInTheDocument();
-    expect(screen.getAllByText("menor custo na simulação")).toHaveLength(1);
-    expect(within(tabela).queryByRole("columnheader", { name: "% da renda" })).toBeNull();
+  test('destaca só a opção do motor e não inventa comprometimento sem renda',async()=>{
+    const base=exemplo.dados as CartaoParcelamento;
+    renderizar({...base,resultado:{...base.resultado,menor_custo:12,renda_liquida_mensal_centavos:null,opcoes:base.resultado.opcoes.map(o=>({...o,comprometimento_renda_pct:null}))}});
+    const lista=screen.getByRole('list',{name:'Opções de parcelamento simuladas'});
+    const linha12=within(lista).getByText('12 parcelas').closest('[role=listitem]') as HTMLElement;
+    expect(within(linha12).getByText('Menor valor hoje (CDI)')).toBeVisible();
+    expect(screen.getAllByText('Menor valor hoje (CDI)')).toHaveLength(1);
+    await userEvent.click(screen.getByText('Ver custos e premissas'));
+    expect(screen.queryByText('Comprometimento da renda')).toBeNull();
+    expect(screen.queryByText(/Renda líquida considerada/)).toBeNull();
+    expect(screen.queryByText(/Desconto de 0,00%/)).toBeNull();
   });
 });

@@ -29,7 +29,7 @@ export function TabelaCompartilhada<T>({
   }
 
   return (
-    <div className="overflow-x-auto w-full border border-[#EEEEEE] rounded-xl bg-white">
+    <div className="relative overflow-x-auto w-full border border-[#EEEEEE] rounded-xl bg-white">
       <table className="w-full text-left border-collapse text-xs">
         <caption className="sr-only">{caption}</caption>
         <thead>

@@ -82,16 +82,19 @@ describe("CamadaChat", () => {
     anterior.remove();
   });
 
-  test("retorna foco ao fechar e rola ao receber mensagem", () => {
+  test("retorna foco ao fechar e rola só a lista de mensagens, nunca os ancestrais", () => {
     const anterior = document.createElement("button");
     document.body.appendChild(anterior);
     anterior.focus();
+    // scrollIntoView também rola a moldura do app e esconde o botão Fechar.
     const rolar = vi.fn();
     const original = Element.prototype.scrollIntoView;
     Element.prototype.scrollIntoView = rolar;
     const p = props();
     const { unmount } = render(<CamadaChat {...p} />);
-    expect(rolar).toHaveBeenCalled();
+    expect(rolar).not.toHaveBeenCalled();
+    const lista = screen.getByRole("dialog").querySelector<HTMLElement>(".overflow-y-auto")!;
+    expect(lista).not.toBeNull();
     unmount();
     expect(anterior).toHaveFocus();
     Element.prototype.scrollIntoView = original;

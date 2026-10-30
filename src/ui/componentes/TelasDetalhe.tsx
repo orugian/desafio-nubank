@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
   ArrowDownToLine,
   ArrowUpDown,
@@ -27,11 +27,13 @@ export function TelaInvestimentos({
   mostrarSaldos,
   aoNaoDisponivel,
   aoPerguntar,
+  acessoNina,
 }: {
   visao: VisaoApp;
   mostrarSaldos: boolean;
   aoNaoDisponivel: () => void;
   aoPerguntar?: (texto: string) => void;
+  acessoNina?: ReactNode;
 }) {
   const posicoesInvest = visao.posicoes.filter((p) => p.categoria !== "saldo_separado");
   const totalInvestido = posicoesInvest.reduce((s, p) => s + p.valor_atual_centavos, 0);
@@ -70,11 +72,12 @@ export function TelaInvestimentos({
 
   return (
     <div className="flex flex-col flex-1">
-      <header className="bg-[#820AD1] text-white px-6 py-5 flex items-center justify-between">
-        <div>
+      <header className="newai-native-header bg-[#820AD1] text-white px-6 py-4 flex items-center justify-between gap-3">
+        <div className="min-w-0">
           <div className="text-sm opacity-90">Carteira de investimentos</div>
-          <div className="text-lg font-semibold mt-0.5">{visao.persona.nome}</div>
+          <div className="text-base font-semibold mt-0.5">{visao.persona.nome}</div>
         </div>
+        {acessoNina}
       </header>
 
       <section className="px-6 py-6 flex items-center justify-between">
@@ -223,11 +226,13 @@ export function TelaConta({
   mostrarSaldos,
   aoVoltar,
   aoNaoDisponivel,
+  acessoNina,
 }: {
   visao: VisaoApp;
   mostrarSaldos: boolean;
   aoVoltar: () => void;
   aoNaoDisponivel: () => void;
+  acessoNina?: ReactNode;
 }) {
   const [subAba, setSubAba] = useState<"usar" | "guardar">("usar");
   const [busca, setBusca] = useState("");
@@ -240,7 +245,7 @@ export function TelaConta({
 
   return (
     <div className="flex flex-col flex-1">
-      <header className="px-4 py-3 flex items-center justify-between border-b border-[#EEEEEE]">
+      <header className="newai-native-header bg-white px-4 py-2 flex items-center justify-between gap-2 border-b border-[#EEEEEE]">
         <button
           type="button"
           aria-label="Voltar para início"
@@ -250,7 +255,7 @@ export function TelaConta({
           <ChevronLeft className="w-6 h-6" />
         </button>
         <span className="text-sm font-semibold text-[#111111]">Conta</span>
-        <div className="w-11" />
+        {acessoNina ?? <div className="w-11" />}
       </header>
 
       {/* Controle segmentado Usar / Guardar (IMG_2105) */}
@@ -422,11 +427,13 @@ export function TelaCartao({
   mostrarSaldos = true,
   aoVoltar,
   aoNaoDisponivel,
+  acessoNina,
 }: {
   visao: VisaoApp;
   mostrarSaldos?: boolean;
   aoVoltar: () => void;
   aoNaoDisponivel: () => void;
+  acessoNina?: ReactNode;
 }) {
   const cartao = visao.cartao;
 
@@ -445,7 +452,7 @@ export function TelaCartao({
 
   return (
     <div className="flex flex-col flex-1">
-      <header className="px-4 py-3 flex items-center justify-between border-b border-[#EEEEEE]">
+      <header className="newai-native-header bg-white px-4 py-2 flex items-center justify-between gap-2 border-b border-[#EEEEEE]">
         <button
           type="button"
           aria-label="Voltar para início"
@@ -455,7 +462,7 @@ export function TelaCartao({
           <ChevronLeft className="w-6 h-6" />
         </button>
         <span className="text-sm font-semibold text-[#111111]">Cartão de crédito</span>
-        <div className="w-11" />
+        {acessoNina ?? <div className="w-11" />}
       </header>
 
       <section className="px-6 py-6 flex justify-between items-start">
@@ -586,16 +593,18 @@ export function TelaComoFunciona({
   config,
   estado,
   aoVoltar,
+  acessoNina,
 }: {
   config: Config;
   estado: EstadoSessao;
   aoVoltar: () => void;
+  acessoNina?: ReactNode;
 }) {
   const mensagensComRastro = estado.conversa.filter((m) => m.rastro && m.rastro.length > 0);
 
   return (
     <div className="flex flex-col flex-1">
-      <header className="px-4 py-3 flex items-center justify-between border-b border-[#EEEEEE]">
+      <header className="newai-native-header bg-white px-4 py-2 flex items-center justify-between gap-2 border-b border-[#EEEEEE]">
         <button
           type="button"
           aria-label="Voltar para início"
@@ -605,7 +614,7 @@ export function TelaComoFunciona({
           <ChevronLeft className="w-6 h-6" />
         </button>
         <span className="text-sm font-semibold text-[#111111]">Como funciona</span>
-        <div className="w-11" />
+        {acessoNina ?? <div className="w-11" />}
       </header>
 
       <div className="p-6 flex flex-col gap-5 text-xs text-[#111111]">

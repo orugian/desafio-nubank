@@ -22,7 +22,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
 .newai-viewport {
@@ -41,8 +41,12 @@ body {
   height: 100vh;
   height: 100dvh;
   min-height: 0;
+  /* clip (e não só hidden): a moldura nunca pode ser rolada, nem por scrollIntoView/foco. */
   overflow: hidden;
+  overflow: clip;
   background: white;
+  color: #191919;
+  color-scheme: light;
   padding: env(safe-area-inset-top) env(safe-area-inset-right)
     env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
@@ -52,6 +56,8 @@ body {
 }
 
 .newai-scroll {
+  /* Contém descendentes absolutos (ex.: legendas sr-only) dentro da área rolável. */
+  position: relative;
   flex: 1 1 0%;
   min-height: 0;
   overflow-y: auto;
@@ -77,33 +83,31 @@ body {
   min-height: 44px;
 }
 
-.newai-launcher {
+.newai-nina {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   min-height: 44px;
+  flex-shrink: 0;
   padding: 0 12px;
-  border-radius: 12px;
-  background: #5b168f;
+  border-radius: 999px;
+  background: #820ad1;
   color: #fff;
   font-size: 14px;
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  line-height: 20px;
+  font-weight: 600;
+  transition: background-color 160ms ease-out, transform 160ms ease-out;
 }
-
-.newai-launcher-accent {
-  color: #e3dffd;
-  letter-spacing: 0.04em;
-}
-
-.newai-launcher:hover {
-  background: #820ad1;
-}
-
-.newai-launcher:focus-visible {
-  outline: 3px solid #820ad1;
-  outline-offset: 3px;
-}
+.newai-nina:hover { background: #5d0599; }
+.newai-nina-inverse { background: #fff; color: #820ad1; }
+.newai-nina-inverse:hover { background: #f3e9fb; }
+.newai-nina:active { transform: scale(.97); }
+.newai-nina:focus-visible { outline: 2px solid #820ad1; outline-offset: 3px; }
+.newai-nina-inverse:focus-visible { outline-color: #fff; }
+.newai-home-header { position: sticky; top: -88px; z-index: 10; }
+.newai-native-header { position: sticky; top: 0; z-index: 10; }
+@media (prefers-reduced-motion: reduce) { .newai-nina { transition: none; } }
 
 .newai-navigation {
   align-self: center;
@@ -121,6 +125,5 @@ body {
     height: min(900px, calc(100dvh - 48px));
     padding: 0;
     border-radius: 24px;
-    box-shadow: 0 12px 36px rgb(0 0 0 / 12%);
   }
 }

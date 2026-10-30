@@ -47,7 +47,7 @@ describe("T7 · Cartões novos e atalhos de investimento", () => {
     cleanup();
   });
 
-  test("1. Renderizar CartaoChat com cada um dos 5 exemplos e checar textos-chave", () => {
+  test("1. Renderizar CartaoChat com cada um dos 5 exemplos e checar textos-chave", async () => {
     // 1.1 Cotação
     const resCotacao = exCotacao.dados.resultado;
     const { unmount: unmount1 } = render(
@@ -91,7 +91,7 @@ describe("T7 · Cartões novos e atalhos de investimento", () => {
       screen.getByText(formatarReais(resComparativo.real.valor_centavos)),
     ).toBeInTheDocument();
     expect(screen.getByText(resComparativo.rotulo)).toBeInTheDocument();
-    const ocorrenciasMelhor = screen.getAllByText(/melhor/i);
+    const ocorrenciasMelhor = screen.getAllByText("Maior valor na comparação");
     expect(ocorrenciasMelhor).toHaveLength(1);
     unmount2();
 
@@ -142,6 +142,7 @@ describe("T7 · Cartões novos e atalhos de investimento", () => {
     ).toBeInTheDocument();
     expect(screen.getByText(resPix.rotulo)).toBeInTheDocument();
     expect(resPix.cronograma).toHaveLength(resPix.parcelas);
+    await userEvent.click(screen.getByText("Ver parcelas e encargos"));
     for (let i = 1; i <= resPix.parcelas; i++) {
       expect(
         screen.getByText(`${i}/${resPix.parcelas}`),

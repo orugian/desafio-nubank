@@ -29,6 +29,7 @@ import {
 } from "@/contratos";
 import { obterClientePadrao, type ClienteApi } from "./cliente-api";
 import { CamadaChat } from "./componentes/CamadaChat";
+import { BotaoNina } from "./componentes/BotaoNina";
 import {
   TelaCartao,
   TelaComoFunciona,
@@ -311,14 +312,6 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
             >
               Recomeçar
             </button>
-            <button
-              type="button"
-              onClick={() => setChatAberto(true)}
-              aria-label="Abrir chat com a Nina (NewAI)"
-              className="newai-launcher"
-            >
-              <span>Nina</span>
-            </button>
           </div>
         </div>
 
@@ -342,7 +335,7 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
         {abaAtual === "home" && (
           <div className="flex flex-col flex-1">
             {/* Cabeçalho roxo (IMG_2103) */}
-            <header className="bg-[#820AD1] text-white px-6 pt-6 pb-5 flex flex-col gap-5">
+            <header className="newai-home-header bg-[#820AD1] text-white px-6 pt-6 pb-4 flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <button
                   type="button"
@@ -386,7 +379,10 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
                   </button>
                 </div>
               </div>
-              <div className="text-lg font-semibold">Olá, {visao.persona.nome}</div>
+              <div className="flex items-center justify-between gap-3">
+                <h1 className="text-base font-semibold min-w-0">Olá, {visao.persona.nome}</h1>
+                <BotaoNina inverso aoAbrir={() => setChatAberto(true)} />
+              </div>
             </header>
 
             {/* Faixa neutra secundária */}
@@ -555,6 +551,7 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
             visao={visao}
             mostrarSaldos={mostrarSaldos}
             aoNaoDisponivel={acionarNaoDisponivel}
+            acessoNina={<BotaoNina inverso aoAbrir={() => setChatAberto(true)} />}
             aoPerguntar={(texto) => {
               setChatAberto(true);
               enviarMensagemNova(texto);
@@ -567,6 +564,7 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
             visao={visao}
             mostrarSaldos={mostrarSaldos}
             aoVoltar={() => setAbaAtual("home")}
+            acessoNina={<BotaoNina aoAbrir={() => setChatAberto(true)} />}
             aoNaoDisponivel={acionarNaoDisponivel}
           />
         )}
@@ -576,6 +574,7 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
             visao={visao}
             mostrarSaldos={mostrarSaldos}
             aoVoltar={() => setAbaAtual("home")}
+            acessoNina={<BotaoNina aoAbrir={() => setChatAberto(true)} />}
             aoNaoDisponivel={acionarNaoDisponivel}
           />
         )}
@@ -584,6 +583,7 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
           <TelaComoFunciona
             config={config}
             estado={estado}
+            acessoNina={<BotaoNina aoAbrir={() => setChatAberto(true)} />}
             aoVoltar={() => setAbaAtual("home")}
           />
         )}

@@ -68,7 +68,7 @@ for (const viewport of [
     const inicio = page.getByRole("button", { name: "Início", exact: true });
     const investimentos = page.getByRole("button", { name: "Investimentos", exact: true });
     const conta = page.getByRole("button", { name: "Conta e extrato", exact: true });
-    const abrirChat = page.getByRole("button", { name: "NewAI", exact: true });
+    const abrirChat = page.getByRole("button", { name: "Abrir chat com a Nina (NewAI)", exact: true });
     for (const controle of [inicio, investimentos, conta, abrirChat]) await acessivelNoViewport(controle);
 
     if (viewport.name === "desktop") {
@@ -121,7 +121,7 @@ for (const viewport of [
     await novaConversa.click();
     await expect.poll(() => page.evaluate(() => JSON.parse(sessionStorage.getItem("newai_sessao_v1") ?? "null")?.estado?.versao)).toBe(0);
     await expect(chat.getByText(/Antes de confirmar/i)).toHaveCount(0);
-    await expect(chat.getByText(/Olá! Posso simular/i)).toBeVisible();
+    await expect(chat.getByRole("heading", { name: "O que você quer planejar?" })).toBeVisible();
     await fechar.click();
     await expect(chat).toBeHidden();
     await abrirChat.click();
