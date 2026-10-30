@@ -506,6 +506,7 @@ const cartoes: Array<[string, string, CartaoResposta]> = [
         quantidade: 4,
         total_saidas_centavos: itensDelivery.reduce((s, i) => s + i.valor_centavos, 0),
         total_entradas_centavos: 0,
+        saldo_centavos: -itensDelivery.reduce((s, i) => s + i.valor_centavos, 0),
         grupos: [],
         itens: itensDelivery,
       },
