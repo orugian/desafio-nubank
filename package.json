@@ -10,6 +10,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "e2e": "playwright test",
+    "verifica-prod": "node scripts/verifica-prod.mjs",
     "avaliar": "tsx --env-file=.env.local avaliacao/executar.ts",
     "mercado:coletar": "tsx scripts/mercado/coletar.ts",
     "personas:gerar": "tsx scripts/personas/gerar.ts"

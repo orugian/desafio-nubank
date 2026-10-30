@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NewAI — assistente financeira (desafio Nubank)
 
-## Getting Started
+Protótipo de uma assistente conversacional que responde sobre dinheiro com números
+calculados por um motor determinístico em TypeScript: o modelo conversa, o motor
+calcula. Todos os dados de persona são fictícios.
 
-First, run the development server:
+**Demo no ar:** https://desafio-nubank.vercel.app
+(QR code para a apresentação em `../apresentacao/qr-desafio-nubank.png`.)
+
+## Como a demo funciona
+
+1. Abra a URL e escolha uma persona (Bia, Caio ou Duda).
+2. Toque em **Nina** para abrir o chat e pergunte em linguagem livre
+   ("quanto tenho disponível hoje?", "cabe uma parcela de 300?", "e se eu guardar 200 por mês?").
+
+O app é um Next.js (App Router) com rotas de API que chamam o provedor de modelo
+(`LLM_PROVEDOR`) e as ferramentas do motor. Em `MODO=local` não há código de acesso;
+`MODO=publico` exige `CODIGO_ACESSO` nas requisições.
+
+## Rodando local
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # preencha as chaves do provedor escolhido
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Variáveis (ver `.env.example`):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variável | Uso |
+| --- | --- |
+| `LLM_PROVEDOR` | `openrouter`, `nvidia` ou `roteirizado` (sem modelo real) |
+| `OPENROUTER_API_KEY` / `OPENROUTER_MODELO` | provedor OpenRouter |
+| `NVIDIA_API_KEY` / `NVIDIA_MODELO` | provedor NVIDIA |
+| `LLM_ROTEIRO` | roteiro JSON quando `LLM_PROVEDOR=roteirizado` |
+| `MERCADO_AO_VIVO` | `1` = cotações ao vivo com fallback gravado; `0` = só gravado |
+| `BRAPI_TOKEN`, `COINGECKO_API_KEY` | opcionais, elevam limites das fontes de mercado |
+| `NEXT_PUBLIC_MARCA` | `nubank` ou `neutra` |
+| `NEXT_PUBLIC_API_EXEMPLOS` | `1` usa exemplos do contrato no lugar das rotas `/api/*` |
+| `MODO` / `CODIGO_ACESSO` | `local` (livre) ou `publico` (exige código) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Testes
 
-## Learn More
+```bash
+npm test          # Vitest (unitários e de integração)
+npm run e2e       # Playwright (sobe o dev server)
+npm run typecheck
+npm run verifica-prod   # smoke da produção: persona -> Nina -> resposta (Playwright)
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Deploy (Vercel)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Projeto `desafio-nubank` em `guilherme-orugians-projects`, com o repositório
+conectado à branch `main` (push em `main` = deploy de produção).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+vercel env ls production     # variáveis de produção já configuradas
+vercel deploy --prod
+```
 
-## Deploy on Vercel
+Variáveis necessárias em produção: `LLM_PROVEDOR`, `OPENROUTER_API_KEY`,
+`OPENROUTER_MODELO`, `MERCADO_AO_VIVO`, `BRAPI_TOKEN`, `COINGECKO_API_KEY`,
+`NEXT_PUBLIC_MARCA=nubank`, `NEXT_PUBLIC_API_EXEMPLOS=0`, `MODO=local`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`.vercelignore` exclui apenas artefatos volumosos (`avaliacao/`, `test-results/`).
+Nada dentro de `src/` pode ser excluído: o `tsc` do `next build` compila o projeto
+inteiro (inclui testes e fixtures) e o build falha se um arquivo referenciado faltar.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Onde ler mais
+
+- `instrucoes.md` — instruções da Nina (é o texto que vai no prompt).
+- `docs/RUNBOOK.md` — passo a passo de demonstração e operação local.
+- `src/contratos/` — contratos HTTP, visão e ferramentas (fonte da verdade dos tipos).
+- `avaliacao/` — harness e resultados da avaliação de conversas.
