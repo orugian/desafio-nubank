@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // A bolha de desenvolvimento cobre a navegação em telas pequenas.
+  devIndicators: false,
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {

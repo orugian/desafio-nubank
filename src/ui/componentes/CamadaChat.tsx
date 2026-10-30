@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import { Send, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Plus, Send, X } from "lucide-react";
 import {
   textos,
+  LIMITES,
   type AvisoTurno,
   type CartaoResposta,
   type EstadoSessao,
   type Falha,
 } from "@/contratos";
 import { CartaoChat } from "./CartaoChat";
+import { TextoMarkdown } from "./TextoMarkdown";
 
 export function CamadaChat({
   estado,
@@ -35,6 +37,38 @@ export function CamadaChat({
   aoExecutarAcao: (tipo: "confirmar" | "cancelar", operacao_id: string) => void;
 }) {
   const [rascunho, setRascunho] = useState("");
+  const dialogo = useRef<HTMLDivElement>(null);
+  const fechar = useRef<HTMLButtonElement>(null);
+  const fim = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const focoAnterior = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    fechar.current?.focus();
+    return () => focoAnterior?.focus();
+  }, []);
+
+  useEffect(() => {
+    fim.current?.scrollIntoView?.({ block: "end" });
+  }, [estado.conversa, enviando, textoPendente, avisosRecentes, falhaAtual]);
+
+  function recomecar() {
+    if (enviando) return;
+    if (window.confirm("Iniciar uma nova conversa? Isso também reinicia as simulações, operações, declarações (dados declarados), hipóteses e pendências simuladas no estado desta persona.")) {
+      setRascunho("");
+      aoRecomecar();
+    }
+  }
+
+  function manterFoco(e: React.KeyboardEvent<HTMLDivElement>) {
+    if (e.key === "Escape") { aoFechar(); return; }
+    if (e.key !== "Tab") return;
+    const itens = dialogo.current?.querySelectorAll<HTMLElement>('button:not(:disabled), textarea:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])');
+    if (!itens?.length) return;
+    const primeiro = itens[0]!;
+    const ultimo = itens[itens.length - 1]!;
+    if (e.shiftKey && document.activeElement === primeiro) { e.preventDefault(); ultimo.focus(); }
+    else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primeiro.focus(); }
+  }
 
   function submeter(e: React.FormEvent) {
     e.preventDefault();
@@ -46,12 +80,14 @@ export function CamadaChat({
 
   return (
     <div
+      ref={dialogo}
       role="dialog"
       aria-label="Chat NewAI"
       aria-modal="true"
-      className="fixed inset-0 z-40 flex justify-center bg-black/30"
+      onKeyDown={manterFoco}
+      className="absolute inset-0 z-40 flex justify-center bg-black/30"
     >
-      <div className="w-full max-w-[430px] h-full bg-[#F0F0F0] flex flex-col shadow-lg">
+      <div className="w-full max-w-[430px] h-full bg-[#F0F0F0] flex flex-col shadow-lg pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] min-[600px]:pt-0 min-[600px]:px-0">
         {/* Faixa de protótipo no topo do chat */}
         <div className="bg-[#111111] text-white text-[11px] py-1 px-4 text-center">
           {textos.faixa_prototipo}
@@ -60,19 +96,29 @@ export function CamadaChat({
         {/* Cabeçalho branco do chat (IMG_2114) */}
         <header className="bg-white px-4 py-3 border-b border-[#EEEEEE] flex items-center justify-between shadow-2xs">
           <button
+            ref={fechar}
             type="button"
             aria-label="Fechar chat"
             onClick={aoFechar}
-            className="w-11 h-11 rounded-full flex items-center justify-center text-[#646464] hover:bg-[#F0F0F0]"
+            className="w-11 h-11 rounded-full flex items-center justify-center text-[#646464] hover:bg-[#F0F0F0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#820AD1]"
           >
             <X className="w-6 h-6" />
           </button>
           <h2 className="text-base font-semibold text-[#111111]">Chat</h2>
-          <div className="w-11" />
+          <button
+            type="button"
+            aria-label="Nova conversa"
+            title="Nova conversa"
+            disabled={enviando}
+            onClick={recomecar}
+            className="w-11 h-11 rounded-full flex items-center justify-center text-[#5B168F] hover:bg-[#F3E9FB] disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#820AD1]"
+          >
+            <Plus className="w-6 h-6" aria-hidden="true" />
+          </button>
         </header>
 
         {/* Lista de mensagens */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
           <div className="self-center bg-[#BDBDBD] text-white text-xs px-3 py-1 rounded-full font-medium">
             30/10/2026
           </div>
@@ -136,7 +182,7 @@ export function CamadaChat({
               >
                 <div className="rounded-2xl rounded-bl-xs bg-white text-[#111111] px-4 py-3 text-sm shadow-2xs">
                   <div className="font-semibold text-xs text-[#820AD1] mb-1">Assistente NewAI</div>
-                  <div className="whitespace-pre-line">{m.texto}</div>
+                  <TextoMarkdown texto={m.texto} />
                 </div>
                 {(m.cartoes as CartaoResposta[]).map((c, idx) => (
                   <CartaoChat
@@ -200,7 +246,7 @@ export function CamadaChat({
                   <button
                     type="button"
                     disabled={enviando}
-                    onClick={aoRecomecar}
+                    onClick={recomecar}
                     className="px-3.5 py-1.5 rounded-full bg-[#111111] text-white font-semibold"
                   >
                     {textos.acoes.recomecar}
@@ -209,27 +255,30 @@ export function CamadaChat({
               </div>
             </div>
           )}
+          <div ref={fim} aria-hidden="true" />
         </div>
 
         {/* Compositor no rodapé (IMG_2114) */}
         <form
           onSubmit={submeter}
-          className="bg-white px-6 py-3 border-t border-[#EEEEEE] flex items-center gap-2"
+          className="bg-white px-4 sm:px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] min-[600px]:pb-3 border-t border-[#EEEEEE] flex items-end gap-2"
         >
-          <div className="flex-1 flex items-center bg-[#F0F0F0] rounded-full px-4 py-2.5">
-            <input
-              type="text"
+          <div className="min-w-0 flex-1 flex items-end bg-[#F0F0F0] rounded-3xl px-4 py-1.5 focus-within:ring-2 focus-within:ring-[#820AD1]">
+            <textarea
+              aria-label="Mensagem"
+              maxLength={LIMITES.texto_mensagem_max}
+              rows={1}
               value={rascunho}
               disabled={enviando}
               onChange={(e) => setRascunho(e.target.value)}
               placeholder="Digite sua mensagem..."
-              className="flex-1 bg-transparent text-sm text-[#111111] placeholder:text-[#646464] focus:outline-none disabled:opacity-50"
+              className="min-w-0 flex-1 max-h-32 resize-none bg-transparent py-3 text-base leading-5 text-[#111111] placeholder:text-[#646464] focus:outline-none disabled:opacity-50"
             />
             <button
               type="submit"
               aria-label="Enviar mensagem"
               disabled={enviando || !rascunho.trim()}
-              className="ml-2 w-9 h-9 rounded-full flex items-center justify-center text-[#820AD1] disabled:opacity-40"
+              className="ml-2 w-11 h-11 shrink-0 rounded-full flex items-center justify-center text-[#820AD1] disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#820AD1]"
             >
               <Send className="w-5 h-5" />
             </button>

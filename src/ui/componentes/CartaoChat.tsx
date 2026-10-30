@@ -27,9 +27,12 @@ export function CartaoChat({
 
   if (cartao.tipo === "comparacao") {
     return (
-      <div className="mt-2 rounded-2xl border border-[#EEEEEE] bg-white p-3.5 text-xs text-[#111111] flex flex-col gap-3">
-        <div className="font-semibold text-sm text-[#111111]">Comparação de cenários</div>
-        <p className="text-[11px] text-[#646464] bg-[#F8F8F8] p-2 rounded-lg">
+      <div className="mt-2 min-w-0 rounded-[20px] border border-[#EEEEEE] bg-white p-4 text-xs leading-relaxed text-[#111111] flex flex-col gap-4">
+        <div>
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-[#5B168F]">Projeção</div>
+          <div className="mt-1 font-semibold text-lg leading-tight text-[#111111]">Comparação de cenários</div>
+        </div>
+        <p className="text-xs text-[#4A4A4A] bg-[#F8F8F8] p-3 rounded-xl">
           {textos.legenda_margem}
         </p>
 
@@ -37,10 +40,10 @@ export function CartaoChat({
           {cartao.cenarios.map((c) => (
             <div
               key={c.cenario_id}
-              className="rounded-xl border border-[#EEEEEE] p-3 bg-[#FAFAFA] flex flex-col gap-1.5"
+              className="min-w-0 rounded-2xl border border-[#EEEEEE] p-3.5 bg-[#FAFAFA] flex flex-col gap-2"
             >
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-[#111111]">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-semibold text-sm text-[#111111]">
                   {c.nome} ({c.cenario_id})
                 </span>
                 <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#F3E9FB] text-[#5B168F]">
@@ -49,7 +52,7 @@ export function CartaoChat({
               </div>
 
               {c.indicadores && (
-                <div className="grid grid-cols-2 gap-1.5 text-[11px] mt-1">
+                <div className="grid grid-cols-1 gap-2 text-xs mt-1">
                   <div>
                     <span className="text-[#646464]">{textos.rotulos.margem}: </span>
                     <span className="font-semibold tabular-nums">
@@ -76,7 +79,7 @@ export function CartaoChat({
                     </span>
                   </div>
                   {c.indicadores.primeira_falta && (
-                    <div className="col-span-2 text-[#F65758] font-medium">
+                    <div className="col-span-full rounded-lg bg-red-50 p-2 text-[#9B1C1C] font-medium">
                       {textos.rotulos.primeira_falta}:{" "}
                       {formatarDiaMes(c.indicadores.primeira_falta.data)} ·{" "}
                       {formatarReais(c.indicadores.primeira_falta.valor_descoberto_centavos)} (
@@ -84,7 +87,7 @@ export function CartaoChat({
                     </div>
                   )}
                   {c.indicadores.sem_recebimentos && (
-                    <div className="col-span-2 text-[#646464] border-t border-[#EEEEEE] pt-1 mt-0.5">
+                    <div className="col-span-full text-[#4A4A4A] border-t border-[#EEEEEE] pt-2 mt-0.5">
                       <span className="font-medium">{textos.rotulos.sem_recebimentos}: </span>
                       falta {formatarReais(c.indicadores.sem_recebimentos.insuficiencia_centavos)} ·
                       saldo final{" "}
@@ -95,7 +98,7 @@ export function CartaoChat({
               )}
 
               {c.avisos.map((av) => (
-                <div key={av} className="text-[11px] text-[#DB791C] font-medium">
+                <div key={av} className="rounded-lg bg-amber-50 p-2 text-xs text-[#8A5300] font-medium">
                   {textos.rotulos.avisos_cenario[av]}
                 </div>
               ))}
@@ -112,7 +115,8 @@ export function CartaoChat({
         <button
           type="button"
           onClick={() => setExpandido((v) => !v)}
-          className="text-left text-xs font-semibold text-[#820AD1] underline"
+          aria-expanded={expandido}
+          className="min-h-11 self-start text-left text-xs font-semibold text-[#5B168F] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#820AD1]"
         >
           {expandido ? "Ocultar eventos da projeção" : "Ver eventos da projeção"}
         </button>
@@ -231,7 +235,7 @@ export function CartaoChat({
           Guardar {formatarReais(cartao.valor_centavos)} em {cartao.destino.nome}
         </div>
         {cartao.alerta && (
-          <div className="p-2 rounded-lg bg-red-50 text-[#F65758] font-medium">{cartao.alerta}</div>
+          <div className="p-3 rounded-xl bg-red-50 text-[#9B1C1C] font-medium">{cartao.alerta}</div>
         )}
         {cartao.rendimento_estimado && (
           <div className="text-[11px] text-[#646464]">
@@ -247,7 +251,7 @@ export function CartaoChat({
             type="button"
             disabled={desabilitado}
             onClick={() => aoExecutarAcao("confirmar", cartao.operacao_id)}
-            className="flex-1 py-2 px-3 rounded-full bg-[#820AD1] text-white font-semibold disabled:opacity-40"
+            className="min-h-11 flex-1 py-2 px-3 rounded-full bg-[#820AD1] text-white font-semibold disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5B168F]"
           >
             {textos.acoes.confirmar}
           </button>
@@ -255,7 +259,7 @@ export function CartaoChat({
             type="button"
             disabled={desabilitado}
             onClick={() => aoExecutarAcao("cancelar", cartao.operacao_id)}
-            className="flex-1 py-2 px-3 rounded-full bg-[#F0F0F0] text-[#111111] font-semibold disabled:opacity-40"
+            className="min-h-11 flex-1 py-2 px-3 rounded-full bg-[#F0F0F0] text-[#111111] font-semibold disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5B168F]"
           >
             {textos.acoes.cancelar}
           </button>
@@ -280,11 +284,18 @@ export function CartaoChat({
 
   if (cartao.tipo === "investimentos") {
     return (
-      <div className="mt-2 rounded-2xl border border-[#EEEEEE] bg-white p-3.5 text-xs flex flex-col gap-2">
-        <div className="font-semibold text-sm">
-          Investimentos (classificados até {formatarDiaMes(cartao.resultado.ate_data)})
+      <div className="mt-2 min-w-0 rounded-[20px] border border-[#EEEEEE] bg-white p-4 text-xs leading-relaxed flex flex-col gap-3">
+        <div>
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-[#5B168F]">Carteira</div>
+          <div className="mt-1 font-semibold text-base">
+            Investimentos (classificados até {formatarDiaMes(cartao.resultado.ate_data)})
+          </div>
         </div>
-        <div className="text-[11px] text-[#646464]">{cartao.resultado.rotulo_rentabilidade}</div>
+        <div className="rounded-xl bg-[#F3E9FB] p-3">
+          <div className="text-xs text-[#5B168F]">Valor total</div>
+          <div className="mt-1 text-xl font-semibold tabular-nums text-[#111111]">{formatarReais(cartao.resultado.totais.valor_total_centavos)}</div>
+        </div>
+        <div className="text-xs text-[#4A4A4A]">{cartao.resultado.rotulo_rentabilidade}</div>
         <TabelaCompartilhada
           caption="Posições de investimento"
           itens={cartao.resultado.posicoes}
@@ -302,7 +313,9 @@ export function CartaoChat({
                     {textos.rotulos.classificacao[p.classificacao]} · disp.{" "}
                     {formatarDiaMes(p.data_disponibilidade)}
                   </div>
-                  {p.restricao && <div className="text-[10px] text-[#DB791C]">{p.restricao}</div>}
+                  {p.restricao && <div className="text-[11px] text-[#8A5300]">{p.restricao}</div>}
+                  {p.rotulo_estimativa && <div className="text-[11px] text-[#4A4A4A]">{p.rotulo_estimativa}</div>}
+                  <div className="text-[11px] text-[#4A4A4A]">Fonte: {p.fonte}</div>
                 </div>
               ),
             },
@@ -503,10 +516,13 @@ export function CartaoChat({
         isMelhor: resultado.melhor === alt.id,
       })),
     ];
+    // A escala é apenas visual; os valores exibidos continuam sendo os do contrato.
+    const maiorValor = Math.max(0, ...linhas.map((linha) => linha.valor_centavos));
 
     return (
-      <div className="mt-2 rounded-2xl border border-[#EEEEEE] bg-white p-3.5 text-xs flex flex-col gap-2">
-        <div className="font-semibold text-sm text-[#111111]">
+      <div className="mt-2 min-w-0 rounded-[20px] border border-[#EEEEEE] bg-white p-4 text-xs leading-relaxed flex flex-col gap-3">
+        <div className="text-[11px] font-semibold uppercase tracking-wide text-[#5B168F]">Investimentos</div>
+        <div className="font-semibold text-base text-[#111111]">
           Comparativo · {resultado.posicao.nome}
         </div>
         <div className="text-[11px] text-[#646464]">
@@ -514,6 +530,9 @@ export function CartaoChat({
           {formatarDiaMes(resultado.inicio)} ({resultado.dias_corridos} dias)
         </div>
 
+        {maiorValor > 0 && (
+          <p className="text-xs text-[#4A4A4A]">As barras comparam o valor hoje; os valores exatos estão na tabela.</p>
+        )}
         <TabelaCompartilhada
           caption={`Comparativo de rendimento para ${resultado.posicao.nome}`}
           itens={linhas}
@@ -536,9 +555,16 @@ export function CartaoChat({
               titulo: "Valor hoje",
               alinharDireita: true,
               renderizar: (l) => (
-                <span className={l.isMelhor ? "font-bold tabular-nums whitespace-nowrap" : "tabular-nums whitespace-nowrap"}>
-                  {formatarReais(l.valor_centavos)}
-                </span>
+                <div>
+                  <span className={l.isMelhor ? "font-bold tabular-nums whitespace-nowrap" : "tabular-nums whitespace-nowrap"}>
+                    {formatarReais(l.valor_centavos)}
+                  </span>
+                  {maiorValor > 0 && (
+                    <div aria-hidden="true" className="mt-1 h-1.5 w-full min-w-12 overflow-hidden rounded-full bg-[#EEE8F3]">
+                      <div className="h-full rounded-full bg-[#820AD1]" style={{ width: `${(l.valor_centavos / maiorValor) * 100}%` }} />
+                    </div>
+                  )}
+                </div>
               ),
             },
             {
@@ -584,8 +610,9 @@ export function CartaoChat({
         : `prefixado ${taxaPrefTexto}% a.a.`;
 
     return (
-      <div className="mt-2 rounded-2xl border border-[#EEEEEE] bg-white p-3.5 text-xs flex flex-col gap-2">
-        <div className="font-semibold text-sm text-[#111111]">Simulação · {indexadorTitulo}</div>
+      <div className="mt-2 min-w-0 rounded-[20px] border border-[#EEEEEE] bg-white p-4 text-xs leading-relaxed flex flex-col gap-3">
+        <div className="text-[11px] font-semibold uppercase tracking-wide text-[#5B168F]">Investimentos</div>
+        <div className="font-semibold text-base text-[#111111]">Simulação · {indexadorTitulo}</div>
         <div className="text-[11px] text-[#646464]">
           {formatarReais(resultado.valor_centavos)} de {formatarDiaMes(resultado.inicio)} a{" "}
           {formatarData(resultado.fim)} ({resultado.dias_corridos} dias)
@@ -616,7 +643,7 @@ export function CartaoChat({
               {formatarReais(resultado.rendimento_liquido_centavos)}
             </span>
           </div>
-          <div className="flex justify-between border-t border-[#EEEEEE] pt-1.5 mt-0.5 text-sm font-bold text-[#111111]">
+          <div className="flex flex-wrap items-baseline justify-between gap-2 rounded-xl bg-[#F3E9FB] p-3 mt-1 text-sm font-semibold text-[#111111]">
             <span>Valor final líquido</span>
             <span className="tabular-nums">
               {formatarReais(resultado.valor_final_liquido_centavos)}
@@ -644,13 +671,14 @@ export function CartaoChat({
       resultado.juros_origem === "premissa" ? "premissa do protótipo" : "informado";
 
     return (
-      <div className="mt-2 rounded-2xl border border-[#EEEEEE] bg-white p-3.5 text-xs flex flex-col gap-2">
-        <div className="font-semibold text-sm text-[#111111]">
+      <div className="mt-2 min-w-0 rounded-[20px] border border-[#EEEEEE] bg-white p-4 text-xs leading-relaxed flex flex-col gap-3">
+        <div className="text-[11px] font-semibold uppercase tracking-wide text-[#5B168F]">Simulação de crédito</div>
+        <div className="font-semibold text-base text-[#111111]">
           Pix no crédito · {formatarReais(resultado.valor_centavos)} em {resultado.parcelas}x
         </div>
 
         {resultado.saldo_suficiente === false ? (
-          <div className="p-2 rounded-lg bg-amber-50 text-[#DB791C] font-medium text-[11px]">
+          <div className="p-3 rounded-xl bg-amber-50 text-[#8A5300] font-medium text-xs">
             Saldo em conta insuficiente: faltam {formatarReais(resultado.falta_saldo_centavos)}
           </div>
         ) : (
@@ -669,11 +697,11 @@ export function CartaoChat({
             <span className="text-[#646464]">IOF</span>
             <span className="tabular-nums">{formatarReais(resultado.iof_centavos)}</span>
           </div>
-          <div className="flex justify-between border-t border-[#EEEEEE] pt-1.5 mt-0.5 text-sm font-bold text-[#111111]">
+          <div className="flex flex-wrap items-baseline justify-between gap-2 rounded-xl bg-[#F3E9FB] p-3 mt-1 text-sm font-semibold text-[#111111]">
             <span>Total pago</span>
             <span className="tabular-nums">{formatarReais(resultado.total_pago_centavos)}</span>
           </div>
-          <div className="flex justify-between font-semibold text-[#F65758]">
+          <div className="flex justify-between gap-2 font-semibold text-[#9B1C1C]">
             <span>Custo do crédito</span>
             <span className="tabular-nums">{formatarReais(resultado.custo_total_centavos)}</span>
           </div>
@@ -711,7 +739,7 @@ export function CartaoChat({
         />
 
         {resultado.excede_limite && (
-          <div className="p-2 rounded-lg bg-red-50 text-[#F65758] font-medium text-[11px]">
+          <div className="p-3 rounded-xl bg-red-50 text-[#9B1C1C] font-medium text-xs">
             O total passa do limite disponível do cartão (
             {formatarReais(resultado.limite_disponivel_centavos)})
           </div>

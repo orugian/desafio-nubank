@@ -132,7 +132,7 @@ export function TelaInvestimentos({
               </span>
             </div>
             <div className="flex flex-wrap gap-x-3 gap-y-1 text-[#646464]">
-              <span>Aplicado: {formatarReais(p.aplicado_centavos)}</span>
+              <span>Aplicado: {mostrarSaldos ? formatarReais(p.aplicado_centavos) : "••••"}</span>
               <span>Rentabilidade: {p.rentabilidade_pct}%</span>
               {p.cdi_pct && <span>{p.cdi_pct}% do CDI</span>}
               <span>Disponível: {formatarDiaMes(p.data_disponibilidade)}</span>
@@ -143,7 +143,7 @@ export function TelaInvestimentos({
                 <span>
                   Proteção: {p.protecao.tipo}
                   {p.protecao.tipo === "parcial"
-                    ? ` (${formatarReais(p.protecao.valor_centavos)})`
+                    ? ` (${mostrarSaldos ? formatarReais(p.protecao.valor_centavos) : "••••"})`
                     : ""}
                 </span>
               </div>
@@ -178,7 +178,7 @@ export function TelaInvestimentos({
                     <div className="text-[11px] text-[#259E56] font-medium">
                       Proteção {p.protecao.tipo}
                       {p.protecao.tipo === "parcial"
-                        ? `: ${formatarReais(p.protecao.valor_centavos)}`
+                        ? `: ${mostrarSaldos ? formatarReais(p.protecao.valor_centavos) : "••••"}`
                         : ""}
                     </div>
                   )}
@@ -200,7 +200,7 @@ export function TelaInvestimentos({
                     {mostrarSaldos ? formatarReais(p.valor_atual_centavos) : "••••"}
                   </div>
                   <div className="text-[11px] text-[#646464]">
-                    Aplicado: {formatarReais(p.aplicado_centavos)}
+                    Aplicado: {mostrarSaldos ? formatarReais(p.aplicado_centavos) : "••••"}
                   </div>
                   <div className="text-[11px] text-[#259E56]">Rent.: {p.rentabilidade_pct}%</div>
                   {p.valorizacao_periodo_pct !== null && (
@@ -351,12 +351,15 @@ export function TelaConta({
                 {p.previsto ? ` · ${textos.rotulos.previsto}` : ""}
               </div>
               {p.estimativa_texto && (
-                <div className="text-[11px] text-[#5B168F]">{p.estimativa_texto}</div>
+                <div className="text-[11px] text-[#5B168F]">
+                  {mostrarSaldos ? p.estimativa_texto : "••••"}
+                </div>
               )}
             </div>
             <div className="font-semibold tabular-nums">
-              {p.tipo === "saida" ? "− " : "+ "}
-              {formatarReais(p.valor_centavos)}
+              {mostrarSaldos
+                ? `${p.tipo === "saida" ? "− " : "+ "}${formatarReais(p.valor_centavos)}`
+                : "••••"}
             </div>
           </div>
         ))}
@@ -403,7 +406,9 @@ export function TelaConta({
               titulo: "Valor",
               alinharDireita: true,
               renderizar: (i) =>
-                `${i.tipo === "saida" ? "−" : "+"}${formatarReais(i.valor_centavos)}`,
+                mostrarSaldos
+                  ? `${i.tipo === "saida" ? "−" : "+"}${formatarReais(i.valor_centavos)}`
+                  : "••••",
             },
           ]}
         />
@@ -414,10 +419,12 @@ export function TelaConta({
 
 export function TelaCartao({
   visao,
+  mostrarSaldos = true,
   aoVoltar,
   aoNaoDisponivel,
 }: {
   visao: VisaoApp;
+  mostrarSaldos?: boolean;
   aoVoltar: () => void;
   aoNaoDisponivel: () => void;
 }) {
@@ -454,19 +461,19 @@ export function TelaCartao({
       <section className="px-6 py-6 flex justify-between items-start">
         <div className="flex flex-col gap-1">
           <div className="text-xs text-[#646464]">
-            Fatura fechada ({faturaPrincipal.fatura_id})
+            Fatura {cartao.fatura_fechada ? "fechada" : "aberta"} ({faturaPrincipal.fatura_id})
           </div>
           <div className="text-3xl font-semibold text-[#111111] tabular-nums">
-            {formatarReais(faturaPrincipal.valor_centavos)}
+            {mostrarSaldos ? formatarReais(faturaPrincipal.valor_centavos) : "••••"}
           </div>
           <div className="text-xs text-[#646464] mt-1">
             Limite total:{" "}
             <span className="font-semibold text-[#111111]">
-              {formatarReais(cartao.limite_centavos)}
+              {mostrarSaldos ? formatarReais(cartao.limite_centavos) : "••••"}
             </span>
           </div>
           <div className="text-xs text-[#646464]">
-            Vence em {formatarDiaMes(faturaPrincipal.vencimento)} · Fechou em{" "}
+            Vence em {formatarDiaMes(faturaPrincipal.vencimento)} · Fechamento em{" "}
             {formatarDiaMes(faturaPrincipal.fechamento)}
           </div>
 
@@ -488,20 +495,14 @@ export function TelaCartao({
           </div>
         </div>
 
-        {/* Barra vertical segmentada estreita à direita (IMG_2104) */}
-        <div className="w-2.5 h-36 rounded-full overflow-hidden flex flex-col gap-0.5 bg-[#EEEEEE]">
-          <div className="flex-1 bg-[#259E56]" />
-          <div className="h-10 bg-[#F65758]" />
-          <div className="h-5 bg-[#459BCA]" />
-        </div>
       </section>
 
       <section className="px-6 py-4 border-t border-[#EEEEEE] flex flex-col gap-3">
         <h2 className="text-sm font-semibold text-[#111111]">
-          Itens da fatura fechada ({faturaPrincipal.fatura_id})
+          Itens da fatura {cartao.fatura_fechada ? "fechada" : "aberta"} ({faturaPrincipal.fatura_id})
         </h2>
         <TabelaCompartilhada
-          caption="Itens da fatura fechada"
+          caption={`Itens da fatura ${cartao.fatura_fechada ? "fechada" : "aberta"}`}
           itens={faturaPrincipal.itens}
           obterChave={(i, idx) => `fech-${idx}`}
           colunas={[
@@ -521,12 +522,13 @@ export function TelaCartao({
               chave: "valor",
               titulo: "Valor",
               alinharDireita: true,
-              renderizar: (i) => formatarReais(i.valor_centavos),
+              renderizar: (i) => mostrarSaldos ? formatarReais(i.valor_centavos) : "••••",
             },
           ]}
         />
       </section>
 
+      {cartao.fatura_fechada && (
       <section className="px-6 py-4 border-t border-[#EEEEEE] flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-[#111111]">
@@ -534,7 +536,7 @@ export function TelaCartao({
             {formatarDiaMes(cartao.fatura_aberta.vencimento)}
           </h2>
           <span className="text-xs font-semibold tabular-nums">
-            {formatarReais(cartao.fatura_aberta.valor_centavos)}
+            {mostrarSaldos ? formatarReais(cartao.fatura_aberta.valor_centavos) : "••••"}
           </span>
         </div>
         <TabelaCompartilhada
@@ -551,11 +553,12 @@ export function TelaCartao({
               chave: "valor",
               titulo: "Valor",
               alinharDireita: true,
-              renderizar: (i) => formatarReais(i.valor_centavos),
+              renderizar: (i) => mostrarSaldos ? formatarReais(i.valor_centavos) : "••••",
             },
           ]}
         />
       </section>
+      )}
 
       {cartao.proximas.length > 0 && (
         <section className="px-6 py-4 border-t border-[#EEEEEE] flex flex-col gap-2">
@@ -568,7 +571,9 @@ export function TelaCartao({
               <span>
                 {f.fatura_id} · vencimento {formatarDiaMes(f.vencimento)}
               </span>
-              <span className="font-semibold tabular-nums">{formatarReais(f.valor_centavos)}</span>
+              <span className="font-semibold tabular-nums">
+                {mostrarSaldos ? formatarReais(f.valor_centavos) : "••••"}
+              </span>
             </div>
           ))}
         </section>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowUpDown,
   Barcode,
@@ -13,7 +13,6 @@ import {
   Menu,
   PiggyBank,
   Smartphone,
-  Sparkles,
   UserRound,
   Wallet,
 } from "lucide-react";
@@ -65,6 +64,8 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
   const [falhaChat, setFalhaChat] = useState<Falha | null>(null);
   const [avisosChat, setAvisosChat] = useState<AvisoTurno[]>([]);
   const [contadorMsg, setContadorMsg] = useState(1);
+  // Lock síncrono: o estado React só é atualizado no próximo render.
+  const operacaoEmAndamento = useRef(false);
 
   useEffect(() => {
     try {
@@ -96,24 +97,52 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
   }, [estado, visao, config, abaAtual, chatAberto]);
 
   async function iniciarPersona(persona_id: string) {
-    setAvisoTemporario(null);
-    setErroFatal(null);
-    setFalhaChat(null);
-    setAvisosChat([]);
-    setUltimoEnvio(null);
-    const res = await cliente.criarSessao({ persona_id });
-    if (res.status === "ok") {
-      setEstado(res.estado);
-      setVisao(res.visao);
-      setConfig(res.config);
-      setAbaAtual("home");
-    } else {
-      setErroFatal(res.falha.mensagem);
+    if (operacaoEmAndamento.current) return;
+    operacaoEmAndamento.current = true;
+    setEnviando(true);
+    const informarFalha = (falha: Falha) => {
+      if (estado) {
+        setAvisoTemporario(falha.mensagem);
+        setFalhaChat({
+          ...falha,
+          mensagem: `${falha.mensagem} Tente iniciar uma nova conversa novamente.`,
+          pode_tentar_novamente: false,
+        });
+      } else {
+        setErroFatal(falha.mensagem);
+      }
+    };
+    try {
+      const res = await cliente.criarSessao({ persona_id });
+      if (res.status === "ok") {
+        setEstado(res.estado);
+        setVisao(res.visao);
+        setConfig(res.config);
+        setAbaAtual("home");
+        setAvisoTemporario(null);
+        setErroFatal(null);
+        setFalhaChat(null);
+        setAvisosChat([]);
+        setUltimoEnvio(null);
+      } else {
+        informarFalha(res.falha);
+      }
+    } catch {
+      informarFalha({
+        tipo: "F-03",
+        codigo: "INDISPONIVEL",
+        mensagem: textos.falhas["F-03"],
+        pode_tentar_novamente: false,
+      });
+    } finally {
+      operacaoEmAndamento.current = false;
+      setEnviando(false);
     }
   }
 
   async function dispararTurno(msg: { id: string; texto: string }) {
-    if (!estado || enviando) return;
+    if (!estado || operacaoEmAndamento.current) return;
+    operacaoEmAndamento.current = true;
     const versaoEsperada = estado.versao + 1;
     setEnviando(true);
     setFalhaChat(null);
@@ -152,6 +181,7 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
         pode_tentar_novamente: true,
       });
     } finally {
+      operacaoEmAndamento.current = false;
       setEnviando(false);
     }
   }
@@ -171,7 +201,8 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
     tipo: "confirmar" | "cancelar",
     operacao_id: string,
   ) {
-    if (!estado || enviando) return;
+    if (!estado || operacaoEmAndamento.current) return;
+    operacaoEmAndamento.current = true;
     const versaoEsperada = estado.versao + 1;
     setEnviando(true);
     setFalhaChat(null);
@@ -207,6 +238,7 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
         pode_tentar_novamente: true,
       });
     } finally {
+      operacaoEmAndamento.current = false;
       setEnviando(false);
     }
   }
@@ -217,12 +249,12 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
 
   if (!estado || !visao || !config) {
     return (
-      <div className="min-h-screen bg-[#F0F0F0] flex justify-center">
-        <div className="w-full max-w-[430px] min-h-screen bg-white flex flex-col shadow-sm">
+      <div className="newai-viewport">
+        <div className="newai-frame">
           <div className="bg-[#111111] text-white text-xs py-1.5 px-4 text-center font-medium">
             {textos.faixa_prototipo}
           </div>
-          <main className="flex-1 p-6 flex flex-col gap-6">
+          <main className="newai-scroll p-6 flex flex-col gap-6">
             <div>
               <h1 className="text-2xl font-semibold text-[#111111]">Escolha uma persona</h1>
               <p className="text-sm text-[#646464] mt-1">
@@ -240,6 +272,7 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
                   key={p.id}
                   type="button"
                   onClick={() => void iniciarPersona(p.id)}
+                  disabled={enviando}
                   className="w-full text-left p-4 rounded-2xl border border-[#EEEEEE] bg-[#F8F8F8] hover:bg-[#F3E9FB] transition-colors flex items-center justify-between gap-3"
                 >
                   <div>
@@ -257,12 +290,12 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#F0F0F0] flex justify-center">
-      <div className="w-full max-w-[430px] min-h-screen bg-white flex flex-col relative pb-28 shadow-sm">
+    <div className="newai-viewport">
+      <div className="newai-frame">
         {/* Faixa de protótipo permanente em todas as telas */}
-        <div className="bg-[#111111] text-white text-xs py-1.5 px-4 flex items-center justify-between gap-2">
+        <div className="newai-topbar bg-[#111111] text-white text-xs px-4">
           <span>{textos.faixa_prototipo}</span>
-          <div className="flex items-center gap-2">
+          <div className="newai-topbar-actions">
             <button
               type="button"
               onClick={() => setAbaAtual("como_funciona")}
@@ -273,9 +306,17 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
             <button
               type="button"
               onClick={() => void iniciarPersona(estado.persona_id)}
-              className="underline text-[11px] text-white"
+              disabled={enviando}
+              className="underline text-[11px] text-white disabled:opacity-50"
             >
               Recomeçar
+            </button>
+            <button
+              type="button"
+              onClick={() => setChatAberto(true)}
+              className="newai-launcher"
+            >
+              <span>New<span className="newai-launcher-accent">AI</span></span>
             </button>
           </div>
         </div>
@@ -296,6 +337,7 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
           </div>
         )}
 
+        <div className="newai-scroll">
         {abaAtual === "home" && (
           <div className="flex flex-col flex-1">
             {/* Cabeçalho roxo (IMG_2103) */}
@@ -329,7 +371,9 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
                   <button
                     type="button"
                     aria-label="Trocar persona"
+                    disabled={enviando}
                     onClick={() => {
+                      if (operacaoEmAndamento.current) return;
                       window.sessionStorage.removeItem(CHAVE_STORAGE);
                       setEstado(null);
                       setVisao(null);
@@ -446,7 +490,9 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
                 >
                   <div>
                     <h2 className="text-lg font-semibold text-[#111111]">Cartão de crédito</h2>
-                    <p className="text-xs text-[#646464] mt-1">Fatura fechada</p>
+                    <p className="text-xs text-[#646464] mt-1">
+                      {visao.cartao.fatura_fechada ? "Fatura fechada" : "Fatura aberta"}
+                    </p>
                     <p className="text-xl font-semibold text-[#111111] mt-0.5 tabular-nums">
                       {mostrarSaldos
                         ? formatarReais(
@@ -494,8 +540,7 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
                       </span>
                     </div>
                     <span className="font-semibold tabular-nums text-[#111111]">
-                      {p.tipo === "saida" ? "− " : "+ "}
-                      {formatarReais(p.valor_centavos)}
+                      {mostrarSaldos ? `${p.tipo === "saida" ? "−" : "+"} ${formatarReais(p.valor_centavos)}` : "••••"}
                     </span>
                   </div>
                 ))}
@@ -528,6 +573,7 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
         {abaAtual === "cartao" && (
           <TelaCartao
             visao={visao}
+            mostrarSaldos={mostrarSaldos}
             aoVoltar={() => setAbaAtual("home")}
             aoNaoDisponivel={acionarNaoDisponivel}
           />
@@ -541,20 +587,12 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
           />
         )}
 
-        {/* Botão NewAI flutuante em todas as telas */}
-        <button
-          type="button"
-          onClick={() => setChatAberto(true)}
-          className="fixed bottom-20 right-4 z-30 flex items-center gap-2 rounded-full bg-[#820AD1] text-white px-4 py-3 text-sm font-semibold shadow-md hover:bg-[#5B168F]"
-        >
-          <Sparkles className="w-4 h-4" />
-          <span>NewAI</span>
-        </button>
+        </div>
 
-        {/* Barra inferior flutuante com 3 ícones */}
+        {/* Barra inferior reservada dentro da moldura. */}
         <nav
           aria-label="Navegação principal"
-          className="fixed bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-white/95 border border-[#EEEEEE] rounded-full px-4 py-2 shadow-sm"
+          className="newai-navigation flex items-center gap-2 bg-white/95 border border-[#EEEEEE] rounded-full px-4 py-2 shadow-sm"
         >
           <button
             type="button"
