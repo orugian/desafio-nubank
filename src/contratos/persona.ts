@@ -233,6 +233,7 @@ export const esquemaPersona = z.strictObject({
   conta: z.strictObject({
     saldo_30_07_centavos: esquemaCentavos,
     saldo_inicio_hoje_centavos: esquemaCentavos,
+    saldo_inicio_historico_centavos: esquemaCentavos.optional(),
   }),
   historico: z.array(esquemaLancamento),
   compromissos: z.array(esquemaCompromisso),

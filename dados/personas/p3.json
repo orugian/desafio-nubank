@@ -10,9 +10,305 @@
   },
   "conta": {
     "saldo_30_07_centavos": 191700,
-    "saldo_inicio_hoje_centavos": 250000
+    "saldo_inicio_hoje_centavos": 250000,
+    "saldo_inicio_historico_centavos": 230700
   },
   "historico": [
+    {
+      "id": "L30044",
+      "data": "2026-05-04",
+      "descricao": "Mensalidade escolar",
+      "tipo": "saida",
+      "meio": "boleto",
+      "categoria": "educacao",
+      "valor_centavos": 90000,
+      "recorrencia_id": "E1"
+    },
+    {
+      "id": "L30041",
+      "data": "2026-05-05",
+      "descricao": "Pagamento fatura cartão",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "fatura",
+      "valor_centavos": 65000,
+      "fatura_id": "F2605"
+    },
+    {
+      "id": "L30057",
+      "data": "2026-05-06",
+      "descricao": "Padaria Família",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "mercado",
+      "valor_centavos": 9500
+    },
+    {
+      "id": "L30039",
+      "data": "2026-05-10",
+      "descricao": "Supermercado",
+      "tipo": "saida",
+      "meio": "cartao_credito",
+      "categoria": "mercado",
+      "valor_centavos": 42000
+    },
+    {
+      "id": "L30047",
+      "data": "2026-05-13",
+      "descricao": "Salário",
+      "tipo": "entrada",
+      "meio": "salario",
+      "categoria": "receitas",
+      "valor_centavos": 420000,
+      "recorrencia_id": "E3"
+    },
+    {
+      "id": "L30058",
+      "data": "2026-05-14",
+      "descricao": "Transporte Escolar",
+      "tipo": "saida",
+      "meio": "pix",
+      "categoria": "transporte",
+      "valor_centavos": 11000
+    },
+    {
+      "id": "L30040",
+      "data": "2026-05-18",
+      "descricao": "Combustível",
+      "tipo": "saida",
+      "meio": "cartao_credito",
+      "categoria": "transporte",
+      "valor_centavos": 26000
+    },
+    {
+      "id": "L30050",
+      "data": "2026-05-18",
+      "descricao": "Financiamento",
+      "tipo": "saida",
+      "meio": "debito_automatico",
+      "categoria": "outros",
+      "valor_centavos": 130000,
+      "recorrencia_id": "E4"
+    },
+    {
+      "id": "L30059",
+      "data": "2026-05-22",
+      "descricao": "Lazer Parque",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "lazer",
+      "valor_centavos": 10000
+    },
+    {
+      "id": "L30053",
+      "data": "2026-05-28",
+      "descricao": "Condomínio",
+      "tipo": "saida",
+      "meio": "boleto",
+      "categoria": "moradia",
+      "valor_centavos": 65000,
+      "recorrencia_id": "E5"
+    },
+    {
+      "id": "L30060",
+      "data": "2026-06-03",
+      "descricao": "Hortifruti",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "mercado",
+      "valor_centavos": 9800
+    },
+    {
+      "id": "L30045",
+      "data": "2026-06-04",
+      "descricao": "Mensalidade escolar",
+      "tipo": "saida",
+      "meio": "boleto",
+      "categoria": "educacao",
+      "valor_centavos": 90000,
+      "recorrencia_id": "E1"
+    },
+    {
+      "id": "L30042",
+      "data": "2026-06-05",
+      "descricao": "Pagamento fatura cartão",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "fatura",
+      "valor_centavos": 68000,
+      "fatura_id": "F2606"
+    },
+    {
+      "id": "L30037",
+      "data": "2026-06-08",
+      "descricao": "Supermercado",
+      "tipo": "saida",
+      "meio": "cartao_credito",
+      "categoria": "mercado",
+      "valor_centavos": 43000
+    },
+    {
+      "id": "L30056",
+      "data": "2026-06-10",
+      "descricao": "Aplicação CDB liquidez diária",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "investimentos",
+      "valor_centavos": 150000,
+      "posicao_id": "INV7"
+    },
+    {
+      "id": "L30061",
+      "data": "2026-06-12",
+      "descricao": "Transporte Escolar",
+      "tipo": "saida",
+      "meio": "pix",
+      "categoria": "transporte",
+      "valor_centavos": 11000
+    },
+    {
+      "id": "L30048",
+      "data": "2026-06-13",
+      "descricao": "Salário",
+      "tipo": "entrada",
+      "meio": "salario",
+      "categoria": "receitas",
+      "valor_centavos": 420000,
+      "recorrencia_id": "E3"
+    },
+    {
+      "id": "L30051",
+      "data": "2026-06-18",
+      "descricao": "Financiamento",
+      "tipo": "saida",
+      "meio": "debito_automatico",
+      "categoria": "outros",
+      "valor_centavos": 130000,
+      "recorrencia_id": "E4"
+    },
+    {
+      "id": "L30038",
+      "data": "2026-06-20",
+      "descricao": "Combustível",
+      "tipo": "saida",
+      "meio": "cartao_credito",
+      "categoria": "transporte",
+      "valor_centavos": 27000
+    },
+    {
+      "id": "L30062",
+      "data": "2026-06-24",
+      "descricao": "Papelaria",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "compras",
+      "valor_centavos": 9200
+    },
+    {
+      "id": "L30054",
+      "data": "2026-06-28",
+      "descricao": "Condomínio",
+      "tipo": "saida",
+      "meio": "boleto",
+      "categoria": "moradia",
+      "valor_centavos": 65000,
+      "recorrencia_id": "E5"
+    },
+    {
+      "id": "L30046",
+      "data": "2026-07-04",
+      "descricao": "Mensalidade escolar",
+      "tipo": "saida",
+      "meio": "boleto",
+      "categoria": "educacao",
+      "valor_centavos": 90000,
+      "recorrencia_id": "E1"
+    },
+    {
+      "id": "L30043",
+      "data": "2026-07-05",
+      "descricao": "Pagamento fatura cartão",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "fatura",
+      "valor_centavos": 70000,
+      "fatura_id": "F2607"
+    },
+    {
+      "id": "L30063",
+      "data": "2026-07-07",
+      "descricao": "Hortifruti",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "mercado",
+      "valor_centavos": 10500
+    },
+    {
+      "id": "L30035",
+      "data": "2026-07-10",
+      "descricao": "Supermercado",
+      "tipo": "saida",
+      "meio": "cartao_credito",
+      "categoria": "mercado",
+      "valor_centavos": 42000
+    },
+    {
+      "id": "L30049",
+      "data": "2026-07-13",
+      "descricao": "Salário",
+      "tipo": "entrada",
+      "meio": "salario",
+      "categoria": "receitas",
+      "valor_centavos": 420000,
+      "recorrencia_id": "E3"
+    },
+    {
+      "id": "L30064",
+      "data": "2026-07-15",
+      "descricao": "Transporte Escolar",
+      "tipo": "saida",
+      "meio": "pix",
+      "categoria": "transporte",
+      "valor_centavos": 11000
+    },
+    {
+      "id": "L30052",
+      "data": "2026-07-18",
+      "descricao": "Financiamento",
+      "tipo": "saida",
+      "meio": "debito_automatico",
+      "categoria": "outros",
+      "valor_centavos": 130000,
+      "recorrencia_id": "E4"
+    },
+    {
+      "id": "L30036",
+      "data": "2026-07-19",
+      "descricao": "Combustível",
+      "tipo": "saida",
+      "meio": "cartao_credito",
+      "categoria": "transporte",
+      "valor_centavos": 26000
+    },
+    {
+      "id": "L30065",
+      "data": "2026-07-22",
+      "descricao": "Lanche Tarde",
+      "tipo": "saida",
+      "meio": "pix",
+      "categoria": "restaurante",
+      "valor_centavos": 9000
+    },
+    {
+      "id": "L30055",
+      "data": "2026-07-28",
+      "descricao": "Condomínio",
+      "tipo": "saida",
+      "meio": "boleto",
+      "categoria": "moradia",
+      "valor_centavos": 65000,
+      "recorrencia_id": "E5"
+    },
     {
       "id": "L30026",
       "data": "2026-08-03",
@@ -394,10 +690,10 @@
   "gasto_diario": {
     "valor_centavos": 1000,
     "base": {
-      "de": "2026-07-30",
+      "de": "2026-04-30",
       "ate": "2026-10-29",
-      "dias": 92,
-      "total_centavos": 92000
+      "dias": 183,
+      "total_centavos": 183000
     }
   },
   "cartao": {
@@ -416,6 +712,67 @@
     ],
     "faturas": [
       {
+        "id": "F2605",
+        "fechamento": "2026-04-29",
+        "vencimento": "2026-05-05",
+        "status": "fechada",
+        "valor_centavos": 65000,
+        "itens": [
+          {
+            "data": "2026-04-10",
+            "descricao": "Supermercado",
+            "valor_centavos": 40000
+          },
+          {
+            "data": "2026-04-18",
+            "descricao": "Combustível",
+            "valor_centavos": 25000
+          }
+        ]
+      },
+      {
+        "id": "F2606",
+        "fechamento": "2026-05-29",
+        "vencimento": "2026-06-05",
+        "status": "fechada",
+        "valor_centavos": 68000,
+        "itens": [
+          {
+            "lancamento_id": "L30039",
+            "data": "2026-05-10",
+            "descricao": "Supermercado",
+            "valor_centavos": 42000
+          },
+          {
+            "lancamento_id": "L30040",
+            "data": "2026-05-18",
+            "descricao": "Combustível",
+            "valor_centavos": 26000
+          }
+        ]
+      },
+      {
+        "id": "F2607",
+        "fechamento": "2026-06-29",
+        "vencimento": "2026-07-05",
+        "status": "fechada",
+        "valor_centavos": 70000,
+        "itens": [
+          {
+            "lancamento_id": "L30037",
+            "data": "2026-06-08",
+            "descricao": "Supermercado",
+            "valor_centavos": 43000
+          },
+          {
+            "lancamento_id": "L30038",
+            "data": "2026-06-20",
+            "descricao": "Combustível",
+            "valor_centavos": 27000
+          }
+        ]
+      },
+      {
         "id": "F2608",
         "fechamento": "2026-07-29",
         "vencimento": "2026-08-05",
@@ -423,11 +780,13 @@
         "valor_centavos": 68000,
         "itens": [
           {
+            "lancamento_id": "L30035",
             "data": "2026-07-10",
             "descricao": "Supermercado",
             "valor_centavos": 42000
           },
           {
+            "lancamento_id": "L30036",
             "data": "2026-07-19",
             "descricao": "Combustível",
             "valor_centavos": 26000

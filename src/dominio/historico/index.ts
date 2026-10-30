@@ -19,6 +19,9 @@ import {
 import { diaDaSemana, somarDias } from "@/dominio/calendario";
 
 const ROTULOS_MES: Record<string, string> = {
+  "04": "Abril/2026",
+  "05": "Maio/2026",
+  "06": "Junho/2026",
   "07": "Julho/2026",
   "08": "Agosto/2026",
   "09": "Setembro/2026",

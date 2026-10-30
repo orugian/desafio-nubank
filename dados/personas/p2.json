@@ -10,9 +10,263 @@
   },
   "conta": {
     "saldo_30_07_centavos": 97858,
-    "saldo_inicio_hoje_centavos": 90000
+    "saldo_inicio_hoje_centavos": 90000,
+    "saldo_inicio_historico_centavos": 135858
   },
   "historico": [
+    {
+      "id": "L20041",
+      "data": "2026-05-02",
+      "descricao": "Padaria Central",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "mercado",
+      "valor_centavos": 8500
+    },
+    {
+      "id": "L20028",
+      "data": "2026-05-03",
+      "descricao": "Internet",
+      "tipo": "saida",
+      "meio": "debito_automatico",
+      "categoria": "assinaturas",
+      "valor_centavos": 12000,
+      "recorrencia_id": "E1"
+    },
+    {
+      "id": "L20040",
+      "data": "2026-05-04",
+      "descricao": "Aporte Fundo DI",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "investimentos",
+      "valor_centavos": 200000,
+      "posicao_id": "INV4"
+    },
+    {
+      "id": "L20042",
+      "data": "2026-05-07",
+      "descricao": "Delivery Pizza",
+      "tipo": "saida",
+      "meio": "pix",
+      "categoria": "delivery",
+      "valor_centavos": 7200
+    },
+    {
+      "id": "L20031",
+      "data": "2026-05-08",
+      "descricao": "Aluguel",
+      "tipo": "saida",
+      "meio": "pix",
+      "categoria": "moradia",
+      "valor_centavos": 110000,
+      "recorrencia_id": "E2"
+    },
+    {
+      "id": "L20034",
+      "data": "2026-05-12",
+      "descricao": "Conta de luz",
+      "tipo": "saida",
+      "meio": "debito_automatico",
+      "categoria": "contas_casa",
+      "valor_centavos": 17000,
+      "recorrencia_id": "E4"
+    },
+    {
+      "id": "L20043",
+      "data": "2026-05-14",
+      "descricao": "Supermercado Sul",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "mercado",
+      "valor_centavos": 19000
+    },
+    {
+      "id": "L20037",
+      "data": "2026-05-15",
+      "descricao": "Serviço prestado a cliente",
+      "tipo": "entrada",
+      "meio": "pix",
+      "categoria": "receitas",
+      "valor_centavos": 240000
+    },
+    {
+      "id": "L20044",
+      "data": "2026-05-21",
+      "descricao": "Transporte Urbano",
+      "tipo": "saida",
+      "meio": "pix",
+      "categoria": "transporte",
+      "valor_centavos": 6800
+    },
+    {
+      "id": "L20045",
+      "data": "2026-05-27",
+      "descricao": "Restaurante Prato Feito",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "restaurante",
+      "valor_centavos": 7500
+    },
+    {
+      "id": "L20029",
+      "data": "2026-06-03",
+      "descricao": "Internet",
+      "tipo": "saida",
+      "meio": "debito_automatico",
+      "categoria": "assinaturas",
+      "valor_centavos": 12000,
+      "recorrencia_id": "E1"
+    },
+    {
+      "id": "L20046",
+      "data": "2026-06-04",
+      "descricao": "Delivery Hambúrguer",
+      "tipo": "saida",
+      "meio": "pix",
+      "categoria": "delivery",
+      "valor_centavos": 6400
+    },
+    {
+      "id": "L20032",
+      "data": "2026-06-08",
+      "descricao": "Aluguel",
+      "tipo": "saida",
+      "meio": "pix",
+      "categoria": "moradia",
+      "valor_centavos": 110000,
+      "recorrencia_id": "E2"
+    },
+    {
+      "id": "L20047",
+      "data": "2026-06-11",
+      "descricao": "Supermercado Sul",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "mercado",
+      "valor_centavos": 18500
+    },
+    {
+      "id": "L20035",
+      "data": "2026-06-12",
+      "descricao": "Conta de luz",
+      "tipo": "saida",
+      "meio": "debito_automatico",
+      "categoria": "contas_casa",
+      "valor_centavos": 16000,
+      "recorrencia_id": "E4"
+    },
+    {
+      "id": "L20038",
+      "data": "2026-06-15",
+      "descricao": "Serviço prestado a cliente",
+      "tipo": "entrada",
+      "meio": "pix",
+      "categoria": "receitas",
+      "valor_centavos": 235000
+    },
+    {
+      "id": "L20048",
+      "data": "2026-06-18",
+      "descricao": "Delivery Japonês",
+      "tipo": "saida",
+      "meio": "pix",
+      "categoria": "delivery",
+      "valor_centavos": 9600
+    },
+    {
+      "id": "L20049",
+      "data": "2026-06-25",
+      "descricao": "Lazer e Cultura",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "lazer",
+      "valor_centavos": 8500
+    },
+    {
+      "id": "L20030",
+      "data": "2026-07-03",
+      "descricao": "Internet",
+      "tipo": "saida",
+      "meio": "debito_automatico",
+      "categoria": "assinaturas",
+      "valor_centavos": 12000,
+      "recorrencia_id": "E1"
+    },
+    {
+      "id": "L20050",
+      "data": "2026-07-03",
+      "descricao": "Mercado da Esquina",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "mercado",
+      "valor_centavos": 17500
+    },
+    {
+      "id": "L20033",
+      "data": "2026-07-08",
+      "descricao": "Aluguel",
+      "tipo": "saida",
+      "meio": "pix",
+      "categoria": "moradia",
+      "valor_centavos": 110000,
+      "recorrencia_id": "E2"
+    },
+    {
+      "id": "L20051",
+      "data": "2026-07-11",
+      "descricao": "Delivery Lanches",
+      "tipo": "saida",
+      "meio": "pix",
+      "categoria": "delivery",
+      "valor_centavos": 6500
+    },
+    {
+      "id": "L20036",
+      "data": "2026-07-12",
+      "descricao": "Conta de luz",
+      "tipo": "saida",
+      "meio": "debito_automatico",
+      "categoria": "contas_casa",
+      "valor_centavos": 17500,
+      "recorrencia_id": "E4"
+    },
+    {
+      "id": "L20039",
+      "data": "2026-07-15",
+      "descricao": "Serviço prestado a cliente",
+      "tipo": "entrada",
+      "meio": "pix",
+      "categoria": "receitas",
+      "valor_centavos": 240000
+    },
+    {
+      "id": "L20052",
+      "data": "2026-07-16",
+      "descricao": "Transporte Urbano",
+      "tipo": "saida",
+      "meio": "pix",
+      "categoria": "transporte",
+      "valor_centavos": 7000
+    },
+    {
+      "id": "L20053",
+      "data": "2026-07-20",
+      "descricao": "Restaurante Bairro",
+      "tipo": "saida",
+      "meio": "debito",
+      "categoria": "restaurante",
+      "valor_centavos": 8200
+    },
+    {
+      "id": "L20054",
+      "data": "2026-07-26",
+      "descricao": "Feira Livre",
+      "tipo": "saida",
+      "meio": "pix",
+      "categoria": "mercado",
+      "valor_centavos": 5300
+    },
     {
       "id": "L20014",
       "data": "2026-08-02",
@@ -357,10 +611,10 @@
   "gasto_diario": {
     "valor_centavos": 1500,
     "base": {
-      "de": "2026-07-30",
+      "de": "2026-04-30",
       "ate": "2026-10-29",
-      "dias": 92,
-      "total_centavos": 138000
+      "dias": 183,
+      "total_centavos": 274500
     }
   },
   "cartao": null,

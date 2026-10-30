@@ -6,7 +6,7 @@ import type { NomeFerramenta } from "./ferramentas";
 
 export const descricoesFerramentas: Record<NomeFerramenta, string> = {
   consultar_historico:
-    "Consulta lançamentos dos últimos 3 meses (30/07 a 29/10/2026), com filtros e agrupamento. Somente leitura.",
+    "Consulta lançamentos dos últimos 6 meses (30/04 a 29/10/2026), com filtros e agrupamento. Somente leitura.",
   consultar_cartao:
     "Mostra o cartão de crédito: fatura fechada, fatura aberta e próximas faturas com parcelas. Somente leitura. Antes de incluir uma compra declarada com descrição e valor, consulte para triar item já existente. Se encontrar correspondência, cite o item e a fatura e pergunte se é outra compra. A consulta não registra compra nem devolve por si só erro tipado de duplicidade.",
   consultar_investimentos:

@@ -87,15 +87,27 @@ export function verificarInvariantes(bruta: unknown): ViolacaoInvariante[] {
     vistos.add(id);
   }
 
-  // 2. saldo_30_07 + lançamentos de conta (sem compras no cartão) = saldo no início de hoje.
-  const movimento = p.historico
-    .filter((l) => l.meio !== "cartao_credito")
+  // 2. saldo_30_07 checkpoint + movimentos desde 30/07 = saldo no início de hoje.
+  //    Quando saldo_inicio_historico_centavos existe, início + TODOS movimentos = saldo hoje.
+  const movimentoDesde3007 = p.historico
+    .filter((l) => l.meio !== "cartao_credito" && l.data >= "2026-07-30")
     .reduce((s, l) => s + (l.tipo === "entrada" ? l.valor_centavos : -l.valor_centavos), 0);
-  if (p.conta.saldo_30_07_centavos + movimento !== p.conta.saldo_inicio_hoje_centavos) {
+  if (p.conta.saldo_30_07_centavos + movimentoDesde3007 !== p.conta.saldo_inicio_hoje_centavos) {
     v.push({
       invariante: 2,
-      mensagem: `saldo 30/07 ${p.conta.saldo_30_07_centavos} + movimento ${movimento} ≠ saldo hoje ${p.conta.saldo_inicio_hoje_centavos}`,
+      mensagem: `saldo 30/07 ${p.conta.saldo_30_07_centavos} + movimento ${movimentoDesde3007} ≠ saldo hoje ${p.conta.saldo_inicio_hoje_centavos}`,
     });
+  }
+  if (p.conta.saldo_inicio_historico_centavos !== undefined) {
+    const movimentoTotal = p.historico
+      .filter((l) => l.meio !== "cartao_credito")
+      .reduce((s, l) => s + (l.tipo === "entrada" ? l.valor_centavos : -l.valor_centavos), 0);
+    if (p.conta.saldo_inicio_historico_centavos + movimentoTotal !== p.conta.saldo_inicio_hoje_centavos) {
+      v.push({
+        invariante: 2,
+        mensagem: `saldo início ${p.conta.saldo_inicio_historico_centavos} + movimento total ${movimentoTotal} ≠ saldo hoje ${p.conta.saldo_inicio_hoje_centavos}`,
+      });
+    }
   }
 
   // 3. Valor de cada fatura = soma dos itens. Itens de cada ciclo = compras no cartão do ciclo (C-02) + parcelas do ciclo.
@@ -146,9 +158,12 @@ export function verificarInvariantes(bruta: unknown): ViolacaoInvariante[] {
     }
   }
 
-  // 4. Parcelas coerentes com C-03; compra anterior a 30/07 marcada.
+  // 4. Parcelas coerentes com C-03; compra anterior ao início do histórico marcada.
+  const inicioHistoricoParcela = p.conta.saldo_inicio_historico_centavos !== undefined
+    ? INICIO_HISTORICO
+    : (p.gasto_diario.base.de === "2026-07-30" ? "2026-07-30" : INICIO_HISTORICO);
   for (const pc of p.cartao?.parcelamentos ?? []) {
-    if ((pc.data_compra < INICIO_HISTORICO) !== pc.anterior_ao_historico) {
+    if ((pc.data_compra < inicioHistoricoParcela) !== pc.anterior_ao_historico) {
       v.push({ invariante: 4, mensagem: `parcelamento ${pc.id}: anterior_ao_historico incoerente com ${pc.data_compra}` });
     }
   }
@@ -193,21 +208,24 @@ export function verificarInvariantes(bruta: unknown): ViolacaoInvariante[] {
     }
   }
 
-  // 6. gasto_diario = teto(saídas variáveis por Pix ou débito no histórico / 92).
+  // 6. gasto_diario = teto(saídas variáveis por Pix ou débito no histórico / dias_historico).
   const variaveis: readonly string[] = CATEGORIAS_VARIAVEIS;
   const totalVariavel = p.historico
     .filter((l) => l.tipo === "saida" && (l.meio === "pix" || l.meio === "debito") && variaveis.includes(l.categoria))
     .reduce((s, l) => s + l.valor_centavos, 0);
-  const diario = Math.floor((totalVariavel + DIAS_HISTORICO - 1) / DIAS_HISTORICO);
   const b = p.gasto_diario.base;
+  const ehLegado92 = b.dias === 92 && b.de === "2026-07-30" && b.ate === "2026-10-29";
+  const diasEsperados = ehLegado92 ? 92 : DIAS_HISTORICO;
+  const inicioEsperado = ehLegado92 ? "2026-07-30" : INICIO_HISTORICO;
+  const diario = Math.floor((totalVariavel + diasEsperados - 1) / diasEsperados);
   if (
     p.gasto_diario.valor_centavos !== diario ||
     b.total_centavos !== totalVariavel ||
-    b.dias !== DIAS_HISTORICO ||
-    b.de !== INICIO_HISTORICO ||
+    b.dias !== diasEsperados ||
+    b.de !== inicioEsperado ||
     b.ate !== FIM_HISTORICO
   ) {
-    v.push({ invariante: 6, mensagem: `gasto diário ${p.gasto_diario.valor_centavos} ≠ teto(${totalVariavel} / ${DIAS_HISTORICO}) = ${diario}` });
+    v.push({ invariante: 6, mensagem: `gasto diário ${p.gasto_diario.valor_centavos} ≠ teto(${totalVariavel} / ${diasEsperados}) = ${diario}` });
   }
 
   // 7. Conta estimada = teto(média das 3 últimas ocorrências), citadas em `estimativa`.

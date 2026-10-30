@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 import {
-  INICIO_HISTORICO,
+  INICIO_SERIES_MERCADO,
   esquemaResultadoCotacao,
   formatarDiaMesHora,
   type Contexto,
@@ -27,7 +27,7 @@ export function montarResultadoCotacao(
   let periodo_desde: string | null = null;
 
   if (ordenada.length > 0) {
-    const pontoBase = ordenada.find((p) => p.data >= INICIO_HISTORICO);
+    const pontoBase = ordenada.find((p) => p.data >= INICIO_SERIES_MERCADO);
     if (pontoBase && pontoBase.preco_centavos > 0) {
       periodo_desde = pontoBase.data;
       const preco = new Decimal(bruta.preco_centavos);

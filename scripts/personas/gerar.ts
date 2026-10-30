@@ -32,8 +32,7 @@ function fechamentoNaData(serie: Array<{ data: string; preco_centavos: number }>
 }
 
 class NumeradorLancamentos {
-  private n = 0;
-  constructor(private prefixo = "L") {}
+  constructor(private prefixo = "L", private n = 0) {}
   proximo(): string {
     this.n += 1;
     return `${this.prefixo}${String(this.n).padStart(4, "0")}`;
@@ -45,6 +44,13 @@ function ordenarHistorico(itens: Lancamento[]): Lancamento[] {
 }
 
 function calcularSaldo3007(saldoInicioHoje: number, historico: Lancamento[]): number {
+  const movimento = historico
+    .filter((l) => l.meio !== "cartao_credito" && l.data >= "2026-07-30")
+    .reduce((s, l) => s + (l.tipo === "entrada" ? l.valor_centavos : -l.valor_centavos), 0);
+  return saldoInicioHoje - movimento;
+}
+
+function calcularSaldoInicioHistorico(saldoInicioHoje: number, historico: Lancamento[]): number {
   const movimento = historico
     .filter((l) => l.meio !== "cartao_credito")
     .reduce((s, l) => s + (l.tipo === "entrada" ? l.valor_centavos : -l.valor_centavos), 0);
@@ -70,7 +76,6 @@ export function gerarP1(): Persona {
   const custoPetr4 = new Decimal("10").mul(precoPetr4Compra).toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toNumber();
 
   // Compras no cartão por ciclo de fechamento (dia 29):
-  // Ciclo F2608 (fecha 29/07, vence 05/08): compras antes de 30/07 fora da janela do histórico, + Celular 2/10 (15.000)
   // Ciclo F2609 (29/07 a 28/08, fecha 29/08, vence 05/09):
   const c09MercadoId = ids.proximo();
   const c09RestId = ids.proximo();
@@ -83,7 +88,50 @@ export function gerarP1(): Persona {
   const c11MercadoId = ids.proximo();
   const c11RestId = ids.proximo();
 
+  const idsExtra = new NumeradorLancamentos("L1", 21);
+  const c08MercadoId = idsExtra.proximo();
+  const c08FarmId = idsExtra.proximo();
+  const idCompraCelular = idsExtra.proximo();
+  const c07MercadoId = idsExtra.proximo();
+  const c07RestId = idsExtra.proximo();
+  const c06MercadoId = idsExtra.proximo();
+  const c06FarmId = idsExtra.proximo();
+
   const faturas: Fatura[] = [
+    {
+      id: "F2605",
+      fechamento: "2026-04-29",
+      vencimento: "2026-05-05",
+      status: "fechada",
+      valor_centavos: 40000,
+      itens: [
+        { data: "2026-04-12", descricao: "Supermercado", valor_centavos: 25000 },
+        { data: "2026-04-20", descricao: "Farmácia", valor_centavos: 15000 },
+      ],
+    },
+    {
+      id: "F2606",
+      fechamento: "2026-05-29",
+      vencimento: "2026-06-05",
+      status: "fechada",
+      valor_centavos: 48000,
+      itens: [
+        { lancamento_id: c06MercadoId, data: "2026-05-11", descricao: "Mercado", valor_centavos: 27000 },
+        { lancamento_id: c06FarmId, data: "2026-05-22", descricao: "Farmácia", valor_centavos: 21000 },
+      ],
+    },
+    {
+      id: "F2607",
+      fechamento: "2026-06-29",
+      vencimento: "2026-07-05",
+      status: "fechada",
+      valor_centavos: 55000,
+      itens: [
+        { lancamento_id: idCompraCelular, data: "2026-06-20", descricao: "Celular", valor_centavos: 15000, parcelamento_id: "PC1", parcela: "1/10" },
+        { lancamento_id: c07MercadoId, data: "2026-06-12", descricao: "Supermercado", valor_centavos: 26000 },
+        { lancamento_id: c07RestId, data: "2026-06-25", descricao: "Restaurante", valor_centavos: 14000 },
+      ],
+    },
     {
       id: "F2608",
       fechamento: "2026-07-29",
@@ -92,8 +140,8 @@ export function gerarP1(): Persona {
       valor_centavos: 54000,
       itens: [
         { descricao: "Celular", valor_centavos: 15000, parcelamento_id: "PC1", parcela: "2/10" },
-        { data: "2026-07-12", descricao: "Supermercado", valor_centavos: 24000 },
-        { data: "2026-07-21", descricao: "Farmácia", valor_centavos: 15000 },
+        { lancamento_id: c08MercadoId, data: "2026-07-12", descricao: "Supermercado", valor_centavos: 24000 },
+        { lancamento_id: c08FarmId, data: "2026-07-21", descricao: "Farmácia", valor_centavos: 15000 },
       ],
     },
     {
@@ -171,10 +219,36 @@ export function gerarP1(): Persona {
 
     // Compra de PETR4 no histórico (invariante 8)
     { id: ids.proximo(), data: "2026-08-14", descricao: "Compra PETR4 (10 un)", tipo: "saida", meio: "debito", categoria: "investimentos", valor_centavos: custoPetr4, posicao_id: "INV3" },
+
+    // Lançamentos extras de P1 em mai/jun/jul (idsExtra)
+    { id: c08MercadoId, data: "2026-07-12", descricao: "Supermercado", tipo: "saida", meio: "cartao_credito", categoria: "mercado", valor_centavos: 24000 },
+    { id: c08FarmId, data: "2026-07-21", descricao: "Farmácia", tipo: "saida", meio: "cartao_credito", categoria: "saude", valor_centavos: 15000 },
+    { id: idCompraCelular, data: "2026-06-20", descricao: "Celular", tipo: "saida", meio: "cartao_credito", categoria: "compras", valor_centavos: 150000, parcelamento_id: "PC1", parcela: "1/10" },
+    { id: c07MercadoId, data: "2026-06-12", descricao: "Supermercado", tipo: "saida", meio: "cartao_credito", categoria: "mercado", valor_centavos: 26000 },
+    { id: c07RestId, data: "2026-06-25", descricao: "Restaurante", tipo: "saida", meio: "cartao_credito", categoria: "restaurante", valor_centavos: 14000 },
+    { id: c06MercadoId, data: "2026-05-11", descricao: "Mercado", tipo: "saida", meio: "cartao_credito", categoria: "mercado", valor_centavos: 27000 },
+    { id: c06FarmId, data: "2026-05-22", descricao: "Farmácia", tipo: "saida", meio: "cartao_credito", categoria: "saude", valor_centavos: 21000 },
+
+    // Pagamentos de faturas mai/jun/jul
+    { id: idsExtra.proximo(), data: "2026-05-05", descricao: "Pagamento fatura cartão", tipo: "saida", meio: "debito", categoria: "fatura", valor_centavos: 40000, fatura_id: "F2605" },
+    { id: idsExtra.proximo(), data: "2026-06-05", descricao: "Pagamento fatura cartão", tipo: "saida", meio: "debito", categoria: "fatura", valor_centavos: 48000, fatura_id: "F2606" },
+    { id: idsExtra.proximo(), data: "2026-07-05", descricao: "Pagamento fatura cartão", tipo: "saida", meio: "debito", categoria: "fatura", valor_centavos: 55000, fatura_id: "F2607" },
+
+    // Recorrências mai/jun/jul
+    { id: idsExtra.proximo(), data: "2026-05-10", descricao: "Aluguel", tipo: "saida", meio: "pix", categoria: "moradia", valor_centavos: 60000, recorrencia_id: "B" },
+    { id: idsExtra.proximo(), data: "2026-06-10", descricao: "Aluguel", tipo: "saida", meio: "pix", categoria: "moradia", valor_centavos: 60000, recorrencia_id: "B" },
+    { id: idsExtra.proximo(), data: "2026-07-10", descricao: "Aluguel", tipo: "saida", meio: "pix", categoria: "moradia", valor_centavos: 60000, recorrencia_id: "B" },
+    { id: idsExtra.proximo(), data: "2026-05-15", descricao: "Contas da casa", tipo: "saida", meio: "debito_automatico", categoria: "contas_casa", valor_centavos: 20000, recorrencia_id: "C" },
+    { id: idsExtra.proximo(), data: "2026-06-15", descricao: "Contas da casa", tipo: "saida", meio: "debito_automatico", categoria: "contas_casa", valor_centavos: 20000, recorrencia_id: "C" },
+    { id: idsExtra.proximo(), data: "2026-07-15", descricao: "Contas da casa", tipo: "saida", meio: "debito_automatico", categoria: "contas_casa", valor_centavos: 20000, recorrencia_id: "C" },
+    { id: idsExtra.proximo(), data: "2026-05-20", descricao: "Salário", tipo: "entrada", meio: "salario", categoria: "receitas", valor_centavos: 300000, recorrencia_id: "R1" },
+    { id: idsExtra.proximo(), data: "2026-06-20", descricao: "Salário", tipo: "entrada", meio: "salario", categoria: "receitas", valor_centavos: 300000, recorrencia_id: "R1" },
+    { id: idsExtra.proximo(), data: "2026-07-20", descricao: "Salário", tipo: "entrada", meio: "salario", categoria: "receitas", valor_centavos: 300000, recorrencia_id: "R1" },
   ]);
 
   const saldoHoje = 180000;
   const saldo3007 = calcularSaldo3007(saldoHoje, historico);
+  const saldoInicioHistorico = calcularSaldoInicioHistorico(saldoHoje, historico);
 
   const compromissos: Compromisso[] = [
     {
@@ -225,7 +299,7 @@ export function gerarP1(): Persona {
       valor_total_centavos: 150000,
       parcelas: 10,
       data_compra: "2026-06-20",
-      anterior_ao_historico: true,
+      anterior_ao_historico: false,
     },
   ];
 
@@ -276,7 +350,11 @@ export function gerarP1(): Persona {
       liquido_mensal_centavos: 300000,
       descricao: "Salário CLT; líquido de R$ 3.000,00 após INSS e IR retido",
     },
-    conta: { saldo_30_07_centavos: saldo3007, saldo_inicio_hoje_centavos: saldoHoje },
+    conta: {
+      saldo_30_07_centavos: saldo3007,
+      saldo_inicio_hoje_centavos: saldoHoje,
+      saldo_inicio_historico_centavos: saldoInicioHistorico,
+    },
     historico,
     compromissos,
     gasto_diario: construirGastoDiario(0),
@@ -300,8 +378,9 @@ export function gerarP2(): Persona {
   const luz09Id = ids.proximo();
   const luz10Id = ids.proximo();
 
-  // Saídas variáveis por Pix/débito em 30/07..29/10 somando exatamente 138.000 centavos (1380,00 / 92 = 15,00 por dia).
-  // Inclui delivery em setembro para CV-10.
+  const idsExtra = new NumeradorLancamentos("L2", 27);
+
+  // Saídas variáveis por Pix/débito em 30/07..29/10 somando exatamente 138.000 centavos
   const gastosVariaveis: Array<{ data: string; descricao: string; meio: "pix" | "debito"; categoria: Lancamento["categoria"]; valor_centavos: number }> = [
     { data: "2026-08-02", descricao: "Padaria Central", meio: "debito", categoria: "mercado", valor_centavos: 8500 },
     { data: "2026-08-07", descricao: "Delivery Pizza", meio: "pix", categoria: "delivery", valor_centavos: 7200 },
@@ -318,7 +397,26 @@ export function gerarP2(): Persona {
     { data: "2026-10-20", descricao: "Restaurante Bairro", meio: "debito", categoria: "restaurante", valor_centavos: 8200 },
     { data: "2026-10-26", descricao: "Feira Livre", meio: "pix", categoria: "mercado", valor_centavos: 6800 },
   ];
-  const totalVariavel = gastosVariaveis.reduce((s, g) => s + g.valor_centavos, 0);
+
+  // Saídas variáveis extras em mai/jun/jul somando exatamente 136.500 centavos (total 274.500 / 183 = 15,00 por dia)
+  const gastosVariaveisExtra: Array<{ data: string; descricao: string; meio: "pix" | "debito"; categoria: Lancamento["categoria"]; valor_centavos: number }> = [
+    { data: "2026-05-02", descricao: "Padaria Central", meio: "debito", categoria: "mercado", valor_centavos: 8500 },
+    { data: "2026-05-07", descricao: "Delivery Pizza", meio: "pix", categoria: "delivery", valor_centavos: 7200 },
+    { data: "2026-05-14", descricao: "Supermercado Sul", meio: "debito", categoria: "mercado", valor_centavos: 19000 },
+    { data: "2026-05-21", descricao: "Transporte Urbano", meio: "pix", categoria: "transporte", valor_centavos: 6800 },
+    { data: "2026-05-27", descricao: "Restaurante Prato Feito", meio: "debito", categoria: "restaurante", valor_centavos: 7500 },
+    { data: "2026-06-04", descricao: "Delivery Hambúrguer", meio: "pix", categoria: "delivery", valor_centavos: 6400 },
+    { data: "2026-06-11", descricao: "Supermercado Sul", meio: "debito", categoria: "mercado", valor_centavos: 18500 },
+    { data: "2026-06-18", descricao: "Delivery Japonês", meio: "pix", categoria: "delivery", valor_centavos: 9600 },
+    { data: "2026-06-25", descricao: "Lazer e Cultura", meio: "debito", categoria: "lazer", valor_centavos: 8500 },
+    { data: "2026-07-03", descricao: "Mercado da Esquina", meio: "debito", categoria: "mercado", valor_centavos: 17500 },
+    { data: "2026-07-11", descricao: "Delivery Lanches", meio: "pix", categoria: "delivery", valor_centavos: 6500 },
+    { data: "2026-07-16", descricao: "Transporte Urbano", meio: "pix", categoria: "transporte", valor_centavos: 7000 },
+    { data: "2026-07-20", descricao: "Restaurante Bairro", meio: "debito", categoria: "restaurante", valor_centavos: 8200 },
+    { data: "2026-07-26", descricao: "Feira Livre", meio: "pix", categoria: "mercado", valor_centavos: 5300 },
+  ];
+
+  const totalVariavel = [...gastosVariaveis, ...gastosVariaveisExtra].reduce((s, g) => s + g.valor_centavos, 0);
 
   const historico = ordenarHistorico([
     // Recorrência E1: Internet 120,00 dia 03
@@ -344,9 +442,41 @@ export function gerarP2(): Persona {
     // Compra de BTC em 10/08/2026 (invariante 8)
     { id: ids.proximo(), data: "2026-08-10", descricao: "Compra Bitcoin (0.005 BTC)", tipo: "saida", meio: "pix", categoria: "investimentos", valor_centavos: custoBtc, posicao_id: "INV5" },
 
-    // Saídas variáveis
+    // Saídas variáveis existentes
     ...gastosVariaveis.map((g) => ({
       id: ids.proximo(),
+      data: g.data,
+      descricao: g.descricao,
+      tipo: "saida" as const,
+      meio: g.meio,
+      categoria: g.categoria,
+      valor_centavos: g.valor_centavos,
+    })),
+
+    // Recorrências mai/jun/jul
+    { id: idsExtra.proximo(), data: "2026-05-03", descricao: "Internet", tipo: "saida", meio: "debito_automatico", categoria: "assinaturas", valor_centavos: 12000, recorrencia_id: "E1" },
+    { id: idsExtra.proximo(), data: "2026-06-03", descricao: "Internet", tipo: "saida", meio: "debito_automatico", categoria: "assinaturas", valor_centavos: 12000, recorrencia_id: "E1" },
+    { id: idsExtra.proximo(), data: "2026-07-03", descricao: "Internet", tipo: "saida", meio: "debito_automatico", categoria: "assinaturas", valor_centavos: 12000, recorrencia_id: "E1" },
+
+    { id: idsExtra.proximo(), data: "2026-05-08", descricao: "Aluguel", tipo: "saida", meio: "pix", categoria: "moradia", valor_centavos: 110000, recorrencia_id: "E2" },
+    { id: idsExtra.proximo(), data: "2026-06-08", descricao: "Aluguel", tipo: "saida", meio: "pix", categoria: "moradia", valor_centavos: 110000, recorrencia_id: "E2" },
+    { id: idsExtra.proximo(), data: "2026-07-08", descricao: "Aluguel", tipo: "saida", meio: "pix", categoria: "moradia", valor_centavos: 110000, recorrencia_id: "E2" },
+
+    { id: idsExtra.proximo(), data: "2026-05-12", descricao: "Conta de luz", tipo: "saida", meio: "debito_automatico", categoria: "contas_casa", valor_centavos: 17000, recorrencia_id: "E4" },
+    { id: idsExtra.proximo(), data: "2026-06-12", descricao: "Conta de luz", tipo: "saida", meio: "debito_automatico", categoria: "contas_casa", valor_centavos: 16000, recorrencia_id: "E4" },
+    { id: idsExtra.proximo(), data: "2026-07-12", descricao: "Conta de luz", tipo: "saida", meio: "debito_automatico", categoria: "contas_casa", valor_centavos: 17500, recorrencia_id: "E4" },
+
+    // Recebimentos extras somando 715000 (total 1.430.000 / 6 = 238333)
+    { id: idsExtra.proximo(), data: "2026-05-15", descricao: "Serviço prestado a cliente", tipo: "entrada", meio: "pix", categoria: "receitas", valor_centavos: 240000 },
+    { id: idsExtra.proximo(), data: "2026-06-15", descricao: "Serviço prestado a cliente", tipo: "entrada", meio: "pix", categoria: "receitas", valor_centavos: 235000 },
+    { id: idsExtra.proximo(), data: "2026-07-15", descricao: "Serviço prestado a cliente", tipo: "entrada", meio: "pix", categoria: "receitas", valor_centavos: 240000 },
+
+    // Aporte INV4 dentro do histórico (invariante 8)
+    { id: idsExtra.proximo(), data: "2026-05-04", descricao: "Aporte Fundo DI", tipo: "saida", meio: "debito", categoria: "investimentos", valor_centavos: 200000, posicao_id: "INV4" },
+
+    // Saídas variáveis extras
+    ...gastosVariaveisExtra.map((g) => ({
+      id: idsExtra.proximo(),
       data: g.data,
       descricao: g.descricao,
       tipo: "saida" as const,
@@ -358,6 +488,7 @@ export function gerarP2(): Persona {
 
   const saldoHoje = 90000;
   const saldo3007 = calcularSaldo3007(saldoHoje, historico);
+  const saldoInicioHistorico = calcularSaldoInicioHistorico(saldoHoje, historico);
 
   const compromissos: Compromisso[] = [
     {
@@ -468,7 +599,11 @@ export function gerarP2(): Persona {
       liquido_mensal_centavos: 238333,
       descricao: "Serviços a clientes pessoa física por Pix; média dos últimos 3 meses",
     },
-    conta: { saldo_30_07_centavos: saldo3007, saldo_inicio_hoje_centavos: saldoHoje },
+    conta: {
+      saldo_30_07_centavos: saldo3007,
+      saldo_inicio_hoje_centavos: saldoHoje,
+      saldo_inicio_historico_centavos: saldoInicioHistorico,
+    },
     historico,
     compromissos,
     gasto_diario: construirGastoDiario(totalVariavel),
@@ -496,7 +631,49 @@ export function gerarP3(): Persona {
   // Ciclo F2612 aberta (a partir de 29/10):
   const c12CafeId = ids.proximo();
 
+  // IDs extras para mai/jun/jul (partindo de 34 para preservar L30001..L30034)
+  const idsExtra = new NumeradorLancamentos("L3", 34);
+  const c08MercId = idsExtra.proximo();
+  const c08CombId = idsExtra.proximo();
+  const c07MercId = idsExtra.proximo();
+  const c07CombId = idsExtra.proximo();
+  const c06MercId = idsExtra.proximo();
+  const c06CombId = idsExtra.proximo();
+
   const faturas: Fatura[] = [
+    {
+      id: "F2605",
+      fechamento: "2026-04-29",
+      vencimento: "2026-05-05",
+      status: "fechada",
+      valor_centavos: 65000,
+      itens: [
+        { data: "2026-04-10", descricao: "Supermercado", valor_centavos: 40000 },
+        { data: "2026-04-18", descricao: "Combustível", valor_centavos: 25000 },
+      ],
+    },
+    {
+      id: "F2606",
+      fechamento: "2026-05-29",
+      vencimento: "2026-06-05",
+      status: "fechada",
+      valor_centavos: 68000,
+      itens: [
+        { lancamento_id: c06MercId, data: "2026-05-10", descricao: "Supermercado", valor_centavos: 42000 },
+        { lancamento_id: c06CombId, data: "2026-05-18", descricao: "Combustível", valor_centavos: 26000 },
+      ],
+    },
+    {
+      id: "F2607",
+      fechamento: "2026-06-29",
+      vencimento: "2026-07-05",
+      status: "fechada",
+      valor_centavos: 70000,
+      itens: [
+        { lancamento_id: c07MercId, data: "2026-06-08", descricao: "Supermercado", valor_centavos: 43000 },
+        { lancamento_id: c07CombId, data: "2026-06-20", descricao: "Combustível", valor_centavos: 27000 },
+      ],
+    },
     {
       id: "F2608",
       fechamento: "2026-07-29",
@@ -504,8 +681,8 @@ export function gerarP3(): Persona {
       status: "fechada",
       valor_centavos: 68000,
       itens: [
-        { data: "2026-07-10", descricao: "Supermercado", valor_centavos: 42000 },
-        { data: "2026-07-19", descricao: "Combustível", valor_centavos: 26000 },
+        { lancamento_id: c08MercId, data: "2026-07-10", descricao: "Supermercado", valor_centavos: 42000 },
+        { lancamento_id: c08CombId, data: "2026-07-19", descricao: "Combustível", valor_centavos: 26000 },
       ],
     },
     {
@@ -570,7 +747,23 @@ export function gerarP3(): Persona {
     { data: "2026-10-14", descricao: "Transporte Escolar", meio: "pix", categoria: "transporte", valor_centavos: 11000 },
     { data: "2026-10-21", descricao: "Lanche Tarde", meio: "pix", categoria: "restaurante", valor_centavos: 9500 },
   ];
-  const totalVariavel = gastosVariaveis.reduce((s, g) => s + g.valor_centavos, 0);
+
+  // Saídas variáveis extras em mai/jun/jul somando 91.000 centavos (total 183.000 / 183 = 1000 por dia)
+  const gastosVariaveisExtra: Array<{ data: string; descricao: string; meio: "pix" | "debito"; categoria: Lancamento["categoria"]; valor_centavos: number }> = [
+    { data: "2026-05-06", descricao: "Padaria Família", meio: "debito", categoria: "mercado", valor_centavos: 9500 },
+    { data: "2026-05-14", descricao: "Transporte Escolar", meio: "pix", categoria: "transporte", valor_centavos: 11000 },
+    { data: "2026-05-22", descricao: "Lazer Parque", meio: "debito", categoria: "lazer", valor_centavos: 10000 },
+    { data: "2026-06-03", descricao: "Hortifruti", meio: "debito", categoria: "mercado", valor_centavos: 9800 },
+    { data: "2026-06-12", descricao: "Transporte Escolar", meio: "pix", categoria: "transporte", valor_centavos: 11000 },
+    { data: "2026-06-24", descricao: "Papelaria", meio: "debito", categoria: "compras", valor_centavos: 9200 },
+    { data: "2026-07-07", descricao: "Hortifruti", meio: "debito", categoria: "mercado", valor_centavos: 10500 },
+    { data: "2026-07-15", descricao: "Transporte Escolar", meio: "pix", categoria: "transporte", valor_centavos: 11000 },
+    { data: "2026-07-22", descricao: "Lanche Tarde", meio: "pix", categoria: "restaurante", valor_centavos: 9000 },
+  ];
+
+  const totalVariavel =
+    gastosVariaveis.reduce((s, g) => s + g.valor_centavos, 0) +
+    gastosVariaveisExtra.reduce((s, g) => s + g.valor_centavos, 0);
 
   const historico = ordenarHistorico([
     // Compras no cartão no histórico
@@ -612,9 +805,53 @@ export function gerarP3(): Persona {
     // Consulta médica (categoria saude, não variável, em 23/10 valor 67,00 não reservado)
     { id: ids.proximo(), data: "2026-10-23", descricao: "Consulta pediatria", tipo: "saida", meio: "debito", categoria: "saude", valor_centavos: 6700 },
 
-    // Saídas variáveis
+    // Saídas variáveis existentes
     ...gastosVariaveis.map((g) => ({
       id: ids.proximo(),
+      data: g.data,
+      descricao: g.descricao,
+      tipo: "saida" as const,
+      meio: g.meio,
+      categoria: g.categoria,
+      valor_centavos: g.valor_centavos,
+    })),
+
+    // Compras no cartão em mai/jun/jul (idsExtra)
+    { id: c08MercId, data: "2026-07-10", descricao: "Supermercado", tipo: "saida", meio: "cartao_credito", categoria: "mercado", valor_centavos: 42000 },
+    { id: c08CombId, data: "2026-07-19", descricao: "Combustível", tipo: "saida", meio: "cartao_credito", categoria: "transporte", valor_centavos: 26000 },
+    { id: c07MercId, data: "2026-06-08", descricao: "Supermercado", tipo: "saida", meio: "cartao_credito", categoria: "mercado", valor_centavos: 43000 },
+    { id: c07CombId, data: "2026-06-20", descricao: "Combustível", tipo: "saida", meio: "cartao_credito", categoria: "transporte", valor_centavos: 27000 },
+    { id: c06MercId, data: "2026-05-10", descricao: "Supermercado", tipo: "saida", meio: "cartao_credito", categoria: "mercado", valor_centavos: 42000 },
+    { id: c06CombId, data: "2026-05-18", descricao: "Combustível", tipo: "saida", meio: "cartao_credito", categoria: "transporte", valor_centavos: 26000 },
+
+    // Pagamentos faturas mai/jun/jul
+    { id: idsExtra.proximo(), data: "2026-05-05", descricao: "Pagamento fatura cartão", tipo: "saida", meio: "debito", categoria: "fatura", valor_centavos: 65000, fatura_id: "F2605" },
+    { id: idsExtra.proximo(), data: "2026-06-05", descricao: "Pagamento fatura cartão", tipo: "saida", meio: "debito", categoria: "fatura", valor_centavos: 68000, fatura_id: "F2606" },
+    { id: idsExtra.proximo(), data: "2026-07-05", descricao: "Pagamento fatura cartão", tipo: "saida", meio: "debito", categoria: "fatura", valor_centavos: 70000, fatura_id: "F2607" },
+
+    // Recorrências mai/jun/jul
+    { id: idsExtra.proximo(), data: "2026-05-04", descricao: "Mensalidade escolar", tipo: "saida", meio: "boleto", categoria: "educacao", valor_centavos: 90000, recorrencia_id: "E1" },
+    { id: idsExtra.proximo(), data: "2026-06-04", descricao: "Mensalidade escolar", tipo: "saida", meio: "boleto", categoria: "educacao", valor_centavos: 90000, recorrencia_id: "E1" },
+    { id: idsExtra.proximo(), data: "2026-07-04", descricao: "Mensalidade escolar", tipo: "saida", meio: "boleto", categoria: "educacao", valor_centavos: 90000, recorrencia_id: "E1" },
+
+    { id: idsExtra.proximo(), data: "2026-05-13", descricao: "Salário", tipo: "entrada", meio: "salario", categoria: "receitas", valor_centavos: 420000, recorrencia_id: "E3" },
+    { id: idsExtra.proximo(), data: "2026-06-13", descricao: "Salário", tipo: "entrada", meio: "salario", categoria: "receitas", valor_centavos: 420000, recorrencia_id: "E3" },
+    { id: idsExtra.proximo(), data: "2026-07-13", descricao: "Salário", tipo: "entrada", meio: "salario", categoria: "receitas", valor_centavos: 420000, recorrencia_id: "E3" },
+
+    { id: idsExtra.proximo(), data: "2026-05-18", descricao: "Financiamento", tipo: "saida", meio: "debito_automatico", categoria: "outros", valor_centavos: 130000, recorrencia_id: "E4" },
+    { id: idsExtra.proximo(), data: "2026-06-18", descricao: "Financiamento", tipo: "saida", meio: "debito_automatico", categoria: "outros", valor_centavos: 130000, recorrencia_id: "E4" },
+    { id: idsExtra.proximo(), data: "2026-07-18", descricao: "Financiamento", tipo: "saida", meio: "debito_automatico", categoria: "outros", valor_centavos: 130000, recorrencia_id: "E4" },
+
+    { id: idsExtra.proximo(), data: "2026-05-28", descricao: "Condomínio", tipo: "saida", meio: "boleto", categoria: "moradia", valor_centavos: 65000, recorrencia_id: "E5" },
+    { id: idsExtra.proximo(), data: "2026-06-28", descricao: "Condomínio", tipo: "saida", meio: "boleto", categoria: "moradia", valor_centavos: 65000, recorrencia_id: "E5" },
+    { id: idsExtra.proximo(), data: "2026-07-28", descricao: "Condomínio", tipo: "saida", meio: "boleto", categoria: "moradia", valor_centavos: 65000, recorrencia_id: "E5" },
+
+    // Aporte INV7 em 2026-06-10 (invariante 8)
+    { id: idsExtra.proximo(), data: "2026-06-10", descricao: "Aplicação CDB liquidez diária", tipo: "saida", meio: "debito", categoria: "investimentos", valor_centavos: 150000, posicao_id: "INV7" },
+
+    // Saídas variáveis extras mai/jun/jul
+    ...gastosVariaveisExtra.map((g) => ({
+      id: idsExtra.proximo(),
       data: g.data,
       descricao: g.descricao,
       tipo: "saida" as const,
@@ -626,6 +863,7 @@ export function gerarP3(): Persona {
 
   const saldoHoje = 250000;
   const saldo3007 = calcularSaldo3007(saldoHoje, historico);
+  const saldoInicioHistorico = calcularSaldoInicioHistorico(saldoHoje, historico);
 
   const compromissos: Compromisso[] = [
     {
@@ -728,7 +966,11 @@ export function gerarP3(): Persona {
       liquido_mensal_centavos: 420000,
       descricao: "Salário CLT; líquido de R$ 4.200,00 após INSS e IR retido",
     },
-    conta: { saldo_30_07_centavos: saldo3007, saldo_inicio_hoje_centavos: saldoHoje },
+    conta: {
+      saldo_30_07_centavos: saldo3007,
+      saldo_inicio_hoje_centavos: saldoHoje,
+      saldo_inicio_historico_centavos: saldoInicioHistorico,
+    },
     historico,
     compromissos,
     gasto_diario: construirGastoDiario(totalVariavel),

@@ -15,9 +15,9 @@ describe("B2 · 4: consultarHistorico (H-01 a H-04, CR-17k)", () => {
     return r.persona;
   };
 
-  test("CR-17k: filtro fora de 30/07 a 29/10 retorna DATA_FORA_DO_HISTORICO", () => {
+  test("CR-17k: filtro fora de 30/04 a 29/10 retorna DATA_FORA_DO_HISTORICO", () => {
     const p2 = obterP2();
-    const r1 = consultarHistorico(p2, { de: "2026-07-01", ate: "2026-07-31" });
+    const r1 = consultarHistorico(p2, { de: "2026-04-01", ate: "2026-04-29" });
     expect(r1.ok ? "ok" : r1.erro.codigo).toBe("DATA_FORA_DO_HISTORICO");
 
     const r2 = consultarHistorico(p2, { de: "2026-10-01", ate: "2026-10-30" });
@@ -51,16 +51,16 @@ describe("B2 · 4: consultarHistorico (H-01 a H-04, CR-17k)", () => {
     // Filtro por meio e busca textual case-insensitive
     const rBusca = consultarHistorico(p2, { meio: "debito_automatico", busca: "luz" });
     if (!rBusca.ok) throw new Error(rBusca.erro.mensagem);
-    expect(rBusca.quantidade).toBe(3);
-    expect(rBusca.total_saidas_centavos).toBe(16500 + 18000 + 19500);
+    expect(rBusca.quantidade).toBe(6);
+    expect(rBusca.total_saidas_centavos).toBe(17000 + 16000 + 17500 + 16500 + 18000 + 19500);
 
-    // Sem filtro: retorna período completo 30/07..29/10 e no máximo 20 itens mais recentes
+    // Sem filtro: retorna período completo 30/04..29/10 e no máximo 20 itens mais recentes
     const p3 = obterP3();
     expect(p3.historico.length).toBeGreaterThan(20);
     const todos = consultarHistorico(p3, {});
     if (!todos.ok) throw new Error(todos.erro.mensagem);
     esquemaResultadoHistorico.parse(todos);
-    expect(todos.de).toBe("2026-07-30");
+    expect(todos.de).toBe("2026-04-30");
     expect(todos.ate).toBe("2026-10-29");
     expect(todos.quantidade).toBe(p3.historico.length);
     expect(todos.itens).toHaveLength(20);
@@ -76,15 +76,15 @@ describe("B2 · 4: consultarHistorico (H-01 a H-04, CR-17k)", () => {
     const catMoradia = porCat.grupos.find((g) => g.chave === "moradia")!;
     expect(catMoradia).toMatchObject({
       chave: "moradia",
-      quantidade: 3,
-      total_saidas_centavos: 330000,
+      quantidade: 6,
+      total_saidas_centavos: 660000,
       total_entradas_centavos: 0,
     });
 
     const porMes = consultarHistorico(p2, { agrupar_por: "mes" });
     if (!porMes.ok) throw new Error(porMes.erro.mensagem);
     esquemaResultadoHistorico.parse(porMes);
-    expect(porMes.grupos.map((g) => g.chave)).toEqual(["2026-08", "2026-09", "2026-10"]);
+    expect(porMes.grupos.map((g) => g.chave)).toEqual(["2026-05", "2026-06", "2026-07", "2026-08", "2026-09", "2026-10"]);
 
     // 2026-08-03 foi segunda-feira; 2026-08-02 foi domingo (semana de 2026-07-27)
     const porSemana = consultarHistorico(p2, { de: "2026-08-01", ate: "2026-08-09", agrupar_por: "semana" });
