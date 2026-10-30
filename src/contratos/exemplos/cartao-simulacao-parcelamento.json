@@ -94,7 +94,7 @@
       "premissas": [
         "juros de 2,99% a.m. é premissa do protótipo, não a taxa da loja",
         "parcelas mensais fixas (tabela Price); a última fecha o saldo e pode variar alguns centavos",
-        "CDI mensal = (1 + CDI diário de 0,050788%)^21 − 1 (21 dias úteis por mês), CDI de 2026-10-27",
+        "CDI mensal = (1 + CDI diário de 0,050788%)^21 − 1 (21 dias úteis por mês), CDI de 27/10/2026",
         "valor presente: quanto as parcelas valem hoje se o dinheiro ficasse rendendo no CDI (bruto, sem IR)",
         "sem IOF, tarifas ou seguros"
       ],

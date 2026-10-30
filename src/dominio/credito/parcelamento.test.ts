@@ -1,6 +1,11 @@
 import Decimal from "decimal.js";
 import { describe, expect, test } from "vitest";
-import { esquemaResultadoSimulacaoParcelamento, estadoInicial, type EstadoSessao } from "@/contratos";
+import {
+  esquemaResultadoSimulacaoParcelamento,
+  estadoInicial,
+  formatarData,
+  type EstadoSessao,
+} from "@/contratos";
 import { carregarPersona } from "@/dados";
 import { escolherOpcoes, simularParcelamento } from "@/dominio/credito/parcelamento";
 import { MERCADO_TESTE, P1 as P1_SEM_RENDA, P2 as P2_TESTE } from "@/dominio/caixa/testes/personas";
@@ -194,6 +199,54 @@ describe("simularParcelamento", () => {
       const { ok: _, ...resultado } = r;
       void _;
       expect(() => esquemaResultadoSimulacaoParcelamento.parse(resultado)).not.toThrow();
+    }
+  });
+
+  test("(g) opcoes_parcelas com opção maior que parcelas_max devolve ARGUMENTOS_INVALIDOS", () => {
+    const r = simularParcelamento(P1, estado, {
+      valor_centavos: 100_000,
+      parcelas_max: 12,
+      opcoes_parcelas: [48],
+    });
+    expect(r.ok).toBe(false);
+    if (r.ok) return;
+    expect(r.erro.codigo).toBe("ARGUMENTOS_INVALIDOS");
+    expect(r.erro.mensagem).toBe("opcoes_parcelas não pode ter valor acima de parcelas_max.");
+    expect(r.erro.campos).toEqual(["opcoes_parcelas", "parcelas_max"]);
+  });
+
+  test("(h) parcelas_max e opcoes_parcelas com opções <= parcelas_max usa as opções", () => {
+    const r = simularParcelamento(P1, estado, {
+      valor_centavos: 100_000,
+      parcelas_max: 48,
+      opcoes_parcelas: [12, 24],
+    });
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.opcoes.map((o) => o.parcelas)).toEqual([12, 24]);
+  });
+
+  test("(i) valor fora de inteiro seguro ao calcular opção devolve VALOR_INVALIDO", () => {
+    const r = simularParcelamento(P1, estado, {
+      valor_centavos: Number.MAX_SAFE_INTEGER,
+      juros_am_pct: "30",
+      parcelas_max: 72,
+    });
+    expect(r.ok).toBe(false);
+    if (r.ok) return;
+    expect(r.erro.codigo).toBe("VALOR_INVALIDO");
+    expect(r.erro.mensagem).toBe("Valor alto demais para simular.");
+    expect(r.erro.campos).toEqual(["valor"]);
+  });
+
+  test("(j) premissas contêm data do CDI formatada (DD/MM/AAAA) e nenhuma premissa com data ISO", () => {
+    const r = simularParcelamento(P1, estado, { valor_centavos: 100_000 });
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const dataFormatada = formatarData(estado.mercado.cdi.data_ref);
+    expect(r.premissas.some((p) => p.includes(dataFormatada))).toBe(true);
+    for (const p of r.premissas) {
+      expect(p).not.toMatch(/\d{4}-\d{2}-\d{2}/);
     }
   });
 });

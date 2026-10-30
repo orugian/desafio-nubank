@@ -2,6 +2,7 @@ import Decimal from "decimal.js";
 import {
   PREMISSAS_CREDITO,
   erro,
+  formatarData,
   textos,
   type EstadoSessao,
   type OpcaoParcelamento,
@@ -155,6 +156,15 @@ export function simularParcelamento(
       );
     }
   }
+  if (pedido.parcelas_max !== undefined && pedido.opcoes_parcelas !== undefined) {
+    if (pedido.opcoes_parcelas.some((n) => n > pedido.parcelas_max!)) {
+      return erro(
+        "ARGUMENTOS_INVALIDOS",
+        "opcoes_parcelas não pode ter valor acima de parcelas_max.",
+        ["opcoes_parcelas", "parcelas_max"],
+      );
+    }
+  }
 
   let jurosPublicado: string;
   let juros_origem: "premissa" | "informado";
@@ -201,16 +211,33 @@ export function simularParcelamento(
     const parcela_centavos = fluxos[0]!;
     const ultima_parcela_centavos = fluxos[n - 1]!;
     const total_pago_centavos = entrada + fluxos.reduce((s, f) => s + f, 0);
+    const juros_total_centavos = total_pago_centavos - valor;
+    const custo_vs_a_vista_centavos = total_pago_centavos - a_vista_centavos;
     const valor_presente_centavos = arred(new D(entrada).plus(valorPresente(fluxos, cdiMensal)));
+    const vantagem_vs_a_vista_centavos = a_vista_centavos - valor_presente_centavos;
+
+    const publicados = [
+      parcela_centavos,
+      ultima_parcela_centavos,
+      total_pago_centavos,
+      juros_total_centavos,
+      custo_vs_a_vista_centavos,
+      valor_presente_centavos,
+      vantagem_vs_a_vista_centavos,
+    ];
+    if (publicados.some((v) => !Number.isSafeInteger(v))) {
+      return erro("VALOR_INVALIDO", "Valor alto demais para simular.", ["valor"]);
+    }
+
     opcoes.push({
       parcelas: n,
       parcela_centavos,
       ultima_parcela_centavos,
       total_pago_centavos,
-      juros_total_centavos: total_pago_centavos - valor,
-      custo_vs_a_vista_centavos: total_pago_centavos - a_vista_centavos,
+      juros_total_centavos,
+      custo_vs_a_vista_centavos,
       valor_presente_centavos,
-      vantagem_vs_a_vista_centavos: a_vista_centavos - valor_presente_centavos,
+      vantagem_vs_a_vista_centavos,
       cet_am_pct: pct2(taxaInterna(fluxos, financiado).times(100)),
       comprometimento_renda_pct: renda === null ? null : pct2(new D(parcela_centavos).div(renda).times(100)),
     });
@@ -247,7 +274,7 @@ export function simularParcelamento(
     i.isZero()
       ? "sem juros: parcelas iguais; a última absorve a diferença de arredondamento"
       : "parcelas mensais fixas (tabela Price); a última fecha o saldo e pode variar alguns centavos",
-    `CDI mensal = (1 + CDI diário de ${taxaDiaria.replace(".", ",")}%)^21 − 1 (21 dias úteis por mês), CDI de ${estado.mercado.cdi.data_ref}`,
+    `CDI mensal = (1 + CDI diário de ${taxaDiaria.replace(".", ",")}%)^21 − 1 (21 dias úteis por mês), CDI de ${formatarData(estado.mercado.cdi.data_ref)}`,
     "valor presente: quanto as parcelas valem hoje se o dinheiro ficasse rendendo no CDI (bruto, sem IR)",
     "sem IOF, tarifas ou seguros",
   ];
