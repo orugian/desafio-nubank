@@ -16,9 +16,9 @@ from decimal import Decimal, ROUND_HALF_UP, localcontext
 from pathlib import Path
 
 HOJE = "2026-10-30"
-INICIO_HISTORICO = "2026-07-30"
+INICIO_HISTORICO = "2026-04-30"
 FIM_HISTORICO = "2026-10-29"
-DIAS_HISTORICO = 92
+DIAS_HISTORICO = 183
 
 FERIADOS = {
     "2026-11-02",
@@ -112,17 +112,29 @@ def conferir_persona(
     erros: list[str] = []
     pid = persona["id"]
 
-    # 1. Saldo no início de hoje a partir de saldo_30_07 + lançamentos de conta
-    mov = sum(
+    # 1. Saldo no início de hoje a partir de saldo_30_07 (checkpoint) + movimentos desde 30/07
+    mov_desde_3007 = sum(
         (l["valor_centavos"] if l["tipo"] == "entrada" else -l["valor_centavos"])
         for l in persona["historico"]
-        if l["meio"] != "cartao_credito"
+        if l["meio"] != "cartao_credito" and l["data"] >= "2026-07-30"
     )
-    saldo_recalculado = int(persona["conta"]["saldo_30_07_centavos"]) + mov
+    saldo_recalculado = int(persona["conta"]["saldo_30_07_centavos"]) + mov_desde_3007
     if saldo_recalculado != int(persona["conta"]["saldo_inicio_hoje_centavos"]):
         erros.append(
-            f"{pid}: saldo_inicio_hoje {persona['conta']['saldo_inicio_hoje_centavos']} != recalculado {saldo_recalculado}"
+            f"{pid}: saldo_inicio_hoje {persona['conta']['saldo_inicio_hoje_centavos']} != recalculado {saldo_recalculado} (a partir de saldo_30_07)"
         )
+
+    if persona["conta"].get("saldo_inicio_historico_centavos") is not None:
+        mov_total = sum(
+            (l["valor_centavos"] if l["tipo"] == "entrada" else -l["valor_centavos"])
+            for l in persona["historico"]
+            if l["meio"] != "cartao_credito"
+        )
+        saldo_total = int(persona["conta"]["saldo_inicio_historico_centavos"]) + mov_total
+        if saldo_total != int(persona["conta"]["saldo_inicio_hoje_centavos"]):
+            erros.append(
+                f"{pid}: saldo_inicio_hoje {persona['conta']['saldo_inicio_hoje_centavos']} != recalculado {saldo_total} (a partir de saldo_inicio_historico)"
+            )
 
     # 2. Faturas
     faturas_recalc = []
@@ -147,7 +159,8 @@ def conferir_persona(
         and l["meio"] in ("pix", "debito")
         and l["categoria"] in CATEGORIAS_VARIAVEIS
     )
-    gasto_diario_recalc = (total_var + DIAS_HISTORICO - 1) // DIAS_HISTORICO
+    base_dias = int(persona.get("gasto_diario", {}).get("base", {}).get("dias", DIAS_HISTORICO))
+    gasto_diario_recalc = (total_var + base_dias - 1) // base_dias
     if gasto_diario_recalc != int(persona["gasto_diario"]["valor_centavos"]):
         erros.append(
             f"{pid}: gasto_diario {persona['gasto_diario']['valor_centavos']} != recalculado {gasto_diario_recalc}"

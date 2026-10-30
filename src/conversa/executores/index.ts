@@ -26,7 +26,7 @@ import {
   registrarDeclaracao,
   validarEstado as validarEstadoDominio,
 } from "@/dominio/caixa";
-import { consultarCartao } from "@/dominio/cartao";
+import { consultarCartao, resumirParcelamentos } from "@/dominio/cartao";
 import { consultarHistorico } from "@/dominio/historico";
 import { consultarInvestimentos, projetarRendimento } from "@/dominio/investimentos";
 import { cancelarMovimentacao, confirmarMovimentacao, proporMovimentacao } from "@/dominio/operacoes";
@@ -114,11 +114,12 @@ export function criarExecutores(opcoes: { buscarCotacao?: typeof buscarCotacao }
         if (!cartaoVisao) {
           return erro("OPERACAO_NAO_PERMITIDA", textos.erros.OPERACAO_NAO_PERMITIDA, ["cartao"]);
         }
+        const parcelamentos = resumirParcelamentos(rPersona.persona, ctx.estado);
         const cartao: CartaoResposta = { tipo: "cartao_credito", cartao: cartaoVisao };
         return {
           ok: true,
           estado: ctx.estado,
-          resultado: { cartao: cartaoVisao },
+          resultado: { cartao: cartaoVisao, parcelamentos },
           cartoes: [cartao],
           avisos: [],
         };

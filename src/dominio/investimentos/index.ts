@@ -1,7 +1,7 @@
 // Investimentos (spec §5.4, §6.1). Implementação no B3b.
 
 import Decimal from "decimal.js";
-import { FIM_JANELA, HOJE, INICIO_HISTORICO, dataExiste, erro, formatarDiaMes, textos } from "@/contratos";
+import { FIM_JANELA, HOJE, INICIO_SERIES_MERCADO, dataExiste, erro, formatarDiaMes, textos } from "@/contratos";
 import type {
   Contexto,
   DataISO,
@@ -90,7 +90,7 @@ function precoBasePeriodo(ticker: string, contexto: Contexto): number | null {
   const serie = contexto.series.fechamentos[ticker]?.serie;
   if (!serie?.length) return null;
   const ordenada = [...serie].sort((a, b) => a.data.localeCompare(b.data));
-  const em3007 = ordenada.find((p) => p.data >= INICIO_HISTORICO);
+  const em3007 = ordenada.find((p) => p.data >= INICIO_SERIES_MERCADO);
   return (em3007 ?? ordenada[0]).preco_centavos;
 }
 

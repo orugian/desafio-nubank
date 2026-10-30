@@ -28,6 +28,7 @@ import {
 import { carregarPersona } from "@/dados";
 import { criarCalendario } from "@/dominio/calendario";
 import { calcularCenarios, saldoDisponivelHoje } from "@/dominio/caixa";
+import { resumirParcelamentos } from "@/dominio/cartao";
 import cdiJson from "../../dados/mercado/cdi.json";
 import btcJson from "../../dados/mercado/fechamentos-BTC.json";
 import petr4Json from "../../dados/mercado/fechamentos-PETR4.json";
@@ -142,6 +143,7 @@ function montarCorpoContexto(
     hipoteses: estado.hipoteses,
     operacoes: estado.operacoes,
     operacao_pendente: estado.operacao_pendente,
+    parcelamentos_cartao: resumirParcelamentos(persona, estado),
     cenarios: cenarios.map((c) => ({
       cenario_id: c.cenario_id,
       nome: c.nome,

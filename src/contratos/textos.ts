@@ -133,7 +133,7 @@ export const textos = {
     VALOR_INVALIDO: "Valor inválido: use texto com ponto decimal, maior que zero (ex.: \"500\" ou \"12.50\").",
     DATA_ANTES_DE_HOJE: "A data é anterior a hoje (30/10/2026).",
     DATA_FORA_DA_JANELA: "A data passa de 29/11/2026, fim da projeção.",
-    DATA_FORA_DO_HISTORICO: "O histórico vai de 30/07 a 29/10/2026.",
+    DATA_FORA_DO_HISTORICO: "O histórico vai de 30/04 a 29/10/2026.",
     EVENTO_INEXISTENTE: "Não existe evento com esse id na situação atual.",
     POSICAO_INEXISTENTE: "Não existe posição com esse id.",
     OPERACAO_NAO_PERMITIDA: "Essa alteração não é permitida.",

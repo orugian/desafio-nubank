@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import Decimal from "decimal.js";
 import {
   ARQUIVOS_MERCADO,
-  INICIO_HISTORICO,
+  INICIO_SERIES_MERCADO,
   esquemaSerieCdi,
   esquemaSerieFechamentos,
   type SerieCdi,
@@ -100,7 +100,7 @@ export function converterSerieCoinGecko(
   if (!Array.isArray(obj?.prices)) {
     throw new Error("Resposta da CoinGecko inválida");
   }
-  const deData = meta?.deData ?? INICIO_HISTORICO;
+  const deData = meta?.deData ?? INICIO_SERIES_MERCADO;
   const ateData = meta?.ateData ?? DATA_CORTE_FECHAMENTO;
   const porData = new Map<string, number>();
 

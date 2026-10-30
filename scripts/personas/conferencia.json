@@ -7,6 +7,21 @@
       "gasto_diario_centavos": 0,
       "faturas": [
         {
+          "id": "F2605",
+          "vencimento": "2026-05-05",
+          "valor_centavos": 40000
+        },
+        {
+          "id": "F2606",
+          "vencimento": "2026-06-05",
+          "valor_centavos": 48000
+        },
+        {
+          "id": "F2607",
+          "vencimento": "2026-07-05",
+          "valor_centavos": 55000
+        },
+        {
           "id": "F2608",
           "vencimento": "2026-08-05",
           "valor_centavos": 54000
@@ -141,6 +156,21 @@
       "saldo_inicio_hoje_centavos": 250000,
       "gasto_diario_centavos": 1000,
       "faturas": [
+        {
+          "id": "F2605",
+          "vencimento": "2026-05-05",
+          "valor_centavos": 65000
+        },
+        {
+          "id": "F2606",
+          "vencimento": "2026-06-05",
+          "valor_centavos": 68000
+        },
+        {
+          "id": "F2607",
+          "vencimento": "2026-07-05",
+          "valor_centavos": 70000
+        },
         {
           "id": "F2608",
           "vencimento": "2026-08-05",

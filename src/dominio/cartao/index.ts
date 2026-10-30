@@ -144,3 +144,108 @@ export function consultarCartao(persona: Persona, estado: EstadoSessao): CartaoV
     proximas: ordenadas.filter((f) => f.status === "futura" && f.vencimento > aberta.vencimento),
   };
 }
+
+export type ResumoParcelamento = {
+  id: string;
+  descricao: string;
+  data_compra: string;
+  valor_total_centavos: number;
+  parcelas: number;
+  valor_parcela_centavos: number;
+  parcelas_pagas: number;
+  parcelas_restantes: number;
+  saldo_restante_centavos: number;
+  proximo_vencimento: string | null;
+  ultimo_vencimento: string | null;
+  quitado: boolean;
+};
+
+export function resumirParcelamentos(persona: Persona, estado: EstadoSessao): ResumoParcelamento[] {
+  if (!persona.cartao) return [];
+  const cartao = persona.cartao;
+
+  const faturasPagas = new Set(
+    persona.historico
+      .filter((l) => l.fatura_id && l.tipo === "saida" && l.meio === "debito")
+      .map((l) => l.fatura_id as string),
+  );
+
+  const resumos: ResumoParcelamento[] = [];
+
+  for (const pc of cartao.parcelamentos) {
+    const r = distribuirCompra(persona, { data: pc.data_compra, valor_centavos: pc.valor_total_centavos, parcelas: pc.parcelas }, false);
+    if (!r.ok) continue;
+
+    let parcelasPagas = 0;
+    let saldoRestante = 0;
+    let proximoVencimento: string | null = null;
+    const ultimoVencimento = r.parcelas.at(-1)?.vencimento ?? null;
+
+    for (const p of r.parcelas) {
+      const paga = faturasPagas.has(p.fatura_id);
+      if (paga) {
+        parcelasPagas += 1;
+      } else {
+        saldoRestante += p.valor_centavos;
+        if (!proximoVencimento) {
+          proximoVencimento = p.vencimento;
+        }
+      }
+    }
+
+    const parcelasRestantes = pc.parcelas - parcelasPagas;
+    const baseParcela = Math.floor(pc.valor_total_centavos / pc.parcelas);
+
+    resumos.push({
+      id: pc.id,
+      descricao: pc.descricao,
+      data_compra: pc.data_compra,
+      valor_total_centavos: pc.valor_total_centavos,
+      parcelas: pc.parcelas,
+      valor_parcela_centavos: baseParcela,
+      parcelas_pagas: parcelasPagas,
+      parcelas_restantes: parcelasRestantes,
+      saldo_restante_centavos: saldoRestante,
+      proximo_vencimento: proximoVencimento,
+      ultimo_vencimento: ultimoVencimento,
+      quitado: parcelasRestantes === 0,
+    });
+  }
+
+  const compras = new Map<string, Extract<EstadoSessao["declaracoes"][number]["alteracao"], { operacao: "adicionar_evento" }>>();
+  for (const d of estado.declaracoes) {
+    const a = d.alteracao;
+    if (a.operacao === "adicionar_evento" && a.meio === "cartao_credito") compras.set(d.id, a);
+    if (a.operacao === "remover_evento") compras.delete(a.evento_id);
+    if (a.operacao === "alterar_evento") {
+      const anterior = compras.get(a.evento_id);
+      if (anterior) compras.set(a.evento_id, { ...anterior, data: a.data ?? anterior.data, valor: a.valor ?? anterior.valor });
+    }
+  }
+
+  for (const [id, a] of compras.entries()) {
+    const numParcelas = a.parcelas ?? 1;
+    if (numParcelas <= 1) continue;
+    const [reais, cent = ""] = a.valor.split(".");
+    const valor_total_centavos = Number(reais) * 100 + Number(cent.padEnd(2, "0"));
+    const r = alocarCompra(persona, estado, { data: a.data, valor_centavos: valor_total_centavos, parcelas: numParcelas });
+    if (!r.ok) continue;
+    const baseParcela = Math.floor(valor_total_centavos / numParcelas);
+    resumos.push({
+      id,
+      descricao: a.descricao,
+      data_compra: a.data,
+      valor_total_centavos,
+      parcelas: numParcelas,
+      valor_parcela_centavos: baseParcela,
+      parcelas_pagas: 0,
+      parcelas_restantes: numParcelas,
+      saldo_restante_centavos: valor_total_centavos,
+      proximo_vencimento: r.parcelas[0]?.vencimento ?? null,
+      ultimo_vencimento: r.parcelas.at(-1)?.vencimento ?? null,
+      quitado: false,
+    });
+  }
+
+  return resumos;
+}

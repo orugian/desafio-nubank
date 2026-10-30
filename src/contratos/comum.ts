@@ -6,9 +6,11 @@ export const VERSAO_CONTRATOS = "1.1";
 /** Calendário fixo (spec D-02). O relógio do sistema nunca entra no cálculo. */
 export const HOJE = "2026-10-30";
 export const FIM_JANELA = "2026-11-29";
-export const INICIO_HISTORICO = "2026-07-30";
+export const INICIO_HISTORICO = "2026-04-30";
 export const FIM_HISTORICO = "2026-10-29";
-export const DIAS_HISTORICO = 92;
+export const DIAS_HISTORICO = 183;
+/** Início das séries de mercado gravadas e da base de valorização de renda variável (independe do histórico da conta). */
+export const INICIO_SERIES_MERCADO = "2026-07-30";
 
 /** Feriados de hoje em diante (spec §3). Antes de hoje vale a série de CDI gravada. */
 export const FERIADOS = [

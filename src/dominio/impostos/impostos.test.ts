@@ -183,7 +183,7 @@ describe("Tarefa T3 — estimativa de imposto de renda (domínio)", () => {
 
   // 5. IRPF pelo histórico (P1, P2, P3)
   test("5. IRPF pelo histórico: P1, P2 e P3", () => {
-    // P1: Salário R$ 3.000 em 3 meses (agosto, setembro, outubro)
+    // P1: Salário R$ 3.000 em 6 meses (maio a outubro; histórico de 6 meses)
     const rP1 = carregarPersona("p1");
     expect(rP1.ok).toBe(true);
     if (!rP1.ok) throw new Error("p1");
@@ -196,7 +196,7 @@ describe("Tarefa T3 — estimativa de imposto de renda (domínio)", () => {
     expect(res1.irpf?.origem).toBe("historico");
     expect(res1.irpf?.tipo_renda).toBe("salario");
     expect(res1.irpf?.rendimento_mensal_centavos).toBe(300000);
-    expect(res1.irpf?.meses_base).toBe(3);
+    expect(res1.irpf?.meses_base).toBe(6);
     // 300000 - 60720 = 239280 <= 242880 (isento) -> imposto 0
     expect(res1.irpf?.imposto_devido_centavos).toBe(0);
     expect(res1.irpf?.mensal.imposto_centavos).toBe(0);
@@ -214,7 +214,7 @@ describe("Tarefa T3 — estimativa de imposto de renda (domínio)", () => {
     expect(res2.irpf?.origem).toBe("historico");
     expect(res2.irpf?.tipo_renda).toBe("autonomo");
     expect(res2.irpf?.rendimento_mensal_centavos).toBe(238333);
-    expect(res2.irpf?.meses_base).toBe(3);
+    expect(res2.irpf?.meses_base).toBe(6);
     expect(res2.irpf?.forma_mensal).toBe("carnê-leão (DARF mensal) sobre recebimentos de pessoa física");
 
     // P3: Salário R$ 4.200 em 3 meses (420000)
