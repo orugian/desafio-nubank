@@ -166,7 +166,7 @@ export const esquemaItemImposto = z.object({
 export type ItemImposto = z.infer<typeof esquemaItemImposto>;
 
 export const esquemaIrpf = z.object({
-  origem: z.enum(["historico", "informado"]),
+  origem: z.enum(["historico", "informado", "cadastro"]),
   tipo_renda: z.enum(["salario", "autonomo"]),
   rendimento_mensal_centavos: esquemaCentavosPositivos,
   meses_base: z.int().nonnegative(),

@@ -19,8 +19,8 @@ import {
   meioCombinaComTipo,
 } from "./comum";
 
-// Persona é estrita: campo desconhecido (renda, perfil, cheque especial) é
-// rejeitado (invariante 11 da spec §4.2).
+// Persona é estrita: campo desconhecido (perfil, cheque especial, renda fora
+// do bloco `renda`) é rejeitado (invariante 11 da spec §4.2).
 
 const tipoComMeio = <T extends { tipo: "saida" | "entrada"; meio: string }>(v: T, ctx: z.RefinementCtx) => {
   if (!meioCombinaComTipo(v.tipo, v.meio)) {
@@ -215,10 +215,21 @@ export const esquemaPosicao = z.discriminatedUnion("categoria", [
 export type Posicao = z.infer<typeof esquemaPosicao>;
 export type CategoriaPosicao = Posicao["categoria"];
 
+export const esquemaRenda = z.strictObject({
+  tipo: z.enum(["clt", "autonomo"]),
+  /** Rendimento bruto mensal tributável (antes de INSS/IR). */
+  bruto_mensal_centavos: esquemaCentavosPositivos,
+  /** Líquido mensal que cai na conta (o histórico de entradas usa este valor). */
+  liquido_mensal_centavos: esquemaCentavosPositivos,
+  descricao: z.string().min(1).max(80),
+});
+export type Renda = z.infer<typeof esquemaRenda>;
+
 export const esquemaPersona = z.strictObject({
   id: esquemaIdPersona,
   nome: z.string().min(1).max(40),
   resumo: z.string().min(1).max(120),
+  renda: esquemaRenda.optional(),
   conta: z.strictObject({
     saldo_30_07_centavos: esquemaCentavos,
     saldo_inicio_hoje_centavos: esquemaCentavos,

@@ -187,7 +187,8 @@ describe("Tarefa T3 — estimativa de imposto de renda (domínio)", () => {
     const rP1 = carregarPersona("p1");
     expect(rP1.ok).toBe(true);
     if (!rP1.ok) throw new Error("p1");
-    const res1 = estimarImpostoRenda(rP1.persona, estadoInicial("p1", snapshotGravado()), contextoReal, {
+    const { renda: _1, ...p1SemRenda } = rP1.persona;
+    const res1 = estimarImpostoRenda(p1SemRenda, estadoInicial("p1", snapshotGravado()), contextoReal, {
       escopo: "irpf",
     });
     expect(res1.ok).toBe(true);
@@ -204,7 +205,8 @@ describe("Tarefa T3 — estimativa de imposto de renda (domínio)", () => {
     const rP2 = carregarPersona("p2");
     expect(rP2.ok).toBe(true);
     if (!rP2.ok) throw new Error("p2");
-    const res2 = estimarImpostoRenda(rP2.persona, estadoInicial("p2", snapshotGravado()), contextoReal, {
+    const { renda: _2, ...p2SemRenda } = rP2.persona;
+    const res2 = estimarImpostoRenda(p2SemRenda, estadoInicial("p2", snapshotGravado()), contextoReal, {
       escopo: "irpf",
     });
     expect(res2.ok).toBe(true);
@@ -220,7 +222,8 @@ describe("Tarefa T3 — estimativa de imposto de renda (domínio)", () => {
     const rP3 = carregarPersona("p3");
     expect(rP3.ok).toBe(true);
     if (!rP3.ok) throw new Error("p3");
-    const res3 = estimarImpostoRenda(rP3.persona, estadoInicial("p3", snapshotGravado()), contextoReal, {
+    const { renda: _3, ...p3SemRenda } = rP3.persona;
+    const res3 = estimarImpostoRenda(p3SemRenda, estadoInicial("p3", snapshotGravado()), contextoReal, {
       escopo: "irpf",
     });
     expect(res3.ok).toBe(true);
@@ -228,6 +231,93 @@ describe("Tarefa T3 — estimativa de imposto de renda (domínio)", () => {
     expect(res3.irpf?.rendimento_mensal_centavos).toBe(420000);
     expect(res3.irpf?.imposto_devido_centavos).toBe(0);
     expect(res3.irpf?.mensal.imposto_centavos).toBe(0);
+  });
+
+  // T8 · IRPF pelo cadastro (P1, P2, P3)
+  test("IRPF pelo cadastro", () => {
+    // P1:
+    // renda bruta do cadastro: 340000, clt -> tipo "salario", origem "cadastro", meses_base: 0
+    // mensal base 340000−60720=279280 → 7,5% faixa: 279280×0,075−18216=2730 (arredonde meio para cima) → renda ≤ 500000 → redução = imposto → imposto mensal 0
+    // anual R 4080000, desconto 816000, base 3264000 → 3264000×0,075−218592=26208 → R ≤ 6000000 → redução total → devido 0
+    const rP1 = carregarPersona("p1");
+    expect(rP1.ok).toBe(true);
+    if (!rP1.ok) throw new Error("p1");
+    const res1 = estimarImpostoRenda(rP1.persona, estadoInicial("p1", snapshotGravado()), contextoReal, {
+      escopo: "irpf",
+    });
+    expect(res1.ok).toBe(true);
+    if (!res1.ok) throw new Error("res1");
+    expect(res1.irpf?.origem).toBe("cadastro");
+    expect(res1.irpf?.tipo_renda).toBe("salario");
+    expect(res1.irpf?.rendimento_mensal_centavos).toBe(340000);
+    expect(res1.irpf?.meses_base).toBe(0);
+    expect(res1.irpf?.mensal.base_centavos).toBe(279280);
+    expect(res1.irpf?.mensal.imposto_tabela_centavos).toBe(2730);
+    expect(res1.irpf?.mensal.reducao_centavos).toBe(2730);
+    expect(res1.irpf?.mensal.imposto_centavos).toBe(0);
+    expect(res1.irpf?.rendimento_anual_centavos).toBe(4080000);
+    expect(res1.irpf?.desconto_simplificado_centavos).toBe(816000);
+    expect(res1.irpf?.base_calculo_centavos).toBe(3264000);
+    expect(res1.irpf?.imposto_tabela_centavos).toBe(26208);
+    expect(res1.irpf?.reducao_centavos).toBe(26208);
+    expect(res1.irpf?.imposto_devido_centavos).toBe(0);
+    expect(res1.irpf?.premissas).toContain("renda bruta do cadastro da persona");
+    const { ok: _o1, ...semOk1 } = res1;
+    expect(() => esquemaResultadoImpostoRenda.parse(semOk1)).not.toThrow();
+
+    // P3:
+    // renda bruta: 500000, clt -> "salario", origem "cadastro", meses_base: 0
+    // mensal base 439280 → 439280×0,225−67549=31289 → redução (rendimento 500000 ≤ 500000) = imposto → 0
+    // anual R 6000000, desconto 1200000, base 4800000 → 4800000×0,225−810585=269415 → R ≤ 6000000 → zera → devido 0
+    const rP3 = carregarPersona("p3");
+    expect(rP3.ok).toBe(true);
+    if (!rP3.ok) throw new Error("p3");
+    const res3 = estimarImpostoRenda(rP3.persona, estadoInicial("p3", snapshotGravado()), contextoReal, {
+      escopo: "irpf",
+    });
+    expect(res3.ok).toBe(true);
+    if (!res3.ok) throw new Error("res3");
+    expect(res3.irpf?.origem).toBe("cadastro");
+    expect(res3.irpf?.tipo_renda).toBe("salario");
+    expect(res3.irpf?.rendimento_mensal_centavos).toBe(500000);
+    expect(res3.irpf?.meses_base).toBe(0);
+    expect(res3.irpf?.mensal.base_centavos).toBe(439280);
+    expect(res3.irpf?.mensal.imposto_tabela_centavos).toBe(31289);
+    expect(res3.irpf?.mensal.reducao_centavos).toBe(31289);
+    expect(res3.irpf?.mensal.imposto_centavos).toBe(0);
+    expect(res3.irpf?.rendimento_anual_centavos).toBe(6000000);
+    expect(res3.irpf?.desconto_simplificado_centavos).toBe(1200000);
+    expect(res3.irpf?.base_calculo_centavos).toBe(4800000);
+    expect(res3.irpf?.imposto_tabela_centavos).toBe(269415);
+    expect(res3.irpf?.reducao_centavos).toBe(269415);
+    expect(res3.irpf?.imposto_devido_centavos).toBe(0);
+    expect(res3.irpf?.premissas).toContain("renda bruta do cadastro da persona");
+    const { ok: _o3, ...semOk3 } = res3;
+    expect(() => esquemaResultadoImpostoRenda.parse(semOk3)).not.toThrow();
+
+    // P2:
+    // renda bruta: 238333, autonomo -> tipo "autonomo", origem "cadastro", meses_base: 0
+    // mensal base 177613 → isento → 0
+    const rP2 = carregarPersona("p2");
+    expect(rP2.ok).toBe(true);
+    if (!rP2.ok) throw new Error("p2");
+    const res2 = estimarImpostoRenda(rP2.persona, estadoInicial("p2", snapshotGravado()), contextoReal, {
+      escopo: "irpf",
+    });
+    expect(res2.ok).toBe(true);
+    if (!res2.ok) throw new Error("res2");
+    expect(res2.irpf?.origem).toBe("cadastro");
+    expect(res2.irpf?.tipo_renda).toBe("autonomo");
+    expect(res2.irpf?.rendimento_mensal_centavos).toBe(238333);
+    expect(res2.irpf?.meses_base).toBe(0);
+    expect(res2.irpf?.mensal.base_centavos).toBe(177613);
+    expect(res2.irpf?.mensal.imposto_tabela_centavos).toBe(0);
+    expect(res2.irpf?.mensal.reducao_centavos).toBe(0);
+    expect(res2.irpf?.mensal.imposto_centavos).toBe(0);
+    expect(res2.irpf?.imposto_devido_centavos).toBe(0);
+    expect(res2.irpf?.premissas).toContain("renda bruta do cadastro da persona");
+    const { ok: _o2, ...semOk2 } = res2;
+    expect(() => esquemaResultadoImpostoRenda.parse(semOk2)).not.toThrow();
   });
 
   // 6. Investimentos P1 (persona real)
@@ -391,8 +481,11 @@ describe("Tarefa T3 — estimativa de imposto de renda (domínio)", () => {
     }
 
     // Persona sem receitas no histórico + escopo "irpf" sem renda informada -> ARGUMENTOS_INVALIDOS
+    // Sem histórico de receitas e sem renda no cadastro: não há base para o IRPF.
+    const { renda: _rendaP1, ...p1SemRenda } = rP1.persona;
+    void _rendaP1;
     const pSemReceitas = esquemaPersona.parse({
-      ...rP1.persona,
+      ...p1SemRenda,
       historico: [],
     });
     const rSemRenda = estimarImpostoRenda(pSemReceitas, estadoP1, contextoReal, { escopo: "irpf" });

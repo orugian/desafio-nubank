@@ -7,8 +7,11 @@ import {
   LIMITES,
   definicoesFerramentas,
   ehNomeFerramenta,
+  formatarReais,
   textos,
   type AvisoTurno,
+  type Persona,
+  type ResultadoCenario,
   type CartaoResposta,
   type Contexto,
   type DepsConversa,
@@ -76,11 +79,40 @@ export function montarContextoDeterministico(
   const cenarios = calcularCenarios(persona, estado, contextoDominio);
   const cenarioAtual = cenarios[0];
 
+  const contexto = montarCorpoContexto(persona, estado, cenarios, cenarioAtual, tela_atual);
+  // IN-04: strings em reais geradas pelo código, para o modelo nunca converter centavos.
+  return { ...contexto, valores_formatados: formatarCentavosDoContexto(contexto) };
+}
+
+/** Caminho do campo → "R$ x,yy" para todo campo `*_centavos` inteiro do contexto. */
+function formatarCentavosDoContexto(valor: unknown, caminho = "", saida: Record<string, string> = {}): Record<string, string> {
+  if (Array.isArray(valor)) {
+    valor.forEach((item, i) => formatarCentavosDoContexto(item, `${caminho}[${i}]`, saida));
+  } else if (valor !== null && typeof valor === "object") {
+    for (const [chave, item] of Object.entries(valor)) {
+      const proximo = caminho ? `${caminho}.${chave}` : chave;
+      if (chave.endsWith("_centavos") && typeof item === "number" && Number.isSafeInteger(item)) {
+        saida[proximo] = formatarReais(item);
+      } else {
+        formatarCentavosDoContexto(item, proximo, saida);
+      }
+    }
+  }
+  return saida;
+}
+
+function montarCorpoContexto(
+  persona: Persona,
+  estado: EstadoSessao,
+  cenarios: ResultadoCenario[],
+  cenarioAtual: ResultadoCenario | undefined,
+  tela_atual?: string,
+): Record<string, unknown> {
   return {
     hoje: HOJE,
     janela: { de: HOJE, ate: FIM_JANELA },
     ...(tela_atual ? { tela_atual } : {}),
-    persona: { id: persona.id, nome: persona.nome },
+    persona: { id: persona.id, nome: persona.nome, renda: persona.renda ?? null },
     conta: {
       saldo_inicio_hoje_centavos: persona.conta.saldo_inicio_hoje_centavos,
       saldo_disponivel_hoje_centavos: saldoDisponivelHoje(persona, estado),

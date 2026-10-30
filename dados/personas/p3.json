@@ -2,6 +2,12 @@
   "id": "p3",
   "nome": "Duda (fictícia)",
   "resumo": "Tem filhos na escola, financiamento e compras parceladas no cartão.",
+  "renda": {
+    "tipo": "clt",
+    "bruto_mensal_centavos": 500000,
+    "liquido_mensal_centavos": 420000,
+    "descricao": "Salário CLT; líquido de R$ 4.200,00 após INSS e IR retido"
+  },
   "conta": {
     "saldo_30_07_centavos": 191700,
     "saldo_inicio_hoje_centavos": 250000

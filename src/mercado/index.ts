@@ -51,7 +51,53 @@ export function snapshotGravado(): SnapshotMercado {
 }
 
 export type FetchLike = (url: string, init?: { headers?: Record<string, string>; signal?: AbortSignal }) => Promise<Response>;
-export type OpcoesAoVivo = { timeout_ms: number; fetch?: FetchLike; ativo?: boolean; brapi_token?: string };
+export type OpcoesAoVivo = {
+  timeout_ms: number;
+  fetch?: FetchLike;
+  ativo?: boolean;
+  brapi_token?: string;
+  /** Relógio injetado só para testes; permitido aqui pois é TTL de cache de rede, não data de negócio. */
+  agora_ms?: () => number;
+};
+
+export const TTL_CACHE_MERCADO_MS = 60_000;
+type EntradaCache = { expira_em: number; corpo: unknown };
+const cacheMercado = new Map<string, EntradaCache>();
+export function limparCacheMercado(): void { cacheMercado.clear(); }
+
+async function obterJsonComCache(
+  url: string,
+  headers: Record<string, string> | undefined,
+  fetchFn: FetchLike,
+  timeoutMs: number,
+  agoraMs: () => number,
+): Promise<any> {
+  const agora = agoraMs();
+  const entrada = cacheMercado.get(url);
+  if (entrada) {
+    if (entrada.expira_em > agora) {
+      return entrada.corpo;
+    }
+    cacheMercado.delete(url);
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetchFn(url, { headers, signal: controller.signal });
+    if (!res.ok) {
+      return null;
+    }
+    const corpo = await res.json();
+    cacheMercado.set(url, {
+      expira_em: agora + TTL_CACHE_MERCADO_MS,
+      corpo,
+    });
+    return corpo;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 export type CotacaoBruta = {
   ticker: string;
@@ -94,9 +140,9 @@ export function converterParaIsoBrasilia(timestamp: string | number): string {
   return `${ano}-${mes}-${dia}T${horas}:${minutos}:${segundos}-03:00`;
 }
 
-/** Tenta o ao vivo uma vez; em timeout ou erro devolve o gravado com `tentou_ao_vivo: true` (F-07). */
+/** Tenta o ao vivo uma vez; em timeout ou erro devolve o gravado com `tentou_ao_vivo: true` (F-07). Ligado por padrão (salvo MERCADO_AO_VIVO="0"). */
 export async function buscarAoVivo(opcoes: OpcoesAoVivo): Promise<SnapshotMercado> {
-  const ativo = opcoes.ativo !== undefined ? opcoes.ativo : process.env.MERCADO_AO_VIVO === "1";
+  const ativo = opcoes.ativo !== undefined ? opcoes.ativo : process.env.MERCADO_AO_VIVO !== "0";
   if (!ativo) {
     throw new Error("mercado ao vivo desativado");
   }
@@ -104,25 +150,14 @@ export async function buscarAoVivo(opcoes: OpcoesAoVivo): Promise<SnapshotMercad
   const fetchFn = opcoes.fetch ?? globalThis.fetch;
   const brapiToken = opcoes.brapi_token ?? process.env.BRAPI_TOKEN;
   const timeoutMs = opcoes.timeout_ms;
+  const agoraMs = opcoes.agora_ms ?? Date.now;
   const gravado = snapshotGravado();
-
-  async function fetchComTimeout(url: string, headers?: Record<string, string>): Promise<Response> {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-    try {
-      return await fetchFn(url, { headers, signal: controller.signal });
-    } finally {
-      clearTimeout(timer);
-    }
-  }
 
   // 1. BCB
   const buscarBcb = async (): Promise<{ cdi: SnapshotMercado["cdi"] } | null> => {
     try {
       const url = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados/ultimos/1?formato=json";
-      const res = await fetchComTimeout(url);
-      if (!res.ok) return null;
-      const json = await res.json();
+      const json = await obterJsonComCache(url, undefined, fetchFn, timeoutMs, agoraMs);
       if (!Array.isArray(json) || json.length === 0) return null;
       const item = json[0];
       if (!item || typeof item !== "object") return null;
@@ -153,9 +188,7 @@ export async function buscarAoVivo(opcoes: OpcoesAoVivo): Promise<SnapshotMercad
     try {
       const url = "https://brapi.dev/api/quote/PETR4";
       const headers = brapiToken ? { Authorization: `Bearer ${brapiToken}` } : undefined;
-      const res = await fetchComTimeout(url, headers);
-      if (!res.ok) return null;
-      const json = await res.json();
+      const json = await obterJsonComCache(url, headers, fetchFn, timeoutMs, agoraMs);
       const item = json?.results?.[0];
       if (!item || typeof item !== "object") return null;
       if (typeof item.regularMarketPrice !== "number" || Number.isNaN(item.regularMarketPrice) || item.regularMarketPrice <= 0) {
@@ -188,9 +221,7 @@ export async function buscarAoVivo(opcoes: OpcoesAoVivo): Promise<SnapshotMercad
     try {
       const url =
         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=brl&include_24hr_change=true&include_last_updated_at=true";
-      const res = await fetchComTimeout(url);
-      if (!res.ok) return null;
-      const json = await res.json();
+      const json = await obterJsonComCache(url, undefined, fetchFn, timeoutMs, agoraMs);
       const btcInfo = json?.bitcoin;
       if (!btcInfo || typeof btcInfo !== "object") return null;
       if (typeof btcInfo.brl !== "number" || Number.isNaN(btcInfo.brl) || btcInfo.brl <= 0) {
@@ -255,27 +286,26 @@ export async function buscarAoVivo(opcoes: OpcoesAoVivo): Promise<SnapshotMercad
   return esquemaSnapshotMercado.parse(novoSnapshot);
 }
 
+/** Busca cotação ao vivo com fallback gravado. Ligado por padrão (salvo MERCADO_AO_VIVO="0"). */
 export async function buscarCotacao(
   ticker: string,
   opcoes: OpcoesAoVivo,
   mercado: SnapshotMercado,
 ): Promise<ResultadoDominio<{ cotacao: CotacaoBruta }>> {
   const tickerNormalizado = ticker.trim().toUpperCase();
-  const ativo = opcoes.ativo !== undefined ? opcoes.ativo : process.env.MERCADO_AO_VIVO === "1";
+  const ativo = opcoes.ativo !== undefined ? opcoes.ativo : process.env.MERCADO_AO_VIVO !== "0";
   const fetchFn = opcoes.fetch ?? globalThis.fetch;
   const brapiToken = opcoes.brapi_token ?? process.env.BRAPI_TOKEN;
   const timeoutMs = opcoes.timeout_ms;
+  const agoraMs = opcoes.agora_ms ?? Date.now;
 
   if (ativo && tickerNormalizado.length > 0) {
     if (tickerNormalizado in CRIPTO_IDS) {
       const id = CRIPTO_IDS[tickerNormalizado];
       const url = `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=brl&include_24hr_change=true&include_last_updated_at=true`;
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), timeoutMs);
       try {
-        const res = await fetchFn(url, { signal: controller.signal });
-        if (res.ok) {
-          const json = await res.json();
+        const json = await obterJsonComCache(url, undefined, fetchFn, timeoutMs, agoraMs);
+        if (json) {
           const info = json?.[id];
           if (info && typeof info.brl === "number" && !Number.isNaN(info.brl) && info.brl > 0) {
             const precoCentavos = new Decimal(String(info.brl))
@@ -308,18 +338,13 @@ export async function buscarCotacao(
         }
       } catch {
         // Falha ignorada, segue para fallback
-      } finally {
-        clearTimeout(timer);
       }
     } else {
       const url = `https://brapi.dev/api/quote/${tickerNormalizado}`;
       const headers = brapiToken ? { Authorization: `Bearer ${brapiToken}` } : undefined;
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), timeoutMs);
       try {
-        const res = await fetchFn(url, { headers, signal: controller.signal });
-        if (res.ok) {
-          const json = await res.json();
+        const json = await obterJsonComCache(url, headers, fetchFn, timeoutMs, agoraMs);
+        if (json) {
           const item = json?.results?.[0];
           if (item && typeof item.regularMarketPrice === "number" && !Number.isNaN(item.regularMarketPrice) && item.regularMarketPrice > 0) {
             const precoCentavos = new Decimal(String(item.regularMarketPrice))
@@ -354,8 +379,6 @@ export async function buscarCotacao(
         }
       } catch {
         // Falha ignorada, segue para fallback
-      } finally {
-        clearTimeout(timer);
       }
     }
   }

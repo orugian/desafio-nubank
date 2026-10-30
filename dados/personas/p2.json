@@ -2,6 +2,12 @@
   "id": "p2",
   "nome": "Caio (fictício)",
   "resumo": "Trabalha por conta própria e recebe de clientes por Pix.",
+  "renda": {
+    "tipo": "autonomo",
+    "bruto_mensal_centavos": 238333,
+    "liquido_mensal_centavos": 238333,
+    "descricao": "Serviços a clientes pessoa física por Pix; média dos últimos 3 meses"
+  },
   "conta": {
     "saldo_30_07_centavos": 97858,
     "saldo_inicio_hoje_centavos": 90000

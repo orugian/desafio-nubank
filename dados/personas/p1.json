@@ -2,6 +2,12 @@
   "id": "p1",
   "nome": "Bia (fictícia)",
   "resumo": "Quer juntar dinheiro para uma viagem.",
+  "renda": {
+    "tipo": "clt",
+    "bruto_mensal_centavos": 340000,
+    "liquido_mensal_centavos": 300000,
+    "descricao": "Salário CLT; líquido de R$ 3.000,00 após INSS e IR retido"
+  },
   "conta": {
     "saldo_30_07_centavos": -256910,
     "saldo_inicio_hoje_centavos": 180000
