@@ -190,7 +190,7 @@ export function criarProvedor(config: ConfigProvedor = {}): Provedor {
       const corpo: Record<string, unknown> = {
         model: modelo,
         temperature: 0,
-        max_tokens: 700,
+        max_tokens: 1200,
         stream: false,
         messages: converterMensagensOpenAI(mensagens),
         tools: ferramentas,

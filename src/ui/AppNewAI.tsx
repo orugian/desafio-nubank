@@ -314,9 +314,10 @@ export function AppNewAI({ cliente: clienteProp }: { cliente?: ClienteApi }) {
             <button
               type="button"
               onClick={() => setChatAberto(true)}
+              aria-label="Abrir chat com a Nina (NewAI)"
               className="newai-launcher"
             >
-              <span>New<span className="newai-launcher-accent">AI</span></span>
+              <span>Nina</span>
             </button>
           </div>
         </div>
