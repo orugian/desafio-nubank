@@ -142,6 +142,56 @@ export const esquemaResultadoPixCredito = z.object({
 });
 export type ResultadoPixCredito = z.infer<typeof esquemaResultadoPixCredito>;
 
+export const esquemaOpcaoParcelamento = z.object({
+  parcelas: z.int().min(1).max(72),
+  /** Parcela base (Price: PMT arredondado; sem juros: financiado ÷ n arredondado). */
+  parcela_centavos: esquemaCentavosPositivos,
+  /** Sem juros, a última absorve a diferença de arredondamento; com juros é igual à parcela. */
+  ultima_parcela_centavos: esquemaCentavosPositivos,
+  /** Entrada + soma das parcelas. */
+  total_pago_centavos: esquemaCentavosPositivos,
+  /** Total pago − valor da compra. */
+  juros_total_centavos: esquemaCentavos,
+  /** Total pago − preço à vista (com desconto). */
+  custo_vs_a_vista_centavos: esquemaCentavos,
+  /** Entrada + Σ parcela_k ÷ (1 + CDI mensal)^k (bruto, sem IR). */
+  valor_presente_centavos: esquemaCentavosPositivos,
+  /** À vista − valor presente; positivo = parcelar sai mais barato considerando o CDI. */
+  vantagem_vs_a_vista_centavos: esquemaCentavos,
+  cet_am_pct: esquemaPercentualTexto,
+  comprometimento_renda_pct: esquemaPercentualTexto.nullable(),
+});
+export type OpcaoParcelamento = z.infer<typeof esquemaOpcaoParcelamento>;
+
+export const esquemaResultadoSimulacaoParcelamento = z.object({
+  valor_centavos: esquemaCentavosPositivos,
+  entrada_centavos: esquemaCentavosNaoNegativos,
+  financiado_centavos: esquemaCentavosPositivos,
+  desconto_a_vista_pct: esquemaTaxaPctTexto,
+  a_vista_centavos: esquemaCentavosPositivos,
+  juros_am_pct: esquemaTaxaPctTexto,
+  juros_origem: z.enum(["premissa", "informado"]),
+  cdi_mensal_pct: esquemaPercentualTexto,
+  cdi_data_ref: esquemaData,
+  renda_liquida_mensal_centavos: esquemaCentavosPositivos.nullable(),
+  opcoes: z.array(esquemaOpcaoParcelamento).min(1).max(6),
+  /** "a_vista" ou o número de parcelas com menor valor presente (empate → a_vista). */
+  menor_custo: z.union([z.literal("a_vista"), z.int().min(1).max(72)]),
+  menor_parcela: z.int().min(1).max(72),
+  premissas: z.array(z.string().min(1)).min(1),
+  rotulo: z.string().min(1),
+});
+export type ResultadoSimulacaoParcelamento = z.infer<typeof esquemaResultadoSimulacaoParcelamento>;
+
+export const esquemaResultadoCalculo = z.object({
+  expressao: z.string().min(1).max(200),
+  /** Resultado com 2 casas (ROUND_HALF_UP), sinal permitido. */
+  resultado: z.string().regex(/^-?\d+\.\d{2}$/),
+  resultado_centavos: esquemaCentavos,
+  rotulo: z.string().min(1),
+});
+export type ResultadoCalculo = z.infer<typeof esquemaResultadoCalculo>;
+
 export const esquemaItemImposto = z.object({
   posicao_id: esquemaIdPosicao,
   nome: z.string().min(1),

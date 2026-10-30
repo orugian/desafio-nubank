@@ -1,7 +1,7 @@
 {
   "exemplo": true,
   "esquema": "ArgumentosFerramentas",
-  "descricao": "Argumentos de exemplo de cada uma das 17 ferramentas",
+  "descricao": "Argumentos de exemplo de cada uma das 19 ferramentas",
   "dados": {
     "consultar_historico": {
       "de": "2026-09-01",
@@ -71,6 +71,13 @@
     },
     "estimar_imposto_renda": {
       "escopo": "tudo"
+    },
+    "simular_parcelamento": {
+      "valor": "25000",
+      "parcelas_max": 48
+    },
+    "calcular_valores": {
+      "expressao": "120+85.5+230"
     }
   }
 }

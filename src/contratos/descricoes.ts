@@ -36,6 +36,10 @@ export const descricoesFerramentas: Record<NomeFerramenta, string> = {
     "Simula pagar um Pix usando o cartão de crédito (Pix no crédito) quando falta saldo em conta: juros ao mês (juros_am_pct; sem ele usa a premissa do protótipo de 4,99%), IOF, parcelas nas faturas, total pago e custo efetivo. Use só quando a pessoa perguntar por Pix sem saldo ou Pix no crédito. Nada é executado.",
   estimar_imposto_renda:
     "Estima o imposto de renda do ano-calendário 2026: sobre os investimentos (IR retido no resgate, come-cotas, ações e cripto com isenções e DARF) e o IRPF anual (declaração 2027) pela renda média do histórico ou por rendimento_mensal informado. escopo: tudo (padrão), investimentos ou irpf. Estimativa; não substitui a declaração.",
+  simular_parcelamento:
+    "Simula QUALQUER compra parcelada com valores informados pela pessoa (loja, financiamento, carnê, cartão; não exige cartão Nubank): compara pagar à vista (com desconto_a_vista_pct, se houver) com parcelar em várias opções (parcelas_max ou opcoes_parcelas), com entrada opcional. Para cada opção devolve parcela, total pago, juros, CET, quanto a parcela pesa na renda e o valor presente das parcelas pelo CDI (quanto valem hoje se o dinheiro ficasse rendendo), e aponta a opção de menor custo na simulação. Se a pessoa não informar a taxa, usa a premissa do protótipo de 2,99% a.m. e isso deve ser dito. Use para \"vale mais à vista ou parcelado?\", \"qual o cenário menos prejudicial?\". Simulação; não recomenda comprar nem contrata nada.",
+  calcular_valores:
+    "Calcula somas, diferenças, multiplicações, divisões e percentuais de valores informados pela pessoa (ex.: \"120+85.5+230\", \"25000*0.2\", \"3000-1250\"). Use sempre que precisar de uma conta sobre números da mensagem, em vez de calcular de cabeça. Números com ponto decimal e sem separador de milhar (\"1234.56\", não \"1.234,56\"); % pós-fixo divide por 100 (\"2500*10%\" = 250). Resultado com 2 casas.",
 };
 
 /** Descrições de campos reutilizados nos esquemas das ferramentas. */

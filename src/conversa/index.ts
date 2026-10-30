@@ -201,6 +201,7 @@ const FERRAMENTAS_DE_MERCADO = new Set([
   "comparar_investimento",
   "simular_investimento",
   "estimar_imposto_renda",
+  "simular_parcelamento",
 ]);
 
 export async function processarTurno(

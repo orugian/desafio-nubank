@@ -39,6 +39,8 @@ export const PREMISSAS_CREDITO = {
   iof_adicional_pct: "0.38",
   iof_diario_pct: "0.0082",
   iof_dias_max: 365,
+  /** Juros ao mês do parcelamento de compra (loja/carnê/financiamento) quando a pessoa não informa. */
+  juros_parcelamento_am_pct: "2.99",
 } as const;
 
 /** Limite máximo de data para simulações de investimento (5 anos, spec §1.5). */
